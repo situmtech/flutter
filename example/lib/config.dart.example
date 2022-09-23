@@ -1,0 +1,3 @@
+const situmUser = "YOUR-SITUM-USER";
+const situmApiKey = "YOUR-SITUM-API-KEY";
+const buildingIdentifier = "YOUR-SITUM-BUILDING-IDENTIFIER"
