@@ -1,14 +1,18 @@
 <p align="center"> <img width="233" src="https://situm.com/wp-content/themes/situm/img/logo-situm.svg" style="margin-bottom:1rem" />
-    <h1 align="center">@situm/flutter-wayfinding</h1>
+<h1 align="center">@situm/flutter-wayfinding</h1>
 </p>
 
 <p align="center" style="text-align:center">
-    Situm Flutter Wayfinding Plugin. Integrate plug&play navigation experience with floorplans, POIs, routes and turn-by-turn directions in no time. with the power of [SITUM](https://www.situm.com/).
+
+Situm Wayfinding for Flutter. Integrate plug&play navigation experience with floorplans, POIs, routes and turn-by-turn directions in no time. With the power of [SITUM](https://www.situm.com/).
+
 </p>
 
 <div align="center" style="text-align:center">
-    [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-    ![Flutter](https://img.shields.io/badge/flutter%40lastest-3.3.2-blueviolet)
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+![Flutter](https://img.shields.io/badge/flutter%40lastest-3.3.2-blueviolet)
+
 </div>
 
 ## Getting Started
@@ -18,7 +22,7 @@ A Flutter plugin package that provides a [Situm Wayfinding](https://situm.com/wa
 
 ### Set up your Situm credentials
 
-1. Copy the contents of `config.dart.example` to a new file `config.dart` and fill your Situm email, API key and building identifier.
+Copy the contents of `config.dart.example` to a new file `config.dart` and fill your Situm email, API key and building identifier.
 
 NOTE: for iOS to work you will need to replace the values with yours in SITFNativeMapView.m file:
 ```
