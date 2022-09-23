@@ -17,20 +17,24 @@ class OnPoiSelectedResult {
   final String poiId;
   final String poiName;
 
-  const OnPoiSelectedResult({required this.buildingId,
+  const OnPoiSelectedResult({
+    required this.buildingId,
     required this.buildingName,
     required this.floorId,
     required this.floorName,
     required this.poiId,
-    required this.poiName});
+    required this.poiName,
+  });
 }
 
 class OnPoiDeselectedResult {
   final String buildingId;
   final String buildingName;
 
-  const OnPoiDeselectedResult({required this.buildingId,
-    required this.buildingName});
+  const OnPoiDeselectedResult({
+    required this.buildingId,
+    required this.buildingName,
+  });
 }
 
 // Result callbacks.

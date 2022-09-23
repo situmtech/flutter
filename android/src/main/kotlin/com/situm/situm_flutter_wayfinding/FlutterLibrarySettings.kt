@@ -16,7 +16,14 @@ data class FlutterLibrarySettings(
         useHybridComponents = map.mGet("useHybridComponents", false) as Boolean
         librarySettings.setApiKey(email, apiKey)
         librarySettings.isEnablePoiClustering = map.mGet("enablePoiClustering", true) as Boolean
-        librarySettings
+        librarySettings.setSearchViewPlaceholder(
+            map.mGet(
+                "searchViewPlaceholder",
+                "Situm Flutter Wayfinding"
+            ) as String
+        )
+        librarySettings.setUseDashboardTheme(map.mGet("useDashboardTheme", false) as Boolean)
+        librarySettings.isShowPoiNames = map.mGet("showPoiNames", false) as Boolean
     }
 }
 

@@ -49,6 +49,7 @@ class _MyTabsState extends State<MyTabs> {
         situmApiKey: situmApiKey,
         buildingIdentifier: buildingIdentifier,
         useHybridComponents: true,
+        showPoiNames: true,
         loadCallback: _onSitumMapLoaded)
   ];
 

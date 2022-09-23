@@ -7,16 +7,22 @@ class SitumMapView extends StatefulWidget {
   final String buildingIdentifier;
   final bool useHybridComponents;
   final bool enablePoiClustering;
+  final String searchViewPlaceholder;
+  final bool useDashboardTheme;
+  final bool showPoiNames;
 
-  const SitumMapView(
-      {required Key key,
-      required this.situmUser,
-      required this.situmApiKey,
-      required this.buildingIdentifier,
-      required this.loadCallback,
-      this.useHybridComponents = true,
-      this.enablePoiClustering = true})
-      : super(key: key);
+  const SitumMapView({
+    required Key key,
+    required this.situmUser,
+    required this.situmApiKey,
+    required this.buildingIdentifier,
+    required this.loadCallback,
+    this.useHybridComponents = true,
+    this.enablePoiClustering = true,
+    this.searchViewPlaceholder = "Situm Flutter Wayfinding",
+    this.useDashboardTheme = false,
+    this.showPoiNames = false,
+  }) : super(key: key);
 
   final SitumMapViewCallback loadCallback;
 
@@ -44,7 +50,10 @@ class _SitumMapViewState extends State<SitumMapView> {
       "situmApiKey": widget.situmApiKey,
       "buildingIdentifier": widget.buildingIdentifier,
       "enablePoiClustering": widget.enablePoiClustering,
-      "useHybridComponents": widget.useHybridComponents
+      "useHybridComponents": widget.useHybridComponents,
+      "searchViewPlaceholder": widget.searchViewPlaceholder,
+      "useDashboardTheme": widget.useDashboardTheme,
+      "showPoiNames": widget.showPoiNames,
     };
     var controller = SitumFlutterWayfinding(id);
     controller.load(widget.loadCallback, loadParams);
