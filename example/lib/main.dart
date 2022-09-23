@@ -60,6 +60,9 @@ class _MyTabsState extends State<MyTabs> {
     controller.onPoiSelected((poiSelectedResult) {
       log("Poi ${poiSelectedResult.poiName} selected!");
     });
+    controller.onPoiDeselected((poiDeselectedResult) {
+      log("Poi deselected!");
+    });
   }
 
   @override

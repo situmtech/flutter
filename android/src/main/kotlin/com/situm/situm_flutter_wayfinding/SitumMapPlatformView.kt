@@ -137,7 +137,11 @@ class SitumMapPlatformView(
             }
 
             override fun onPoiDeselected(building: Building) {
-                // TODO: WIP
+                val arguments = mutableMapOf<String, String>(
+                    "buildingId" to building.identifier,
+                    "buildingName" to building.name,
+                )
+                methodChannel.invokeMethod("onPoiDeselected", arguments)
             }
         }
     }
