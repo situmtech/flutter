@@ -36,7 +36,7 @@ flutter:
     platforms:
       android:
         package: com.situm.situm_flutter_wayfinding
-        pluginClass: SitumFlutterWayfindingPlugin
+        pluginClass: SitumFlutterSDKPlugin
       ios:
         pluginClass: SitumFlutterWayfindingPlugin
 

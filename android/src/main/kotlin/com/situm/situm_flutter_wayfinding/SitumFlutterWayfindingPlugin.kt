@@ -1,21 +1,40 @@
 package com.situm.situm_flutter_wayfinding
 
-import androidx.annotation.NonNull
+import androidx.appcompat.app.AppCompatActivity
 import io.flutter.embedding.engine.plugins.FlutterPlugin
-import io.flutter.plugin.common.MethodChannel
+import io.flutter.embedding.engine.plugins.activity.ActivityAware
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 
-// TODO: is this class necessary??
+// SitumFlutterWayfindingPlugin
+// Avoids the message "The plugin `situm_flutter_wayfinding` doesn't have a main class [...]".
+// Right now WYF does not have a plugin class (extending FlutterPlugin).
+// TODO: create a separated plugin for SitumSdk.
+// TODO: register platform view here instead of MainActivity.
+open class SitumFlutterWayfindingPlugin : FlutterPlugin, ActivityAware {
 
-/** SitumFlutterWayfindingPlugin */
-class SitumFlutterWayfindingPlugin : FlutterPlugin {
+    private var activity: AppCompatActivity? = null
 
-    private lateinit var channel: MethodChannel
-
-    override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
-        channel = MethodChannel(flutterPluginBinding.binaryMessenger, SitumMapFactory.CHANNEL_ID)
+    override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
+        // Do nothing.
     }
 
-    override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
-        channel.setMethodCallHandler(null)
+    override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
+        // Do nothing
+    }
+
+    override fun onAttachedToActivity(binding: ActivityPluginBinding) {
+        activity = binding.activity as AppCompatActivity
+    }
+
+    override fun onDetachedFromActivityForConfigChanges() {
+        activity = null
+    }
+
+    override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
+        activity = binding.activity as AppCompatActivity
+    }
+
+    override fun onDetachedFromActivity() {
+        activity = null
     }
 }

@@ -1,12 +1,15 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:situm_flutter_wayfinding/situm_flutter_sdk.dart';
 import 'package:situm_flutter_wayfinding/situm_flutter_wayfinding.dart';
 import 'package:situm_flutter_wayfinding_example/config.dart';
 
 void main() => runApp(const MyApp());
 
 const _title = "Situm Flutter Wayfinding";
+const MY_BUILDING_ID = "9571";
+const MY_POI_ID = "104105";
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -29,19 +32,42 @@ class MyTabs extends StatefulWidget {
 
 class _MyTabsState extends State<MyTabs> {
   int _selectedIndex = 0;
+  static SitumFlutterSDK? situmSdk;
 
-  static const List<Widget> _tabBarWidgets = <Widget>[
+  final List<Widget> _tabBarWidgets = <Widget>[
     // Home:
     Card(
-      child: Center(
-        child: Text(
-          'Home',
-          style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-        ),
+      child: Column(
+        children: [
+          const Text(
+            'SitumSdk',
+            style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+          ),
+          ButtonBar(
+            alignment: MainAxisAlignment.center,
+            children: [
+              TextButton(
+                  onPressed: () {
+                    _requestUpdates();
+                  },
+                  child: const Text('Start')),
+              TextButton(
+                  onPressed: () {
+                    _removeUpdates();
+                  },
+                  child: const Text('Stop')),
+              TextButton(
+                  onPressed: () {
+                    _prefetch();
+                  },
+                  child: const Text('Prefetch')),
+            ],
+          )
+        ],
       ),
     ),
     // The Situm map:
-    SitumMapView(
+    const SitumMapView(
         key: Key("situm_map"),
         // Your Situm credentials and building, see config.dart.
         // Copy config.dart.example if you haven't already.
@@ -57,13 +83,34 @@ class _MyTabsState extends State<MyTabs> {
     // The Situm map was successfully loaded, use the given controller to
     // call the WYF API methods.
     log("Situm Map loaded!");
-    // controller.selectPoi(Poi("104105", "9571"));
     controller.onPoiSelected((poiSelectedResult) {
       log("Poi ${poiSelectedResult.poiName} selected!");
     });
     controller.onPoiDeselected((poiDeselectedResult) {
       log("Poi deselected!");
     });
+    controller.selectPoi(Poi(MY_POI_ID, MY_BUILDING_ID));
+  }
+
+  @override
+  void initState() {
+    // SitumSdk for flutter:
+    situmSdk = SitumFlutterSDK();
+    situmSdk?.init(situmUser, situmApiKey);
+    super.initState();
+  }
+
+  static void _requestUpdates() async {
+    situmSdk?.requestLocationUpdates(_MyLocationListener(), {});
+  }
+
+  static void _removeUpdates() async {
+    situmSdk?.removeUpdates();
+  }
+
+  static void _prefetch() async {
+    var prefetch = await situmSdk?.prefetchPositioningInfo([MY_BUILDING_ID]);
+    print("SDK CALLBACK: PREFETCH = $prefetch");
   }
 
   @override
@@ -98,5 +145,23 @@ class _MyTabsState extends State<MyTabs> {
     setState(() {
       _selectedIndex = index;
     });
+  }
+}
+
+class _MyLocationListener implements LocationListener {
+  @override
+  void onError(Error error) {
+    print("SDK> ERROR: ${error.message}");
+  }
+
+  @override
+  void onLocationChanged(OnLocationChangedResult locationChangedResult) {
+    print(
+        "SDK> Location changed, building ID is: ${locationChangedResult.buildingId}");
+  }
+
+  @override
+  void onStatusChanged(String status) {
+    print("SDK> STATUS: $status");
   }
 }

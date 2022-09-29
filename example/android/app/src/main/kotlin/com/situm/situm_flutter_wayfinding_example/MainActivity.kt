@@ -7,6 +7,9 @@ import io.flutter.embedding.engine.FlutterEngine
 class MainActivity : /*FlutterActivity()*/ FlutterAppCompatActivity() {
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
+        // Automatically register plugins:
+        super.configureFlutterEngine(flutterEngine)
+        // Reguster WYF widget:
         flutterEngine
             .platformViewsController
             .registry
