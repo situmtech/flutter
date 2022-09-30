@@ -8,13 +8,58 @@ class OnLocationChangedResult {
   });
 }
 
-class OnEnterGeofenceResult {
-  final String geofenceId;
-  final String geofenceName;
+class OnEnteredGeofenceResult {
+  final List<Geofence> geofences;
 
-  const OnEnterGeofenceResult({
-    required this.geofenceId,
-    required this.geofenceName,
+  const OnEnteredGeofenceResult({
+    required this.geofences,
+  });
+}
+
+class OnExitedGeofenceResult {
+  final List<Geofence> geofences;
+
+  const OnExitedGeofenceResult({
+    required this.geofences,
+  });
+}
+
+class NamedResource {
+  final String id;
+  final String name;
+
+  const NamedResource({
+    required this.id,
+    required this.name,
+  });
+
+  @override
+  String toString() {
+    return "$name:$id";
+  }
+}
+
+class Geofence extends NamedResource {
+  Geofence({
+    required super.id,
+    required super.name,
+  });
+}
+
+class Poi extends NamedResource {
+  final String buildingId;
+
+  Poi({
+    required super.id,
+    required super.name,
+    required this.buildingId,
+  });
+}
+
+class PoiCategory extends NamedResource {
+  PoiCategory({
+    required super.id,
+    required super.name,
   });
 }
 
@@ -38,5 +83,9 @@ abstract class LocationListener {
 }
 
 // On enter geofences.
-typedef OnEnterGeofenceCallback = void Function(
-    List<OnEnterGeofenceResult> onEnterGeofenceResult);
+typedef OnEnteredGeofencesCallback = void Function(
+    OnEnteredGeofenceResult onEnterGeofenceResult);
+
+// On exit geofences.
+typedef OnExitedGeofencesCallback = void Function(
+    OnExitedGeofenceResult onExitGeofenceResult);

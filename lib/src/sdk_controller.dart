@@ -3,7 +3,8 @@ part of situm_flutter_sdk;
 class SitumFlutterSDK {
   late final MethodChannel methodChannel;
   LocationListener? locationListener;
-  OnEnterGeofenceCallback? onEnterGeofenceCallback;
+  OnEnteredGeofencesCallback? onEnteredGeofencesCallback;
+  OnExitedGeofencesCallback? onExitedGeofencesCallback;
 
   SitumFlutterSDK() {
     methodChannel = const MethodChannel(CHANNEL_SDK_ID);
@@ -13,7 +14,6 @@ class SitumFlutterSDK {
   // Calls
 
   Future<void> init(String situmUser, String situmApiKey) async {
-    log("Dart selectPoi called, methodChannel will be invoked.");
     await methodChannel.invokeMethod<String>('init',
         <String, dynamic>{'situmUser': situmUser, 'situmApiKey': situmApiKey});
   }
@@ -36,8 +36,27 @@ class SitumFlutterSDK {
     });
   }
 
-  Future<void> onEnterGeofence(OnEnterGeofenceCallback callback) async {
-    onEnterGeofenceCallback = callback;
+  Future<List<Poi>> fetchPoisFromBuilding(String buildingId) async {
+    List response = await methodChannel.invokeMethod("fetchPoisFromBuilding", {
+      "buildingId": buildingId,
+    });
+    return createPois(response);
+  }
+
+  Future<List<PoiCategory>> fetchPoiCategories() async {
+    List response = await methodChannel.invokeMethod("fetchCategories");
+    return createCategories(response);
+  }
+
+  Future<void> onEnterGeofences(OnEnteredGeofencesCallback callback) async {
+    onEnteredGeofencesCallback = callback;
+    // Install the native listener only when it was explicitly required as it
+    // supposes a computational costs.
+    await methodChannel.invokeMethod('geofenceCallbacksRequested');
+  }
+
+  Future<void> onExitGeofences(OnExitedGeofencesCallback callback) async {
+    onExitedGeofencesCallback = callback;
     // Install the native listener only when it was explicitly required as it
     // supposes a computational costs.
     await methodChannel.invokeMethod('geofenceCallbacksRequested');
@@ -56,8 +75,11 @@ class SitumFlutterSDK {
       case 'onError':
         _onError(call.arguments);
         break;
-      case 'onEnterGeofence':
-        _onEnterGeofence(call.arguments);
+      case 'onEnteredGeofences':
+        _onEnterGeofences(call.arguments);
+        break;
+      case 'onExitedGeofences':
+        _onExitGeofences(call.arguments);
         break;
       default:
         print('Method ${call.method} not found!');
@@ -81,14 +103,21 @@ class SitumFlutterSDK {
     ));
   }
 
-  void _onEnterGeofence(arguments) {
-    // TODO: list of OnEnterGeofenceResult?
-    // TODO: OnEnterGeofenceResult contains list?
-    onEnterGeofenceCallback?.call([
-      OnEnterGeofenceResult(
-        geofenceId: arguments['geofenceId'],
-        geofenceName: arguments['geofenceName'],
-      )
-    ]);
+  void _onEnterGeofences(arguments) {
+    List<dynamic> geofencesData = arguments['geofences'];
+    List<Geofence> geofencesList = createGeofences(geofencesData);
+    if (geofencesList.isNotEmpty) {
+      onEnteredGeofencesCallback
+          ?.call(OnEnteredGeofenceResult(geofences: geofencesList));
+    }
+  }
+
+  void _onExitGeofences(arguments) {
+    List<dynamic> geofencesData = arguments['geofences'];
+    List<Geofence> geofencesList = createGeofences(geofencesData);
+    if (geofencesList.isNotEmpty) {
+      onExitedGeofencesCallback
+          ?.call(OnExitedGeofenceResult(geofences: geofencesList));
+    }
   }
 }

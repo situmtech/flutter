@@ -21,10 +21,10 @@ class SitumFlutterWayfinding {
     return result;
   }
 
-  Future<String?> selectPoi(Poi poi) async {
+  Future<String?> selectPoi(String id, String buildingId) async {
     log("Dart selectPoi called, methodChannel will be invoked.");
     return await methodChannel.invokeMethod<String>('selectPoi',
-        <String, dynamic>{'id': poi.id, 'buildingId': poi.buildingId});
+        <String, dynamic>{'id': id, 'buildingId': buildingId});
   }
 
   void onPoiSelected(OnPoiSelectedCallback callback) {

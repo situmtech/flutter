@@ -2,13 +2,6 @@ part of situm_flutter_wayfinding;
 
 // Public definitions:
 
-class Poi {
-  final String id;
-  final String buildingId;
-
-  Poi(this.id, this.buildingId);
-}
-
 class OnPoiSelectedResult {
   final String buildingId;
   final String buildingName;

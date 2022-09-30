@@ -4,9 +4,13 @@ import android.content.Context
 import androidx.annotation.NonNull
 import es.situm.sdk.SitumSdk
 import es.situm.sdk.error.Error
+//import es.situm.sdk.location.GeofenceListener
 import es.situm.sdk.location.LocationListener
 import es.situm.sdk.location.LocationRequest
 import es.situm.sdk.location.LocationStatus
+//import es.situm.sdk.model.cartography.Geofence
+import es.situm.sdk.model.cartography.Poi
+import es.situm.sdk.model.cartography.PoiCategory
 import es.situm.sdk.model.location.Location
 import es.situm.sdk.utils.Handler
 import io.flutter.embedding.engine.plugins.FlutterPlugin
@@ -23,6 +27,8 @@ class SitumFlutterSDKPlugin : FlutterPlugin, ActivityAware, MethodChannel.Method
 
     private lateinit var channel: MethodChannel
     private var locationListener: LocationListener? = null
+
+    //    private var geofenceListener: GeofenceListener? = null
     private var context: Context? = null
 
     companion object {
@@ -45,12 +51,42 @@ class SitumFlutterSDKPlugin : FlutterPlugin, ActivityAware, MethodChannel.Method
             "requestLocationUpdates" -> requestLocationUpdates(arguments, result)
             "removeUpdates" -> removeUpdates(result)
             "prefetchPositioningInfo" -> prefetchPositioningInfo(arguments, result)
-            "geofenceCallbacksRequested" -> geofenceCallbacksRequested(arguments, result)
+            "geofenceCallbacksRequested" -> geofenceCallbacksRequested(result)
+            "fetchPoisFromBuilding" -> fetchPoisFromBuilding(arguments, result)
+            "fetchCategories" -> fetchCategories(result)
             else -> result.notImplemented()
         }
     }
 
-    // Public methods:
+    // Public methods (impl):
+
+    private fun fetchCategories(result: MethodChannel.Result) {
+        SitumSdk.communicationManager()
+            .fetchPoiCategories(object : Handler<Collection<PoiCategory>> {
+                override fun onSuccess(categories: Collection<PoiCategory>) {
+                    result.success(categories.toCategoriesMap())
+                }
+
+                override fun onFailure(error: Error) {
+                    result.notifySitumSdkError(error)
+                }
+
+            })
+    }
+
+    private fun fetchPoisFromBuilding(arguments: Map<String, Any>, result: MethodChannel.Result) {
+        val buildingId = arguments["buildingId"] as String
+        SitumSdk.communicationManager()
+            .fetchIndoorPOIsFromBuilding(buildingId, object : Handler<Collection<Poi>> {
+                override fun onSuccess(pois: Collection<Poi>) {
+                    result.success(pois.toPoisMap())
+                }
+
+                override fun onFailure(error: Error) {
+                    result.notifySitumSdkError(error)
+                }
+            })
+    }
 
     private fun init(arguments: Map<String, Any>, result: MethodChannel.Result) {
         SitumSdk.init(context)
@@ -81,11 +117,7 @@ class SitumFlutterSDKPlugin : FlutterPlugin, ActivityAware, MethodChannel.Method
             }
 
             override fun onError(error: Error) {
-                val callbackArgs = mutableMapOf<String, Any>(
-                    "code" to error.code,
-                    "message" to error.message
-                )
-                channel.invokeMethod("onError", callbackArgs)
+                channel.invokeMethod("onError", error.toDartError())
             }
         }
         SitumSdk.locationManager().requestLocationUpdates(locationRequest, locationListener!!)
@@ -108,18 +140,30 @@ class SitumFlutterSDKPlugin : FlutterPlugin, ActivityAware, MethodChannel.Method
                 }
 
                 override fun onFailure(error: Error) {
-                    result.error(error.code.toString(), error.message, null)
+                    result.notifySitumSdkError(error)
                 }
 
             })
     }
 
     private fun geofenceCallbacksRequested(
-        arguments: Map<String, Any>,
         result: MethodChannel.Result
     ) {
-        // TODO: waiting for SDK to be released.
+//        geofenceListener = object : GeofenceListener {
+//            override fun onEnteredGeofences(enteredGeofences: List<Geofence>) {
+//                val geofencesMap = enteredGeofences.toGeofencesMap()
+//                channel.invokeMethod("onEnteredGeofences", geofencesMap)
+//            }
+//
+//            override fun onExitedGeofences(exitedGeofences: List<Geofence>) {
+//                val geofencesMap = exitedGeofences.toGeofencesMap()
+//                channel.invokeMethod("onExitedGeofences", geofencesMap)
+//            }
+//        }
+//        SitumSdk.locationManager().setGeofenceListener(geofenceListener)
+//        result.success("DONE")
     }
+
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
         context = binding.activity

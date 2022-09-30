@@ -56,13 +56,28 @@ class _MyTabsState extends State<MyTabs> {
                     _removeUpdates();
                   },
                   child: const Text('Stop')),
+            ],
+          ),
+          ButtonBar(
+            alignment: MainAxisAlignment.center,
+            children: [
+              TextButton(
+                  onPressed: () {
+                    _fetchPois();
+                  },
+                  child: const Text('Pois')),
+              TextButton(
+                  onPressed: () {
+                    _fetchCategories();
+                  },
+                  child: const Text('Categories')),
               TextButton(
                   onPressed: () {
                     _prefetch();
                   },
                   child: const Text('Prefetch')),
             ],
-          )
+          ),
         ],
       ),
     ),
@@ -89,7 +104,7 @@ class _MyTabsState extends State<MyTabs> {
     controller.onPoiDeselected((poiDeselectedResult) {
       log("Poi deselected!");
     });
-    controller.selectPoi(Poi(MY_POI_ID, MY_BUILDING_ID));
+    controller.selectPoi(MY_POI_ID, MY_BUILDING_ID);
   }
 
   @override
@@ -110,7 +125,17 @@ class _MyTabsState extends State<MyTabs> {
 
   static void _prefetch() async {
     var prefetch = await situmSdk?.prefetchPositioningInfo([MY_BUILDING_ID]);
-    print("SDK CALLBACK: PREFETCH = $prefetch");
+    print("SDK RESPONSE: PREFETCH = $prefetch");
+  }
+
+  static void _fetchPois() async {
+    var pois = await situmSdk?.fetchPoisFromBuilding(MY_BUILDING_ID);
+    print("SDK RESPONSE: POIS = $pois");
+  }
+
+  static void _fetchCategories() async {
+    var categories = await situmSdk?.fetchPoiCategories();
+    print("SDK RESPONSE: CATEGORES = $categories");
   }
 
   @override
