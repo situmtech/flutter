@@ -5,11 +5,13 @@
 // Support project import fallback if the generated compatibility header
 // is not copied when this plugin is created as a library.
 // https://forums.swift.org/t/swift-static-libraries-dont-copy-generated-objective-c-header/19816
-#import "situm_flutter_wayfinding-Swift.h"
+// #import "situm_flutter_wayfinding-Swift.h"
 #endif
+
+#import "SITFSDKPlugin.h"
 
 @implementation SitumFlutterWayfindingPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
-  [SwiftSitumFlutterWayfindingPlugin registerWithRegistrar:registrar];
+  [SITFSDKPlugin registerWithRegistrar:registrar];
 }
 @end

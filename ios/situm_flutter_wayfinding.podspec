@@ -11,10 +11,11 @@ A new Flutter plugin project.
                        DESC
   s.homepage         = 'http://example.com'
   s.license          = { :file => '../LICENSE' }
-  s.author           = { 'Your Company' => 'email@example.com' }
+  s.author           = { 'Situm Technologies' => 'mobile@situm.com' }
   s.source           = { :path => '.' }
   s.source_files = 'Classes/**/*'
   s.dependency 'Flutter'
+  s.dependency 'SitumWayfinding'
   s.platform = :ios, '9.0'
 
   # Flutter.framework does not contain a i386 slice.

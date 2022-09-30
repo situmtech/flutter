@@ -8,8 +8,8 @@ import 'package:situm_flutter_wayfinding_example/config.dart';
 void main() => runApp(const MyApp());
 
 const _title = "Situm Flutter Wayfinding";
-const MY_BUILDING_ID = "9571";
-const MY_POI_ID = "104105";
+const MY_BUILDING_ID = "YOUR-SITUM-BUILDING-IDENTIFIER";
+const MY_POI_ID = "YOUR-SITUM-POI-IDENTIFIER";
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -135,7 +135,7 @@ class _MyTabsState extends State<MyTabs> {
 
   static void _fetchCategories() async {
     var categories = await situmSdk?.fetchPoiCategories();
-    print("SDK RESPONSE: CATEGORES = $categories");
+    print("SDK RESPONSE: CATEGORIES = $categories");
   }
 
   @override
