@@ -85,11 +85,15 @@ class _MyTabsState extends State<MyTabs> {
         key: Key("situm_map"),
         // Your Situm credentials and building, see config.dart.
         // Copy config.dart.example if you haven't already.
+        searchViewPlaceholder: "Situm Flutter Wayfinding",
         situmUser: situmUser,
         situmApiKey: situmApiKey,
         buildingIdentifier: buildingIdentifier,
         useHybridComponents: true,
         showPoiNames: true,
+        hasSearchView: true,
+        lockCameraToBuilding: false,
+        useRemoteConfig: false,
         loadCallback: _onSitumMapLoaded)
   ];
 

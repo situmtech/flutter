@@ -7,13 +7,13 @@ data class FlutterLibrarySettings(
 ) {
     var librarySettings: LibrarySettings = LibrarySettings()
     val buildingIdentifier: String
-    val useHybridComponents: Boolean
+    val lockCameraToBuilding: Boolean
 
     init {
         val email = map.mGet("situmUser", "NO-EMAIL") as String
         val apiKey = map.mGet("situmApiKey", "NO-API-KEY") as String
         buildingIdentifier = map.mGet("buildingIdentifier", "NO-BUILDING-IDENTIFIER") as String
-        useHybridComponents = map.mGet("useHybridComponents", false) as Boolean
+        lockCameraToBuilding = map.mGet("lockCameraToBuilding", false) as Boolean
         librarySettings.setApiKey(email, apiKey)
         librarySettings.isEnablePoiClustering = map.mGet("enablePoiClustering", true) as Boolean
         librarySettings.setSearchViewPlaceholder(
@@ -24,6 +24,8 @@ data class FlutterLibrarySettings(
         )
         librarySettings.setUseDashboardTheme(map.mGet("useDashboardTheme", false) as Boolean)
         librarySettings.isShowPoiNames = map.mGet("showPoiNames", false) as Boolean
+        librarySettings.setHasSearchView(map.mGet("hasSearchView", true) as Boolean)
+        librarySettings.isUseRemoteConfig = map.mGet("useRemoteConfig", false) as Boolean
     }
 }
 

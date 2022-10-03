@@ -10,6 +10,9 @@ class SitumMapView extends StatefulWidget {
   final String searchViewPlaceholder;
   final bool useDashboardTheme;
   final bool showPoiNames;
+  final bool hasSearchView;
+  final bool lockCameraToBuilding;
+  final bool useRemoteConfig;
 
   const SitumMapView({
     required Key key,
@@ -22,6 +25,9 @@ class SitumMapView extends StatefulWidget {
     this.searchViewPlaceholder = "Situm Flutter Wayfinding",
     this.useDashboardTheme = false,
     this.showPoiNames = false,
+    this.hasSearchView = true,
+    this.lockCameraToBuilding = false,
+    this.useRemoteConfig = false,
   }) : super(key: key);
 
   final SitumMapViewCallback loadCallback;
@@ -54,6 +60,9 @@ class _SitumMapViewState extends State<SitumMapView> {
       "searchViewPlaceholder": widget.searchViewPlaceholder,
       "useDashboardTheme": widget.useDashboardTheme,
       "showPoiNames": widget.showPoiNames,
+      "hasSearchView": widget.hasSearchView,
+      "lockCameraToBuilding": widget.lockCameraToBuilding,
+      "useRemoteConfig": widget.useRemoteConfig,
     };
     var controller = SitumFlutterWayfinding(id);
     controller.load(widget.loadCallback, loadParams);

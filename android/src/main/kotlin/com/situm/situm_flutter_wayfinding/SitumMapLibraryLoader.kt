@@ -89,6 +89,9 @@ class SitumMapLibraryLoader(
             settings.buildingIdentifier,
             object : Handler<BuildingInfo> {
                 override fun onSuccess(buildingInfo: BuildingInfo) {
+                    if (settings.lockCameraToBuilding) {
+                        library.enableOneBuildingMode(settings.buildingIdentifier);
+                    }
                     library.centerBuilding(
                         buildingInfo.building,
                         object : ActionsCallback {
