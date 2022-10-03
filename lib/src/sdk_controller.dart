@@ -104,8 +104,7 @@ class SitumFlutterSDK {
   }
 
   void _onEnterGeofences(arguments) {
-    List<dynamic> geofencesData = arguments['geofences'];
-    List<Geofence> geofencesList = createGeofences(geofencesData);
+    List<Geofence> geofencesList = createGeofences(arguments);
     if (geofencesList.isNotEmpty) {
       onEnteredGeofencesCallback
           ?.call(OnEnteredGeofenceResult(geofences: geofencesList));
@@ -113,8 +112,7 @@ class SitumFlutterSDK {
   }
 
   void _onExitGeofences(arguments) {
-    List<dynamic> geofencesData = arguments['geofences'];
-    List<Geofence> geofencesList = createGeofences(geofencesData);
+    List<Geofence> geofencesList = createGeofences(arguments);
     if (geofencesList.isNotEmpty) {
       onExitedGeofencesCallback
           ?.call(OnExitedGeofenceResult(geofences: geofencesList));

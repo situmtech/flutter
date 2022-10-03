@@ -8,7 +8,6 @@ import 'package:situm_flutter_wayfinding_example/config.dart';
 void main() => runApp(const MyApp());
 
 const _title = "Situm Flutter Wayfinding";
-const MY_BUILDING_ID = "YOUR-SITUM-BUILDING-IDENTIFIER";
 const MY_POI_ID = "YOUR-SITUM-POI-IDENTIFIER";
 
 class MyApp extends StatelessWidget {
@@ -97,14 +96,14 @@ class _MyTabsState extends State<MyTabs> {
   static void _onSitumMapLoaded(SitumFlutterWayfinding controller) {
     // The Situm map was successfully loaded, use the given controller to
     // call the WYF API methods.
-    log("Situm Map loaded!");
+    print("WYF> Situm Map loaded!");
     controller.onPoiSelected((poiSelectedResult) {
-      log("Poi ${poiSelectedResult.poiName} selected!");
+      print("WYF> Poi ${poiSelectedResult.poiName} selected!");
     });
     controller.onPoiDeselected((poiDeselectedResult) {
-      log("Poi deselected!");
+      print("WYF> Poi deselected!");
     });
-    controller.selectPoi(MY_POI_ID, MY_BUILDING_ID);
+    controller.selectPoi(MY_POI_ID, buildingIdentifier);
   }
 
   @override
@@ -112,6 +111,12 @@ class _MyTabsState extends State<MyTabs> {
     // SitumSdk for flutter:
     situmSdk = SitumFlutterSDK();
     situmSdk?.init(situmUser, situmApiKey);
+    situmSdk?.onEnterGeofences((geofencesResult) {
+      print("SDK> Enter geofences: ${geofencesResult.geofences}.");
+    });
+    situmSdk?.onExitGeofences((geofencesResult) {
+      print("SDK> Exit geofences: ${geofencesResult.geofences}.");
+    });
     super.initState();
   }
 
@@ -124,12 +129,12 @@ class _MyTabsState extends State<MyTabs> {
   }
 
   static void _prefetch() async {
-    var prefetch = await situmSdk?.prefetchPositioningInfo([MY_BUILDING_ID]);
+    var prefetch = await situmSdk?.prefetchPositioningInfo([buildingIdentifier]);
     print("SDK RESPONSE: PREFETCH = $prefetch");
   }
 
   static void _fetchPois() async {
-    var pois = await situmSdk?.fetchPoisFromBuilding(MY_BUILDING_ID);
+    var pois = await situmSdk?.fetchPoisFromBuilding(buildingIdentifier);
     print("SDK RESPONSE: POIS = $pois");
   }
 

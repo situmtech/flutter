@@ -46,15 +46,13 @@ allprojects {
     }
 }
 ```
-2. Include the Situm Wayfinding dependency in your app level `build.gradle`. Also add AppCompat:
+2. Make sure AppCompat library is in your `build.gradle` dependencies:
 ```groovy
 implementation 'androidx.appcompat:appcompat:1.4.1'
-implementation ('es.situm:situm-wayfinding-release-0.19.0-flutter-0.1:0.19.0-alpha@aar') {
-    transitive = true
-}
 ```
 3. Make sure your `MainActivity` extends the provided `FlutterAppCompatActivity`.
-4. Review your `styles.xml` file and make sure the application theme extends `Theme.AppCompat.Light.DarkActionBar`.
+   This class was duplicated from `FlutterFragmentActivity` to add support to androidx `AppCompatActivity`, which is not currently supported by Flutter.  
+5. Review your `styles.xml` file and make sure the application theme extends `Theme.AppCompat.Light.DarkActionBar`.
    Also remove the action bar in your theme:
 ```xml
 <style name="NormalTheme" parent="Theme.AppCompat.Light.DarkActionBar">

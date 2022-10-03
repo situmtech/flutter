@@ -4,11 +4,11 @@ import android.content.Context
 import androidx.annotation.NonNull
 import es.situm.sdk.SitumSdk
 import es.situm.sdk.error.Error
-//import es.situm.sdk.location.GeofenceListener
+import es.situm.sdk.location.GeofenceListener
 import es.situm.sdk.location.LocationListener
 import es.situm.sdk.location.LocationRequest
 import es.situm.sdk.location.LocationStatus
-//import es.situm.sdk.model.cartography.Geofence
+import es.situm.sdk.model.cartography.Geofence
 import es.situm.sdk.model.cartography.Poi
 import es.situm.sdk.model.cartography.PoiCategory
 import es.situm.sdk.model.location.Location
@@ -27,8 +27,7 @@ class SitumFlutterSDKPlugin : FlutterPlugin, ActivityAware, MethodChannel.Method
 
     private lateinit var channel: MethodChannel
     private var locationListener: LocationListener? = null
-
-    //    private var geofenceListener: GeofenceListener? = null
+    private var geofenceListener: GeofenceListener? = null
     private var context: Context? = null
 
     companion object {
@@ -149,19 +148,19 @@ class SitumFlutterSDKPlugin : FlutterPlugin, ActivityAware, MethodChannel.Method
     private fun geofenceCallbacksRequested(
         result: MethodChannel.Result
     ) {
-//        geofenceListener = object : GeofenceListener {
-//            override fun onEnteredGeofences(enteredGeofences: List<Geofence>) {
-//                val geofencesMap = enteredGeofences.toGeofencesMap()
-//                channel.invokeMethod("onEnteredGeofences", geofencesMap)
-//            }
-//
-//            override fun onExitedGeofences(exitedGeofences: List<Geofence>) {
-//                val geofencesMap = exitedGeofences.toGeofencesMap()
-//                channel.invokeMethod("onExitedGeofences", geofencesMap)
-//            }
-//        }
-//        SitumSdk.locationManager().setGeofenceListener(geofenceListener)
-//        result.success("DONE")
+        geofenceListener = object : GeofenceListener {
+            override fun onEnteredGeofences(enteredGeofences: List<Geofence>) {
+                val geofencesMap = enteredGeofences.toGeofencesMap()
+                channel.invokeMethod("onEnteredGeofences", geofencesMap)
+            }
+
+            override fun onExitedGeofences(exitedGeofences: List<Geofence>) {
+                val geofencesMap = exitedGeofences.toGeofencesMap()
+                channel.invokeMethod("onExitedGeofences", geofencesMap)
+            }
+        }
+        SitumSdk.locationManager().setGeofenceListener(geofenceListener)
+        result.success("DONE")
     }
 
 
