@@ -92,8 +92,9 @@ class _MyTabsState extends State<MyTabs> {
         useHybridComponents: true,
         showPoiNames: true,
         hasSearchView: true,
-        lockCameraToBuilding: false,
+        lockCameraToBuilding: true,
         useRemoteConfig: false,
+        initialZoom: 15,
         loadCallback: _onSitumMapLoaded)
   ];
 

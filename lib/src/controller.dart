@@ -27,6 +27,16 @@ class SitumFlutterWayfinding {
         <String, dynamic>{'id': id, 'buildingId': buildingId});
   }
 
+  Future<String?> startPositioning() async {
+    log("Dart startPositioning called, methodChannel will be invoked.");
+    return await methodChannel.invokeMethod<String>('startPositioning');
+  }
+
+  Future<String?> stopPositioning() async {
+    log("Dart stopPositioning called, methodChannel will be invoked.");
+    return await methodChannel.invokeMethod<String>('stopPositioning');
+  }
+
   void onPoiSelected(OnPoiSelectedCallback callback) {
     onPoiSelectedCallback = callback;
   }

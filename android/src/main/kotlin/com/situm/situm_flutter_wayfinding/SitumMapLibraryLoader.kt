@@ -23,7 +23,7 @@ class SitumMapLibraryLoader(
 
     private val handler = android.os.Handler(Looper.getMainLooper())
 
-    fun load(arguments: Map<String, Any>, callback: Callback) {
+    fun load(flutterLibrarySettings: FlutterLibrarySettings, callback: Callback) {
         if (loaded) {
             library?.let {
                 callback.onSuccess(it)
@@ -32,16 +32,15 @@ class SitumMapLibraryLoader(
         }
 
         Log.d("ATAG", "PlatformView load called!")
-        val settings = FlutterLibrarySettings(arguments)
         runLoad {
             library = SitumMapsLibrary(
                 R.id.situm_flutter_map_view,
                 activity,
-                settings.librarySettings
+                flutterLibrarySettings.librarySettings
             ).apply {
                 setSitumMapsListener(object : SitumMapsListener {
                     override fun onSuccess() {
-                        onLibraryLoaded(this@apply, settings, callback)
+                        onLibraryLoaded(this@apply, flutterLibrarySettings, callback)
                     }
 
                     override fun onError(error: Int) {

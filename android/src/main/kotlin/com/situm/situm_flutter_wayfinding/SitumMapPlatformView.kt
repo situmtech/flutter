@@ -35,6 +35,7 @@ class SitumMapPlatformView(
         // WYF:
         private var library: SitumMapsLibrary? = null
         private lateinit var libraryLoader: SitumMapLibraryLoader
+        lateinit var loadSettings: FlutterLibrarySettings
 
         const val ERROR_LIBRARY_NOT_LOADED = "ERROR_LIBRARY_NOT_LOADED"
         const val ERROR_SELECT_POI = "ERROR_SELECT_POI"
@@ -50,7 +51,6 @@ class SitumMapPlatformView(
     }
 
     override fun getView(): View? {
-        Log.d("ATAG", "getView() method called!")
         if (layout == null) {
             val inflater = LayoutInflater.from(activity)
             layout = inflater.inflate(R.layout.situm_flutter_map_view_layout, null, false)
@@ -59,7 +59,7 @@ class SitumMapPlatformView(
     }
 
     override fun onMethodCall(methodCall: MethodCall, result: MethodChannel.Result) {
-        val arguments = methodCall.arguments as Map<String, Any>
+        val arguments = (methodCall.arguments ?: emptyMap<String, Any>()) as Map<String, Any>
         if (methodCall.method == "load") {
             load(arguments, result)
         } else {
@@ -70,6 +70,8 @@ class SitumMapPlatformView(
             when (methodCall.method) {
                 // Add here all the library methods:
                 "selectPoi" -> selectPoi(arguments, result)
+                "startPositioning" -> startPositioning()
+                "stopPositioning" -> stopPositioning()
                 else -> result.notImplemented()
             }
         }
@@ -84,7 +86,8 @@ class SitumMapPlatformView(
 
     // Load WYF into the target view.
     private fun load(arguments: Map<String, Any>, methodResult: MethodChannel.Result) {
-        libraryLoader.load(arguments, object : SitumMapLibraryLoader.Callback {
+        loadSettings = FlutterLibrarySettings(arguments)
+        libraryLoader.load(loadSettings, object : SitumMapLibraryLoader.Callback {
             override fun onSuccess(obtained: SitumMapsLibrary) {
                 library = obtained
                 methodResult.success("SUCCESS")
@@ -95,6 +98,14 @@ class SitumMapPlatformView(
                 methodResult.error(code.toString(), message, null)
             }
         })
+    }
+
+    private fun startPositioning() {
+        library?.startPositioning(loadSettings.buildingIdentifier)
+    }
+
+    private fun stopPositioning() {
+        library?.stopPositioning()
     }
 
     // Select the given poi in the map.
