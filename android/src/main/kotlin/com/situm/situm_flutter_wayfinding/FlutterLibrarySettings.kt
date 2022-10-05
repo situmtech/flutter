@@ -27,6 +27,7 @@ data class FlutterLibrarySettings(
         librarySettings.setHasSearchView(map.mGet("hasSearchView", true) as Boolean)
         librarySettings.isUseRemoteConfig = map.mGet("useRemoteConfig", false) as Boolean
         librarySettings.initialZoom = map.mGet("initialZoom", 18) as Int
+        librarySettings.isShowNavigationIndications = map.mGet("showNavigationIndications", true) as Boolean
     }
 }
 

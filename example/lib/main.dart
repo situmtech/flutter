@@ -95,6 +95,7 @@ class _MyTabsState extends State<MyTabs> {
         lockCameraToBuilding: true,
         useRemoteConfig: false,
         initialZoom: 15,
+        showNavigationIndications: true,
         loadCallback: _onSitumMapLoaded)
   ];
 

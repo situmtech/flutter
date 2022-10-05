@@ -21,6 +21,10 @@ class SitumFlutterWayfinding {
     return result;
   }
 
+  Future<void> unload() async {
+    await methodChannel.invokeMethod("unload");
+  }
+
   Future<String?> selectPoi(String id, String buildingId) async {
     log("Dart selectPoi called, methodChannel will be invoked.");
     return await methodChannel.invokeMethod<String>('selectPoi',

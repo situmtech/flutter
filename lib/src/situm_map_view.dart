@@ -14,6 +14,7 @@ class SitumMapView extends StatefulWidget {
   final bool lockCameraToBuilding;
   final bool useRemoteConfig;
   final int initialZoom;
+  final bool showNavigationIndications;
 
   const SitumMapView({
     required Key key,
@@ -30,6 +31,7 @@ class SitumMapView extends StatefulWidget {
     this.lockCameraToBuilding = false,
     this.useRemoteConfig = false,
     this.initialZoom = 18,
+    this.showNavigationIndications = true,
   }) : super(key: key);
 
   final SitumMapViewCallback loadCallback;
@@ -66,6 +68,7 @@ class _SitumMapViewState extends State<SitumMapView> {
       "lockCameraToBuilding": widget.lockCameraToBuilding,
       "useRemoteConfig": widget.useRemoteConfig,
       "initialZoom": widget.initialZoom,
+      "showNavigationIndications": widget.showNavigationIndications,
     };
     var controller = SitumFlutterWayfinding(id);
     controller.load(widget.loadCallback, loadParams);

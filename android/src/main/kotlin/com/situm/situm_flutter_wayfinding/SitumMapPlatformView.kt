@@ -69,6 +69,7 @@ class SitumMapPlatformView(
             }
             when (methodCall.method) {
                 // Add here all the library methods:
+                "unload" -> unload()
                 "selectPoi" -> selectPoi(arguments, result)
                 "startPositioning" -> startPositioning()
                 "stopPositioning" -> stopPositioning()
@@ -98,6 +99,11 @@ class SitumMapPlatformView(
                 methodResult.error(code.toString(), message, null)
             }
         })
+    }
+
+    private fun unload() {
+        layout = null
+        libraryLoader.unload()
     }
 
     private fun startPositioning() {
@@ -174,7 +180,6 @@ class SitumMapPlatformView(
     override fun onDestroy(owner: LifecycleOwner) {
         super.onDestroy(owner)
         owner.lifecycle.removeObserver(this)
-        layout = null
-        libraryLoader.unload()
+        unload()
     }
 }
