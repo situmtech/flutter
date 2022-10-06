@@ -5,6 +5,7 @@ class SitumMapView extends StatefulWidget {
   final String situmUser;
   final String situmApiKey;
   final String buildingIdentifier;
+  final String googleMapsApiKey;
   final bool useHybridComponents;
   final bool enablePoiClustering;
   final String searchViewPlaceholder;
@@ -25,6 +26,7 @@ class SitumMapView extends StatefulWidget {
     required this.situmApiKey,
     required this.buildingIdentifier,
     required this.loadCallback,
+    required this.googleMapsApiKey,
     this.didUpdateCallback,
     this.useHybridComponents = true,
     this.enablePoiClustering = true,
@@ -43,7 +45,6 @@ class SitumMapView extends StatefulWidget {
 }
 
 class _SitumMapViewState extends State<SitumMapView> {
-
   SitumFlutterWayfinding? controller;
 
   @override
@@ -95,10 +96,27 @@ class _SitumMapViewState extends State<SitumMapView> {
   Widget _buildiOS(BuildContext context, Map<String, dynamic> creationParams) {
     const String viewType = '<platform-view-type>';
 
+    Map<String, dynamic> loadParams = <String, dynamic>{
+      "situmUser": widget.situmUser,
+      "situmApiKey": widget.situmApiKey,
+      "buildingIdentifier": widget.buildingIdentifier,
+      "googleMapsApiKey": widget.googleMapsApiKey,
+      "enablePoiClustering": widget.enablePoiClustering,
+      "useHybridComponents": widget.useHybridComponents,
+      "searchViewPlaceholder": widget.searchViewPlaceholder,
+      "useDashboardTheme": widget.useDashboardTheme,
+      "showPoiNames": widget.showPoiNames,
+      "hasSearchView": widget.hasSearchView,
+      "lockCameraToBuilding": widget.lockCameraToBuilding,
+      "useRemoteConfig": widget.useRemoteConfig,
+      "initialZoom": widget.initialZoom,
+      "showNavigationIndications": widget.showNavigationIndications,
+    };
+
     return UiKitView(
       viewType: viewType,
       layoutDirection: TextDirection.ltr,
-      creationParams: creationParams,
+      creationParams: loadParams,
       creationParamsCodec: const StandardMessageCodec(),
     );
   }
