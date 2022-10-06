@@ -2,6 +2,7 @@ part of situm_flutter_wayfinding;
 
 class SitumFlutterWayfinding {
   late final MethodChannel methodChannel;
+  bool situmMapLoaded = false;
   OnPoiSelectedCallback? onPoiSelectedCallback;
   OnPoiDeselectedCallback? onPoiDeselectedCallback;
 
@@ -12,17 +13,23 @@ class SitumFlutterWayfinding {
 
   // Calls:
 
-  Future<String?> load(SitumMapViewCallback situmMapResultCallback,
-      Map<String, dynamic> creationParams) async {
-    log("Dart load called, methodChannel will be invoked.");
-    final result =
-        await methodChannel.invokeMethod<String>('load', creationParams);
-    situmMapResultCallback(this);
+  Future<String?> load(
+    SitumMapViewCallback situmMapLoadCallback,
+    SitumMapViewCallback? situmMapDidUpdateCallback,
+    Map<String, dynamic> creationParams
+  ) async {
+    print("Situm> Dart load called, methodChannel will be invoked.");
+    final result = await methodChannel.invokeMethod<String>('load', creationParams);
+    print("Situm> Got load result: $result");
+    situmMapLoaded = true;
+    situmMapLoadCallback(this);
+    situmMapDidUpdateCallback?.call(this);
     return result;
   }
 
   Future<void> unload() async {
     await methodChannel.invokeMethod("unload");
+    situmMapLoaded = false;
   }
 
   Future<String?> selectPoi(String id, String buildingId) async {

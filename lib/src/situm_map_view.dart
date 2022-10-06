@@ -16,12 +16,16 @@ class SitumMapView extends StatefulWidget {
   final int initialZoom;
   final bool showNavigationIndications;
 
+  final SitumMapViewCallback loadCallback;
+  final SitumMapViewCallback? didUpdateCallback;
+
   const SitumMapView({
     required Key key,
     required this.situmUser,
     required this.situmApiKey,
     required this.buildingIdentifier,
     required this.loadCallback,
+    this.didUpdateCallback,
     this.useHybridComponents = true,
     this.enablePoiClustering = true,
     this.searchViewPlaceholder = "Situm Flutter Wayfinding",
@@ -34,13 +38,14 @@ class SitumMapView extends StatefulWidget {
     this.showNavigationIndications = true,
   }) : super(key: key);
 
-  final SitumMapViewCallback loadCallback;
-
   @override
   State<StatefulWidget> createState() => _SitumMapViewState();
 }
 
 class _SitumMapViewState extends State<SitumMapView> {
+
+  SitumFlutterWayfinding? controller;
+
   @override
   Widget build(BuildContext context) {
     Map<String, dynamic> platformViewParams = <String, dynamic>{
@@ -55,6 +60,7 @@ class _SitumMapViewState extends State<SitumMapView> {
   }
 
   Future<void> _onPlatformViewCreated(int id) async {
+    print("Situm> _onPlatformViewCreated called");
     Map<String, dynamic> loadParams = <String, dynamic>{
       "situmUser": widget.situmUser,
       "situmApiKey": widget.situmApiKey,
@@ -70,8 +76,16 @@ class _SitumMapViewState extends State<SitumMapView> {
       "initialZoom": widget.initialZoom,
       "showNavigationIndications": widget.showNavigationIndications,
     };
-    var controller = SitumFlutterWayfinding(id);
-    controller.load(widget.loadCallback, loadParams);
+    controller = SitumFlutterWayfinding(id);
+    controller!.load(widget.loadCallback, widget.didUpdateCallback, loadParams);
+  }
+
+  @override
+  void didUpdateWidget(covariant SitumMapView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (controller?.situmMapLoaded == true) {
+      widget.didUpdateCallback?.call(controller!);
+    }
   }
 
   // ==========================================================================
@@ -103,7 +117,7 @@ class _SitumMapViewState extends State<SitumMapView> {
 
   Widget _buildHybrid(
       BuildContext context, Map<String, dynamic> creationParams) {
-    log("Using hybrid components");
+    print("Situm> Using hybrid components");
     return PlatformViewLink(
       viewType: CHANNEL_ID,
       surfaceFactory: (context, controller) {
@@ -136,7 +150,7 @@ class _SitumMapViewState extends State<SitumMapView> {
 
   Widget _buildVirtualDisplay(
       BuildContext context, Map<String, dynamic> creationParams) {
-    log("Using virtual display");
+    print("Situm> Using virtual display");
     return AndroidView(
       viewType: CHANNEL_ID,
       creationParams: creationParams,
