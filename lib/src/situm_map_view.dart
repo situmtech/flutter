@@ -26,7 +26,7 @@ class SitumMapView extends StatefulWidget {
     required this.situmApiKey,
     required this.buildingIdentifier,
     required this.loadCallback,
-    required this.googleMapsApiKey,
+    this.googleMapsApiKey = "",
     this.didUpdateCallback,
     this.useHybridComponents = true,
     this.enablePoiClustering = true,
