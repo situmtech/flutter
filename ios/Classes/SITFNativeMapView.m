@@ -56,11 +56,17 @@
         _view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 1, 1)];
 
         Builder *settingsBuilder = [[Builder alloc] init];
-        Credentials *credentials = [[Credentials alloc]initWithUser:@"place_situm_user_here"
-                                                               apiKey:@"place_situm_apikey_here"
-                                                     googleMapsApiKey:@"place_googlemaps_apikey_here"];
+        
+        NSString *situmUser = [args valueForKey:@"situmUser"];
+        NSString *apiKey = [args valueForKey:@"situmApiKey"];
+        NSString *buildingIdentifier = [args valueForKey:@"buildingIdentifier"];
+        NSString *googleMapsApiKey = [args valueForKey:@"googleMapsApiKey"];
+        
+        Credentials *credentials = [[Credentials alloc]initWithUser:situmUser
+                                                               apiKey:apiKey
+                                                     googleMapsApiKey:googleMapsApiKey];
         [settingsBuilder setCredentialsWithCredentials:credentials];
-        [settingsBuilder setBuildingIdWithBuildingId:@"place_building_identifier_here"];
+        [settingsBuilder setBuildingIdWithBuildingId:buildingIdentifier];
         
         [settingsBuilder setEnablePoiClusteringWithEnablePoisClustering:YES];
         

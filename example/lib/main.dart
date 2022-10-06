@@ -89,6 +89,7 @@ class _MyTabsState extends State<MyTabs> {
         situmUser: situmUser,
         situmApiKey: situmApiKey,
         buildingIdentifier: buildingIdentifier,
+        googleMapsApiKey: googleMapsApiKey,
         useHybridComponents: true,
         showPoiNames: true,
         hasSearchView: true,
@@ -135,7 +136,8 @@ class _MyTabsState extends State<MyTabs> {
   }
 
   static void _prefetch() async {
-    var prefetch = await situmSdk?.prefetchPositioningInfo([buildingIdentifier]);
+    var prefetch =
+        await situmSdk?.prefetchPositioningInfo([buildingIdentifier]);
     print("SDK RESPONSE: PREFETCH = $prefetch");
   }
 
