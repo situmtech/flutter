@@ -10,6 +10,11 @@
 @import SitumWayfinding;
 // #import <SitumWayfinding/SitumWayfinding-umbrella.h>
 
+@interface SITFNativeMapViewFactory()
+@property (nonatomic) BOOL isWayfindingLoaded;
+@end
+
+
 @implementation SITFNativeMapViewFactory {
     NSObject<FlutterBinaryMessenger>* _messenger;
 }
@@ -18,6 +23,7 @@
   self = [super init];
   if (self) {
     _messenger = messenger;
+    _isWayfindingLoaded = NO;
   }
   return self;
 }
@@ -53,8 +59,9 @@
               binaryMessenger:(NSObject<FlutterBinaryMessenger>*)messenger {
 
     if (self = [super init]) {
+      if (!_isWayfindingLoaded){
+        _isWayfindingLoaded = YES;
         _view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 1, 1)];
-
         Builder *settingsBuilder = [[Builder alloc] init];
         
         NSString *situmUser = [args valueForKey:@"situmUser"];
@@ -95,8 +102,8 @@
         if (error) {
             NSLog(@"Unable to load wayfinding library");
         }
-
-  }
+      }
+    }
   return self;
 }
 
