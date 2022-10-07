@@ -4,10 +4,6 @@ import android.os.Looper
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import es.situm.sdk.SitumSdk
-import es.situm.sdk.error.Error
-import es.situm.sdk.model.cartography.BuildingInfo
-import es.situm.sdk.utils.Handler
 import es.situm.wayfinding.SitumMapsLibrary
 import es.situm.wayfinding.SitumMapsListener
 import es.situm.wayfinding.actions.ActionsCallback
@@ -84,29 +80,16 @@ class SitumMapLibraryLoader(
         settings: FlutterLibrarySettings,
         result: Callback
     ) {
-        if (settings.lockCameraToBuilding) {
-            library.enableOneBuildingMode(settings.buildingIdentifier);
+        val callback = object : ActionsCallback {
+            override fun onActionConcluded() {
+                result.onSuccess(library)
+            }
         }
-        SitumSdk.communicationManager().fetchBuildingInfo(
-            settings.buildingIdentifier,
-            object : Handler<BuildingInfo> {
-                override fun onSuccess(buildingInfo: BuildingInfo) {
-                    library.centerBuilding(
-                        buildingInfo.building,
-                        object : ActionsCallback {
-                            override fun onActionConcluded() {
-                                result.onSuccess(library)
-                            }
-                        })
-                }
-
-                override fun onFailure(error: Error) {
-                    result.onError(
-                        error.code,
-                        "Error loading SitumMapsLibrary, error is: $error"
-                    )
-                }
-            })
+        if (settings.lockCameraToBuilding) {
+            library.enableOneBuildingMode(settings.buildingIdentifier, callback);
+        } else {
+            library.centerBuilding(settings.buildingIdentifier, callback)
+        }
     }
 
     fun unload() {

@@ -110,7 +110,8 @@ class _MyTabsState extends State<MyTabs> {
     controller.onPoiDeselected((poiDeselectedResult) {
       print("WYF> Poi deselected!");
     });
-    controller.selectPoi(MY_POI_ID, buildingIdentifier);
+    //controller.startPositioning();
+    //controller.selectPoi(MY_POI_ID, buildingIdentifier);
   }
 
   @override

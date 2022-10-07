@@ -1,7 +1,6 @@
 package com.situm.situm_flutter_wayfinding
 
 import android.annotation.SuppressLint
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
@@ -140,7 +139,7 @@ class SitumMapPlatformView(
 
     fun initCallbacks() {
         // Listen for POI selection/deselection events.
-        library?.onPoiSelectionListener = object : OnPoiSelectionListener {
+        library?.setOnPoiSelectionListener(object : OnPoiSelectionListener {
             override fun onPoiSelected(poi: Poi, floor: Floor, building: Building) {
                 val arguments = mutableMapOf<String, String>(
                     "buildingId" to building.identifier,
@@ -160,7 +159,7 @@ class SitumMapPlatformView(
                 )
                 methodChannel.invokeMethod("onPoiDeselected", arguments)
             }
-        }
+        })
     }
 
     // Utils
