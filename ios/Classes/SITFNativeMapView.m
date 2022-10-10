@@ -98,7 +98,6 @@
         if (error) {
             NSLog(@"Unable to load wayfinding library");
         }
-      }
     }
   return self;
 }
