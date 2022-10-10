@@ -14,14 +14,30 @@ class SitumFlutterSDK {
   // Calls
 
   Future<void> init(String situmUser, String situmApiKey) async {
-    await methodChannel.invokeMethod<String>('init',
-        <String, dynamic>{'situmUser': situmUser, 'situmApiKey': situmApiKey});
+    await methodChannel.invokeMethod<String>(
+      'init',
+      <String, dynamic>{
+        'situmUser': situmUser,
+        'situmApiKey': situmApiKey,
+      },
+    );
+  }
+
+  Future<void> setConfiguration(ConfigurationOptions options) async {
+    await methodChannel.invokeMethod(
+      "setConfiguration",
+      <String, dynamic>{
+        'useRemoteConfig': options.useRemoteConfig,
+      },
+    );
   }
 
   Future<void> requestLocationUpdates(
       LocationListener listener, Map<String, dynamic> locationRequest) async {
-    locationListener = listener;
-    await methodChannel.invokeMethod('requestLocationUpdates', locationRequest);
+    if (!identical(locationListener, listener)) {
+      locationListener = listener;
+      await methodChannel.invokeMethod('requestLocationUpdates', locationRequest);
+    }
   }
 
   Future<void> removeUpdates() async {
@@ -30,9 +46,18 @@ class SitumFlutterSDK {
   }
 
   Future<String> prefetchPositioningInfo(
-      List<String> buildingIdentifiers) async {
+    List<String> buildingIdentifiers, {
+    PrefetchOptions? options,
+  }) async {
+    Map<String, dynamic> optionsMap = {};
+    if (options != null) {
+      optionsMap = {
+        "preloadImages": options.preloadImages,
+      };
+    }
     return await methodChannel.invokeMethod("prefetchPositioningInfo", {
       "buildingIdentifiers": buildingIdentifiers,
+      "optionsMap": optionsMap,
     });
   }
 

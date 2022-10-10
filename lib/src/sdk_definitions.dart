@@ -63,6 +63,22 @@ class PoiCategory extends NamedResource {
   });
 }
 
+class ConfigurationOptions {
+  final bool useRemoteConfig;
+
+  ConfigurationOptions({
+    this.useRemoteConfig = false,
+  });
+}
+
+class PrefetchOptions {
+  final bool preloadImages;
+
+  PrefetchOptions({
+    this.preloadImages = false,
+  });
+}
+
 class Error {
   final Int code;
   final String message;

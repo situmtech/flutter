@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:situm_flutter_wayfinding/situm_flutter_sdk.dart';
 import 'package:situm_flutter_wayfinding/situm_flutter_wayfinding.dart';
@@ -94,7 +92,7 @@ class _MyTabsState extends State<MyTabs> {
         showPoiNames: true,
         hasSearchView: true,
         lockCameraToBuilding: true,
-        useRemoteConfig: false,
+        useRemoteConfig: true,
         initialZoom: 15,
         showNavigationIndications: true,
         loadCallback: _onSitumMapLoaded)
@@ -119,6 +117,9 @@ class _MyTabsState extends State<MyTabs> {
     // SitumSdk for flutter:
     situmSdk = SitumFlutterSDK();
     situmSdk?.init(situmUser, situmApiKey);
+    situmSdk?.setConfiguration(ConfigurationOptions(
+      useRemoteConfig: true,
+    ));
     situmSdk?.onEnterGeofences((geofencesResult) {
       print("SDK> Enter geofences: ${geofencesResult.geofences}.");
     });
@@ -137,8 +138,12 @@ class _MyTabsState extends State<MyTabs> {
   }
 
   static void _prefetch() async {
-    var prefetch =
-        await situmSdk?.prefetchPositioningInfo([buildingIdentifier]);
+    var prefetch = await situmSdk?.prefetchPositioningInfo(
+      [buildingIdentifier],
+      options: PrefetchOptions(
+        preloadImages: true,
+      ),
+    );
     print("SDK RESPONSE: PREFETCH = $prefetch");
   }
 

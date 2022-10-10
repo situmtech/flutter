@@ -1,8 +1,11 @@
 package com.situm.situm_flutter_wayfinding
 
 import android.content.Context
+import android.util.Log
 import androidx.annotation.NonNull
 import es.situm.sdk.SitumSdk
+import es.situm.sdk.communication.CommunicationConfigImpl
+import es.situm.sdk.configuration.network.NetworkOptionsImpl
 import es.situm.sdk.error.Error
 import es.situm.sdk.location.GeofenceListener
 import es.situm.sdk.location.LocationListener
@@ -47,6 +50,7 @@ class SitumFlutterSDKPlugin : FlutterPlugin, ActivityAware, MethodChannel.Method
         val arguments = (methodCall.arguments ?: emptyMap<String, Any>()) as Map<String, Any>
         when (methodCall.method) {
             "init" -> init(arguments, result)
+            "setConfiguration" -> setConfiguration(arguments, result)
             "requestLocationUpdates" -> requestLocationUpdates(arguments, result)
             "removeUpdates" -> removeUpdates(result)
             "prefetchPositioningInfo" -> prefetchPositioningInfo(arguments, result)
@@ -58,6 +62,13 @@ class SitumFlutterSDKPlugin : FlutterPlugin, ActivityAware, MethodChannel.Method
     }
 
     // Public methods (impl):
+
+    private fun setConfiguration(arguments: Map<String, Any>, result: MethodChannel.Result) {
+        if (arguments.containsKey("useRemoteConfig")) {
+            SitumSdk.configuration().isUseRemoteConfig = arguments["useRemoteConfig"] as Boolean
+        }
+        result.success("DONE")
+    }
 
     private fun fetchCategories(result: MethodChannel.Result) {
         SitumSdk.communicationManager()
@@ -132,8 +143,15 @@ class SitumFlutterSDKPlugin : FlutterPlugin, ActivityAware, MethodChannel.Method
 
     private fun prefetchPositioningInfo(arguments: Map<String, Any>, result: MethodChannel.Result) {
         val buildingIdentifiers = arguments["buildingIdentifiers"] as List<String>
+        val optionsBuilder = NetworkOptionsImpl.Builder()
+        val optionsMap = (arguments["optionsMap"] ?: emptyMap<String, Any>()) as Map<String, Any>
+        if (optionsMap.containsKey("preloadImages")) {
+            Log.d("ATAG", "Contains preloadImages parameter")
+            optionsBuilder.setPreloadImages(optionsMap["preloadImages"] as Boolean)
+        }
+        val config = CommunicationConfigImpl(optionsBuilder.build())
         SitumSdk.communicationManager()
-            .prefetchPositioningInfo(buildingIdentifiers, object : Handler<String> {
+            .prefetchPositioningInfo(buildingIdentifiers, config, object : Handler<String> {
                 override fun onSuccess(s: String) {
                     result.success("DONE")
                 }
@@ -141,7 +159,6 @@ class SitumFlutterSDKPlugin : FlutterPlugin, ActivityAware, MethodChannel.Method
                 override fun onFailure(error: Error) {
                     result.notifySitumSdkError(error)
                 }
-
             })
     }
 
