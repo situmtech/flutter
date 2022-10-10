@@ -70,6 +70,7 @@
         NSNumber *useDashboardTheme = [args valueForKey:@"useDashboardTheme"];
         NSNumber *showNavigationIndications = [args valueForKey:@"showNavigationIndications"];
         NSNumber *enablePoiClustering = [args valueForKey:@"enablePoiClustering"];
+        NSNumber *useRemoteConfig = [args valueForKey:@"useRemoteConfig"];
         
         Credentials *credentials = [[Credentials alloc]initWithUser:situmUser
                                                                apiKey:apiKey
@@ -84,6 +85,7 @@
         [settingsBuilder setShowSearchBarWithShowSearchBar:[hasSearchView boolValue]];
         [settingsBuilder setUseDashboardThemeWithUseDashboardTheme:[useDashboardTheme boolValue]];
         [settingsBuilder setShowNavigationIndicationsWithShowNavigationIndications:[showNavigationIndications boolValue]];
+        [settingsBuilder setUseRemoteConfigWithUseRemoteConfig:[useRemoteConfig boolValue]];
           
         FlutterViewController *rootController = (FlutterViewController*)[[
                                              [[UIApplication sharedApplication]delegate] window] rootViewController];
@@ -91,7 +93,6 @@
         SitumMapsLibrary *library = [[SitumMapsLibrary alloc]initWithContainedBy:_view
                                                                     controlledBy:rootController
                                                                     withSettings:[settingsBuilder build]];
-        
         
         NSError *error;
         [library loadAndReturnError:&error];
