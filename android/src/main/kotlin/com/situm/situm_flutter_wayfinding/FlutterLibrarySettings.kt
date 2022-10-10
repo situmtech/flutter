@@ -8,6 +8,7 @@ data class FlutterLibrarySettings(
     var librarySettings: LibrarySettings = LibrarySettings()
     val buildingIdentifier: String
     val lockCameraToBuilding: Boolean
+    val showFloorSelector: Boolean
 
     init {
         val email = map.mGet("situmUser", "NO-EMAIL") as String
@@ -28,6 +29,7 @@ data class FlutterLibrarySettings(
         librarySettings.isUseRemoteConfig = map.mGet("useRemoteConfig", false) as Boolean
         librarySettings.initialZoom = map.mGet("initialZoom", 18) as Int
         librarySettings.isShowNavigationIndications = map.mGet("showNavigationIndications", true) as Boolean
+        showFloorSelector = map.mGet("showFloorSelector", true) as Boolean
     }
 }
 

@@ -95,6 +95,7 @@ class _MyTabsState extends State<MyTabs> {
         useRemoteConfig: true,
         initialZoom: 15,
         showNavigationIndications: true,
+        showFloorSelector: true,
         loadCallback: _onSitumMapLoaded)
   ];
 

@@ -80,6 +80,9 @@ class SitumMapLibraryLoader(
         settings: FlutterLibrarySettings,
         result: Callback
     ) {
+        if (!settings.showFloorSelector) { // Call only when explicitly wants to hide it.
+            library.setFloorsListVisible(false)
+        }
         val callback = object : ActionsCallback {
             override fun onActionConcluded() {
                 result.onSuccess(library)
