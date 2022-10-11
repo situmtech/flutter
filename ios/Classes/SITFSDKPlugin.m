@@ -15,7 +15,7 @@
 
 // static FlutterMethodChannel *channel;
 
-@interface SITFSDKPlugin() <SITLocationDelegate/*, SITGeofencingDelegate*/>
+@interface SITFSDKPlugin() <SITLocationDelegate, SITGeofencesDelegate>
 
 @property (nonatomic, strong) SITCommunicationManager *comManager;
 @property (nonatomic, strong) SITLocationManager *locManager;
@@ -61,6 +61,9 @@
     } else if ([@"fetchCategories" isEqualToString:call.method]) {
         [self handleFetchCategories:call
                              result:result];
+    } else if ([@"geofenceCallbacksRequested" isEqualToString:call.method]){
+        [self handleGeofenceCallbacksRequested: call
+                                        result: result];
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -255,10 +258,30 @@ didInitiatedWithRequest:(SITLocationRequest *)request
     
 }
 
-// TODO: Connect geofencing
+- (void)didEnteredGeofences:(NSArray<SITGeofence *> *)geofences {
+    NSLog(@"location Manager did entered geofences");
+    [self.channel invokeMethod:@"onEnteredGeofences" arguments:[self nativeGeofenceArrayToDart:geofences]];
+}
 
+- (void)didExitedGeofences:(NSArray<SITGeofence *> *)geofences {
+    NSLog(@"location Manager did exited geofences");
+    [self.channel invokeMethod:@"onExitedGeofences" arguments:[self nativeGeofenceArrayToDart:geofences]];
+}
 
+-(NSArray<NSDictionary *> *)nativeGeofenceArrayToDart:(NSArray<SITGeofence *> *)nativeGeofences{
+    NSMutableArray *dartGeofences = [NSMutableArray new];
+    for (SITGeofence * geofence in nativeGeofences){
+        NSMutableDictionary *dartGeofence = [NSMutableDictionary new];
+        dartGeofence[@"id"] = geofence.identifier;
+        dartGeofence[@"name"] = geofence.name;
+        [dartGeofences addObject:dartGeofence];
+    }
+    return dartGeofences;
+}
 
-
+- (void) handleGeofenceCallbacksRequested :(FlutterMethodCall*)call
+                                    result:(FlutterResult)result {
+    self.locManager.geofenceDelegate = self;
+}
 
 @end
