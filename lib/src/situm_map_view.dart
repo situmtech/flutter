@@ -7,6 +7,7 @@ class SitumMapView extends StatefulWidget {
   final String buildingIdentifier;
   final String googleMapsApiKey;
   final bool useHybridComponents;
+  final TextDirection directionality;
   final bool enablePoiClustering;
   final String searchViewPlaceholder;
   final bool useDashboardTheme;
@@ -30,6 +31,7 @@ class SitumMapView extends StatefulWidget {
     this.googleMapsApiKey = "",
     this.didUpdateCallback,
     this.useHybridComponents = true,
+    this.directionality = TextDirection.ltr,
     this.enablePoiClustering = true,
     this.searchViewPlaceholder = "Situm Flutter Wayfinding",
     this.useDashboardTheme = false,
@@ -55,9 +57,10 @@ class _SitumMapViewState extends State<SitumMapView> {
       // TODO: add view specific creation params.
     };
     if (defaultTargetPlatform == TargetPlatform.android) {
-      return _buildAndroidView(context, platformViewParams);
+      return _buildAndroidView(
+          context, platformViewParams, widget.directionality);
     } else if (defaultTargetPlatform == TargetPlatform.iOS) {
-      return _buildiOS(context, platformViewParams);
+      return _buildiOS(context, platformViewParams, widget.directionality);
     }
     return Text('$defaultTargetPlatform is not supported by the Situm plugin');
   }
@@ -96,7 +99,11 @@ class _SitumMapViewState extends State<SitumMapView> {
   // iOS
   // ==========================================================================
 
-  Widget _buildiOS(BuildContext context, Map<String, dynamic> creationParams) {
+  Widget _buildiOS(
+    BuildContext context,
+    Map<String, dynamic> creationParams,
+    TextDirection directionality,
+  ) {
     const String viewType = '<platform-view-type>';
 
     Map<String, dynamic> loadParams = <String, dynamic>{
@@ -118,7 +125,7 @@ class _SitumMapViewState extends State<SitumMapView> {
 
     return UiKitView(
       viewType: viewType,
-      layoutDirection: TextDirection.ltr,
+      layoutDirection: directionality,
       creationParams: loadParams,
       creationParamsCodec: const StandardMessageCodec(),
     );
@@ -129,15 +136,21 @@ class _SitumMapViewState extends State<SitumMapView> {
   // ==========================================================================
 
   Widget _buildAndroidView(
-      BuildContext context, Map<String, dynamic> creationParams) {
+    BuildContext context,
+    Map<String, dynamic> creationParams,
+    TextDirection directionality,
+  ) {
     if (widget.useHybridComponents) {
-      return _buildHybrid(context, creationParams);
+      return _buildHybrid(context, creationParams, directionality);
     }
     return _buildVirtualDisplay(context, creationParams);
   }
 
   Widget _buildHybrid(
-      BuildContext context, Map<String, dynamic> creationParams) {
+    BuildContext context,
+    Map<String, dynamic> creationParams,
+    TextDirection directionality,
+  ) {
     print("Situm> Using hybrid components");
     return PlatformViewLink(
       viewType: CHANNEL_ID,
@@ -153,7 +166,7 @@ class _SitumMapViewState extends State<SitumMapView> {
             PlatformViewsService.initExpensiveAndroidView(
           id: params.id,
           viewType: CHANNEL_ID,
-          layoutDirection: TextDirection.ltr,
+          layoutDirection: directionality,
           creationParams: creationParams,
           creationParamsCodec: const StandardMessageCodec(),
           onFocus: () {
