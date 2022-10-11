@@ -61,6 +61,9 @@
     } else if ([@"fetchCategories" isEqualToString:call.method]) {
         [self handleFetchCategories:call
                              result:result];
+    } else if ([@"geofenceCallbacksRequested" isEqualToString:call.method]){
+        [self handleGeofenceCallbacksRequested: call
+                                        result: result];
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -101,7 +104,6 @@
     [lManager requestWhenInUseAuthorization];
     
     self.locManager.delegate = self;
-    self.locManager.geofenceDelegate = self;
     [self.locManager requestLocationUpdates:nil];
     
     result(@"DONE");
@@ -275,6 +277,11 @@ didInitiatedWithRequest:(SITLocationRequest *)request
         [dartGeofences addObject:dartGeofence];
     }
     return dartGeofences;
+}
+
+- (void) handleGeofenceCallbacksRequested :(FlutterMethodCall*)call
+                                    result:(FlutterResult)result {
+    self.locManager.geofenceDelegate = self;
 }
 
 @end
