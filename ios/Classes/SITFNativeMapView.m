@@ -49,6 +49,7 @@
 @end
 
 static BOOL isWayfindingLoaded = NO;
+static SitumMapsLibrary *library;
 
 @implementation SITFNativeMapView {
    UIView *_view;
@@ -58,54 +59,54 @@ static BOOL isWayfindingLoaded = NO;
                viewIdentifier:(int64_t)viewId
                     arguments:(id _Nullable)args
               binaryMessenger:(NSObject<FlutterBinaryMessenger>*)messenger {
-
     if (self = [super init]) {
-      if (!isWayfindingLoaded){
-        isWayfindingLoaded = YES;
         _view = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 1, 1)];
-        Builder *settingsBuilder = [[Builder alloc] init];
-        
-        NSString *situmUser = [args valueForKey:@"situmUser"];
-        NSString *apiKey = [args valueForKey:@"situmApiKey"];
-        NSString *buildingIdentifier = [args valueForKey:@"buildingIdentifier"];
-        NSString *googleMapsApiKey = [args valueForKey:@"googleMapsApiKey"];
-        NSString *searchViewPlaceholder = [args valueForKey:@"searchViewPlaceholder"];
-        NSNumber *showPoiNames = [args valueForKey:@"showPoiNames"];
-        NSNumber *hasSearchView = [args valueForKey:@"hasSearchView"];
-        NSNumber *useDashboardTheme = [args valueForKey:@"useDashboardTheme"];
-        NSNumber *showNavigationIndications = [args valueForKey:@"showNavigationIndications"];
-        NSNumber *enablePoiClustering = [args valueForKey:@"enablePoiClustering"];
-        
-        Credentials *credentials = [[Credentials alloc]initWithUser:situmUser
-                                                               apiKey:apiKey
-                                                     googleMapsApiKey:googleMapsApiKey];
-        
-        [settingsBuilder setCredentialsWithCredentials:credentials];
-        [settingsBuilder setBuildingIdWithBuildingId:buildingIdentifier];
-        [settingsBuilder setSearchViewPlaceholderWithSearchViewPlaceholder:searchViewPlaceholder];
-        
-        [settingsBuilder setEnablePoiClusteringWithEnablePoisClustering:[enablePoiClustering boolValue]];
-        [settingsBuilder setShowPoiNamesWithShowPoiNames:[showPoiNames boolValue]];
-        [settingsBuilder setShowSearchBarWithShowSearchBar:[hasSearchView boolValue]];
-        [settingsBuilder setUseDashboardThemeWithUseDashboardTheme:[useDashboardTheme boolValue]];
-        [settingsBuilder setShowNavigationIndicationsWithShowNavigationIndications:[showNavigationIndications boolValue]];
-          
         FlutterViewController *rootController = (FlutterViewController*)[[
-                                             [[UIApplication sharedApplication]delegate] window] rootViewController];
-        
-        SitumMapsLibrary *library = [[SitumMapsLibrary alloc]initWithContainedBy:_view
-                                                                    controlledBy:rootController
-                                                                    withSettings:[settingsBuilder build]];
-        
-        
-        NSError *error;
-        [library loadAndReturnError:&error];
-        if (error) {
-            NSLog(@"Unable to load wayfinding library");
+            [[UIApplication sharedApplication]delegate] window] rootViewController];
+        if (isWayfindingLoaded){
+            [library presentInNewView:_view controlledBy:rootController];
+        }else{
+            isWayfindingLoaded = YES;
+            Builder *settingsBuilder = [[Builder alloc] init];
+            
+            NSString *situmUser = [args valueForKey:@"situmUser"];
+            NSString *apiKey = [args valueForKey:@"situmApiKey"];
+            NSString *buildingIdentifier = [args valueForKey:@"buildingIdentifier"];
+            NSString *googleMapsApiKey = [args valueForKey:@"googleMapsApiKey"];
+            NSString *searchViewPlaceholder = [args valueForKey:@"searchViewPlaceholder"];
+            NSNumber *showPoiNames = [args valueForKey:@"showPoiNames"];
+            NSNumber *hasSearchView = [args valueForKey:@"hasSearchView"];
+            NSNumber *useDashboardTheme = [args valueForKey:@"useDashboardTheme"];
+            NSNumber *showNavigationIndications = [args valueForKey:@"showNavigationIndications"];
+            NSNumber *enablePoiClustering = [args valueForKey:@"enablePoiClustering"];
+            
+            Credentials *credentials = [[Credentials alloc]initWithUser:situmUser
+                                                                 apiKey:apiKey
+                                                       googleMapsApiKey:googleMapsApiKey];
+            
+            [settingsBuilder setCredentialsWithCredentials:credentials];
+            [settingsBuilder setBuildingIdWithBuildingId:buildingIdentifier];
+            [settingsBuilder setSearchViewPlaceholderWithSearchViewPlaceholder:searchViewPlaceholder];
+            
+            [settingsBuilder setEnablePoiClusteringWithEnablePoisClustering:[enablePoiClustering boolValue]];
+            [settingsBuilder setShowPoiNamesWithShowPoiNames:[showPoiNames boolValue]];
+            [settingsBuilder setShowSearchBarWithShowSearchBar:[hasSearchView boolValue]];
+            [settingsBuilder setUseDashboardThemeWithUseDashboardTheme:[useDashboardTheme boolValue]];
+            [settingsBuilder setShowNavigationIndicationsWithShowNavigationIndications:[showNavigationIndications boolValue]];
+            
+            library = [[SitumMapsLibrary alloc]initWithContainedBy:_view
+                                                      controlledBy:rootController
+                                                      withSettings:[settingsBuilder build]];
+            
+            
+            NSError *error;
+            [library loadAndReturnError:&error];
+            if (error) {
+                NSLog(@"Unable to load wayfinding library");
+            }
         }
-      }
     }
-  return self;
+    return self;
 }
 
 - (UIView*)view {
