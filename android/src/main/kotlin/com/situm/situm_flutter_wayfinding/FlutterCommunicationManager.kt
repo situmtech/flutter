@@ -22,16 +22,20 @@ class FlutterCommunicationManager {
             SitumSdk.communicationManager()
                 .fetchIndoorPOIsFromBuilding(buildingId, object : Handler<Collection<Poi>> {
                     override fun onSuccess(pois: Collection<Poi>) {
+                        Log.d(TAG, "Getting POI $poiId.")
                         for (poi in pois) {
                             if (poiId == poi.identifier) {
+                                Log.d(TAG, "Found POI $poiId.")
                                 callback.onSuccess(poi)
                                 return
                             }
                         }
+                        Log.d(TAG, "POI $poiId not found.")
                         callback.onError("Poi with id=$poiId not found for building with id=$buildingId")
                     }
 
                     override fun onFailure(error: Error) {
+                        Log.e(TAG, "Error getting POI $poiId.")
                         callback.onError(error.message)
                     }
                 })

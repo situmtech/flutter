@@ -2,7 +2,12 @@ part of situm_flutter_wayfinding;
 
 class SitumFlutterWayfinding {
   late final MethodChannel methodChannel;
+  // Keep loaded state.
   bool situmMapLoaded = false;
+  // Both loading and loaded will block new native load calls.
+  // loaded is used also in situm_map_view to delegate didUpdateCallback calls
+  // only if WYF was completely loaded.
+  bool situmMapLoading = false;
   OnPoiSelectedCallback? onPoiSelectedCallback;
   OnPoiDeselectedCallback? onPoiDeselectedCallback;
 
@@ -26,14 +31,18 @@ class SitumFlutterWayfinding {
       SitumMapViewCallback? situmMapDidUpdateCallback,
       Map<String, dynamic> creationParams) async {
     print("Situm> Dart load() invoked.");
+    if (situmMapLoading) {
+      return "ALREADY_LOADING";
+    }
     if (situmMapLoaded) {
       return "ALREADY_DONE";
     }
     print("Situm> MethodChannel will be invoked.");
-    situmMapLoaded = true;
+    situmMapLoading = true;
     final result =
         await methodChannel.invokeMethod<String>('load', creationParams);
     print("Situm> Got load result: $result");
+    situmMapLoaded = true;
     situmMapLoadCallback(this);
     situmMapDidUpdateCallback?.call(this);
     return result;
@@ -42,6 +51,7 @@ class SitumFlutterWayfinding {
   Future<void> unload() async {
     await methodChannel.invokeMethod("unload");
     situmMapLoaded = false;
+    situmMapLoading = false;
   }
 
   Future<String?> selectPoi(String id, String buildingId) async {
