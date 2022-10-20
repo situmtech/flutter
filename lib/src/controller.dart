@@ -6,22 +6,34 @@ class SitumFlutterWayfinding {
   OnPoiSelectedCallback? onPoiSelectedCallback;
   OnPoiDeselectedCallback? onPoiDeselectedCallback;
 
-  SitumFlutterWayfinding(int id) {
-    methodChannel = MethodChannel('${CHANNEL_ID}_$id');
+  static final SitumFlutterWayfinding _controller =
+      SitumFlutterWayfinding._internal();
+
+  factory SitumFlutterWayfinding() {
+    // Factory: ensure only one controller exists.
+    return _controller;
+  }
+
+  SitumFlutterWayfinding._internal() {
+    methodChannel = const MethodChannel(CHANNEL_ID);
     methodChannel.setMethodCallHandler(_methodCallHandler);
   }
 
   // Calls:
 
   Future<String?> load(
-    SitumMapViewCallback situmMapLoadCallback,
-    SitumMapViewCallback? situmMapDidUpdateCallback,
-    Map<String, dynamic> creationParams
-  ) async {
-    print("Situm> Dart load called, methodChannel will be invoked.");
-    final result = await methodChannel.invokeMethod<String>('load', creationParams);
-    print("Situm> Got load result: $result");
+      SitumMapViewCallback situmMapLoadCallback,
+      SitumMapViewCallback? situmMapDidUpdateCallback,
+      Map<String, dynamic> creationParams) async {
+    print("Situm> Dart load() invoked.");
+    if (situmMapLoaded) {
+      return "ALREADY_DONE";
+    }
+    print("Situm> MethodChannel will be invoked.");
     situmMapLoaded = true;
+    final result =
+        await methodChannel.invokeMethod<String>('load', creationParams);
+    print("Situm> Got load result: $result");
     situmMapLoadCallback(this);
     situmMapDidUpdateCallback?.call(this);
     return result;
@@ -34,8 +46,8 @@ class SitumFlutterWayfinding {
 
   Future<String?> selectPoi(String id, String buildingId) async {
     log("Dart selectPoi called, methodChannel will be invoked.");
-    return await methodChannel.invokeMethod<String>('selectPoi',
-        <String, dynamic>{'id': id, 'buildingId': buildingId});
+    return await methodChannel.invokeMethod<String>(
+        'selectPoi', <String, dynamic>{'id': id, 'buildingId': buildingId});
   }
 
   Future<String?> startPositioning() async {

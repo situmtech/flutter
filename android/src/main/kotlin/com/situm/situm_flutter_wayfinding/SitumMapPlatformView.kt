@@ -1,8 +1,10 @@
 package com.situm.situm_flutter_wayfinding
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
@@ -43,9 +45,9 @@ class SitumMapPlatformView(
     private var methodChannel: MethodChannel
 
     init {
-        libraryLoader = SitumMapLibraryLoader(activity)
+        libraryLoader = SitumMapLibraryLoader.fromActivity(activity)
         activity.lifecycle.addObserver(this)
-        methodChannel = MethodChannel(messenger, "situm.com/flutter_wayfinding_$id")
+        methodChannel = MethodChannel(messenger, "situm.com/flutter_wayfinding")
         methodChannel.setMethodCallHandler(this)
     }
 
@@ -68,7 +70,7 @@ class SitumMapPlatformView(
             }
             when (methodCall.method) {
                 // Add here all the library methods:
-                "unload" -> unload()
+                "unload" -> unload(result)
                 "selectPoi" -> selectPoi(arguments, result)
                 "startPositioning" -> startPositioning()
                 "stopPositioning" -> stopPositioning()
@@ -100,9 +102,15 @@ class SitumMapPlatformView(
         })
     }
 
-    private fun unload() {
-        layout = null
+    private fun unload(methodResult: MethodChannel.Result?) {
+        Log.d("Situm>", "PlatformView unload called!")
         libraryLoader.unload()
+        // Ensure this layout does not have a parent:
+        if (layout?.parent != null) {
+            (layout?.parent as ViewGroup).removeView(layout)
+        }
+        layout = null
+        methodResult?.success("DONE")
     }
 
     private fun startPositioning() {
@@ -115,6 +123,7 @@ class SitumMapPlatformView(
 
     // Select the given poi in the map.
     private fun selectPoi(arguments: Map<String, Any>, methodResult: MethodChannel.Result) {
+        Log.d("Situm>", "Android> Plugin selectPoi call.")
         val buildingId = arguments["buildingId"] as String
         val poiId = arguments["id"] as String
         FlutterCommunicationManager.fetchPoi(
@@ -122,8 +131,10 @@ class SitumMapPlatformView(
             poiId,
             object : FlutterCommunicationManager.Callback<Poi> {
                 override fun onSuccess(result: Poi) {
+                    Log.d("Situm>", "Android> Library selectPoi call.")
                     library?.selectPoi(result, object : ActionsCallback {
                         override fun onActionConcluded() {
+                            Log.d("Situm>", "Android> selectPoi success.")
                             methodResult.success(poiId)
                         }
                     })
@@ -179,6 +190,6 @@ class SitumMapPlatformView(
     override fun onDestroy(owner: LifecycleOwner) {
         super.onDestroy(owner)
         owner.lifecycle.removeObserver(this)
-        unload()
+        unload(null)
     }
 }
