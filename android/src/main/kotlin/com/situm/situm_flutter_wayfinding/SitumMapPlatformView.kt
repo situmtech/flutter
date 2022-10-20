@@ -29,6 +29,8 @@ class SitumMapPlatformView(
     DefaultLifecycleObserver {
 
     companion object {
+        const val TAG = "Situm>"
+
         // Workaround to avoid WYF to be recreated with the flutter widget lifecycle.
         @SuppressLint("StaticFieldLeak")
         private var layout: View? = null
@@ -103,7 +105,7 @@ class SitumMapPlatformView(
     }
 
     private fun unload(methodResult: MethodChannel.Result?) {
-        Log.d("Situm>", "PlatformView unload called!")
+        Log.d(TAG, "PlatformView unload called!")
         libraryLoader.unload()
         // Ensure this layout does not have a parent:
         if (layout?.parent != null) {
@@ -123,7 +125,7 @@ class SitumMapPlatformView(
 
     // Select the given poi in the map.
     private fun selectPoi(arguments: Map<String, Any>, methodResult: MethodChannel.Result) {
-        Log.d("Situm>", "Android> Plugin selectPoi call.")
+        Log.d(TAG, "Android> Plugin selectPoi call.")
         val buildingId = arguments["buildingId"] as String
         val poiId = arguments["id"] as String
         FlutterCommunicationManager.fetchPoi(
@@ -131,16 +133,17 @@ class SitumMapPlatformView(
             poiId,
             object : FlutterCommunicationManager.Callback<Poi> {
                 override fun onSuccess(result: Poi) {
-                    Log.d("Situm>", "Android> Library selectPoi call.")
+                    Log.d(TAG, "Android> Library selectPoi call.")
                     library?.selectPoi(result, object : ActionsCallback {
                         override fun onActionConcluded() {
-                            Log.d("Situm>", "Android> selectPoi success.")
+                            Log.d(TAG, "Android> selectPoi success.")
                             methodResult.success(poiId)
                         }
                     })
                 }
 
                 override fun onError(message: String) {
+                    Log.e(TAG, "Android> Library selectPoi error: $message.")
                     methodResult.error(ERROR_SELECT_POI, message, null)
                 }
             })

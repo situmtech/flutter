@@ -1,5 +1,6 @@
 package com.situm.situm_flutter_wayfinding
 
+import android.util.Log
 import es.situm.sdk.SitumSdk
 import es.situm.sdk.error.Error
 import es.situm.sdk.model.cartography.Poi
@@ -9,6 +10,8 @@ import es.situm.sdk.utils.Handler
 class FlutterCommunicationManager {
 
     companion object {
+        const val TAG = "Situm>"
+
         /**
          * Get a Poi using both Building and Poi identifiers.
          * @param buildingId The building id.

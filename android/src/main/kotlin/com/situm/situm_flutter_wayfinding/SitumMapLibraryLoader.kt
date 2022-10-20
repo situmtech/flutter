@@ -13,6 +13,8 @@ class SitumMapLibraryLoader private constructor(
 ) {
 
     companion object {
+        const val TAG = "Situm>"
+
         var loaded = false
         private var library: SitumMapsLibrary? = null
         private var instance: SitumMapLibraryLoader? = null
@@ -27,16 +29,16 @@ class SitumMapLibraryLoader private constructor(
     private val handler = android.os.Handler(Looper.getMainLooper())
 
     fun load(flutterLibrarySettings: FlutterLibrarySettings, callback: Callback) {
-        Log.d("Situm>", "PlatformView load called!")
+        Log.d(TAG, "PlatformView load called!")
         if (loaded) { // Manage this case, but it should not happen.
-            Log.d("Situm>", "\tAlready loaded, library = $library")
+            Log.d(TAG, "\tAlready loaded, library = $library")
             library?.let {
                 callback.onSuccess(it)
             }
             return
         }
         loaded = true // Set loaded=true as soon as possible to avoid multiple calls while loading.
-        Log.d("Situm>", "\tNot loaded yet.")
+        Log.d(TAG, "\tNot loaded yet.")
         // Avoid race conditions: native load will be called when the target view was available.
         // The SitumMapsLibrary instantiation must be done immediately so it can be passed as
         // parameter in the callback above while loading (when multiple calls to load() occur).
@@ -49,7 +51,7 @@ class SitumMapLibraryLoader private constructor(
             library?.apply {
                 setSitumMapsListener(object : SitumMapsListener {
                     override fun onSuccess() {
-                        Log.d("Situm>", "\tNative load done.")
+                        Log.d(TAG, "\tNative load done.")
                         onLibraryLoaded(this@apply, flutterLibrarySettings, callback)
                     }
 
@@ -78,7 +80,7 @@ class SitumMapLibraryLoader private constructor(
             override fun run() {
                 val mapView = activity.findViewById<View>(R.id.situm_flutter_map_view)
                 if (mapView != null) {
-                    Log.d("Situm>", "Target view found: ${R.id.situm_flutter_map_view}.")
+                    Log.d(TAG, "Target view found: ${R.id.situm_flutter_map_view}.")
                     handler.post(runnable)
                 } else {
                     handler.postDelayed(this, 50)
@@ -111,7 +113,7 @@ class SitumMapLibraryLoader private constructor(
         try {
             library?.unload()
         } catch (e: IllegalStateException) {
-            Log.d("Situm>", "Illegal call to unload()", e)
+            Log.d(TAG, "Illegal call to unload()", e)
         }
         library = null
         loaded = false
