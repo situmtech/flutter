@@ -67,7 +67,7 @@ import SitumWayfinding
         
         // Establish delegates and callbacks
         do {
-            try SITFLNativeMapView.library!.presentInNewView(_view, controlledBy: controller)
+            try SITFLNativeMapView.library!.load()
             
         } catch {
             print("Some Error Happened")
