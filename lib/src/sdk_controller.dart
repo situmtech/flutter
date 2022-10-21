@@ -2,6 +2,7 @@ part of situm_flutter_sdk;
 
 class SitumFlutterSDK {
   late final MethodChannel methodChannel;
+  late final MethodChannel wayfindingMethodChannel;
   LocationListener? locationListener;
   OnEnteredGeofencesCallback? onEnteredGeofencesCallback;
   OnExitedGeofencesCallback? onExitedGeofencesCallback;
@@ -9,6 +10,10 @@ class SitumFlutterSDK {
   SitumFlutterSDK() {
     methodChannel = const MethodChannel(CHANNEL_SDK_ID);
     methodChannel.setMethodCallHandler(_methodCallHandler);
+
+    wayfindingMethodChannel = const MethodChannel('situm.com/flutter_wayfinding');
+    // Stablish callback
+
   }
 
   // Calls
@@ -16,6 +21,12 @@ class SitumFlutterSDK {
   Future<void> init(String situmUser, String situmApiKey) async {
     await methodChannel.invokeMethod<String>('init',
         <String, dynamic>{'situmUser': situmUser, 'situmApiKey': situmApiKey});
+  }
+
+  Future<void> selectPoi(String identifier) async {
+    await wayfindingMethodChannel.invokeMethod('selectPoi', {
+      "identifier" : identifier,
+    });
   }
 
   Future<void> requestLocationUpdates(

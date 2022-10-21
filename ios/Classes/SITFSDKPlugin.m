@@ -11,7 +11,8 @@
 
 #import <CoreLocation/CoreLocation.h>
 
-#import "SITFNativeMapView.h"
+// #import "SITFNativeMapView.h"
+#import "situm_flutter_wayfinding-Swift.h"
 
 // static FlutterMethodChannel *channel;
 
@@ -28,8 +29,8 @@
 
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
     
-    SITFNativeMapViewFactory* factory =
-          [[SITFNativeMapViewFactory alloc] initWithMessenger:registrar.messenger];
+    SITFLNativeMapViewFactory* factory =
+          [[SITFLNativeMapViewFactory alloc] initWithMessenger:registrar.messenger];
       [registrar registerViewFactory:factory withId:@"<platform-view-type>"];
 
     FlutterMethodChannel *channel = [FlutterMethodChannel methodChannelWithName:@"situm.com/flutter_sdk" binaryMessenger:[registrar messenger]];

@@ -166,9 +166,18 @@ class _MyTabsState extends State<MyTabs> {
     );
   }
 
+  void _onTitleTapped() {
+    situmSdk?.selectPoi("126713");
+  }
+
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
+
+      if (index == 1) {
+        _onTitleTapped();
+      }
+
     });
   }
 }
