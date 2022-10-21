@@ -96,6 +96,7 @@ class _MyTabsState extends State<MyTabs> {
         initialZoom: 15,
         showNavigationIndications: true,
         showFloorSelector: true,
+        language: "",
         loadCallback: _onSitumMapLoaded)
   ];
 

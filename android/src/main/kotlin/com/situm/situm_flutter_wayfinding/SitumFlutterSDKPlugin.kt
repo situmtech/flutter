@@ -67,6 +67,7 @@ class SitumFlutterSDKPlugin : FlutterPlugin, ActivityAware, MethodChannel.Method
         if (arguments.containsKey("useRemoteConfig")) {
             SitumSdk.configuration().isUseRemoteConfig = arguments["useRemoteConfig"] as Boolean
         }
+        SitumSdk.configuration().language = arguments["language"] as String
         result.success("DONE")
     }
 

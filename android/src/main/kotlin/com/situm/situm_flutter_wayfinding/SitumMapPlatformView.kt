@@ -16,6 +16,8 @@ import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.platform.PlatformView
+import android.os.Build
+import java.util.*
 
 
 class SitumMapPlatformView(
@@ -81,12 +83,25 @@ class SitumMapPlatformView(
         methodChannel.setMethodCallHandler(null)
     }
 
+    private fun setLanguage(arguments: Map<String, Any>) {
+        var language = arguments["language"] as String?
+        if (language.isNullOrEmpty()) {
+            return
+        }
+        val locale = Locale(language)
+        val resources = activity.resources
+        val configuration = resources.configuration
+        configuration.setLocale(locale)
+        resources.updateConfiguration(configuration, resources.displayMetrics)
+    }
+
 
     // Public methods (impl):
 
     // Load WYF into the target view.
     private fun load(arguments: Map<String, Any>, methodResult: MethodChannel.Result) {
         loadSettings = FlutterLibrarySettings(arguments)
+        setLanguage(arguments)
         libraryLoader.load(loadSettings, object : SitumMapLibraryLoader.Callback {
             override fun onSuccess(obtained: SitumMapsLibrary) {
                 library = obtained

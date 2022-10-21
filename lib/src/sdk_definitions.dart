@@ -73,9 +73,11 @@ class ConfigurationOptions {
 
 class PrefetchOptions {
   final bool preloadImages;
+  final String language;
 
   PrefetchOptions({
     this.preloadImages = false,
+    this.language = "",
   });
 }
 

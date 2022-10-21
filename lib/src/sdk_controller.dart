@@ -28,6 +28,7 @@ class SitumFlutterSDK {
       "setConfiguration",
       <String, dynamic>{
         'useRemoteConfig': options.useRemoteConfig,
+        'language': options.language,
       },
     );
   }
@@ -36,7 +37,8 @@ class SitumFlutterSDK {
       LocationListener listener, Map<String, dynamic> locationRequest) async {
     if (!identical(locationListener, listener)) {
       locationListener = listener;
-      await methodChannel.invokeMethod('requestLocationUpdates', locationRequest);
+      await methodChannel.invokeMethod(
+          'requestLocationUpdates', locationRequest);
     }
   }
 
