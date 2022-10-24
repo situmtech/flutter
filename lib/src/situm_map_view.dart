@@ -83,7 +83,8 @@ class _SitumMapViewState extends State<SitumMapView> {
       "showNavigationIndications": widget.showNavigationIndications,
       "showFloorSelector": widget.showFloorSelector,
     };
-    controller = SitumFlutterWayfinding(id);
+    
+    controller = SitumFlutterWayfinding();
     controller!.load(widget.loadCallback, widget.didUpdateCallback, loadParams);
   }
 
@@ -128,6 +129,7 @@ class _SitumMapViewState extends State<SitumMapView> {
       layoutDirection: directionality,
       creationParams: loadParams,
       creationParamsCodec: const StandardMessageCodec(),
+      onPlatformViewCreated: _onPlatformViewCreated,
     );
   }
 

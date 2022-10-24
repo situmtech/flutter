@@ -146,7 +146,6 @@ class SitumFlutterSDKPlugin : FlutterPlugin, ActivityAware, MethodChannel.Method
         val optionsBuilder = NetworkOptionsImpl.Builder()
         val optionsMap = (arguments["optionsMap"] ?: emptyMap<String, Any>()) as Map<String, Any>
         if (optionsMap.containsKey("preloadImages")) {
-            Log.d("ATAG", "Contains preloadImages parameter")
             optionsBuilder.setPreloadImages(optionsMap["preloadImages"] as Boolean)
         }
         val config = CommunicationConfigImpl(optionsBuilder.build())

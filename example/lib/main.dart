@@ -87,7 +87,7 @@ class _MyTabsState extends State<MyTabs> {
         situmUser: situmUser,
         situmApiKey: situmApiKey,
         buildingIdentifier: buildingIdentifier,
-        googleMapsApiKey: googleMapsApiKey,
+        googleMapsApiKey: googleMapsApikey,
         useHybridComponents: true,
         showPoiNames: true,
         hasSearchView: true,
@@ -186,9 +186,19 @@ class _MyTabsState extends State<MyTabs> {
     );
   }
 
+  void _onTitleTapped() {
+    // situmSdk?.selectPoi("126713");
+    // situmSdk?.filterPois(); // {"categories" : ["Coffee"]}
+  }
+
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
+
+      if (index == 1) {
+        _onTitleTapped();
+      }
+
     });
   }
 }
