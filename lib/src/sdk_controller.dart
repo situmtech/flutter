@@ -2,6 +2,7 @@ part of situm_flutter_sdk;
 
 class SitumFlutterSDK {
   late final MethodChannel methodChannel;
+
   LocationListener? locationListener;
   OnEnteredGeofencesCallback? onEnteredGeofencesCallback;
   OnExitedGeofencesCallback? onExitedGeofencesCallback;
@@ -9,6 +10,8 @@ class SitumFlutterSDK {
   SitumFlutterSDK() {
     methodChannel = const MethodChannel(CHANNEL_SDK_ID);
     methodChannel.setMethodCallHandler(_methodCallHandler);
+    // Stablish callback
+
   }
 
   // Calls

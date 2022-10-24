@@ -10,8 +10,12 @@
 
 #import "SITFSDKPlugin.h"
 
+
+#import "situm_flutter_wayfinding-Swift.h"
+
 @implementation SitumFlutterWayfindingPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
-  [SITFSDKPlugin registerWithRegistrar:registrar];
+    [SITFSDKPlugin registerWithRegistrar:registrar];
+    [SITFLWayfindingSDKPlugin registerWithRegistrar:registrar];
 }
 @end
