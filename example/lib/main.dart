@@ -167,7 +167,8 @@ class _MyTabsState extends State<MyTabs> {
   }
 
   void _onTitleTapped() {
-    situmSdk?.selectPoi("126713");
+    // situmSdk?.selectPoi("126713");
+    situmSdk?.filterPois(); // {"categories" : ["Coffee"]}
   }
 
   void _onItemTapped(int index) {

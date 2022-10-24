@@ -18,55 +18,73 @@ import Flutter
         
     }
     
-    @objc public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-        if (call.method == "selectPoi") {
+    func handleSelectPoi(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+        print("Received call message")
+        if let args = call.arguments as? Dictionary<String, String>,
+           let poiIdentifier = args["identifier"] {
+            // Retrieve poi from dart
+            let selectedPoi = SITPOI(identifier: poiIdentifier, createdAt: Date(), updatedAt: Date(), customFields: [:])
             
-            print("Received call message")
-            if let args = call.arguments as? Dictionary<String, String>,
-               let poiIdentifier = args["identifier"] {
-                // Retrieve poi from dart
-                let selectedPoi = SITPOI(identifier: poiIdentifier, createdAt: Date(), updatedAt: Date(), customFields: [:])
+            // Connect back poi handler
+            
+            // let poi = SITPOI(identifier: "126465", createdAt: Date(), updatedAt: Date(), customFields: [:])
+            SITCommunicationManager.shared().fetchBuildingInfo("11867", withOptions: nil, success: { [weak self] mapping in
+                guard mapping != nil, let buildingInfo = mapping!["results"] as? SITBuildingInfo else {return}
+                let pois = buildingInfo.indoorPois.sorted(by: { $0.name > $1.name })
                 
-                // Connect back poi handler
-                
-                // let poi = SITPOI(identifier: "126465", createdAt: Date(), updatedAt: Date(), customFields: [:])
-                SITCommunicationManager.shared().fetchBuildingInfo("11871", withOptions: nil, success: { [weak self] mapping in
-                    guard mapping != nil, let buildingInfo = mapping!["results"] as? SITBuildingInfo else {return}
-                    let pois = buildingInfo.indoorPois.sorted(by: { $0.name > $1.name })
-                    
-                    for poi in pois {
-                        if poi.identifier == selectedPoi.identifier {
-                            if let lib = SITFLNativeMapView.library {
-                                print("Selecting poi \(poi)")
-                                lib.selectPoi(poi: poi) { [weak self] result in
-                                    switch result {
-                                    case .success:
-                                        print("POI: selection succeeded")
-                                    case .failure(let reason):
-                                        print("failure with reason: \(reason)")
-                                    }
+                for poi in pois {
+                    if poi.identifier == selectedPoi.identifier {
+                        if let lib = SITFLNativeMapView.library {
+                            print("Selecting poi \(poi)")
+                            lib.selectPoi(poi: poi) { [weak self] result in
+                                switch result {
+                                case .success:
+                                    print("POI: selection succeeded")
+                                case .failure(let reason):
+                                    print("failure with reason: \(reason)")
                                 }
-                                
-                            } else {
-                                print("Library not found")
                             }
+                            
+                        } else {
+                            print("Library not found")
                         }
                     }
-                    
-                }, failure: { error in
-                    print("fetchBuildingInfo \(error)")
-                })
+                }
+                
+            }, failure: { error in
+                print("fetchBuildingInfo \(error)")
+            })
 
-            }
+        }
 
+    }
+    
+    func handleFilterPois(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+        print("handle filter pois")
+        
+        // Receive poi filtering
+        
+        if (SITFLNativeMapView.loaded == false) {
+            print("Unable to filter pois")
+            // Return with error
+        }
+        
+        if let args = call.arguments as? Dictionary<String, [String]>,
+           let categories = args["categories"] {
             
-            
-            
-            
-            
-            
-            
-            
+            print("found categories \(categories) in args: \(args)")
+            SITFLNativeMapView.library?.filterPois(by: categories)
+        } else {
+            // Handle unable to retrieve needed params
+            print("Unable to find categories on arguments")
+        }
+    }
+    
+    @objc public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+        if (call.method == "selectPoi") {
+            handleSelectPoi(call, result: result)
+        } else if (call.method == "filterPois") {
+            handleFilterPois(call, result: result)
         } else {
             print("Method not handled. ")
         }

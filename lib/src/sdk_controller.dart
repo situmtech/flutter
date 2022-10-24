@@ -29,6 +29,12 @@ class SitumFlutterSDK {
     });
   }
 
+  Future<void> filterPois() async {
+    await wayfindingMethodChannel.invokeMethod('filterPois', {
+      "categories" : ["1514"],
+    });
+  }
+
   Future<void> requestLocationUpdates(
       LocationListener listener, Map<String, dynamic> locationRequest) async {
     locationListener = listener;

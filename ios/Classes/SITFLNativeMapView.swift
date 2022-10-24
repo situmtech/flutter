@@ -31,6 +31,9 @@ import SitumWayfinding
 }
 
 @objc public class SITFLNativeMapView: NSObject, FlutterPlatformView {
+    private static var mapView: UIView?
+    internal static var loaded: Bool = false
+    
     private var _view: UIView
     
     internal static var library: SitumMapsLibrary?
@@ -42,35 +45,48 @@ import SitumWayfinding
         arguments args: Any?,
         binaryMessenger messenger: FlutterBinaryMessenger?
     ) {
-        _view = UIView()
+        _view = UIView.init(frame: CGRect(x: 0, y: 0, width: 1, height: 1))
+        
+        
+        let controller = UIApplication.shared.windows.first!.rootViewController as! FlutterViewController
+
+        if SITFLNativeMapView.loaded {            
+            SITFLNativeMapView.library?.presentInNewView(_view, controlledBy: controller)
+        } else {                        
+            SITFLNativeMapView.buildingId = "SET_BUILDING_IDENTIFIER_HERE"
+            let credentials = Credentials(user: "SET_USER_EMAIL_HERE", apiKey: "SET_APIKEY_HERE", googleMapsApiKey: "SET_GOOGLE_APIKEY_HERE ")
+
+            
+            let settings = LibrarySettings.Builder()
+                .setCredentials(credentials: credentials)
+                .setBuildingId(buildingId: SITFLNativeMapView.buildingId!)
+                .setShowPoiNames(showPoiNames: true)
+                .setEnablePoiClustering(enablePoisClustering: true)
+                .setShowSearchBar(showSearchBar: false)
+                .setUseRemoteConfig(useRemoteConfig: true)
+                .setShowBackButton(showBackButton: false)
+                .build()
+            
+            
+                SITFLNativeMapView.library = SitumMapsLibrary(containedBy: _view, controlledBy: controller, withSettings: settings)
+            
+            do {
+                try SITFLNativeMapView.library!.load()
+                        
+                SITFLNativeMapView.loaded = true
+            } catch {
+                print("Some Error Happened")
+            }
+        }
+        
+        
+        
+        
         super.init()
         // iOS views can be created here
-        createNativeView(view: _view)
     }
 
     @objc public func view() -> UIView {
         return _view
-    }
-
-    func createNativeView(view _view: UIView){
-        _view.backgroundColor = UIColor.blue
-        
-        SITFLNativeMapView.buildingId = "SET_BUILDING_ID_HERE"
-        let credentials = Credentials(user: "SET_USER_HERE", apiKey: "SET_APIKEY_HERE", googleMapsApiKey: "SET_GOOGLE_APIKEY_HERE")
-        
-        
-        let settings = LibrarySettings.Builder().setCredentials(credentials: credentials).setBuildingId(buildingId: SITFLNativeMapView.buildingId!).build()
-        
-        let controller = UIApplication.shared.windows.first!.rootViewController as! FlutterViewController
-        SITFLNativeMapView.library = SitumMapsLibrary(containedBy: _view, controlledBy: controller, withSettings: settings)
-        
-        
-        // Establish delegates and callbacks
-        do {
-            try SITFLNativeMapView.library!.load()
-            
-        } catch {
-            print("Some Error Happened")
-        }
     }
 }
