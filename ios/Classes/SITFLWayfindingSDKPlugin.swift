@@ -87,8 +87,7 @@ import Flutter
     
     @objc public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         if (call.method == "load") {
-            handleLoad()
-            
+            handleLoad(call, result: result)
         } else if (call.method == "unload") {
             handleUnload()
         } else if (call.method == "selectPoi") {
@@ -100,7 +99,7 @@ import Flutter
         }
     }
     
-    func handleLoad() {
+    func handleLoad(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         print("Load method detected")
         
         SITFLNativeMapView.delegate = self
@@ -112,6 +111,7 @@ import Flutter
         } else {
             print("Failure loading view")
         }
+        return result("SUCCESS");
     }
     
     func handleUnload() {
