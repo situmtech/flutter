@@ -76,6 +76,7 @@ class SitumMapPlatformView(
                 "selectPoi" -> selectPoi(arguments, result)
                 "startPositioning" -> startPositioning()
                 "stopPositioning" -> stopPositioning()
+                "filterPoisBy" -> filterPoisBy(arguments, result)
                 else -> result.notImplemented()
             }
         }
@@ -147,6 +148,13 @@ class SitumMapPlatformView(
                     methodResult.error(ERROR_SELECT_POI, message, null)
                 }
             })
+    }
+
+    // Filter poi categories
+    private fun filterPoisBy(arguments: Map<String, Any>, result: MethodChannel.Result) {
+        val categoryIdsFilter = arguments["categoryIdsFilter"] as List<String>
+        library?.filterPoisBy(categoryIdsFilter)
+        result.success("DONE")
     }
 
     // Callbacks

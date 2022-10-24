@@ -75,7 +75,7 @@ import Flutter
         }
         
         if let args = call.arguments as? Dictionary<String, [String]>,
-           let categories = args["categories"] {
+           let categories = args["categoryIdsFilter"] {
             
             print("found categories \(categories) in args: \(args)")
             SITFLNativeMapView.library?.filterPois(by: categories)
@@ -91,10 +91,9 @@ import Flutter
             
         } else if (call.method == "unload") {
             handleUnload()
-            
         } else if (call.method == "selectPoi") {
             handleSelectPoi(call, result: result)
-        } else if (call.method == "filterPois") {
+        } else if (call.method == "filterPoisBy") {
             handleFilterPois(call, result: result)
         } else {
             print("Method not handled. ")
