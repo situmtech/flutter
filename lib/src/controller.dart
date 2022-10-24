@@ -60,6 +60,12 @@ class SitumFlutterWayfinding {
         'selectPoi', <String, dynamic>{'id': id, 'buildingId': buildingId});
   }
 
+  Future<void> filterPoisBy(List<String> categoryIdsFilter) async {
+    log("Dart filterPoisBy called, methodChannel will be invoked.");
+    return await methodChannel.invokeMethod<void>('filterPoisBy',
+        <String, List<String>>{'categoryIdsFilter': categoryIdsFilter});
+  }
+
   Future<String?> startPositioning() async {
     log("Dart startPositioning called, methodChannel will be invoked.");
     return await methodChannel.invokeMethod<String>('startPositioning');
