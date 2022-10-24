@@ -14,8 +14,8 @@ class SitumFlutterWayfinding {
   // Calls:
 
   Future<String?> load(
-    SitumMapViewCallback situmMapLoadCallback,
-    SitumMapViewCallback? situmMapDidUpdateCallback,
+      SitumMapViewCallback situmMapLoadCallback,
+      SitumMapViewCallback? situmMapDidUpdateCallback,
     Map<String, dynamic> creationParams
   ) async {
     print("Situm> Dart load called, methodChannel will be invoked.");
@@ -36,6 +36,12 @@ class SitumFlutterWayfinding {
     log("Dart selectPoi called, methodChannel will be invoked.");
     return await methodChannel.invokeMethod<String>('selectPoi',
         <String, dynamic>{'id': id, 'buildingId': buildingId});
+  }
+
+  Future<void> filterPoisBy(List<String> categoryIdsFilter) async {
+    log("Dart filterPoisBy called, methodChannel will be invoked.");
+    return await methodChannel.invokeMethod<void>('filterPoisBy',
+        <String, List<String>>{'categoryIdsFilter': categoryIdsFilter});
   }
 
   Future<String?> startPositioning() async {
