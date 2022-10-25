@@ -94,6 +94,9 @@ class SitumMapLibraryLoader private constructor(
         settings: FlutterLibrarySettings,
         result: Callback
     ) {
+        if (settings.hasNavigationSettings) {
+            settings.setNavigationRequestInterceptor(library)
+        }
         if (!settings.showFloorSelector) { // Call only when explicitly wants to hide it.
             library.setFloorsListVisible(false)
         }
@@ -110,10 +113,12 @@ class SitumMapLibraryLoader private constructor(
     }
 
     fun unload() {
-        try {
-            library?.unload()
-        } catch (e: IllegalStateException) {
-            Log.d(TAG, "Illegal call to unload()", e)
+        if (loaded) {
+            try {
+                library?.unload()
+            } catch (e: Exception) {
+                Log.d(TAG, "Illegal call to unload(). This message can be ignored.", e)
+            }
         }
         library = null
         loaded = false

@@ -85,23 +85,27 @@ class _MyTabsState extends State<MyTabs> {
     ),
     // The Situm map:
     const SitumMapView(
-        key: Key("situm_map"),
-        // Your Situm credentials and building, see config.dart.
-        // Copy config.dart.example if you haven't already.
-        searchViewPlaceholder: "Situm Flutter Wayfinding",
-        situmUser: situmUser,
-        situmApiKey: situmApiKey,
-        buildingIdentifier: buildingIdentifier,
-        googleMapsApiKey: googleMapsApikey,
-        useHybridComponents: true,
-        showPoiNames: true,
-        hasSearchView: true,
-        lockCameraToBuilding: true,
-        useRemoteConfig: true,
-        initialZoom: 15,
-        showNavigationIndications: true,
-        showFloorSelector: true,
-        loadCallback: _onSitumMapLoaded)
+      key: Key("situm_map"),
+      // Your Situm credentials and building, see config.dart.
+      // Copy config.dart.example if you haven't already.
+      searchViewPlaceholder: "Situm Flutter Wayfinding",
+      situmUser: situmUser,
+      situmApiKey: situmApiKey,
+      buildingIdentifier: buildingIdentifier,
+      googleMapsApiKey: googleMapsApiKey,
+      useHybridComponents: true,
+      showPoiNames: true,
+      hasSearchView: true,
+      lockCameraToBuilding: true,
+      useRemoteConfig: true,
+      initialZoom: 15,
+      showNavigationIndications: true,
+      showFloorSelector: true,
+      navigationSettings: NavigationSettings(
+        outsideRouteThreshold: 40
+      ),
+      loadCallback: _onSitumMapLoaded,
+    )
   ];
 
   static void _onSitumMapLoaded(SitumFlutterWayfinding controller) {
@@ -207,7 +211,6 @@ class _MyTabsState extends State<MyTabs> {
       if (index == 1) {
         _onTitleTapped();
       }
-
     });
   }
 }

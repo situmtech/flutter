@@ -18,6 +18,7 @@ class SitumMapView extends StatefulWidget {
   final int initialZoom;
   final bool showNavigationIndications;
   final bool showFloorSelector;
+  final NavigationSettings? navigationSettings;
 
   final SitumMapViewCallback loadCallback;
   final SitumMapViewCallback? didUpdateCallback;
@@ -42,6 +43,7 @@ class SitumMapView extends StatefulWidget {
     this.initialZoom = 18,
     this.showNavigationIndications = true,
     this.showFloorSelector = true,
+    this.navigationSettings,
   }) : super(key: key);
 
   @override
@@ -82,8 +84,8 @@ class _SitumMapViewState extends State<SitumMapView> {
       "initialZoom": widget.initialZoom,
       "showNavigationIndications": widget.showNavigationIndications,
       "showFloorSelector": widget.showFloorSelector,
+      "navigationSettings": widget.navigationSettings?.toMap(),
     };
-    
     controller = SitumFlutterWayfinding();
     controller!.load(widget.loadCallback, widget.didUpdateCallback, loadParams);
   }

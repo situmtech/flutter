@@ -30,6 +30,18 @@ class OnPoiDeselectedResult {
   });
 }
 
+class NavigationSettings {
+  final double outsideRouteThreshold;
+
+  const NavigationSettings({
+    this.outsideRouteThreshold = -1,
+  });
+
+  Map<String, dynamic> toMap() {
+    return {"outsideRouteThreshold": outsideRouteThreshold};
+  }
+}
+
 // Result callbacks.
 
 // WYF load callback.
