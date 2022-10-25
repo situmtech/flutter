@@ -53,6 +53,11 @@ class _MyTabsState extends State<MyTabs> {
                     _removeUpdates();
                   },
                   child: const Text('Stop')),
+              TextButton(
+                  onPressed: () {
+                    _clearCache();
+                  },
+                  child: const Text('Clear cache')),
             ],
           ),
           ButtonBar(
@@ -136,6 +141,10 @@ class _MyTabsState extends State<MyTabs> {
 
   static void _removeUpdates() async {
     situmSdk?.removeUpdates();
+  }
+
+  static void _clearCache() async {
+    situmSdk?.clearCache();
   }
 
   static void _prefetch() async {

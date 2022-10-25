@@ -48,6 +48,11 @@ class SitumFlutterWayfinding {
     return result;
   }
 
+
+  Future<void> loadiOS() async {
+    await methodChannel.invokeMethod("load");
+  }
+
   Future<void> unload() async {
     await methodChannel.invokeMethod("unload");
     situmMapLoaded = false;
