@@ -2,6 +2,7 @@ library situm_flutter_wayfinding;
 
 import 'dart:async';
 import 'dart:developer';
+import 'dart:ffi';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
