@@ -12,6 +12,8 @@ import Flutter
 @objc public class SITFLWayfindingSDKPlugin: NSObject, FlutterPlugin, SITFLNativeMapViewDelegate {
     
     var channel : FlutterMethodChannel?
+    var mapReady: Bool = false
+    
     
     @objc public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(name: "situm.com/flutter_wayfinding", binaryMessenger: registrar.messenger())
@@ -22,12 +24,28 @@ import Flutter
         
     }
     
-    func handleSelectPoi(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-        print("Received call message")
+    @objc func handleSelectPoi(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         if let args = call.arguments as? Dictionary<String, String>,
            let poiIdentifier = args["id"],
            let buildingIdentifier = args["buildingId"] {
             // Retrieve poi from dart
+            
+            if (mapReady == false) {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                    // your code here
+                    self.handleSelectPoi(call, result: result)
+                }
+                
+                return
+            }
+            
+            if (SITFLNativeMapView.loaded == false) {
+                print("Library not loaded, wait before select poi")
+                
+                return
+            }
+            
+            
             let selectedPoi = SITPOI(identifier: poiIdentifier, createdAt: Date(), updatedAt: Date(), customFields: [:])
             
             // Connect back poi handler
@@ -137,6 +155,8 @@ import Flutter
     
     func onMapReady() {
         print("On Map Ready Detected")
+        
+        mapReady = true
         
         // Send method
         self.channel?.invokeMethod("onMapReady", arguments: nil)

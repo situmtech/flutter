@@ -43,6 +43,10 @@ class SitumFlutterSDK {
     }
   }
 
+  Future<void> clearCache() async {
+    await methodChannel.invokeMethod('clearCache');
+  }
+
   Future<void> removeUpdates() async {
     locationListener = null;
     await methodChannel.invokeMethod('removeUpdates');

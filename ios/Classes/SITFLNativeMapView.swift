@@ -64,18 +64,17 @@ internal protocol SITFLNativeMapViewDelegate {
         viewIdentifier viewId: Int64,
         arguments args: Any?,
         binaryMessenger messenger: FlutterBinaryMessenger?
-    ) {
-        _view = UIView.init(frame: CGRect(x: 0, y: 0, width: 1, height: 1))
+    ) {        
+        _view = UIView.init(frame: CGRect(x:frame.origin.x , y: frame.origin.y, width: frame.size.width, height: frame.size.height))
+        SITFLNativeMapView.mapView = _view
         super.init()
-
         
         let controller = UIApplication.shared.windows.first!.rootViewController as! FlutterViewController
 
-        if SITFLNativeMapView.loaded {            
-            SITFLNativeMapView.library?.presentInNewView(_view, controlledBy: controller)
-            
-            // print(" Map Already loaded")
-            
+        if SITFLNativeMapView.loaded {
+                        
+            SITFLNativeMapView.library?.presentInNewView(SITFLNativeMapView.mapView!, controlledBy: controller)
+                        
         } else {
                         
             if let arguments = args as? Dictionary<String, Any>,
@@ -98,6 +97,7 @@ internal protocol SITFLNativeMapViewDelegate {
                     .setShowSearchBar(showSearchBar: showSearchBar)
                     .setUseRemoteConfig(useRemoteConfig: useRemoteConfig)
                     .setShowBackButton(showBackButton: false)
+                    .setShowNavigationIndications(showNavigationIndications: false)
                     .build()
                 
                 let library = SitumMapsLibrary(containedBy: _view, controlledBy: controller, withSettings: settings)
@@ -111,9 +111,7 @@ internal protocol SITFLNativeMapViewDelegate {
                 }
                 
                 SITFLNativeMapView.library = library
-                
-                // SITFLNativeMapView.mapView = self
-                
+                            
                 
                 do {
                     try SITFLNativeMapView.library!.load()
@@ -126,54 +124,6 @@ internal protocol SITFLNativeMapViewDelegate {
             } else {
                 print("Unable to find args")
             }
-            
-            
-            
-            
-            
-
-            
-            /*
-             
-             NSString *situmUser = [args valueForKey:@"situmUser"];
-             NSString *apiKey = [args valueForKey:@"situmApiKey"];
-             NSString *buildingIdentifier = [args valueForKey:@"buildingIdentifier"];
-             NSString *googleMapsApiKey = [args valueForKey:@"googleMapsApiKey"];
-             NSString *searchViewPlaceholder = [args valueForKey:@"searchViewPlaceholder"];
-             NSNumber *showPoiNames = [args valueForKey:@"showPoiNames"];
-             NSNumber *hasSearchView = [args valueForKey:@"hasSearchView"];
-             NSNumber *useDashboardTheme = [args valueForKey:@"useDashboardTheme"];
-             NSNumber *showNavigationIndications = [args valueForKey:@"showNavigationIndications"];
-             NSNumber *enablePoiClustering = [args valueForKey:@"enablePoiClustering"];
-             NSNumber *useRemoteConfig = [args valueForKey:@"useRemoteConfig"];
-             
-             Credentials *credentials = [[Credentials alloc]initWithUser:situmUser
-                                                                    apiKey:apiKey
-                                                          googleMapsApiKey:googleMapsApiKey];
-             
-             [settingsBuilder setCredentialsWithCredentials:credentials];
-             [settingsBuilder setBuildingIdWithBuildingId:buildingIdentifier];
-             [settingsBuilder setSearchViewPlaceholderWithSearchViewPlaceholder:searchViewPlaceholder];
-             
-             [settingsBuilder setEnablePoiClusteringWithEnablePoisClustering:[enablePoiClustering boolValue]];
-             [settingsBuilder setShowPoiNamesWithShowPoiNames:[showPoiNames boolValue]];
-             [settingsBuilder setShowSearchBarWithShowSearchBar:[hasSearchView boolValue]];
-             [settingsBuilder setUseDashboardThemeWithUseDashboardTheme:[useDashboardTheme boolValue]];
-             [settingsBuilder setShowNavigationIndicationsWithShowNavigationIndications:[showNavigationIndications boolValue]];
-             [settingsBuilder setUseRemoteConfigWithUseRemoteConfig:[useRemoteConfig boolValue]];
-               
-             FlutterViewController *rootController = (FlutterViewController*)[[
-                                                  [[UIApplication sharedApplication]delegate] window] rootViewController];
-             
-             SitumMapsLibrary *library = [[SitumMapsLibrary alloc]initWithContainedBy:_view
-                                                                         controlledBy:rootController
-                                                                         withSettings:[settingsBuilder build]];
-             
-             */
-            
-            
-            
-            
             
         }
         
@@ -188,6 +138,15 @@ internal protocol SITFLNativeMapViewDelegate {
             return false
         }
         
+        if (SITFLNativeMapView.loaded) {
+
+            let controller = UIApplication.shared.windows.first!.rootViewController as! FlutterViewController
+
+            
+            SITFLNativeMapView.library?.presentInNewView(SITFLNativeMapView.mapView!, controlledBy: controller)
+            
+            
+        }
 
         /*
         let controller = UIApplication.shared.windows.first!.rootViewController as! FlutterViewController
