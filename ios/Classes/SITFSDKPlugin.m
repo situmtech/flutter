@@ -118,6 +118,8 @@
     self.locManager.delegate = self;
     [self.locManager requestLocationUpdates:nil];
     
+    
+    
     result(@"DONE");
 }
 
@@ -294,6 +296,8 @@ didInitiatedWithRequest:(SITLocationRequest *)request
 - (void) handleGeofenceCallbacksRequested :(FlutterMethodCall*)call
                                     result:(FlutterResult)result {
     self.locManager.geofenceDelegate = self;
+    
+    result(@"SUCCESS");
 }
 
 @end
