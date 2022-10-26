@@ -58,6 +58,7 @@ internal protocol SITFLNativeMapViewDelegate {
     internal static var library: SitumMapsLibrary?
     internal static var buildingId: String?
     internal static var delegate: SITFLNativeMapViewDelegate?
+    internal static var lockCameraToBuilding: Bool = false
 
     @objc init(
         frame: CGRect,
@@ -70,6 +71,11 @@ internal protocol SITFLNativeMapViewDelegate {
         super.init()
         
         let controller = UIApplication.shared.windows.first!.rootViewController as! FlutterViewController
+        
+        if let arguments = args as? Dictionary<String, Any>,
+           let lockCamera = arguments["lockCameraToBuilding"] as? Bool{
+            SITFLNativeMapView.lockCameraToBuilding = lockCamera
+         }
 
         if SITFLNativeMapView.loaded {
                         
@@ -99,7 +105,6 @@ internal protocol SITFLNativeMapViewDelegate {
                     .setShowBackButton(showBackButton: false)
                     .setShowNavigationIndications(showNavigationIndications: false)
                     .build()
-                
                 let library = SitumMapsLibrary(containedBy: _view, controlledBy: controller, withSettings: settings)
                 // Set delegates
                 library.setOnMapReadyListener(listener: self)
@@ -180,6 +185,12 @@ internal protocol SITFLNativeMapViewDelegate {
     public func onMapReady(map: SitumWayfinding.SitumMap) {
         print("On Map Ready")
         
+        if (SITFLNativeMapView.lockCameraToBuilding){
+            if let buildignId = SITFLNativeMapView.buildingId{
+                SITFLNativeMapView.library?.lockCameraToBuilding(buildingId: buildignId, completion: { result in
+                })
+            }
+        }
         
         // Send delegate to dart
         if let del = SITFLNativeMapView.delegate {
