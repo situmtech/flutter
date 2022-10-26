@@ -123,6 +123,7 @@ class _SitumMapViewState extends State<SitumMapView> {
       "lockCameraToBuilding": widget.lockCameraToBuilding,
       "useRemoteConfig": widget.useRemoteConfig,
       "initialZoom": widget.initialZoom,
+      "navigationSettings": widget.navigationSettings?.toMap(),
       "showNavigationIndications": widget.showNavigationIndications,
     };
 

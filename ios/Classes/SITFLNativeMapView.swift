@@ -104,6 +104,14 @@ internal protocol SITFLNativeMapViewDelegate {
                 // Set delegates
                 library.setOnMapReadyListener(listener: self)
                 library.setOnPoiSelectionListener(listener: self)
+                if  let navigationsSettings = arguments["navigationSettings"] as? Dictionary<String, AnyObject>{
+                    if let outsideRouteThreshold = navigationsSettings["outsideRouteThreshold"]{
+                        library.addNavigationRequestInterceptor { navigationRequest in
+                            navigationRequest.outsideRouteThreshold = outsideRouteThreshold as! Int
+                            
+                        }
+                    }
+                }
                 
                 SITFLNativeMapView.library = library
                             
