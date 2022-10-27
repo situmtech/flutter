@@ -54,3 +54,8 @@ typedef OnPoiSelectedCallback = void Function(
 // POI deselection callback.
 typedef OnPoiDeselectedCallback = void Function(
     OnPoiDeselectedResult poiDeselectedResult);
+// Navigation callbacks
+typedef OnNavigationRequestedCallback = void Function(String destinationId);
+typedef OnNavigationErrorCallback = void Function(
+    String destinationId, String errorMessage);
+typedef OnNavigationFinishedCallback = void Function(String destinationId);

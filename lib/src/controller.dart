@@ -10,6 +10,9 @@ class SitumFlutterWayfinding {
   bool situmMapLoading = false;
   OnPoiSelectedCallback? onPoiSelectedCallback;
   OnPoiDeselectedCallback? onPoiDeselectedCallback;
+  OnNavigationRequestedCallback? onNavigationRequestedCallback;
+  OnNavigationErrorCallback? onNavigationErrorCallback;
+  OnNavigationFinishedCallback? onNavigationFinishedCallback;
 
   static final SitumFlutterWayfinding _controller =
       SitumFlutterWayfinding._internal();
@@ -88,6 +91,18 @@ class SitumFlutterWayfinding {
     onPoiDeselectedCallback = callback;
   }
 
+  void onNavigationRequested(OnNavigationRequestedCallback callback) {
+    onNavigationRequestedCallback = callback;
+  }
+
+  void onNavigationError(OnNavigationErrorCallback callback) {
+    onNavigationErrorCallback = callback;
+  }
+
+  void onNavigationFinished(OnNavigationFinishedCallback callback) {
+    onNavigationFinishedCallback = callback;
+  }
+
   // Callbacks:
 
   Future<void> _methodCallHandler(MethodCall call) async {
@@ -97,6 +112,15 @@ class SitumFlutterWayfinding {
         break;
       case 'onPoiDeselected':
         _onPoiDeselected(call.arguments);
+        break;
+      case 'onNavigationRequested':
+        _onNavigationRequested(call.arguments);
+        break;
+      case 'onNavigationFinished':
+        _onNavigationFinished(call.arguments);
+        break;
+      case 'onNavigationError':
+        _onNavigationError(call.arguments);
         break;
       default:
         print('Method ${call.method} not found!');
@@ -123,5 +147,26 @@ class SitumFlutterWayfinding {
     onPoiDeselectedCallback?.call(OnPoiDeselectedResult(
         buildingId: arguments['buildingId'],
         buildingName: arguments['buildingName']));
+  }
+
+  void _onNavigationRequested(arguments) {
+    print("Situm> _onNavigationRequested invoked.");
+
+    onNavigationRequestedCallback?.call(arguments['destinationId']);
+  }
+
+  void _onNavigationFinished(arguments) {
+    print("Situm> _onNavigationFinished invoked.");
+
+    onNavigationFinishedCallback?.call(arguments['destinationId']);
+  }
+
+  void _onNavigationError(arguments) {
+    print("Situm> _onNavigationError invoked.");
+
+    onNavigationErrorCallback?.call(
+      arguments['destinationId'],
+      arguments['error'],
+    );
   }
 }

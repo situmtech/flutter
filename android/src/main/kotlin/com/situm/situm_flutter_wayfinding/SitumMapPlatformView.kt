@@ -14,6 +14,9 @@ import es.situm.sdk.model.cartography.Poi
 import es.situm.wayfinding.OnPoiSelectionListener
 import es.situm.wayfinding.SitumMapsLibrary
 import es.situm.wayfinding.actions.ActionsCallback
+import es.situm.wayfinding.navigation.OnNavigationListener
+import es.situm.wayfinding.navigation.Navigation
+import es.situm.wayfinding.navigation.NavigationError
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
@@ -181,6 +184,30 @@ class SitumMapPlatformView(
                     "buildingName" to building.name,
                 )
                 methodChannel.invokeMethod("onPoiDeselected", arguments)
+            }
+        })
+
+        library?.setOnNavigationListener(object : OnNavigationListener {
+            override fun onNavigationError(navigation: Navigation, error: NavigationError) {
+                val arguments = mutableMapOf<String, String?>(
+                    "error" to error.getMessage(),
+                    "destinationId" to navigation.getDestination().getIdentifier(),
+                )
+                methodChannel.invokeMethod("onNavigationError", arguments)
+            }
+
+            override fun onNavigationFinished(navigation: Navigation) {
+                val arguments = mutableMapOf<String, String?>(
+                    "destinationId" to navigation.getDestination().getIdentifier(),
+                )
+                methodChannel.invokeMethod("onNavigationFinished", arguments)
+            }
+
+            override fun onNavigationRequested(navigation: Navigation) {
+                val arguments = mutableMapOf<String, String?>(
+                    "destinationId" to navigation.getDestination().getIdentifier(),
+                )
+                methodChannel.invokeMethod("onNavigationRequested", arguments)
             }
         })
     }
