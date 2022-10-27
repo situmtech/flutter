@@ -170,6 +170,7 @@ class SitumMapPlatformView(
                     "floorName" to floor.name,
                     "poiId" to poi.identifier,
                     "poiName" to poi.name,
+                    "poiInfoHtml" to poi.infoHtml,
                 )
                 methodChannel.invokeMethod("onPoiSelected", arguments)
             }

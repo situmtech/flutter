@@ -48,7 +48,6 @@ class SitumFlutterWayfinding {
     return result;
   }
 
-
   Future<void> loadiOS() async {
     await methodChannel.invokeMethod("load");
   }
@@ -108,12 +107,14 @@ class SitumFlutterWayfinding {
     print("Situm> _onPoiSelected invoked.");
 
     onPoiSelectedCallback?.call(OnPoiSelectedResult(
-        buildingId: arguments['buildingId'],
-        buildingName: arguments['buildingName'],
-        floorId: arguments['floorId'],
-        floorName: arguments['floorName'],
-        poiId: arguments['poiId'],
-        poiName: arguments['poiName']));
+      buildingId: arguments['buildingId'],
+      buildingName: arguments['buildingName'],
+      floorId: arguments['floorId'],
+      floorName: arguments['floorName'],
+      poiId: arguments['poiId'],
+      poiName: arguments['poiName'],
+      poiInfoHtml: arguments['poiInfoHtml'],
+    ));
   }
 
   void _onPoiDeselected(arguments) {

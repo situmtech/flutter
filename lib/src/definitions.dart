@@ -9,6 +9,7 @@ class OnPoiSelectedResult {
   final String floorName;
   final String poiId;
   final String poiName;
+  final String poiInfoHtml;
 
   const OnPoiSelectedResult({
     required this.buildingId,
@@ -17,6 +18,7 @@ class OnPoiSelectedResult {
     required this.floorName,
     required this.poiId,
     required this.poiName,
+    required this.poiInfoHtml,
   });
 }
 
