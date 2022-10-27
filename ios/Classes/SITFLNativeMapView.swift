@@ -85,7 +85,8 @@ internal protocol SITFLNativeMapViewDelegate {
                let showPoiNames = arguments["showPoiNames"] as? Bool,
                let showSearchBar = arguments["hasSearchView"] as? Bool,
                let enablePoiClustering = arguments["enablePoiClustering"] as? Bool,
-               let useRemoteConfig = arguments["useRemoteConfig"] as? Bool
+               let useRemoteConfig = arguments["useRemoteConfig"] as? Bool,
+               let floorListVisible = arguments["showFloorSelector"] as? Bool
             {
                 SITFLNativeMapView.buildingId = buildingId
                 let credentials = Credentials(user: situmUser, apiKey: situmApikey, googleMapsApiKey: googleMapsApiKey)
@@ -97,7 +98,7 @@ internal protocol SITFLNativeMapViewDelegate {
                     .setShowSearchBar(showSearchBar: showSearchBar)
                     .setUseRemoteConfig(useRemoteConfig: useRemoteConfig)
                     .setShowBackButton(showBackButton: false)
-                    .setShowNavigationIndications(showNavigationIndications: false)
+                    .setShowNavigationIndications(showNavigationIndications: false).setFloorsListVisible(floorsListVisible:floorListVisible)
                     .build()
                 
                 let library = SitumMapsLibrary(containedBy: _view, controlledBy: controller, withSettings: settings)
@@ -114,6 +115,7 @@ internal protocol SITFLNativeMapViewDelegate {
                         }
                     }
                 }
+                
                 
                 SITFLNativeMapView.library = library
                             
