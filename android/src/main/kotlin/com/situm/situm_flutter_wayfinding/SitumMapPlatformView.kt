@@ -80,7 +80,7 @@ class SitumMapPlatformView(
                 else -> result.notImplemented()
             }
         }
-    }addNavigationRequestInterceptor
+    }
 
     override fun dispose() {
         methodChannel.setMethodCallHandler(null)
