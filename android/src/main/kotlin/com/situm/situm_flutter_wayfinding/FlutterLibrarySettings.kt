@@ -20,6 +20,7 @@ data class FlutterLibrarySettings(
     // Navigation settings:
     var hasNavigationSettings: Boolean = false
     var outsideRouteThreshold: Double = NO_VALUE
+    var distanceToGoalThreshold: Double = NO_VALUE
 
     init {
         val email = map.mGet("situmUser", "NO-EMAIL") as String
@@ -48,6 +49,7 @@ data class FlutterLibrarySettings(
             navSettings?.let {
                 hasNavigationSettings = true
                 outsideRouteThreshold = it.mGet("outsideRouteThreshold", NO_VALUE) as Double
+                distanceToGoalThreshold = it.mGet("distanceToGoalThreshold", NO_VALUE) as Double
             }
         }
     }
@@ -58,6 +60,10 @@ data class FlutterLibrarySettings(
                 if (outsideRouteThreshold != NO_VALUE) {
                     Log.d(TAG, "outsideRouteThreshold set to $outsideRouteThreshold")
                     builder.outsideRouteThreshold(outsideRouteThreshold)
+                }
+                if (distanceToGoalThreshold != NO_VALUE) {
+                    Log.d(TAG, "outsideRouteThreshold set to $outsideRouteThreshold")
+                    builder.distanceToGoalThreshold(distanceToGoalThreshold)
                 }
             }
         }

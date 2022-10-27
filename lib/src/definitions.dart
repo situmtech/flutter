@@ -32,13 +32,18 @@ class OnPoiDeselectedResult {
 
 class NavigationSettings {
   final double outsideRouteThreshold;
+  final double distanceToGoalThreshold;
 
   const NavigationSettings({
     this.outsideRouteThreshold = -1,
+    this.distanceToGoalThreshold = -1,
   });
 
   Map<String, dynamic> toMap() {
-    return {"outsideRouteThreshold": outsideRouteThreshold};
+    return {
+      "outsideRouteThreshold": outsideRouteThreshold,
+      "distanceToGoalThreshold": distanceToGoalThreshold
+    };
   }
 }
 
