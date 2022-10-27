@@ -101,9 +101,7 @@ class _MyTabsState extends State<MyTabs> {
       initialZoom: 15,
       showNavigationIndications: true,
       showFloorSelector: true,
-      navigationSettings: NavigationSettings(
-        outsideRouteThreshold: 40
-      ),
+      navigationSettings: NavigationSettings(outsideRouteThreshold: 40),
       loadCallback: _onSitumMapLoaded,
     )
   ];
@@ -128,8 +126,9 @@ class _MyTabsState extends State<MyTabs> {
     situmSdk = SitumFlutterSDK();
     situmSdk?.init(situmUser, situmApiKey);
     situmSdk?.setConfiguration(ConfigurationOptions(
-      useRemoteConfig: true,
-    ));
+        useRemoteConfig: true,
+        setCacheMaxAge:
+            const CacheMaxAge(value: 15, timeUnit: TimeUnit.MINUTES)));
     situmSdk?.onEnterGeofences((geofencesResult) {
       print("SDK> Enter geofences: ${geofencesResult.geofences}.");
     });

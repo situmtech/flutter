@@ -21,6 +21,7 @@ import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
+import java.util.concurrent.TimeUnit
 
 // SitumFlutterSDKPlugin.
 // Right now WYF does not have a plugin class (extending FlutterPlugin), it does require
@@ -67,6 +68,14 @@ class SitumFlutterSDKPlugin : FlutterPlugin, ActivityAware, MethodChannel.Method
         if (arguments.containsKey("useRemoteConfig")) {
             SitumSdk.configuration().isUseRemoteConfig = arguments["useRemoteConfig"] as Boolean
         }
+
+        if (arguments.containsKey("setCacheMaxAgeValue") && arguments.containsKey("setCacheMaxAgeUnit")) {
+            val value = arguments["setCacheMaxAgeValue"] as Int
+            val unit = arguments ["setCacheMaxAgeUnit"] as String
+
+            SitumSdk.configuration().setCacheMaxAge(value.toLong(), TimeUnit.valueOf(unit));
+        }
+
         result.success("DONE")
     }
 

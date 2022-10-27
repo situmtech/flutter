@@ -65,11 +65,31 @@ class PoiCategory extends NamedResource {
 
 class ConfigurationOptions {
   final bool useRemoteConfig;
+  final CacheMaxAge setCacheMaxAge;
 
   ConfigurationOptions({
     this.useRemoteConfig = false,
+    this.setCacheMaxAge =
+        const CacheMaxAge(value: 15, timeUnit: TimeUnit.MINUTES),
   });
 }
+
+class CacheMaxAge {
+  final int value;
+  final TimeUnit timeUnit;
+
+  const CacheMaxAge({
+    required this.value,
+    required this.timeUnit,
+  });
+
+  @override
+  String toString() {
+    return "value = $value: timeUnit = $timeUnit";
+  }
+}
+
+enum TimeUnit { DAYS, HOURS, MINUTES, SECONDS }
 
 class PrefetchOptions {
   final bool preloadImages;

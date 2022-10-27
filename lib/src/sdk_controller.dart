@@ -11,7 +11,6 @@ class SitumFlutterSDK {
     methodChannel = const MethodChannel(CHANNEL_SDK_ID);
     methodChannel.setMethodCallHandler(_methodCallHandler);
     // Stablish callback
-
   }
 
   // Calls
@@ -31,6 +30,8 @@ class SitumFlutterSDK {
       "setConfiguration",
       <String, dynamic>{
         'useRemoteConfig': options.useRemoteConfig,
+        'setCacheMaxAgeValue': options.setCacheMaxAge.value,
+        'setCacheMaxAgeUnit': options.setCacheMaxAge.timeUnit.name
       },
     );
   }
@@ -39,7 +40,8 @@ class SitumFlutterSDK {
       LocationListener listener, Map<String, dynamic> locationRequest) async {
     if (!identical(locationListener, listener)) {
       locationListener = listener;
-      await methodChannel.invokeMethod('requestLocationUpdates', locationRequest);
+      await methodChannel.invokeMethod(
+          'requestLocationUpdates', locationRequest);
     }
   }
 
