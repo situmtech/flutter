@@ -105,10 +105,12 @@ internal protocol SITFLNativeMapViewDelegate {
                 library.setOnMapReadyListener(listener: self)
                 library.setOnPoiSelectionListener(listener: self)
                 if  let navigationsSettings = arguments["navigationSettings"] as? Dictionary<String, AnyObject>{
-                    if let outsideRouteThreshold = navigationsSettings["outsideRouteThreshold"]{
-                        library.addNavigationRequestInterceptor { navigationRequest in
+                    library.addNavigationRequestInterceptor { navigationRequest in
+                        if let outsideRouteThreshold = navigationsSettings["outsideRouteThreshold"]{
                             navigationRequest.outsideRouteThreshold = outsideRouteThreshold as! Int
-                            
+                        }
+                        if let distanceToGoalThreshold = navigationsSettings["distanceToGoalThreshold"]{
+                            navigationRequest.distanceToGoalThreshold = distanceToGoalThreshold as! Int
                         }
                     }
                 }
