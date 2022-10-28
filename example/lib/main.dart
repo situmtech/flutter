@@ -102,8 +102,7 @@ class _MyTabsState extends State<MyTabs> {
       showNavigationIndications: true,
       showFloorSelector: true,
       navigationSettings: NavigationSettings(
-        outsideRouteThreshold: 40
-      ),
+          outsideRouteThreshold: 40, distanceToGoalThreshold: 15),
       loadCallback: _onSitumMapLoaded,
     )
   ];
