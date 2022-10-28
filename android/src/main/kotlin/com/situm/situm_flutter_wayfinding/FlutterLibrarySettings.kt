@@ -62,7 +62,7 @@ data class FlutterLibrarySettings(
                     builder.outsideRouteThreshold(outsideRouteThreshold)
                 }
                 if (distanceToGoalThreshold != NO_VALUE) {
-                    Log.d(TAG, "outsideRouteThreshold set to $outsideRouteThreshold")
+                    Log.d(TAG, "distanceToGoalThreshold set to $distanceToGoalThreshold")
                     builder.distanceToGoalThreshold(distanceToGoalThreshold)
                 }
             }
