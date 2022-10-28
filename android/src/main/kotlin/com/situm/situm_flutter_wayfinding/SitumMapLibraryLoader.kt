@@ -16,6 +16,7 @@ class SitumMapLibraryLoader private constructor(
         const val TAG = "Situm>"
 
         var loaded = false
+        var loading = false
         private var library: SitumMapsLibrary? = null
         private var instance: SitumMapLibraryLoader? = null
 
@@ -30,14 +31,15 @@ class SitumMapLibraryLoader private constructor(
 
     fun load(flutterLibrarySettings: FlutterLibrarySettings, callback: Callback) {
         Log.d(TAG, "PlatformView load called!")
-        if (loaded) { // Manage this case, but it should not happen.
+        if (loaded || loading) { // Manage this case, but it should not happen.
             Log.d(TAG, "\tAlready loaded, library = $library")
             library?.let {
                 callback.onSuccess(it)
             }
             return
         }
-        loaded = true // Set loaded=true as soon as possible to avoid multiple calls while loading.
+        // Set loading=true as soon as possible to avoid multiple calls while loading.
+        loading = true
         Log.d(TAG, "\tNot loaded yet.")
         // Avoid race conditions: native load will be called when the target view was available.
         // The SitumMapsLibrary instantiation must be done immediately so it can be passed as
@@ -53,13 +55,16 @@ class SitumMapLibraryLoader private constructor(
                     override fun onSuccess() {
                         Log.d(TAG, "\tNative load done.")
                         onLibraryLoaded(this@apply, flutterLibrarySettings, callback)
+                        loaded = true
+                        loading = false
                     }
 
                     override fun onError(error: Int) {
-                        loaded = false
                         callback.onError(
                             error, "Error loading SitumMapsLibrary, error code is: $error"
                         )
+                        loaded = false
+                        loading = false
                     }
                 })
                 // Situm Maps Library load!
@@ -78,12 +83,16 @@ class SitumMapLibraryLoader private constructor(
          */
         handler.post(object : Runnable {
             override fun run() {
-                val mapView = activity.findViewById<View>(R.id.situm_flutter_map_view)
-                if (mapView != null) {
-                    Log.d(TAG, "Target view found: ${R.id.situm_flutter_map_view}.")
-                    handler.post(runnable)
-                } else {
-                    handler.postDelayed(this, 50)
+                // Check loading: finish without calling load() if unload() is called before the
+                // next runnable execution.
+                if (loading) {
+                    val mapView = activity.findViewById<View>(R.id.situm_flutter_map_view)
+                    if (mapView != null) {
+                        Log.d(TAG, "Target view found: ${R.id.situm_flutter_map_view}.")
+                        handler.post(runnable)
+                    } else {
+                        handler.postDelayed(this, 50)
+                    }
                 }
             }
         })
@@ -122,6 +131,7 @@ class SitumMapLibraryLoader private constructor(
         }
         library = null
         loaded = false
+        loading = false
     }
 
     interface Callback {
