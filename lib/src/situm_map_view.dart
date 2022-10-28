@@ -23,6 +23,9 @@ class SitumMapView extends StatefulWidget {
   final SitumMapViewCallback loadCallback;
   final SitumMapViewCallback? didUpdateCallback;
 
+  final MapState? onPageStarted;
+  final MapState? onPageFinished;
+
   const SitumMapView({
     required Key key,
     required this.situmUser,
@@ -44,6 +47,8 @@ class SitumMapView extends StatefulWidget {
     this.showNavigationIndications = true,
     this.showFloorSelector = true,
     this.navigationSettings,
+    this.onPageStarted,
+    this.onPageFinished,
   }) : super(key: key);
 
   @override
@@ -58,6 +63,9 @@ class _SitumMapViewState extends State<SitumMapView> {
     Map<String, dynamic> platformViewParams = <String, dynamic>{
       // TODO: add view specific creation params.
     };
+    setState(() {
+      widget.onPageStarted;
+    });
     if (defaultTargetPlatform == TargetPlatform.android) {
       return _buildAndroidView(
           context, platformViewParams, widget.directionality);
@@ -69,6 +77,9 @@ class _SitumMapViewState extends State<SitumMapView> {
 
   Future<void> _onPlatformViewCreated(int id) async {
     print("Situm> _onPlatformViewCreated called");
+    setState(() {
+      widget.onPageFinished;
+    });
     Map<String, dynamic> loadParams = <String, dynamic>{
       "situmUser": widget.situmUser,
       "situmApiKey": widget.situmApiKey,

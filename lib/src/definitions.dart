@@ -43,7 +43,7 @@ class NavigationSettings {
 }
 
 // Result callbacks.
-
+typedef MapState = void Function();
 // WYF load callback.
 typedef SitumMapViewCallback = void Function(SitumFlutterWayfinding controller);
 // POI selection callback.
