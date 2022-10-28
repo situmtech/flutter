@@ -75,8 +75,19 @@
 
 - (void)handleSetConfiguration:(FlutterMethodCall*)call result:(FlutterResult)result {
     BOOL useRemoteConfig = [call.arguments[@"useRemoteConfig"] boolValue];
-
     [SITServices setUseRemoteConfig:useRemoteConfig];
+    
+    NSInteger cacheMaxAgeValue = [call.arguments[@"setCacheMaxAgeValue"] integerValue];
+    NSString *maxAgeUnit = call.arguments[@"setCacheMaxAgeUnit"];
+    
+    if ([@"MINUTES" isEqualToString:maxAgeUnit]) {
+        cacheMaxAgeValue = cacheMaxAgeValue * 60;
+    } else if ([@"HOURS" isEqualToString:maxAgeUnit]) {
+        cacheMaxAgeValue = cacheMaxAgeValue * 60 * 60;
+    } else if ([@"DAYS" isEqualToString:maxAgeUnit]) {
+        cacheMaxAgeValue = cacheMaxAgeValue * 60 * 60 * 24;
+    }
+    [_comManager setCacheMaxAge:cacheMaxAgeValue];
 
     result(@"DONE");
 }
