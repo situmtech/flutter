@@ -1,7 +1,7 @@
 package com.situm.situm_flutter_wayfinding
 
 import android.content.Context
-import android.util.Log
+import android.os.Looper
 import androidx.annotation.NonNull
 import es.situm.sdk.SitumSdk
 import es.situm.sdk.communication.CommunicationConfigImpl
@@ -32,6 +32,7 @@ class SitumFlutterSDKPlugin : FlutterPlugin, ActivityAware, MethodChannel.Method
     private var locationListener: LocationListener? = null
     private var geofenceListener: GeofenceListener? = null
     private var context: Context? = null
+    private var handler = android.os.Handler(Looper.getMainLooper())
 
     companion object {
         const val CHANNEL_ID_SDK = "situm.com/flutter_sdk"
@@ -116,18 +117,22 @@ class SitumFlutterSDKPlugin : FlutterPlugin, ActivityAware, MethodChannel.Method
                 val callbackArgs = mutableMapOf<String, String>(
                     "buildingId" to location.buildingIdentifier
                 )
-                channel.invokeMethod("onLocationChanged", callbackArgs)
+                handler.post { channel.invokeMethod("onLocationChanged", callbackArgs) }
             }
 
             override fun onStatusChanged(status: LocationStatus) {
                 val callbackArgs = mutableMapOf<String, String>(
                     "status" to status.name
                 )
-                channel.invokeMethod("onStatusChanged", callbackArgs)
+                handler.post {
+                    channel.invokeMethod("onStatusChanged", callbackArgs)
+                }
             }
 
             override fun onError(error: Error) {
-                channel.invokeMethod("onError", error.toDartError())
+                handler.post {
+                    channel.invokeMethod("onError", error.toDartError())
+                }
             }
         }
         SitumSdk.locationManager().requestLocationUpdates(locationRequest, locationListener!!)
