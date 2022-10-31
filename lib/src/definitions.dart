@@ -9,6 +9,7 @@ class OnPoiSelectedResult {
   final String floorName;
   final String poiId;
   final String poiName;
+  final String poiInfoHtml;
 
   const OnPoiSelectedResult({
     required this.buildingId,
@@ -17,6 +18,7 @@ class OnPoiSelectedResult {
     required this.floorName,
     required this.poiId,
     required this.poiName,
+    required this.poiInfoHtml,
   });
 }
 
@@ -57,3 +59,8 @@ typedef OnPoiSelectedCallback = void Function(
 // POI deselection callback.
 typedef OnPoiDeselectedCallback = void Function(
     OnPoiDeselectedResult poiDeselectedResult);
+// Navigation callbacks
+typedef OnNavigationRequestedCallback = void Function(String destinationId);
+typedef OnNavigationErrorCallback = void Function(
+    String destinationId, String errorMessage);
+typedef OnNavigationFinishedCallback = void Function(String destinationId);
