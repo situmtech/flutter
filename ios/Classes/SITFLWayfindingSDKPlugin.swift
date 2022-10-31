@@ -112,9 +112,24 @@ import Flutter
             handleSelectPoi(call, result: result)
         } else if (call.method == "filterPoisBy") {
             handleFilterPois(call, result: result)
-        } else {
+        }else if (call.method == "startPositioning") {
+            handleStartPositioning(call, result: result)
+        }else if (call.method == "stopPositioning") {
+            handleStopPositioning(call, result: result)
+        }
+        else {
             print("Method not handled. ")
         }
+    }
+    
+    func handleStartPositioning(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+        SITFLNativeMapView.library?.startPositioning()
+        return result("SUCCESS")
+    }
+    
+    func handleStopPositioning(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+        SITFLNativeMapView.library?.stopPositioning()
+        return result("SUCCESS")
     }
     
     func handleLoad(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
