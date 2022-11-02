@@ -116,6 +116,8 @@ import Flutter
             handleStartPositioning(call, result: result)
         }else if (call.method == "stopPositioning") {
             handleStopPositioning(call, result: result)
+        }else if (call.method == "stopNavigation") {
+            handleStopNavigation(call, result: result)
         }
         else {
             print("Method not handled. ")
@@ -129,6 +131,11 @@ import Flutter
     
     func handleStopPositioning(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         SITFLNativeMapView.library?.stopPositioning()
+        return result("SUCCESS")
+    }
+    
+    func handleStopNavigation(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+        SITFLNativeMapView.library?.stopNavigation()
         return result("SUCCESS")
     }
     
