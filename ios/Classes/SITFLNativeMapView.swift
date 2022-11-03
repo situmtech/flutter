@@ -44,6 +44,8 @@ internal protocol SITFLNativeMapViewDelegate {
     
     func onNavigationRequested(navigation: Navigation)
     
+    func onNavigationStarted(navigation: Navigation)
+    
     func onNavigationError(navigation: Navigation, error: Error)
     
     func onNavigationFinished(navigation: Navigation)
@@ -51,7 +53,6 @@ internal protocol SITFLNativeMapViewDelegate {
 
 
 @objc public class SITFLNativeMapView: NSObject, FlutterPlatformView, OnMapReadyListener, OnPoiSelectionListener, OnNavigationListener {
-
 
     private static var mapView: UIView?
     internal static var loaded: Bool = false
@@ -236,6 +237,12 @@ internal protocol SITFLNativeMapViewDelegate {
     public func onNavigationRequested(navigation: Navigation) {
         if let del = SITFLNativeMapView.delegate {
             del.onNavigationRequested(navigation: navigation)
+        }
+    }
+    
+    public func onNavigationStarted(navigation: Navigation) {
+        if let del = SITFLNativeMapView.delegate {
+            del.onNavigationStarted(navigation: navigation)
         }
     }
     

@@ -201,6 +201,16 @@ import Flutter
         self.channel?.invokeMethod("onNavigationRequested", arguments: arguments)
     }
     
+    func onNavigationStarted(navigation: Navigation) {
+        print("Navigation Started")
+        var arguments:Dictionary<String, Any?> = ["destinationId":navigation.destination.identifier]
+        if let route = navigation.route{
+            arguments["routeDistance"] = Double(route.distance())
+        }
+        self.channel?.invokeMethod("onNavigationStarted", arguments: arguments)
+    }
+    
+    
     func onNavigationError(navigation: Navigation, error: Error) {
         print("Navigation Error")
         let arguments = ["error":error.localizedDescription,
