@@ -14,9 +14,9 @@ import es.situm.sdk.model.cartography.Poi
 import es.situm.wayfinding.OnPoiSelectionListener
 import es.situm.wayfinding.SitumMapsLibrary
 import es.situm.wayfinding.actions.ActionsCallback
-import es.situm.wayfinding.navigation.OnNavigationListener
 import es.situm.wayfinding.navigation.Navigation
 import es.situm.wayfinding.navigation.NavigationError
+import es.situm.wayfinding.navigation.OnNavigationListener
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
@@ -179,7 +179,7 @@ class SitumMapPlatformView(
             }
 
             override fun onPoiDeselected(building: Building) {
-                val arguments = mutableMapOf<String, String>(
+                val arguments = mutableMapOf(
                     "buildingId" to building.identifier,
                     "buildingName" to building.name,
                 )
@@ -189,25 +189,37 @@ class SitumMapPlatformView(
 
         library?.setOnNavigationListener(object : OnNavigationListener {
             override fun onNavigationError(navigation: Navigation, error: NavigationError) {
-                val arguments = mutableMapOf<String, String?>(
-                    "error" to error.getMessage(),
-                    "destinationId" to navigation.getDestination().getIdentifier(),
+                val arguments = mutableMapOf(
+                    "error" to error.message,
+                    "destinationId" to navigation.destination.identifier,
                 )
                 methodChannel.invokeMethod("onNavigationError", arguments)
             }
 
             override fun onNavigationFinished(navigation: Navigation) {
-                val arguments = mutableMapOf<String, String?>(
-                    "destinationId" to navigation.getDestination().getIdentifier(),
+                val arguments = mutableMapOf(
+                    "destinationId" to navigation.destination.identifier,
                 )
                 methodChannel.invokeMethod("onNavigationFinished", arguments)
             }
 
             override fun onNavigationRequested(navigation: Navigation) {
-                val arguments = mutableMapOf<String, String?>(
-                    "destinationId" to navigation.getDestination().getIdentifier(),
+                val arguments = mutableMapOf(
+                    "destinationId" to navigation.destination.identifier,
                 )
                 methodChannel.invokeMethod("onNavigationRequested", arguments)
+            }
+
+            override fun onNavigationStarted(navigation: Navigation) {
+                val arguments = mutableMapOf<String, Any?>(
+                    "destinationId" to navigation.destination.identifier,
+                )
+                navigation.route?.let {
+                    arguments += mutableMapOf<String, Any?>(
+                        "routeDistance" to it.distance
+                    )
+                }
+                methodChannel.invokeMethod("onNavigationStarted", arguments)
             }
         })
     }

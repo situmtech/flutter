@@ -102,7 +102,7 @@ class _MyTabsState extends State<MyTabs> {
       showNavigationIndications: true,
       showFloorSelector: true,
       navigationSettings: NavigationSettings(
-          outsideRouteThreshold: 40, distanceToGoalThreshold: 15),
+          outsideRouteThreshold: 40, distanceToGoalThreshold: 8),
       loadCallback: _onSitumMapLoaded,
     )
   ];
@@ -116,6 +116,9 @@ class _MyTabsState extends State<MyTabs> {
     });
     controller.onPoiDeselected((poiDeselectedResult) {
       print("WYF> Poi deselected!");
+    });
+    controller.onNavigationStarted((navigation) {
+      print("WYF> Nav started, distance = ${navigation.route?.distance}");
     });
     //controller.startPositioning();
     //controller.selectPoi(MY_POI_ID, buildingIdentifier);

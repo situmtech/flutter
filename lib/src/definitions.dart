@@ -49,6 +49,24 @@ class NavigationSettings {
   }
 }
 
+class Route {
+  final double distance;
+
+  const Route({
+    this.distance = -1,
+  });
+}
+
+class NavigationResult {
+  final String destinationId;
+  final Route? route;
+
+  const NavigationResult({
+    required this.destinationId,
+    this.route,
+  });
+}
+
 // Result callbacks.
 
 // WYF load callback.
@@ -64,3 +82,5 @@ typedef OnNavigationRequestedCallback = void Function(String destinationId);
 typedef OnNavigationErrorCallback = void Function(
     String destinationId, String errorMessage);
 typedef OnNavigationFinishedCallback = void Function(String destinationId);
+typedef OnNavigationStartedCallback = void Function(
+    NavigationResult navigation);

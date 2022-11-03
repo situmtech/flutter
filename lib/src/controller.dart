@@ -2,8 +2,10 @@ part of situm_flutter_wayfinding;
 
 class SitumFlutterWayfinding {
   late final MethodChannel methodChannel;
+
   // Keep loaded state.
   bool situmMapLoaded = false;
+
   // Both loading and loaded will block new native load calls.
   // loaded is used also in situm_map_view to delegate didUpdateCallback calls
   // only if WYF was completely loaded.
@@ -13,6 +15,7 @@ class SitumFlutterWayfinding {
   OnNavigationRequestedCallback? onNavigationRequestedCallback;
   OnNavigationErrorCallback? onNavigationErrorCallback;
   OnNavigationFinishedCallback? onNavigationFinishedCallback;
+  OnNavigationStartedCallback? onNavigationStartedCallback;
 
   static final SitumFlutterWayfinding _controller =
       SitumFlutterWayfinding._internal();
@@ -103,6 +106,10 @@ class SitumFlutterWayfinding {
     onNavigationFinishedCallback = callback;
   }
 
+  void onNavigationStarted(OnNavigationStartedCallback callback) {
+    onNavigationStartedCallback = callback;
+  }
+
   // Callbacks:
 
   Future<void> _methodCallHandler(MethodCall call) async {
@@ -121,6 +128,9 @@ class SitumFlutterWayfinding {
         break;
       case 'onNavigationError':
         _onNavigationError(call.arguments);
+        break;
+      case 'onNavigationStarted':
+        _onNavigationStarted(call.arguments);
         break;
       default:
         print('Method ${call.method} not found!');
@@ -152,21 +162,29 @@ class SitumFlutterWayfinding {
   void _onNavigationRequested(arguments) {
     print("Situm> _onNavigationRequested invoked.");
 
+    // TODO: pass NavigationResult.
     onNavigationRequestedCallback?.call(arguments['destinationId']);
   }
 
   void _onNavigationFinished(arguments) {
     print("Situm> _onNavigationFinished invoked.");
 
+    // TODO: pass NavigationResult.
     onNavigationFinishedCallback?.call(arguments['destinationId']);
   }
 
   void _onNavigationError(arguments) {
     print("Situm> _onNavigationError invoked.");
 
+    // TODO: pass NavigationResult.
     onNavigationErrorCallback?.call(
       arguments['destinationId'],
       arguments['error'],
     );
+  }
+
+  void _onNavigationStarted(arguments) {
+    print("Situm> _onNavigationStarted invoked.");
+    onNavigationStartedCallback?.call(createNavigationResult(arguments));
   }
 }
