@@ -36,20 +36,23 @@ import SitumWayfinding
 
 internal protocol SITFLNativeMapViewDelegate {
     
-    func onPoiSelected()
+    func onPoiSelected(poi: SITPOI, level: SITFloor, building: SITBuilding)
     
-    func onPoiDeselected()
+    func onPoiDeselected(building: SITBuilding)
     
     func onMapReady()
     
+    func onNavigationRequested(navigation: Navigation)
+    
+    func onNavigationError(navigation: Navigation, error: Error)
+    
+    func onNavigationFinished(navigation: Navigation)
 }
 
 
-@objc public class SITFLNativeMapView: NSObject, FlutterPlatformView, OnMapReadyListener, OnPoiSelectionListener {
-    
-    
-    
-    
+@objc public class SITFLNativeMapView: NSObject, FlutterPlatformView, OnMapReadyListener, OnPoiSelectionListener, OnNavigationListener {
+
+
     private static var mapView: UIView?
     internal static var loaded: Bool = false
     
@@ -110,6 +113,7 @@ internal protocol SITFLNativeMapViewDelegate {
                 // Set delegates
                 library.setOnMapReadyListener(listener: self)
                 library.setOnPoiSelectionListener(listener: self)
+                library.setOnNavigationListener(listener: self)
                 if  let navigationsSettings = arguments["navigationSettings"] as? Dictionary<String, AnyObject>{
                     library.addNavigationRequestInterceptor { navigationRequest in
                         if let outsideRouteThreshold = navigationsSettings["outsideRouteThreshold"]{
@@ -210,18 +214,40 @@ internal protocol SITFLNativeMapViewDelegate {
         }
     }
     
+    //TODO: Move delegate listeners to its own class
+    
     // MARK: OnPoiSelection Delegate functions
     public func onPoiSelected(poi: SITPOI, level: SITFloor, building: SITBuilding) {
         print("On poi Selected detected")
         if let del = SITFLNativeMapView.delegate {
-            del.onPoiSelected()
+            del.onPoiSelected(poi: poi, level: level, building: building)
         }
     }
     
     public func onPoiDeselected(building: SITBuilding) {
         print("On Poi Deselected detected")
         if let del = SITFLNativeMapView.delegate {
-            del.onPoiDeselected()
+            del.onPoiDeselected(building: building)
+        }
+    }
+    
+    
+    // MARK: OnNavigationListener Delegate functions
+    public func onNavigationRequested(navigation: Navigation) {
+        if let del = SITFLNativeMapView.delegate {
+            del.onNavigationRequested(navigation: navigation)
+        }
+    }
+    
+    public func onNavigationError(navigation: Navigation, error: Error) {
+        if let del = SITFLNativeMapView.delegate {
+            del.onNavigationError(navigation: navigation, error: error)
+        }
+    }
+    
+    public func onNavigationFinished(navigation: Navigation) {
+        if let del = SITFLNativeMapView.delegate {
+            del.onNavigationFinished(navigation: navigation)
         }
     }
 }
