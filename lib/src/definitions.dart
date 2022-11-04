@@ -49,6 +49,23 @@ class NavigationSettings {
   }
 }
 
+class DirectionsSettings {
+  final bool? minimizeFloorChanges;
+
+  const DirectionsSettings({
+    this.minimizeFloorChanges,
+  });
+
+  Map<String, dynamic> toMap() {
+    Map<String, dynamic> map = {};
+
+    if (minimizeFloorChanges != null) {
+      map['minimizeFloorChanges'] = minimizeFloorChanges;
+    }
+    return map;
+  }
+}
+
 class Route {
   final double distance;
 
