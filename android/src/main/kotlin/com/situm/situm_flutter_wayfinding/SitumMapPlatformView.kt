@@ -79,6 +79,7 @@ class SitumMapPlatformView(
                 "selectPoi" -> selectPoi(arguments, result)
                 "startPositioning" -> startPositioning()
                 "stopPositioning" -> stopPositioning()
+                "stopNavigation" -> stopNavigation()
                 "filterPoisBy" -> filterPoisBy(arguments, result)
                 else -> result.notImplemented()
             }
@@ -125,6 +126,10 @@ class SitumMapPlatformView(
 
     private fun stopPositioning() {
         library?.stopPositioning()
+    }
+
+    private fun stopNavigation() {
+        library?.stopNavigation()
     }
 
     // Select the given poi in the map.
