@@ -180,12 +180,21 @@
             dict[@"name"] = poi.name ? poi.name : @"";
             dict[@"categoryId"] = [NSString stringWithFormat:@"%@", poi.category.identifier];
             dict[@"buildingId"] = [NSString stringWithFormat:@"%@", poi.buildingIdentifier];
-
+            
+            dict[@"poiCategory"] =[NSMutableDictionary new];
+            dict[@"poiCategory"][@"id"] = [NSString stringWithFormat:@"%@", poi.identifier];
+            dict[@"poiCategory"][@"name"] = poi.category.name.value;
+            
+            
+            dict[@"position"] =[NSMutableDictionary new];
+            dict[@"position"][@"buildingId"] = [NSString stringWithFormat:@"%@", poi.position.buildingIdentifier];
+            dict[@"position"][@"floorId"] = [NSString stringWithFormat:@"%@", poi.position.floorIdentifier];
+            dict[@"position"][@"latitude"] = [NSNumber numberWithFloat: poi.position.coordinate.latitude];
+            dict[@"position"][@"longitude"] = [NSNumber numberWithFloat: poi.position.coordinate.longitude];
             
             
             [exportedArray addObject:dict];
         }
-        
         result(exportedArray);
         
     } failure:^(NSError * _Nullable error) {
