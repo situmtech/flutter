@@ -48,11 +48,29 @@ class Geofence extends NamedResource {
 
 class Poi extends NamedResource {
   final String buildingId;
+  final PoiCategory poiCategory;
+  final Point position;
 
   Poi({
     required super.id,
     required super.name,
     required this.buildingId,
+    required this.poiCategory,
+    required this.position,
+  });
+}
+
+class Point {
+  final String buildingId;
+  final String floorId;
+  final double latitude;
+  final double longitude;
+
+  Point({
+    required this.buildingId,
+    required this.floorId,
+    required this.latitude,
+    required this.longitude,
   });
 }
 

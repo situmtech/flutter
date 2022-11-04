@@ -5,6 +5,8 @@ Poi createPoi(Map map) {
     id: map["id"],
     name: map["name"],
     buildingId: map["buildingId"],
+    poiCategory: createCategory(map["poiCategory"]),
+    position: createPoint(map["position"]),
   );
 }
 
@@ -20,6 +22,15 @@ PoiCategory createCategory(Map map) {
   return PoiCategory(
     id: map["id"],
     name: map["name"],
+  );
+}
+
+Point createPoint(Map map) {
+  return Point(
+    buildingId: map["buildingId"],
+    floorId: map["floorId"],
+    latitude: map["latitude"],
+    longitude: map["longitude"],
   );
 }
 
