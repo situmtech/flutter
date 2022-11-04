@@ -126,6 +126,7 @@ internal protocol SITFLNativeMapViewDelegate {
                     }
                 }
                 
+                configureDirectionsRequest(for: library, arguments: arguments)
                 
                 SITFLNativeMapView.library = library
                             
@@ -148,6 +149,16 @@ internal protocol SITFLNativeMapViewDelegate {
         
         
         // iOS views can be created here
+    }
+    
+    private func configureDirectionsRequest(for library:SitumMapsLibrary,arguments:Dictionary<String, Any> ){
+        if  let directionsSettings = arguments["directionsSettings"] as? Dictionary<String, AnyObject>{
+            library.addDirectionsRequestInterceptor { directionsRequest in
+                if let minimizeFloorChanges = directionsSettings["minimizeFloorChanges"] as? Bool{
+                    directionsRequest.setMinimizeFloorChanges(minimizeFloorChanges)
+                }
+            }
+        }
     }
     
     internal static func loadView() -> Bool {
