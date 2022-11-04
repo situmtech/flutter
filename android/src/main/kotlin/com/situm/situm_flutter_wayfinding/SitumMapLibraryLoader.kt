@@ -106,6 +106,9 @@ class SitumMapLibraryLoader private constructor(
         if (settings.hasNavigationSettings) {
             settings.setNavigationRequestInterceptor(library)
         }
+        if (settings.hasDirectionsSettings) {
+            settings.setDirectionsRequestInterceptor(library)
+        }
         if (!settings.showFloorSelector) { // Call only when explicitly wants to hide it.
             library.setFloorsListVisible(false)
         }

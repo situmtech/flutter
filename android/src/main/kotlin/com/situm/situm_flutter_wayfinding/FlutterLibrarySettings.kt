@@ -22,6 +22,10 @@ data class FlutterLibrarySettings(
     var outsideRouteThreshold: Double = NO_VALUE
     var distanceToGoalThreshold: Double = NO_VALUE
 
+    // Direction settings
+    var hasDirectionsSettings: Boolean = false
+    var minimizeFloorChanges: Boolean? = null
+
     init {
         val email = map.mGet("situmUser", "NO-EMAIL") as String
         val apiKey = map.mGet("situmApiKey", "NO-API-KEY") as String
@@ -52,6 +56,17 @@ data class FlutterLibrarySettings(
                 distanceToGoalThreshold = it.mGet("distanceToGoalThreshold", NO_VALUE) as Double
             }
         }
+        // Direction settings:
+        if (map.containsKey("directionsSettings")) {
+            val dirSettings: Map<String, Any>? = map["directionsSettings"] as Map<String, Any>?
+            dirSettings?.let {
+                hasDirectionsSettings = true
+                // minimizeFloorChanges = it.mGet("minimizeFloorChanges", null) as Boolean?
+                if (it.containsKey("minimizeFloorChanges")){
+                    minimizeFloorChanges = it["minimizeFloorChanges"] as Boolean
+                }
+            }
+        }
     }
 
     fun setNavigationRequestInterceptor(library: SitumMapsLibrary) {
@@ -64,6 +79,16 @@ data class FlutterLibrarySettings(
                 if (distanceToGoalThreshold != NO_VALUE) {
                     Log.d(TAG, "distanceToGoalThreshold set to $distanceToGoalThreshold")
                     builder.distanceToGoalThreshold(distanceToGoalThreshold)
+                }
+            }
+        }
+    }
+
+    fun setDirectionsRequestInterceptor(library: SitumMapsLibrary) {
+        if (hasDirectionsSettings) {
+            library.addDirectionsRequestInterceptor { builder ->
+                minimizeFloorChanges?.let {
+                    builder.minimizeFloorChanges(it)
                 }
             }
         }

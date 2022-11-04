@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 
+part 'src/mapper.dart';
 part 'src/definitions.dart';
 part 'src/controller.dart';
 part 'src/situm_map_view.dart';

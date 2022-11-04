@@ -10,7 +10,7 @@ import SitumWayfinding
 import Flutter
 
 @objc public class SITFLWayfindingSDKPlugin: NSObject, FlutterPlugin, SITFLNativeMapViewDelegate {
-    
+
     var channel : FlutterMethodChannel?
     var mapReady: Bool = false
     
@@ -116,6 +116,8 @@ import Flutter
             handleStartPositioning(call, result: result)
         }else if (call.method == "stopPositioning") {
             handleStopPositioning(call, result: result)
+        }else if (call.method == "stopNavigation") {
+            handleStopNavigation(call, result: result)
         }
         else {
             print("Method not handled. ")
@@ -129,6 +131,11 @@ import Flutter
     
     func handleStopPositioning(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         SITFLNativeMapView.library?.stopPositioning()
+        return result("SUCCESS")
+    }
+    
+    func handleStopNavigation(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+        SITFLNativeMapView.library?.stopNavigation()
         return result("SUCCESS")
     }
     
@@ -154,18 +161,28 @@ import Flutter
         
     }
     
-    // MARK:
+    // MARK: SITFLNativeMapViewDelegate methods implementation
     
-    func onPoiSelected() {
+    
+    
+    func onPoiSelected(poi: SITPOI, level: SITFloor, building: SITBuilding) {
         print("On Poi Selected Detected")
+        let arguments = ["buildingId": building.identifier,
+                         "buildingName":building.name,"floorId":level.identifier,
+                         "floorName":level.name,
+                         "poiId":poi.identifier,
+                         "poiName":poi.name,
+                         "poiInfoHtml":poi.infoHTML]
         
-        self.channel?.invokeMethod("onPoiSelected", arguments: nil) //
+        self.channel?.invokeMethod("onPoiSelected", arguments: arguments) //
         
     }
     
-    func onPoiDeselected() {
+    func onPoiDeselected(building: SITBuilding) {
         print("On Poi Deselected Detected")
-        self.channel?.invokeMethod("onPoiDeselected", arguments: nil)
+        let arguments = ["buildingId": building.identifier,
+                         "buildingName":building.name]
+        self.channel?.invokeMethod("onPoiDeselected", arguments: arguments)
     }
     
     func onMapReady() {
@@ -175,6 +192,35 @@ import Flutter
         
         // Send method
         self.channel?.invokeMethod("onMapReady", arguments: nil)
+        
     }
     
+    func onNavigationRequested(navigation: Navigation) {
+        print("Navigation Requested")
+        let arguments = ["destinationId":navigation.destination.identifier]
+        self.channel?.invokeMethod("onNavigationRequested", arguments: arguments)
+    }
+    
+    func onNavigationStarted(navigation: Navigation) {
+        print("Navigation Started")
+        var arguments:Dictionary<String, Any?> = ["destinationId":navigation.destination.identifier]
+        if let route = navigation.route{
+            arguments["routeDistance"] = Double(route.distance())
+        }
+        self.channel?.invokeMethod("onNavigationStarted", arguments: arguments)
+    }
+    
+    
+    func onNavigationError(navigation: Navigation, error: Error) {
+        print("Navigation Error")
+        let arguments = ["error":error.localizedDescription,
+                         "destinationId":navigation.destination.identifier]
+        self.channel?.invokeMethod("onNavigationError", arguments: arguments)
+    }
+    
+    func onNavigationFinished(navigation: Navigation) {
+        print("Navigation Finished")
+        let arguments = ["destinationId":navigation.destination.identifier]
+        self.channel?.invokeMethod("onNavigationFinished", arguments: arguments)
+    }
 }
