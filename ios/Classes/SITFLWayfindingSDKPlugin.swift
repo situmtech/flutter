@@ -147,11 +147,11 @@ import Flutter
         let success =  SITFLNativeMapView.loadView()
         
         if (success) {
-            print("Success loading view")
-        } else {
-            print("Failure loading view")
+           return result("SUCCESS")
         }
-        return result("SUCCESS");
+        
+        return result("FAILURE")
+       
     }
     
     func handleUnload() {
@@ -167,6 +167,9 @@ import Flutter
     
     func onPoiSelected(poi: SITPOI, level: SITFloor, building: SITBuilding) {
         print("On Poi Selected Detected")
+        if(self.channel == nil){
+            print("Channel null")
+        }
         let arguments = ["buildingId": building.identifier,
                          "buildingName":building.name,"floorId":level.identifier,
                          "floorName":level.name,

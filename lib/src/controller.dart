@@ -1,7 +1,7 @@
 part of situm_flutter_wayfinding;
 
 class SitumFlutterWayfinding {
-  late final MethodChannel methodChannel;
+  static MethodChannel methodChannel = MethodChannel(CHANNEL_ID);
 
   // Keep loaded state.
   bool situmMapLoaded = false;
@@ -10,14 +10,14 @@ class SitumFlutterWayfinding {
   // loaded is used also in situm_map_view to delegate didUpdateCallback calls
   // only if WYF was completely loaded.
   bool situmMapLoading = false;
-  OnPoiSelectedCallback? onPoiSelectedCallback;
-  OnPoiDeselectedCallback? onPoiDeselectedCallback;
-  OnNavigationRequestedCallback? onNavigationRequestedCallback;
-  OnNavigationErrorCallback? onNavigationErrorCallback;
-  OnNavigationFinishedCallback? onNavigationFinishedCallback;
-  OnNavigationStartedCallback? onNavigationStartedCallback;
+  static OnPoiSelectedCallback? onPoiSelectedCallback;
+  static OnPoiDeselectedCallback? onPoiDeselectedCallback;
+  static OnNavigationRequestedCallback? onNavigationRequestedCallback;
+  static OnNavigationErrorCallback? onNavigationErrorCallback;
+  static OnNavigationFinishedCallback? onNavigationFinishedCallback;
+  static OnNavigationStartedCallback? onNavigationStartedCallback;
 
-  static final SitumFlutterWayfinding _controller =
+  static SitumFlutterWayfinding _controller =
       SitumFlutterWayfinding._internal();
 
   factory SitumFlutterWayfinding() {
@@ -26,7 +26,8 @@ class SitumFlutterWayfinding {
   }
 
   SitumFlutterWayfinding._internal() {
-    methodChannel = const MethodChannel(CHANNEL_ID);
+    methodChannel =  MethodChannel(CHANNEL_ID);
+
     methodChannel.setMethodCallHandler(_methodCallHandler);
   }
 
@@ -54,8 +55,10 @@ class SitumFlutterWayfinding {
     return result;
   }
 
-  Future<void> loadiOS() async {
+  Future<SitumFlutterWayfinding> loadiOS() async {
     await methodChannel.invokeMethod("load");
+    _controller = SitumFlutterWayfinding._internal();
+    return _controller;
   }
 
   Future<void> unload() async {
