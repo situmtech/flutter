@@ -1,7 +1,7 @@
 part of situm_flutter_wayfinding;
 
 class SitumFlutterWayfinding {
-  static MethodChannel methodChannel = MethodChannel(CHANNEL_ID);
+  late final MethodChannel methodChannel;
 
   // Keep loaded state.
   bool situmMapLoaded = false;
@@ -10,14 +10,14 @@ class SitumFlutterWayfinding {
   // loaded is used also in situm_map_view to delegate didUpdateCallback calls
   // only if WYF was completely loaded.
   bool situmMapLoading = false;
-  static OnPoiSelectedCallback? onPoiSelectedCallback;
-  static OnPoiDeselectedCallback? onPoiDeselectedCallback;
-  static OnNavigationRequestedCallback? onNavigationRequestedCallback;
-  static OnNavigationErrorCallback? onNavigationErrorCallback;
-  static OnNavigationFinishedCallback? onNavigationFinishedCallback;
-  static OnNavigationStartedCallback? onNavigationStartedCallback;
+  OnPoiSelectedCallback? onPoiSelectedCallback;
+  OnPoiDeselectedCallback? onPoiDeselectedCallback;
+  OnNavigationRequestedCallback? onNavigationRequestedCallback;
+  OnNavigationErrorCallback? onNavigationErrorCallback;
+  OnNavigationFinishedCallback? onNavigationFinishedCallback;
+  OnNavigationStartedCallback? onNavigationStartedCallback;
 
-  static SitumFlutterWayfinding _controller =
+  static final SitumFlutterWayfinding _controller =
       SitumFlutterWayfinding._internal();
 
   factory SitumFlutterWayfinding() {
@@ -26,8 +26,11 @@ class SitumFlutterWayfinding {
   }
 
   SitumFlutterWayfinding._internal() {
-    methodChannel =  MethodChannel(CHANNEL_ID);
+    _initializeMethodChannel();
+  }
 
+  _initializeMethodChannel() {
+    methodChannel = const MethodChannel(CHANNEL_ID);
     methodChannel.setMethodCallHandler(_methodCallHandler);
   }
 
@@ -55,10 +58,10 @@ class SitumFlutterWayfinding {
     return result;
   }
 
-  Future<SitumFlutterWayfinding> loadiOS() async {
+  // TODO: delete this method!
+  Future<void> loadiOS() async {
     await methodChannel.invokeMethod("load");
-    _controller = SitumFlutterWayfinding._internal();
-    return _controller;
+    _initializeMethodChannel();
   }
 
   Future<void> unload() async {
