@@ -73,7 +73,11 @@ class _SitumMapViewState extends State<SitumMapView> {
     print("Situm> _onPlatformViewCreated called");
     Map<String, dynamic> loadParams = _createLoadParams();
     controller = SitumFlutterWayfinding();
-    controller!.load(widget.loadCallback, widget.didUpdateCallback, loadParams);
+    controller!.load(
+      situmMapLoadCallback: widget.loadCallback,
+      situmMapDidUpdateCallback: widget.didUpdateCallback,
+      creationParams: loadParams
+    );
   }
 
   @override
