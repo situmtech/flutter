@@ -41,27 +41,24 @@ class SitumFlutterWayfinding {
       SitumMapViewCallback? situmMapDidUpdateCallback,
       Map<String, dynamic> creationParams) async {
     print("Situm> Dart load() invoked.");
-    if (situmMapLoading) {
-      return "ALREADY_LOADING";
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      // iOS will handle multiple load calls with presentInNewView().
+      // Android will handle multiple load calls by returning immediately.
+      if (situmMapLoading) {
+        return "ALREADY_LOADING";
+      }
+      if (situmMapLoaded) {
+        return "ALREADY_DONE";
+      }
+      print("Situm> MethodChannel will be invoked.");
+      situmMapLoading = true;
     }
-    if (situmMapLoaded) {
-      return "ALREADY_DONE";
-    }
-    print("Situm> MethodChannel will be invoked.");
-    situmMapLoading = true;
-    final result =
-        await methodChannel.invokeMethod<String>('load', creationParams);
+    final result = await methodChannel.invokeMethod<String>('load', creationParams);
     print("Situm> Got load result: $result");
     situmMapLoaded = true;
     situmMapLoadCallback(this);
     situmMapDidUpdateCallback?.call(this);
     return result;
-  }
-
-  // TODO: delete this method!
-  Future<void> loadiOS() async {
-    await methodChannel.invokeMethod("load");
-    _initializeMethodChannel();
   }
 
   Future<void> unload() async {
