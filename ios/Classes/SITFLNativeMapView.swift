@@ -84,7 +84,7 @@ internal protocol SITFLNativeMapViewDelegate {
         if SITFLNativeMapView.loaded {
                         
             SITFLNativeMapView.library?.presentInNewView(SITFLNativeMapView.mapView!, controlledBy: controller)
-                        
+        
         } else {
                         
             if let arguments = args as? Dictionary<String, Any>,
@@ -172,6 +172,9 @@ internal protocol SITFLNativeMapViewDelegate {
 
             
             SITFLNativeMapView.library?.presentInNewView(SITFLNativeMapView.mapView!, controlledBy: controller)
+            //self.onMapReady(map: SITFLNativeMapView.library!)
+
+            return true
             
             
         }
@@ -198,7 +201,7 @@ internal protocol SITFLNativeMapViewDelegate {
             }
         }*/
 
-        return true
+        return false
     }
     
     internal static func unloadView() {
@@ -230,7 +233,7 @@ internal protocol SITFLNativeMapViewDelegate {
     
     // MARK: OnPoiSelection Delegate functions
     public func onPoiSelected(poi: SITPOI, level: SITFloor, building: SITBuilding) {
-        print("On poi Selected detected")
+        print("On poi Selected detected 2")
         if let del = SITFLNativeMapView.delegate {
             del.onPoiSelected(poi: poi, level: level, building: building)
         }

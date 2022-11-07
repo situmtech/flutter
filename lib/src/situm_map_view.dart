@@ -71,26 +71,13 @@ class _SitumMapViewState extends State<SitumMapView> {
 
   Future<void> _onPlatformViewCreated(int id) async {
     print("Situm> _onPlatformViewCreated called");
-    Map<String, dynamic> loadParams = <String, dynamic>{
-      "situmUser": widget.situmUser,
-      "situmApiKey": widget.situmApiKey,
-      "buildingIdentifier": widget.buildingIdentifier,
-      "enablePoiClustering": widget.enablePoiClustering,
-      "useHybridComponents": widget.useHybridComponents,
-      "searchViewPlaceholder": widget.searchViewPlaceholder,
-      "useDashboardTheme": widget.useDashboardTheme,
-      "showPoiNames": widget.showPoiNames,
-      "hasSearchView": widget.hasSearchView,
-      "lockCameraToBuilding": widget.lockCameraToBuilding,
-      "useRemoteConfig": widget.useRemoteConfig,
-      "initialZoom": widget.initialZoom,
-      "showNavigationIndications": widget.showNavigationIndications,
-      "showFloorSelector": widget.showFloorSelector,
-      "navigationSettings": widget.navigationSettings?.toMap(),
-      "directionsSettings": widget.directionsSettings?.toMap(),
-    };
+    Map<String, dynamic> loadParams = _createLoadParams();
     controller = SitumFlutterWayfinding();
-    controller!.load(widget.loadCallback, widget.didUpdateCallback, loadParams);
+    controller!.load(
+      situmMapLoadCallback: widget.loadCallback,
+      situmMapDidUpdateCallback: widget.didUpdateCallback,
+      creationParams: loadParams
+    );
   }
 
   @override
@@ -112,7 +99,20 @@ class _SitumMapViewState extends State<SitumMapView> {
   ) {
     const String viewType = '<platform-view-type>';
 
-    Map<String, dynamic> loadParams = <String, dynamic>{
+    Map<String, dynamic> loadParams = _createLoadParams();
+
+    return UiKitView(
+      viewType: viewType,
+      layoutDirection: directionality,
+      creationParams: loadParams,
+      creationParamsCodec: const StandardMessageCodec(),
+      onPlatformViewCreated: _onPlatformViewCreated,
+    );
+  }
+
+
+  Map<String, dynamic> _createLoadParams() {
+    return <String, dynamic>{
       "situmUser": widget.situmUser,
       "situmApiKey": widget.situmApiKey,
       "buildingIdentifier": widget.buildingIdentifier,
@@ -131,14 +131,6 @@ class _SitumMapViewState extends State<SitumMapView> {
       "directionsSettings": widget.directionsSettings?.toMap(),
       "showNavigationIndications": widget.showNavigationIndications,
     };
-
-    return UiKitView(
-      viewType: viewType,
-      layoutDirection: directionality,
-      creationParams: loadParams,
-      creationParamsCodec: const StandardMessageCodec(),
-      onPlatformViewCreated: _onPlatformViewCreated,
-    );
   }
 
   // ==========================================================================
