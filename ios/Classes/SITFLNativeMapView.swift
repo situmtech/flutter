@@ -172,7 +172,6 @@ internal protocol SITFLNativeMapViewDelegate {
 
             
             SITFLNativeMapView.library?.presentInNewView(SITFLNativeMapView.mapView!, controlledBy: controller)
-            SITFLNativeMapView.delegate?.onMapReady()
             //self.onMapReady(map: SITFLNativeMapView.library!)
 
             return true
