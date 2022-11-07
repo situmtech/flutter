@@ -80,6 +80,13 @@ class SitumFlutterWayfinding {
     situmMapLoading = false;
   }
 
+  Future<void> updateView() async {
+    // TODO: probably this can be deleted using didUpdateWidget.
+    if (defaultTargetPlatform == TargetPlatform.iOS) {
+      await load();
+    }
+  }
+
   Future<String?> selectPoi(String id, String buildingId) async {
     log("Dart selectPoi called, methodChannel will be invoked.");
     return await methodChannel.invokeMethod<String>(
