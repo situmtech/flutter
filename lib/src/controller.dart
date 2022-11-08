@@ -3,6 +3,10 @@ part of situm_flutter_wayfinding;
 class SitumFlutterWayfinding {
   late final MethodChannel methodChannel;
 
+  // Load callback/Update callback.
+  SitumMapViewCallback? situmMapLoadCallback;
+  SitumMapViewCallback? situmMapDidUpdateCallback;
+
   // Keep loaded state.
   bool situmMapLoaded = false;
 
@@ -26,42 +30,61 @@ class SitumFlutterWayfinding {
   }
 
   SitumFlutterWayfinding._internal() {
+    _initializeMethodChannel();
+  }
+
+  _initializeMethodChannel() {
     methodChannel = const MethodChannel(CHANNEL_ID);
     methodChannel.setMethodCallHandler(_methodCallHandler);
   }
 
   // Calls:
 
-  Future<String?> load(
-      SitumMapViewCallback situmMapLoadCallback,
+  Future<String?> load({
+      SitumMapViewCallback? situmMapLoadCallback,
       SitumMapViewCallback? situmMapDidUpdateCallback,
-      Map<String, dynamic> creationParams) async {
-    print("Situm> Dart load() invoked.");
-    if (situmMapLoading) {
-      return "ALREADY_LOADING";
+      Map<String, dynamic>? creationParams,
+  }) async {
+
+    if (situmMapLoadCallback != null) {
+      this.situmMapLoadCallback = situmMapLoadCallback;
     }
-    if (situmMapLoaded) {
-      return "ALREADY_DONE";
+    if (situmMapDidUpdateCallback != null) {
+      this.situmMapDidUpdateCallback = situmMapDidUpdateCallback;
+    }
+
+    print("Situm> Dart load() invoked.");
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      // iOS will handle multiple load calls with presentInNewView().
+      // Android will handle multiple load calls by returning immediately.
+      if (situmMapLoading) {
+        return "ALREADY_LOADING";
+      }
+      if (situmMapLoaded) {
+        return "ALREADY_DONE";
+      }
     }
     print("Situm> MethodChannel will be invoked.");
     situmMapLoading = true;
-    final result =
-        await methodChannel.invokeMethod<String>('load', creationParams);
+    final result = await methodChannel.invokeMethod<String>('load', creationParams);
     print("Situm> Got load result: $result");
     situmMapLoaded = true;
-    situmMapLoadCallback(this);
+    situmMapLoadCallback?.call(this);
     situmMapDidUpdateCallback?.call(this);
     return result;
-  }
-
-  Future<void> loadiOS() async {
-    await methodChannel.invokeMethod("load");
   }
 
   Future<void> unload() async {
     await methodChannel.invokeMethod("unload");
     situmMapLoaded = false;
     situmMapLoading = false;
+  }
+
+  Future<void> updateView() async {
+    // TODO: probably this can be deleted using didUpdateWidget.
+    if (defaultTargetPlatform == TargetPlatform.iOS) {
+      await load();
+    }
   }
 
   Future<String?> selectPoi(String id, String buildingId) async {
