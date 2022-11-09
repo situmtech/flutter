@@ -58,6 +58,11 @@ class Poi extends NamedResource {
     required this.poiCategory,
     required this.position,
   });
+
+  @override
+  String toString() {
+    return "$name:$id - CAT(${poiCategory.name}:${poiCategory.id})";
+  }
 }
 
 class Point {

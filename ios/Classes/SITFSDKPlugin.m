@@ -182,7 +182,7 @@
             dict[@"buildingId"] = [NSString stringWithFormat:@"%@", poi.buildingIdentifier];
             
             dict[@"poiCategory"] =[NSMutableDictionary new];
-            dict[@"poiCategory"][@"id"] = [NSString stringWithFormat:@"%@", poi.identifier];
+            dict[@"poiCategory"][@"id"] = [NSString stringWithFormat:@"%@", poi.category.identifier];
             dict[@"poiCategory"][@"name"] = poi.category.name.value;
             
             
