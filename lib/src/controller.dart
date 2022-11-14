@@ -76,12 +76,13 @@ class SitumFlutterWayfinding {
 
   Future<void> unload() async {
     print("Situm> unload() method called.");
-    if (!situmMapLoading) {
-      print("Situm> MethodChannel will be invoked for unload().");
-      await methodChannel.invokeMethod("unload");
-      situmMapLoaded = false;
-      situmMapLoading = false;
-    }
+    //if (!situmMapLoading) {
+    // TODO: this needs furder analysis: native "unload" is only removing the view.
+    print("Situm> MethodChannel will be invoked for unload().");
+    await methodChannel.invokeMethod("unload");
+    situmMapLoaded = false;
+    situmMapLoading = false;
+    //}
   }
 
   Future<void> updateView() async {
