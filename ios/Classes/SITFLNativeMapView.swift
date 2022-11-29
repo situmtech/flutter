@@ -11,6 +11,7 @@ import SitumWayfinding
 
 @objc public class SITFLNativeMapViewFactory: NSObject, FlutterPlatformViewFactory {
     private var messenger: FlutterBinaryMessenger
+    var currentView:SITFLNativeMapView?
 
     @objc public init(messenger: FlutterBinaryMessenger) {
         self.messenger = messenger
@@ -26,11 +27,12 @@ import SitumWayfinding
         viewIdentifier viewId: Int64,
         arguments args: Any?
     ) -> FlutterPlatformView {
-        return SITFLNativeMapView(
+        currentView = SITFLNativeMapView(
             frame: frame,
             viewIdentifier: viewId,
             arguments: args,
             binaryMessenger: messenger)
+        return currentView!
     }
 }
 
@@ -54,10 +56,8 @@ internal protocol SITFLNativeMapViewDelegate {
 
 @objc public class SITFLNativeMapView: NSObject, FlutterPlatformView, OnMapReadyListener, OnPoiSelectionListener, OnNavigationListener {
 
-    private static var mapView: UIView?
+    private  var mapView: UIView?
     internal static var loaded: Bool = false
-    
-    private var _view: UIView
     
     internal static var library: SitumMapsLibrary?
     internal static var buildingId: String?
@@ -70,85 +70,8 @@ internal protocol SITFLNativeMapViewDelegate {
         arguments args: Any?,
         binaryMessenger messenger: FlutterBinaryMessenger?
     ) {        
-        _view = UIView.init(frame: CGRect(x:frame.origin.x , y: frame.origin.y, width: frame.size.width, height: frame.size.height))
-        SITFLNativeMapView.mapView = _view
+        mapView = UIView.init(frame: CGRect(x:frame.origin.x , y: frame.origin.y, width: frame.size.width, height: frame.size.height))
         super.init()
-        
-        let controller = UIApplication.shared.windows.first!.rootViewController as! FlutterViewController
-        
-        if let arguments = args as? Dictionary<String, Any>,
-           let lockCamera = arguments["lockCameraToBuilding"] as? Bool{
-            SITFLNativeMapView.lockCameraToBuilding = lockCamera
-         }
-
-        if SITFLNativeMapView.loaded {
-                        
-            SITFLNativeMapView.library?.presentInNewView(SITFLNativeMapView.mapView!, controlledBy: controller)
-        
-        } else {
-                        
-            if let arguments = args as? Dictionary<String, Any>,
-               let buildingId = arguments["buildingIdentifier"] as? String,
-               let situmUser = arguments["situmUser"] as? String,
-              let situmApikey = arguments["situmApiKey"] as? String,
-              let googleMapsApiKey = arguments["googleMapsApiKey"] as? String,
-               let showPoiNames = arguments["showPoiNames"] as? Bool,
-               let showSearchBar = arguments["hasSearchView"] as? Bool,
-               let enablePoiClustering = arguments["enablePoiClustering"] as? Bool,
-               let useRemoteConfig = arguments["useRemoteConfig"] as? Bool,
-               let floorListVisible = arguments["showFloorSelector"] as? Bool
-            {
-                SITFLNativeMapView.buildingId = buildingId
-                let credentials = Credentials(user: situmUser, apiKey: situmApikey, googleMapsApiKey: googleMapsApiKey)
-                let settings = LibrarySettings.Builder()
-                    .setCredentials(credentials: credentials)
-                    .setBuildingId(buildingId: SITFLNativeMapView.buildingId!)
-                    .setShowPoiNames(showPoiNames: showPoiNames) // Retrieve parameters from config.dart
-                    .setEnablePoiClustering(enablePoisClustering: enablePoiClustering)
-                    .setShowSearchBar(showSearchBar: showSearchBar)
-                    .setUseRemoteConfig(useRemoteConfig: useRemoteConfig)
-                    .setShowBackButton(showBackButton: false)
-                    .setShowNavigationIndications(showNavigationIndications: false).setFloorsListVisible(floorsListVisible:floorListVisible)
-                    .build()
-                let library = SitumMapsLibrary(containedBy: _view, controlledBy: controller, withSettings: settings)
-                // Set delegates
-                library.setOnMapReadyListener(listener: self)
-                library.setOnPoiSelectionListener(listener: self)
-                library.setOnNavigationListener(listener: self)
-                if  let navigationsSettings = arguments["navigationSettings"] as? Dictionary<String, AnyObject>{
-                    library.addNavigationRequestInterceptor { navigationRequest in
-                        if let outsideRouteThreshold = navigationsSettings["outsideRouteThreshold"]{
-                            navigationRequest.outsideRouteThreshold = outsideRouteThreshold as! Int
-                        }
-                        if let distanceToGoalThreshold = navigationsSettings["distanceToGoalThreshold"]{
-                            navigationRequest.distanceToGoalThreshold = distanceToGoalThreshold as! Int
-                        }
-                    }
-                }
-                
-                configureDirectionsRequest(for: library, arguments: arguments)
-                
-                SITFLNativeMapView.library = library
-                            
-                
-                do {
-                    try SITFLNativeMapView.library!.load()
-                            
-                    SITFLNativeMapView.loaded = true
-                } catch {
-                    print("Some Error Happened")
-                }
-                
-            } else {
-                print("Unable to find args")
-            }
-            
-        }
-        
-        
-        
-        
-        // iOS views can be created here
     }
     
     private func configureDirectionsRequest(for library:SitumMapsLibrary,arguments:Dictionary<String, Any> ){
@@ -161,55 +84,85 @@ internal protocol SITFLNativeMapViewDelegate {
         }
     }
     
-    internal static func loadView() -> Bool {
-        if library == nil {
-            return false
-        }
-        
-        if (SITFLNativeMapView.loaded) {
-
-            let controller = UIApplication.shared.windows.first!.rootViewController as! FlutterViewController
-
-            
-            SITFLNativeMapView.library?.presentInNewView(SITFLNativeMapView.mapView!, controlledBy: controller)
-            //self.onMapReady(map: SITFLNativeMapView.library!)
-
-            return true
-            
-            
-        }
-
-        /*
+    internal func loadView(arguments args: Any?, completion:(Bool)->()){
         let controller = UIApplication.shared.windows.first!.rootViewController as! FlutterViewController
-
-            
-        if SITFLNativeMapView.loaded {
-            library?.presentInNewView(SITFLNativeMapView.mapView!, controlledBy: controller)
-        } else {
+        if (!SITFLNativeMapView.loaded){
+            initializeLibrary(arguments: args, controller: controller)
             do {
                 try SITFLNativeMapView.library!.load()
-                
-                // Retrieve latest view on hierarchy and assign to mapView
-                
-                for var v in SITFLNativeMapView.view().subviews {
-                    
-                }
-                
                 SITFLNativeMapView.loaded = true
             } catch {
+                completion(false)
                 print("Some Error Happened")
             }
-        }*/
-
-        return false
+        }
+        if SITFLNativeMapView.library == nil {
+            completion(false)
+        }
+        SITFLNativeMapView.library?.presentInNewView(mapView!, controlledBy: controller)
+        completion(true)
     }
     
-    internal static func unloadView() {
+    internal  func initializeLibrary(arguments: Any?, controller: UIViewController){
+        
+        if let arguments = arguments as? Dictionary<String, Any>,
+           let lockCamera = arguments["lockCameraToBuilding"] as? Bool{
+            SITFLNativeMapView.lockCameraToBuilding = lockCamera
+         }
+        
+        if let arguments = arguments as? Dictionary<String, Any>,
+           let buildingId = arguments["buildingIdentifier"] as? String,
+           let situmUser = arguments["situmUser"] as? String,
+          let situmApikey = arguments["situmApiKey"] as? String,
+          let googleMapsApiKey = arguments["googleMapsApiKey"] as? String,
+           let showPoiNames = arguments["showPoiNames"] as? Bool,
+           let showSearchBar = arguments["hasSearchView"] as? Bool,
+           let enablePoiClustering = arguments["enablePoiClustering"] as? Bool,
+           let useRemoteConfig = arguments["useRemoteConfig"] as? Bool,
+           let floorListVisible = arguments["showFloorSelector"] as? Bool
+        {
+            SITFLNativeMapView.buildingId = buildingId
+            let credentials = Credentials(user: situmUser, apiKey: situmApikey, googleMapsApiKey: googleMapsApiKey)
+            let settings = LibrarySettings.Builder()
+                .setCredentials(credentials: credentials)
+                .setBuildingId(buildingId: SITFLNativeMapView.buildingId!)
+                .setShowPoiNames(showPoiNames: showPoiNames) // Retrieve parameters from config.dart
+                .setEnablePoiClustering(enablePoisClustering: enablePoiClustering)
+                .setShowSearchBar(showSearchBar: showSearchBar)
+                .setUseRemoteConfig(useRemoteConfig: useRemoteConfig)
+                .setShowBackButton(showBackButton: false)
+                .setShowNavigationIndications(showNavigationIndications: false).setFloorsListVisible(floorsListVisible:floorListVisible)
+                .build()
+            let library = SitumMapsLibrary(containedBy: mapView!, controlledBy: controller, withSettings: settings)
+            // Set delegates
+            library.setOnMapReadyListener(listener: self)
+            library.setOnPoiSelectionListener(listener: self)
+            library.setOnNavigationListener(listener: self)
+            if  let navigationsSettings = arguments["navigationSettings"] as? Dictionary<String, AnyObject>{
+                library.addNavigationRequestInterceptor { navigationRequest in
+                    if let outsideRouteThreshold = navigationsSettings["outsideRouteThreshold"]{
+                        navigationRequest.outsideRouteThreshold = outsideRouteThreshold as! Int
+                    }
+                    if let distanceToGoalThreshold = navigationsSettings["distanceToGoalThreshold"]{
+                        navigationRequest.distanceToGoalThreshold = distanceToGoalThreshold as! Int
+                    }
+                }
+            }
+            
+            configureDirectionsRequest(for: library, arguments: arguments)
+            
+            SITFLNativeMapView.library = library
+        } else {
+            print("Unable to find args")
+        }
+    }
+    
+    internal func unloadView() {
         // SITFLNativeMapView.library.
     }
 
     @objc public func view() -> UIView {
-        return _view
+        return mapView!
     }
     
     // MARK: OnMapReadyListener

@@ -13,9 +13,13 @@ import Flutter
 
     var channel : FlutterMethodChannel?
     var mapReady: Bool = false
-    
+    static var factory : SITFLNativeMapViewFactory?
     
     @objc public static func register(with registrar: FlutterPluginRegistrar) {
+        
+        factory = SITFLNativeMapViewFactory(messenger: registrar.messenger())
+        registrar.register(factory!, withId: "<platform-view-type>")
+        
         let channel = FlutterMethodChannel(name: "situm.com/flutter_wayfinding", binaryMessenger: registrar.messenger())
         
         let instance = SITFLWayfindingSDKPlugin()
@@ -141,17 +145,12 @@ import Flutter
     
     func handleLoad(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         print("Load method detected")
-        
         SITFLNativeMapView.delegate = self
         // Call load
-        let success =  SITFLNativeMapView.loadView()
-        
-        if (success) {
-           return result("SUCCESS")
+        SITFLWayfindingSDKPlugin.factory?.currentView?.loadView(arguments: call.arguments) {_ in
+            return result("SUCCESS")
+            //return result("FAILURE")
         }
-        
-        return result("FAILURE")
-       
     }
     
     func handleUnload() {
