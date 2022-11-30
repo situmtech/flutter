@@ -42,8 +42,6 @@ internal protocol SITFLNativeMapViewDelegate {
     
     func onPoiDeselected(building: SITBuilding)
     
-    func onMapReady()
-    
     func onNavigationRequested(navigation: Navigation)
     
     func onNavigationStarted(navigation: Navigation)
@@ -54,16 +52,10 @@ internal protocol SITFLNativeMapViewDelegate {
 }
 
 
-@objc public class SITFLNativeMapView: NSObject, FlutterPlatformView, OnMapReadyListener, OnPoiSelectionListener, OnNavigationListener {
+@objc public class SITFLNativeMapView: NSObject, FlutterPlatformView {
 
     private  var mapView: UIView?
-    internal static var loaded: Bool = false
     
-    internal static var library: SitumMapsLibrary?
-    internal static var buildingId: String?
-    internal static var delegate: SITFLNativeMapViewDelegate?
-    internal static var lockCameraToBuilding: Bool = false
-
     @objc init(
         frame: CGRect,
         viewIdentifier viewId: Int64,
@@ -73,37 +65,57 @@ internal protocol SITFLNativeMapViewDelegate {
         mapView = UIView.init(frame: CGRect(x:frame.origin.x , y: frame.origin.y, width: frame.size.width, height: frame.size.height))
         super.init()
     }
-    
-    private func configureDirectionsRequest(for library:SitumMapsLibrary,arguments:Dictionary<String, Any> ){
-        if  let directionsSettings = arguments["directionsSettings"] as? Dictionary<String, AnyObject>{
-            library.addDirectionsRequestInterceptor { directionsRequest in
-                if let minimizeFloorChanges = directionsSettings["minimizeFloorChanges"] as? Bool{
-                    directionsRequest.setMinimizeFloorChanges(minimizeFloorChanges)
-                }
-            }
-        }
+
+    @objc public func view() -> UIView {
+        return mapView!
     }
     
-    internal func loadView(arguments args: Any?, completion:(Bool)->()){
+}
+
+
+//Extension for Situm Wayfinding implementacion
+
+extension SITFLNativeMapView{
+    // TODO Probably all these static variables should be in a different class as Flutter destroy and recreates this view as it sees proper
+    internal static var wyfStarted: Bool =  false
+    internal static var wyfLoaded: Bool = false
+    internal static var library: SitumMapsLibrary?
+    internal static var buildingId: String?
+    internal static var delegate: SITFLNativeMapViewDelegate?
+    internal static var lockCameraToBuilding: Bool = false
+    internal static var mapLoadCompletionCallback:((Bool)->())?
+        
+    internal func loadWYFView(arguments args: Any?, completion:@escaping (Bool)->()){
         let controller = UIApplication.shared.windows.first!.rootViewController as! FlutterViewController
-        if (!SITFLNativeMapView.loaded){
+        //Store the completion handler to notify when the map is ready
+        SITFLNativeMapView.mapLoadCompletionCallback = completion
+        if (!SITFLNativeMapView.wyfStarted){
             initializeLibrary(arguments: args, controller: controller)
             do {
                 try SITFLNativeMapView.library!.load()
-                SITFLNativeMapView.loaded = true
+                SITFLNativeMapView.wyfStarted = true
+                //Here we have to wait to receive the onMapReadyCallback to call the completion
             } catch {
                 completion(false)
                 print("Some Error Happened")
             }
+        }else{
+            if SITFLNativeMapView.library == nil {
+                completion(false)
+            }
+            SITFLNativeMapView.library?.presentInNewView(mapView!, controlledBy: controller)
+            completion(true)
         }
-        if SITFLNativeMapView.library == nil {
-            completion(false)
-        }
-        SITFLNativeMapView.library?.presentInNewView(mapView!, controlledBy: controller)
-        completion(true)
     }
     
-    internal  func initializeLibrary(arguments: Any?, controller: UIViewController){
+    
+    internal func unloadView() {
+        // SITFLNativeMapView.library.
+    }
+    
+
+    //TODO Move translation of React arguments to native objects to SDK -> Mappings project
+    private func initializeLibrary(arguments: Any?, controller: UIViewController){
         
         if let arguments = arguments as? Dictionary<String, Any>,
            let lockCamera = arguments["lockCameraToBuilding"] as? Bool{
@@ -138,17 +150,7 @@ internal protocol SITFLNativeMapViewDelegate {
             library.setOnMapReadyListener(listener: self)
             library.setOnPoiSelectionListener(listener: self)
             library.setOnNavigationListener(listener: self)
-            if  let navigationsSettings = arguments["navigationSettings"] as? Dictionary<String, AnyObject>{
-                library.addNavigationRequestInterceptor { navigationRequest in
-                    if let outsideRouteThreshold = navigationsSettings["outsideRouteThreshold"]{
-                        navigationRequest.outsideRouteThreshold = outsideRouteThreshold as! Int
-                    }
-                    if let distanceToGoalThreshold = navigationsSettings["distanceToGoalThreshold"]{
-                        navigationRequest.distanceToGoalThreshold = distanceToGoalThreshold as! Int
-                    }
-                }
-            }
-            
+            configureNavigationRequest(for: library, arguments: arguments)
             configureDirectionsRequest(for: library, arguments: arguments)
             
             SITFLNativeMapView.library = library
@@ -157,14 +159,34 @@ internal protocol SITFLNativeMapViewDelegate {
         }
     }
     
-    internal func unloadView() {
-        // SITFLNativeMapView.library.
-    }
-
-    @objc public func view() -> UIView {
-        return mapView!
+    private func configureNavigationRequest(for library:SitumMapsLibrary,arguments:Dictionary<String, Any> ){
+        if  let navigationsSettings = arguments["navigationSettings"] as? Dictionary<String, AnyObject>{
+            library.addNavigationRequestInterceptor { navigationRequest in
+                if let outsideRouteThreshold = navigationsSettings["outsideRouteThreshold"]{
+                    navigationRequest.outsideRouteThreshold = outsideRouteThreshold as! Int
+                }
+                if let distanceToGoalThreshold = navigationsSettings["distanceToGoalThreshold"]{
+                    navigationRequest.distanceToGoalThreshold = distanceToGoalThreshold as! Int
+                }
+            }
+        }
+        
     }
     
+    private func configureDirectionsRequest(for library:SitumMapsLibrary,arguments:Dictionary<String, Any> ){
+        if  let directionsSettings = arguments["directionsSettings"] as? Dictionary<String, AnyObject>{
+            library.addDirectionsRequestInterceptor { directionsRequest in
+                if let minimizeFloorChanges = directionsSettings["minimizeFloorChanges"] as? Bool{
+                    directionsRequest.setMinimizeFloorChanges(minimizeFloorChanges)
+                }
+            }
+        }
+    }
+    
+}
+
+//Extension for callbacks
+extension SITFLNativeMapView : OnMapReadyListener, OnPoiSelectionListener, OnNavigationListener {
     // MARK: OnMapReadyListener
     public func onMapReady(map: SitumWayfinding.SitumMap) {
         print("On Map Ready")
@@ -176,13 +198,14 @@ internal protocol SITFLNativeMapViewDelegate {
             }
         }
         
-        // Send delegate to dart
-        if let del = SITFLNativeMapView.delegate {
-            del.onMapReady()
-        }
+        //The load callback is still waiting for the map to be fully laoded, we notify it here
+        notifyLoadCallbackCompleted()
     }
     
-    //TODO: Move delegate listeners to its own class
+    private func notifyLoadCallbackCompleted(){
+        SITFLNativeMapView.mapLoadCompletionCallback!(true)
+        SITFLNativeMapView.wyfLoaded = true
+    }
     
     // MARK: OnPoiSelection Delegate functions
     public func onPoiSelected(poi: SITPOI, level: SITFloor, building: SITBuilding) {
@@ -224,4 +247,5 @@ internal protocol SITFLNativeMapViewDelegate {
             del.onNavigationFinished(navigation: navigation)
         }
     }
+    
 }
