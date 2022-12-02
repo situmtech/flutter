@@ -8,4 +8,10 @@ All non released changes should be in CHANGELOG_UNRELEASED.md file
 
 ---------
 
+## [0.0.4] - 2022-12-02
+
+- Update WYF Android version to 0.21.0.
+- Now `SitumMapView#loadCallback` is always called after widget's `dispose()`. This change makes `SitumMapView` compatible with `Navigator`.
+
+
 ## [0.0.1] - 2022-09-22

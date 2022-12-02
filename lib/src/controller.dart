@@ -14,6 +14,19 @@ class SitumFlutterWayfinding {
   // loaded is used also in situm_map_view to delegate didUpdateCallback calls
   // only if WYF was completely loaded.
   bool situmMapLoading = false;
+
+  // The parent widget of SitumMapView may be disposed, for example, on calls
+  // to Navigator.pushReplacementNamed(...). In such a case, if the map view was
+  // already loaded, the native load() will not be called again, skipping future
+  // calls to onMapLoadCallback. Any code relying on onMapLoadCallback will not
+  // be called after the widget dispose() and any callback/closure established
+  // before dispose() will get out of context (unmounted state).
+  // To avoid this situation, check if dispose() was called to scale up
+  // onMapLoadCallback in the next load call. If the parent widget is destroyed
+  // and restored, it will receive the onMapLoadCallback again and its state
+  // will be the expected one.
+  bool onDisposeCalled = false;
+
   OnPoiSelectedCallback? onPoiSelectedCallback;
   OnPoiDeselectedCallback? onPoiDeselectedCallback;
   OnNavigationRequestedCallback? onNavigationRequestedCallback;
@@ -41,11 +54,10 @@ class SitumFlutterWayfinding {
   // Calls:
 
   Future<String?> load({
-      SitumMapViewCallback? situmMapLoadCallback,
-      SitumMapViewCallback? situmMapDidUpdateCallback,
-      Map<String, dynamic>? creationParams,
+    SitumMapViewCallback? situmMapLoadCallback,
+    SitumMapViewCallback? situmMapDidUpdateCallback,
+    Map<String, dynamic>? creationParams,
   }) async {
-
     if (situmMapLoadCallback != null) {
       this.situmMapLoadCallback = situmMapLoadCallback;
     }
@@ -57,21 +69,40 @@ class SitumFlutterWayfinding {
     if (defaultTargetPlatform == TargetPlatform.android) {
       // iOS will handle multiple load calls with presentInNewView().
       // Android will handle multiple load calls by returning immediately.
+      // TODO: check iOS onDisposeCalled.
       if (situmMapLoading) {
         return "ALREADY_LOADING";
       }
       if (situmMapLoaded) {
+        notifyLoadCallbacksIfNeeded();
         return "ALREADY_DONE";
       }
     }
     print("Situm> MethodChannel will be invoked.");
     situmMapLoading = true;
-    final result = await methodChannel.invokeMethod<String>('load', creationParams);
+    final result =
+        await methodChannel.invokeMethod<String>('load', creationParams);
     print("Situm> Got load result: $result");
+    situmMapLoading = false;
     situmMapLoaded = true;
+    notifyLoadCallbacks();
+    return result;
+  }
+
+  void notifyLoadCallbacksIfNeeded() {
+    if (onDisposeCalled) {
+      onDisposeCalled = false;
+      notifyLoadCallbacks();
+    }
+  }
+
+  void notifyLoadCallbacks() {
     situmMapLoadCallback?.call(this);
     situmMapDidUpdateCallback?.call(this);
-    return result;
+  }
+
+  void onWidgetDisposed() {
+    onDisposeCalled = true;
   }
 
   Future<void> unload() async {

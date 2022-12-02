@@ -1,16 +1,7 @@
-# situm_flutter_wayfinding_example
-
-Demonstrates how to use the situm_flutter_wayfinding plugin.
+<p align="center"> <img width="233" src="https://situm.com/wp-content/themes/situm/img/logo-situm.svg" style="margin-bottom:1rem" />
+<h1 align="center">Situm Flutter Wayfinding Example</h1>
+</p>
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Starting point for a Flutter Wayfinding application.
