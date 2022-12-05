@@ -87,7 +87,10 @@ class SitumMapPlatformView(
     }
 
     override fun dispose() {
-        methodChannel.setMethodCallHandler(null)
+        Log.d(TAG, "PlatformView dispose() called.")
+        // TODO: this is causing problems with unload/load. A deeper analysis should be performed.
+        // Why the method call handler is not being re-established?
+        // methodChannel.setMethodCallHandler(null)
     }
 
 
