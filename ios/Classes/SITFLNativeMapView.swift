@@ -90,12 +90,13 @@ extension SITFLNativeMapView{
         //Store the completion handler to notify when the map is ready
         SITFLNativeMapView.mapLoadCompletionCallback = completion
         if (!SITFLNativeMapView.wyfStarted){
+            SITFLNativeMapView.wyfStarted = true
             initializeLibrary(arguments: args, controller: controller)
             do {
                 try SITFLNativeMapView.library!.load()
-                SITFLNativeMapView.wyfStarted = true
                 //Here we have to wait to receive the onMapReadyCallback to call the completion
             } catch {
+                SITFLNativeMapView.wyfStarted = false
                 completion(false)
                 print("Some Error Happened")
             }
