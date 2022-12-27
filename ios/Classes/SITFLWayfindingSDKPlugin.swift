@@ -12,10 +12,13 @@ import Flutter
 @objc public class SITFLWayfindingSDKPlugin: NSObject, FlutterPlugin, SITFLNativeMapViewDelegate {
 
     var channel : FlutterMethodChannel?
-    var mapReady: Bool = false
-    
+    static var factory : SITFLNativeMapViewFactory?
     
     @objc public static func register(with registrar: FlutterPluginRegistrar) {
+        
+        factory = SITFLNativeMapViewFactory(messenger: registrar.messenger())
+        registrar.register(factory!, withId: "<platform-view-type>")
+        
         let channel = FlutterMethodChannel(name: "situm.com/flutter_wayfinding", binaryMessenger: registrar.messenger())
         
         let instance = SITFLWayfindingSDKPlugin()
@@ -30,16 +33,7 @@ import Flutter
            let buildingIdentifier = args["buildingId"] {
             // Retrieve poi from dart
             
-            if (mapReady == false) {
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                    // your code here
-                    self.handleSelectPoi(call, result: result)
-                }
-                
-                return
-            }
-            
-            if (SITFLNativeMapView.loaded == false) {
+            if (SITFLNativeMapView.wyfLoaded == false) {
                 print("Library not loaded, wait before select poi")
                 
                 return
@@ -87,7 +81,7 @@ import Flutter
         
         // Receive poi filtering
         
-        if (SITFLNativeMapView.loaded == false) {
+        if (SITFLNativeMapView.wyfLoaded == false) {
             print("Unable to filter pois")
             // Return with error
         }
@@ -141,24 +135,19 @@ import Flutter
     
     func handleLoad(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         print("Load method detected")
-        
         SITFLNativeMapView.delegate = self
         // Call load
-        let success =  SITFLNativeMapView.loadView()
-        
-        if (success) {
-           return result("SUCCESS")
+        SITFLWayfindingSDKPlugin.factory?.currentView?.loadWYFView(arguments: call.arguments) {loaded in
+            if (loaded){
+                return result("SUCCESS")
+            }else{
+                return result("FAILURE")
+            }
         }
-        
-        return result("FAILURE")
-       
     }
     
     func handleUnload() {
         print("unload method detected")
-        
-        
-        
     }
     
     // MARK: SITFLNativeMapViewDelegate methods implementation
@@ -186,16 +175,6 @@ import Flutter
         let arguments = ["buildingId": building.identifier,
                          "buildingName":building.name]
         self.channel?.invokeMethod("onPoiDeselected", arguments: arguments)
-    }
-    
-    func onMapReady() {
-        print("On Map Ready Detected")
-        
-        mapReady = true
-        
-        // Send method
-        self.channel?.invokeMethod("onMapReady", arguments: nil)
-        
     }
     
     func onNavigationRequested(navigation: Navigation) {
