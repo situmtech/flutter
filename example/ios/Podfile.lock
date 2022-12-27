@@ -24,17 +24,17 @@ PODS:
   - GoogleMaps/Base (4.2.0)
   - GoogleMaps/Maps (4.2.0):
     - GoogleMaps/Base
-  - Protobuf (3.21.9)
+  - Protobuf (3.21.12)
   - situm_flutter_wayfinding (0.0.1):
     - Flutter
-    - SitumWayfinding (~> 0.16.0)
-  - SitumSDK (2.54.2):
+    - SitumWayfinding (~> 0.17.1)
+  - SitumSDK (2.55.0):
     - Protobuf (~> 3.7)
     - SSZipArchive (~> 2.4)
-  - SitumWayfinding (0.16.0):
+  - SitumWayfinding (0.17.1):
     - Google-Maps-iOS-Utils (~> 4.1.0)
     - GoogleMaps (~> 4.2.0)
-    - SitumSDK (~> 2.54.2)
+    - SitumSDK (~> 2.55.0)
   - SSZipArchive (2.4.3)
 
 DEPENDENCIES:
@@ -60,10 +60,10 @@ SPEC CHECKSUMS:
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
   Google-Maps-iOS-Utils: 3343332b18dfd5be8f1f44edd7d481ace3da4d9a
   GoogleMaps: eb03e327edfd70b06de1e6e321653f73712df7ad
-  Protobuf: 02524ec14183fe08fb259741659e79683788158b
-  situm_flutter_wayfinding: e73aae5089f26bc0f426c2b31612120ebc1865b8
-  SitumSDK: 62e0823dfd0aaba52f3fa5aa720e4515b97bd598
-  SitumWayfinding: b232c8cd13701c875dbc4ead249c67eef8ef73c6
+  Protobuf: 120350fc38646e2dedc26f49ecba778184ea1de2
+  situm_flutter_wayfinding: 2f19c7e366fd6c011cac848aecf2a062b815dde7
+  SitumSDK: d15af2153982df98a1247b252027b543435d4d16
+  SitumWayfinding: 0b9f3e6bc608844a59bae87fbc7e90ccc12ef118
   SSZipArchive: fe6a26b2a54d5a0890f2567b5cc6de5caa600aef
 
 PODFILE CHECKSUM: 16bedaff52fc764294f185fa1e489835aa245ca6
