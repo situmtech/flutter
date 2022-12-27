@@ -8,6 +8,10 @@ All non released changes should be in CHANGELOG_UNRELEASED.md file
 
 ---------
 
+## [0.0.5] - 2022-12-27
+- Code refactoring
+- Updated WYF iOS version to 0.17.1
+
 ## [0.0.4] - 2022-12-02
 
 - Update WYF Android version to 0.21.0.
