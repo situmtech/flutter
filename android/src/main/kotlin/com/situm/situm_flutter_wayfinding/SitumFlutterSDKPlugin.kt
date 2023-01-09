@@ -171,19 +171,18 @@ class SitumFlutterSDKPlugin : FlutterPlugin, ActivityAware, MethodChannel.Method
     ) {
         geofenceListener = object : GeofenceListener {
             override fun onEnteredGeofences(enteredGeofences: List<Geofence>) {
-                val geofencesMap = enteredGeofences.toGeofencesMap()
+                val geofencesMap = enteredGeofences.toMap()
                 channel.invokeMethod("onEnteredGeofences", geofencesMap)
             }
 
             override fun onExitedGeofences(exitedGeofences: List<Geofence>) {
-                val geofencesMap = exitedGeofences.toGeofencesMap()
+                val geofencesMap = exitedGeofences.toMap()
                 channel.invokeMethod("onExitedGeofences", geofencesMap)
             }
         }
         SitumSdk.locationManager().setGeofenceListener(geofenceListener)
         result.success("DONE")
     }
-
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
         context = binding.activity

@@ -1,5 +1,8 @@
 *.iml
 .gradle
+/gradle/
+/gradlew
+/gradlew.*
 /local.properties
 /.idea/workspace.xml
 /.idea/libraries
