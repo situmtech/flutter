@@ -1,7 +1,4 @@
 ## Unreleased
-### Added
-* `android.useAndroidX=true` in the example project.
-  Add it to the `gradle.properties` file of your project if you encounter errors during the Android build.
 
 ### Changed
 * Updated Android WYF to version 0.23.0.
