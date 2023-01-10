@@ -167,22 +167,20 @@
         for (SITPOI *poi in mapping[@"results"]) {
             
             NSMutableDictionary *dict = [NSMutableDictionary new];
-            dict[@"id"] = [NSString stringWithFormat:@"%@", poi.identifier];
-            dict[@"name"] = poi.name ? poi.name : @"";
+            dict[@"identifier"] = [NSString stringWithFormat:@"%@", poi.identifier];
+            dict[@"poiName"] = poi.name ? poi.name : @"";
             dict[@"categoryId"] = [NSString stringWithFormat:@"%@", poi.category.identifier];
-            dict[@"buildingId"] = [NSString stringWithFormat:@"%@", poi.buildingIdentifier];
+            dict[@"buildingIdentifier"] = [NSString stringWithFormat:@"%@", poi.buildingIdentifier];
             
             dict[@"poiCategory"] =[NSMutableDictionary new];
             dict[@"poiCategory"][@"id"] = [NSString stringWithFormat:@"%@", poi.category.identifier];
-            dict[@"poiCategory"][@"name"] = poi.category.name.value;
-            
-            
+            dict[@"poiCategory"][@"poiCategoryName"] = poi.category.name.value;
+
             dict[@"position"] =[NSMutableDictionary new];
-            dict[@"position"][@"buildingId"] = [NSString stringWithFormat:@"%@", poi.position.buildingIdentifier];
-            dict[@"position"][@"floorId"] = [NSString stringWithFormat:@"%@", poi.position.floorIdentifier];
+            dict[@"position"][@"buildingIdentifier"] = [NSString stringWithFormat:@"%@", poi.position.buildingIdentifier];
+            dict[@"position"][@"floorIdentifier"] = [NSString stringWithFormat:@"%@", poi.position.floorIdentifier];
             dict[@"position"][@"latitude"] = [NSNumber numberWithFloat: poi.position.coordinate.latitude];
             dict[@"position"][@"longitude"] = [NSNumber numberWithFloat: poi.position.coordinate.longitude];
-            
             
             [exportedArray addObject:dict];
         }
@@ -215,7 +213,7 @@
                 NSMutableDictionary *dict = [NSMutableDictionary new];
                 
                 dict[@"id"] = [NSString stringWithFormat:@"%@",  category.identifier ];
-                dict[@"name"] = category.name.value;
+                dict[@"poiCategoryName"] = category.name.value;
                 
                 
                 [exportedArray addObject:dict];
@@ -286,7 +284,7 @@ didInitiatedWithRequest:(SITLocationRequest *)request
     NSMutableArray *dartGeofences = [NSMutableArray new];
     for (SITGeofence * geofence in nativeGeofences){
         NSMutableDictionary *dartGeofence = [NSMutableDictionary new];
-        dartGeofence[@"id"] = geofence.identifier;
+        dartGeofence[@"identifier"] = geofence.identifier;
         dartGeofence[@"name"] = geofence.name;
         [dartGeofences addObject:dartGeofence];
     }
