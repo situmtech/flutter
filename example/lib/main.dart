@@ -6,7 +6,6 @@ import 'package:situm_flutter_wayfinding_example/config.dart';
 void main() => runApp(const MyApp());
 
 const _title = "Situm Flutter Wayfinding";
-const MY_POI_ID = "YOUR-SITUM-POI-IDENTIFIER";
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -28,12 +27,14 @@ class MyTabs extends StatefulWidget {
 }
 
 class _MyTabsState extends State<MyTabs> {
-  int _selectedIndex = 0;
-  static SitumFlutterSDK? situmSdk;
+  late SitumFlutterSDK situmSdk;
 
-  final List<Widget> _tabBarWidgets = <Widget>[
+  int _selectedIndex = 0;
+  String currentOutput = "---";
+
+  Widget _createHomeTab() {
     // Home:
-    Card(
+    return Card(
       child: Column(
         children: [
           const Text(
@@ -55,6 +56,7 @@ class _MyTabsState extends State<MyTabs> {
                   child: const Text('Stop')),
               TextButton(
                   onPressed: () {
+                    _echo("SDK> RESPONSE: CLEAR CACHE...");
                     _clearCache();
                   },
                   child: const Text('Clear cache')),
@@ -65,27 +67,34 @@ class _MyTabsState extends State<MyTabs> {
             children: [
               TextButton(
                   onPressed: () {
+                    _echo("SDK> POIS...");
                     _fetchPois();
                   },
                   child: const Text('Pois')),
               TextButton(
                   onPressed: () {
+                    _echo("SDK> CATEGORIES...");
                     _fetchCategories();
                   },
                   child: const Text('Categories')),
               TextButton(
                   onPressed: () {
+                    _echo("SDK> PREFETCH...");
                     _prefetch();
                   },
                   child: const Text('Prefetch')),
             ],
           ),
+          Text(currentOutput)
         ],
       ),
-    ),
+    );
+  }
+
+  Widget _createSitumMapTab() {
     // The Situm map:
-    const SitumMapView(
-      key: Key("situm_map"),
+    return SitumMapView(
+      key: const Key("situm_map"),
       // Your Situm credentials and building, see config.dart.
       // Copy config.dart.example if you haven't already.
       searchViewPlaceholder: "Situm Flutter Wayfinding",
@@ -98,16 +107,18 @@ class _MyTabsState extends State<MyTabs> {
       hasSearchView: true,
       lockCameraToBuilding: true,
       useRemoteConfig: true,
-      initialZoom: 15,
+      initialZoom: 16,
       showNavigationIndications: true,
       showFloorSelector: true,
-      navigationSettings: NavigationSettings(
-          outsideRouteThreshold: 40, distanceToGoalThreshold: 8),
+      navigationSettings: const NavigationSettings(
+        outsideRouteThreshold: 40,
+        distanceToGoalThreshold: 8,
+      ),
       loadCallback: _onSitumMapLoaded,
-    )
-  ];
+    );
+  }
 
-  static void _onSitumMapLoaded(SitumFlutterWayfinding controller) {
+  void _onSitumMapLoaded(SitumFlutterWayfinding controller) {
     // The Situm map was successfully loaded, use the given controller to
     // call the WYF API methods.
     print("WYF> Situm Map loaded!");
@@ -128,49 +139,57 @@ class _MyTabsState extends State<MyTabs> {
   void initState() {
     // SitumSdk for flutter:
     situmSdk = SitumFlutterSDK();
-    situmSdk?.init(situmUser, situmApiKey);
-    situmSdk?.setConfiguration(ConfigurationOptions(
+    situmSdk.init(situmUser, situmApiKey);
+    situmSdk.setConfiguration(ConfigurationOptions(
       useRemoteConfig: true,
     ));
-    situmSdk?.onEnterGeofences((geofencesResult) {
-      print("SDK> Enter geofences: ${geofencesResult.geofences}.");
+    situmSdk.onEnterGeofences((geofencesResult) {
+      _echo("SDK> Enter geofences: ${geofencesResult.geofences}.");
     });
-    situmSdk?.onExitGeofences((geofencesResult) {
-      print("SDK> Exit geofences: ${geofencesResult.geofences}.");
+    situmSdk.onExitGeofences((geofencesResult) {
+      _echo("SDK> Exit geofences: ${geofencesResult.geofences}.");
     });
     super.initState();
   }
 
-  static void _requestUpdates() async {
-    situmSdk?.requestLocationUpdates(_MyLocationListener(), {});
+  void _echo(String output) {
+    setState(() {
+      currentOutput = output;
+      print(currentOutput);
+    });
   }
 
-  static void _removeUpdates() async {
-    situmSdk?.removeUpdates();
+  void _requestUpdates() async {
+    situmSdk.requestLocationUpdates(_MyLocationListener(), {});
   }
 
-  static void _clearCache() async {
-    situmSdk?.clearCache();
+  void _removeUpdates() async {
+    situmSdk.removeUpdates();
   }
 
-  static void _prefetch() async {
-    var prefetch = await situmSdk?.prefetchPositioningInfo(
+  void _clearCache() async {
+    await situmSdk.clearCache();
+    _echo("SDK> RESPONSE: CLEAR CACHE = DONE");
+  }
+
+  void _prefetch() async {
+    var prefetch = await situmSdk.prefetchPositioningInfo(
       [buildingIdentifier],
       options: PrefetchOptions(
         preloadImages: true,
       ),
     );
-    print("SDK RESPONSE: PREFETCH = $prefetch");
+    _echo("SDK> RESPONSE: PREFETCH = $prefetch");
   }
 
-  static void _fetchPois() async {
-    var pois = await situmSdk?.fetchPoisFromBuilding(buildingIdentifier);
-    print("SDK RESPONSE: POIS = $pois");
+  void _fetchPois() async {
+    var pois = await situmSdk.fetchPoisFromBuilding(buildingIdentifier);
+    _echo("SDK> RESPONSE: POIS = $pois");
   }
 
-  static void _fetchCategories() async {
-    var categories = await situmSdk?.fetchPoiCategories();
-    print("SDK RESPONSE: CATEGORIES = $categories");
+  void _fetchCategories() async {
+    var categories = await situmSdk.fetchPoiCategories();
+    _echo("SDK> RESPONSE: CATEGORIES = $categories");
   }
 
   @override
@@ -180,8 +199,12 @@ class _MyTabsState extends State<MyTabs> {
       appBar: AppBar(
         title: const Text(_title),
       ),
-      body: Center(
-        child: _tabBarWidgets.elementAt(_selectedIndex),
+      body: IndexedStack(
+        index: _selectedIndex,
+        children: [
+          _createHomeTab(),
+          _createSitumMapTab(),
+        ],
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
@@ -201,18 +224,9 @@ class _MyTabsState extends State<MyTabs> {
     );
   }
 
-  void _onTitleTapped() {
-    // situmSdk?.selectPoi("126713");
-    // situmSdk?.filterPois(); // {"categories" : ["Coffee"]}
-  }
-
   void _onItemTapped(int index) {
     setState(() {
       _selectedIndex = index;
-
-      if (index == 1) {
-        _onTitleTapped();
-      }
     });
   }
 }
