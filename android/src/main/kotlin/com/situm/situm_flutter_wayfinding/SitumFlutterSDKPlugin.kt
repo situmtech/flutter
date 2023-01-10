@@ -58,6 +58,7 @@ class SitumFlutterSDKPlugin : FlutterPlugin, ActivityAware, MethodChannel.Method
             "geofenceCallbacksRequested" -> geofenceCallbacksRequested(result)
             "fetchPoisFromBuilding" -> fetchPoisFromBuilding(arguments, result)
             "fetchCategories" -> fetchCategories(result)
+            "clearCache" -> clearCache(result)
             else -> result.notImplemented()
         }
     }
@@ -181,6 +182,11 @@ class SitumFlutterSDKPlugin : FlutterPlugin, ActivityAware, MethodChannel.Method
             }
         }
         SitumSdk.locationManager().setGeofenceListener(geofenceListener)
+        result.success("DONE")
+    }
+
+    private fun clearCache(result: MethodChannel.Result) {
+        SitumSdk.communicationManager().invalidateCache()
         result.success("DONE")
     }
 
