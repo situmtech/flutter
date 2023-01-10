@@ -17,3 +17,4 @@ Starting point for a Flutter Wayfinding application.
     <string name="google_api_key">YOUR_GOOGLE_MAPS_API_KEY</string>
     ...
 ```
+3. Launch the application: (1) from your IDE opening the project folder or (2) from the command line executing `flutter run`.
