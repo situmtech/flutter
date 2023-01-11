@@ -179,8 +179,9 @@
             dict[@"position"] =[NSMutableDictionary new];
             dict[@"position"][@"buildingIdentifier"] = [NSString stringWithFormat:@"%@", poi.position.buildingIdentifier];
             dict[@"position"][@"floorIdentifier"] = [NSString stringWithFormat:@"%@", poi.position.floorIdentifier];
-            dict[@"position"][@"latitude"] = [NSNumber numberWithFloat: poi.position.coordinate.latitude];
-            dict[@"position"][@"longitude"] = [NSNumber numberWithFloat: poi.position.coordinate.longitude];
+            dict[@"coordinate"] =[NSMutableDictionary new];
+            dict[@"coordinate"][@"latitude"] = [NSNumber numberWithFloat: poi.position.coordinate.latitude];
+            dict[@"coordinate"][@"longitude"] = [NSNumber numberWithFloat: poi.position.coordinate.longitude];
             
             [exportedArray addObject:dict];
         }
