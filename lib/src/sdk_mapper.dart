@@ -2,9 +2,9 @@ part of situm_flutter_sdk;
 
 Poi createPoi(Map map) {
   return Poi(
-    id: map["id"],
-    name: map["name"],
-    buildingId: map["buildingId"],
+    id: map["identifier"],
+    name: map["poiName"],
+    buildingId: map["buildingIdentifier"],
     poiCategory: createCategory(map["poiCategory"]),
     position: createPoint(map["position"]),
   );
@@ -21,16 +21,16 @@ List<Poi> createPois(List maps) {
 PoiCategory createCategory(Map map) {
   return PoiCategory(
     id: map["id"],
-    name: map["name"],
+    name: map["poiCategoryName"],
   );
 }
 
 Point createPoint(Map map) {
   return Point(
-    buildingId: map["buildingId"],
-    floorId: map["floorId"],
-    latitude: map["latitude"],
-    longitude: map["longitude"],
+    buildingId: map["buildingIdentifier"],
+    floorId: map["floorIdentifier"],
+    latitude: map["coordinate"]["latitude"],
+    longitude: map["coordinate"]["longitude"],
   );
 }
 
@@ -44,7 +44,7 @@ List<PoiCategory> createCategories(List maps) {
 
 Geofence createGeofence(Map map) {
   return Geofence(
-    id: map["id"],
+    id: map["identifier"],
     name: map["name"],
   );
 }

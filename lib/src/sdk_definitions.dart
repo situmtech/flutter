@@ -61,7 +61,7 @@ class Poi extends NamedResource {
 
   @override
   String toString() {
-    return "$name:$id - CAT(${poiCategory.name}:${poiCategory.id})";
+    return "$name:$id - CAT(${poiCategory.name}:${poiCategory.id}) - POS(${position.latitude}, ${position.longitude})";
   }
 }
 

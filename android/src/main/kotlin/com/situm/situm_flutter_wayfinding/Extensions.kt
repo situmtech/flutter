@@ -1,52 +1,39 @@
 package com.situm.situm_flutter_wayfinding
 
 import es.situm.sdk.error.Error
-import es.situm.sdk.model.cartography.Geofence
+import es.situm.sdk.model.MapperInterface
 import es.situm.sdk.model.cartography.Poi
 import es.situm.sdk.model.cartography.PoiCategory
-import es.situm.sdk.model.cartography.Point
 import io.flutter.plugin.common.MethodChannel
 
-fun List<Geofence>.toGeofencesMap(): List<Map<String, String>> {
+fun List<MapperInterface>.toMap(): List<Map<String, Any>> {
     return map {
-        mapOf( // Create a map for each Geofence.
-            "id" to it.identifier,
-            "name" to it.name
-        )
+        it.toMap()
     }
 }
 
 fun Collection<Poi>.toPoisMap(): List<Map<String, Any>> {
     return map {
-        mapOf( // Create a map for each Poi.
-            "id" to it.identifier,
-            "name" to it.name,
-            "buildingId" to it.buildingIdentifier,
-            "poiCategory" to it.category.toMap(),
-            "position" to it.position.toMap(),
-        )
+        mapOf(
+            // Create a map for each Poi.
+            // TODO: pending category identifier, then delete this method.
+            "poiCategory" to it.category.ftToMap(),
+        ) + it.toMap()
     }
 }
 
-fun Point.toMap(): Map<String,Any> {
+fun PoiCategory.ftToMap(): Map<String, Any> {
     return mapOf(
-        "buildingId" to buildingIdentifier,
-        "floorId" to floorIdentifier,
-        "latitude" to coordinate.latitude,
-        "longitude" to coordinate.longitude,
-    )
+        // Create a map for the current poi category.
+        // TODO: fix SDK, add identifier, then delete this method.
+        "id" to identifier,
+    ) + toMap()
 }
 
-fun PoiCategory.toMap(): Map<String,String> {
-    return mapOf( // Create a map for the current poi category.
-            "id" to identifier,
-            "name" to name
-        )
-}
-
-fun Collection<PoiCategory>.toCategoriesMap(): List<Map<String, String>> {
+fun Collection<PoiCategory>.toCategoriesMap(): List<Map<String, Any>> {
+    // TODO: pending category identifier, then delete this method.
     return map {
-        it.toMap()
+        it.ftToMap()
     }
 }
 

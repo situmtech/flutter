@@ -5,3 +5,17 @@
 ## Getting Started
 
 Starting point for a Flutter Wayfinding application.
+
+### To run this example application:
+
+1. Rename the file `lib/config.dart.example` to `lib/config.dart` and replace the contents of the file with your own data.
+2. In Android: add your Google Maps API Key also to the project string resources.
+   The awaited identifier is `@string/google_api_key`:
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="google_api_key">YOUR_GOOGLE_MAPS_API_KEY</string>
+    ...
+```
+3. In iOS: check the project [code signing](https://developer.apple.com/support/code-signing/) before you run the example.
+4. Launch the application: (1) from your IDE opening the project folder or (2) from the command line executing `flutter run`.

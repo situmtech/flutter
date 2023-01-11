@@ -58,6 +58,7 @@ class SitumFlutterSDKPlugin : FlutterPlugin, ActivityAware, MethodChannel.Method
             "geofenceCallbacksRequested" -> geofenceCallbacksRequested(result)
             "fetchPoisFromBuilding" -> fetchPoisFromBuilding(arguments, result)
             "fetchCategories" -> fetchCategories(result)
+            "clearCache" -> clearCache(result)
             else -> result.notImplemented()
         }
     }
@@ -171,12 +172,12 @@ class SitumFlutterSDKPlugin : FlutterPlugin, ActivityAware, MethodChannel.Method
     ) {
         geofenceListener = object : GeofenceListener {
             override fun onEnteredGeofences(enteredGeofences: List<Geofence>) {
-                val geofencesMap = enteredGeofences.toGeofencesMap()
+                val geofencesMap = enteredGeofences.toMap()
                 channel.invokeMethod("onEnteredGeofences", geofencesMap)
             }
 
             override fun onExitedGeofences(exitedGeofences: List<Geofence>) {
-                val geofencesMap = exitedGeofences.toGeofencesMap()
+                val geofencesMap = exitedGeofences.toMap()
                 channel.invokeMethod("onExitedGeofences", geofencesMap)
             }
         }
@@ -184,6 +185,10 @@ class SitumFlutterSDKPlugin : FlutterPlugin, ActivityAware, MethodChannel.Method
         result.success("DONE")
     }
 
+    private fun clearCache(result: MethodChannel.Result) {
+        SitumSdk.communicationManager().invalidateCache()
+        result.success("DONE")
+    }
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
         context = binding.activity
