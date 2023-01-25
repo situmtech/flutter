@@ -50,7 +50,7 @@ class Poi extends NamedResource {
   final String buildingId;
   final PoiCategory poiCategory;
   final Point position;
-  final CustomFields customFields;
+  final Map<String, dynamic> customFields;
 
   Poi({
     required super.id,
@@ -79,19 +79,6 @@ class Point {
     required this.latitude,
     required this.longitude,
   });
-}
-
-class CustomFields {
-  final Map<String, String> content;
-
-  CustomFields({
-    required this.content,
-  });
-
-  @override
-  String toString() {
-    return "$content";
-  }
 }
 
 class PoiCategory extends NamedResource {
