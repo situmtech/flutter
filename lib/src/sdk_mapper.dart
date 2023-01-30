@@ -7,6 +7,7 @@ Poi createPoi(Map map) {
     buildingId: map["buildingIdentifier"],
     poiCategory: createCategory(map["poiCategory"]),
     position: createPoint(map["position"]),
+    customFields: Map<String, dynamic>.from(map["customFields"]),
   );
 }
 
