@@ -50,6 +50,7 @@ class Poi extends NamedResource {
   final String buildingId;
   final PoiCategory poiCategory;
   final Point position;
+  final Map<String, dynamic> customFields;
 
   Poi({
     required super.id,
@@ -57,11 +58,12 @@ class Poi extends NamedResource {
     required this.buildingId,
     required this.poiCategory,
     required this.position,
+    required this.customFields,
   });
 
   @override
   String toString() {
-    return "$name:$id - CAT(${poiCategory.name}:${poiCategory.id}) - POS(${position.latitude}, ${position.longitude})";
+    return "$name:$id - CAT(${poiCategory.name}:${poiCategory.id}) - POS(${position.latitude}, ${position.longitude}) - CUSTOM_FIELDS($customFields)";
   }
 }
 

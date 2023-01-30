@@ -171,6 +171,7 @@
             dict[@"poiName"] = poi.name ? poi.name : @"";
             dict[@"categoryId"] = [NSString stringWithFormat:@"%@", poi.category.identifier];
             dict[@"buildingIdentifier"] = [NSString stringWithFormat:@"%@", poi.buildingIdentifier];
+            dict[@"customFields"] = poi.customFields ? poi.customFields : [NSDictionary new];
             
             dict[@"poiCategory"] =[NSMutableDictionary new];
             dict[@"poiCategory"][@"id"] = [NSString stringWithFormat:@"%@", poi.category.identifier];
