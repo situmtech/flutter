@@ -107,7 +107,9 @@ class _MyTabsState extends State<MyTabs> {
       hasSearchView: true,
       lockCameraToBuilding: true,
       useRemoteConfig: true,
-      initialZoom: 16,
+      initialZoom: 20,
+      minZoom: 19,
+      maxZoom: 21,
       showNavigationIndications: true,
       showFloorSelector: true,
       navigationSettings: const NavigationSettings(
@@ -160,7 +162,7 @@ class _MyTabsState extends State<MyTabs> {
   }
 
   void _requestUpdates() async {
-    situmSdk.requestLocationUpdates(_MyLocationListener(), {});
+    situmSdk.requestLocationUpdates(_MyLocationListener(echoer: _echo), {});
   }
 
   void _removeUpdates() async {
@@ -232,19 +234,25 @@ class _MyTabsState extends State<MyTabs> {
 }
 
 class _MyLocationListener implements LocationListener {
+
+  final Function echoer;
+
+  _MyLocationListener({
+    required this.echoer
+  });
+
   @override
   void onError(Error error) {
-    print("SDK> ERROR: ${error.message}");
+    echoer("SDK> ERROR: ${error.message}");
   }
 
   @override
   void onLocationChanged(OnLocationChangedResult locationChangedResult) {
-    print(
-        "SDK> Location changed, building ID is: ${locationChangedResult.buildingId}");
+    echoer("SDK> Location changed, building ID is: ${locationChangedResult.buildingId}");
   }
 
   @override
   void onStatusChanged(String status) {
-    print("SDK> STATUS: $status");
+    echoer("SDK> STATUS: $status");
   }
 }

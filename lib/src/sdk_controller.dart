@@ -48,7 +48,6 @@ class SitumFlutterSDK {
   }
 
   Future<void> removeUpdates() async {
-    locationListener = null;
     await methodChannel.invokeMethod('removeUpdates');
   }
 
@@ -125,7 +124,8 @@ class SitumFlutterSDK {
   }
 
   void _onStatusChanged(arguments) {
-    locationListener?.onStatusChanged(arguments['status']);
+    String status = arguments['status'];
+    locationListener?.onStatusChanged(status);
   }
 
   void _onError(arguments) {

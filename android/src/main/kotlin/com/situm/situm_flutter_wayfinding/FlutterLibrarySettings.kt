@@ -39,11 +39,13 @@ data class FlutterLibrarySettings(
                 "Situm Flutter Wayfinding"
             ) as String
         )
-        librarySettings.setUseDashboardTheme(map.mGet("useDashboardTheme", false) as Boolean)
-        librarySettings.isShowPoiNames = map.mGet("showPoiNames", false) as Boolean
+        librarySettings.setUseDashboardTheme(map.mGet("useDashboardTheme", true) as Boolean)
+        librarySettings.isShowPoiNames = map.mGet("showPoiNames", true) as Boolean
         librarySettings.setHasSearchView(map.mGet("hasSearchView", true) as Boolean)
-        librarySettings.isUseRemoteConfig = map.mGet("useRemoteConfig", false) as Boolean
+        librarySettings.isUseRemoteConfig = map.mGet("useRemoteConfig", true) as Boolean
         librarySettings.initialZoom = map.mGet("initialZoom", 18) as Int
+        librarySettings.minZoom = map.mGet("minZoom", 15) as Int
+        librarySettings.maxZoom = map.mGet("maxZoom", 21) as Int
         librarySettings.isShowNavigationIndications =
             map.mGet("showNavigationIndications", true) as Boolean
         showFloorSelector = map.mGet("showFloorSelector", true) as Boolean
