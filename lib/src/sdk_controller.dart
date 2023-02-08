@@ -124,8 +124,7 @@ class SitumFlutterSDK {
   }
 
   void _onStatusChanged(arguments) {
-    String status = arguments['status'];
-    locationListener?.onStatusChanged(status);
+    locationListener?.onStatusChanged(arguments['status']);
   }
 
   void _onError(arguments) {
