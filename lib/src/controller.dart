@@ -150,6 +150,11 @@ class SitumFlutterWayfinding {
     return await methodChannel.invokeMethod<String>('stopNavigation');
   }
 
+  Future<String?> findMyCarMode() async {
+    log("Dart findMyCarMode called, methodChannel will be invoked.");
+    return await methodChannel.invokeMethod<String>('findMyCarMode');
+  }
+
   void onPoiSelected(OnPoiSelectedCallback callback) {
     onPoiSelectedCallback = callback;
   }

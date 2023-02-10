@@ -81,6 +81,7 @@ class SitumMapPlatformView(
                 "stopPositioning" -> stopPositioning()
                 "stopNavigation" -> stopNavigation()
                 "filterPoisBy" -> filterPoisBy(arguments, result)
+                "findMyCarMode" -> findMyCarMode()
                 else -> result.notImplemented()
             }
         }
@@ -166,6 +167,10 @@ class SitumMapPlatformView(
         val categoryIdsFilter = arguments["categoryIdsFilter"] as List<String>
         library?.filterPoisBy(categoryIdsFilter)
         result.success("DONE")
+    }
+
+    private fun findMyCarMode() {
+        library?.setCustomPoi(null)
     }
 
     // Callbacks

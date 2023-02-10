@@ -32,6 +32,8 @@ class _MyTabsState extends State<MyTabs> {
   int _selectedIndex = 0;
   String currentOutput = "---";
 
+  SitumFlutterWayfinding? wyfController;
+
   Widget _createHomeTab() {
     // Home:
     return Card(
@@ -93,29 +95,37 @@ class _MyTabsState extends State<MyTabs> {
 
   Widget _createSitumMapTab() {
     // The Situm map:
-    return SitumMapView(
-      key: const Key("situm_map"),
-      // Your Situm credentials and building, see config.dart.
-      // Copy config.dart.example if you haven't already.
-      searchViewPlaceholder: "Situm Flutter Wayfinding",
-      situmUser: situmUser,
-      situmApiKey: situmApiKey,
-      buildingIdentifier: buildingIdentifier,
-      googleMapsApiKey: googleMapsApiKey,
-      useHybridComponents: true,
-      showPoiNames: true,
-      hasSearchView: true,
-      lockCameraToBuilding: true,
-      useRemoteConfig: true,
-      initialZoom: 16,
-      showNavigationIndications: true,
-      showFloorSelector: true,
-      navigationSettings: const NavigationSettings(
-        outsideRouteThreshold: 40,
-        distanceToGoalThreshold: 8,
+    return Stack(children: [
+      SitumMapView(
+        key: const Key("situm_map"),
+        // Your Situm credentials and building, see config.dart.
+        // Copy config.dart.example if you haven't already.
+        searchViewPlaceholder: "Situm Flutter Wayfinding",
+        situmUser: situmUser,
+        situmApiKey: situmApiKey,
+        buildingIdentifier: buildingIdentifier,
+        googleMapsApiKey: googleMapsApiKey,
+        useHybridComponents: true,
+        showPoiNames: true,
+        hasSearchView: true,
+        lockCameraToBuilding: true,
+        useRemoteConfig: true,
+        initialZoom: 16,
+        showNavigationIndications: true,
+        showFloorSelector: true,
+        navigationSettings: const NavigationSettings(
+          outsideRouteThreshold: 40,
+          distanceToGoalThreshold: 8,
+        ),
+        loadCallback: _onSitumMapLoaded,
       ),
-      loadCallback: _onSitumMapLoaded,
-    );
+      TextButton(
+        onPressed: () {
+          wyfController?.findMyCarMode();
+        },
+        child: const Text("Pulsame por favor"),
+      )
+    ]);
   }
 
   void _onSitumMapLoaded(SitumFlutterWayfinding controller) {
@@ -133,6 +143,8 @@ class _MyTabsState extends State<MyTabs> {
     });
     //controller.startPositioning();
     //controller.selectPoi(MY_POI_ID, buildingIdentifier);
+
+    setState(() => wyfController = controller);
   }
 
   @override

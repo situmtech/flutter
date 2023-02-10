@@ -48,7 +48,7 @@ android {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.4.1'
-    implementation ('es.situm:situm-wayfinding:0.23.0-alpha@aar') {
+    implementation ('es.situm:situm-wayfinding-feature-fmc:0.24.1-DEV@aar') {
         transitive = true
     }
 }

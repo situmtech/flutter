@@ -112,6 +112,8 @@ import Flutter
             handleStopPositioning(call, result: result)
         }else if (call.method == "stopNavigation") {
             handleStopNavigation(call, result: result)
+        }else if (call.method == "findMyCarMode") {
+            handleFindMyCarMode(call, result: result)
         }
         else {
             print("Method not handled. ")
@@ -148,6 +150,12 @@ import Flutter
     
     func handleUnload() {
         print("unload method detected")
+    }
+
+    func handleFindMyCarMode(_ call: FlutterMethodCall, result: @escaping FlutterResult){
+        print("Find my car mode called")
+        SITFLNativeMapView.library?.activateFindMyCarMode()
+        return result("SUCCESS")
     }
     
     // MARK: SITFLNativeMapViewDelegate methods implementation
