@@ -25,6 +25,10 @@ API key and building identifier.
 Follow the [Wayfinding guide](https://situm.com/docs/first-steps-for-wayfinding/) if you haven't set
 up a Situm account.
 
+#### Running the example:
+
+Check the [README](./example/README.md) file at the example folder of this repository.
+
 ### Android
 
 The following steps have already been done for you in the example application of this repository, but they are required for a new project:
