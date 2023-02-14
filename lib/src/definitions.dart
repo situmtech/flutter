@@ -84,6 +84,41 @@ class NavigationResult {
   });
 }
 
+class MapPosition {
+  final double latitude;
+  final double longitude;
+
+  MapPosition({
+    required this.latitude,
+    required this.longitude,
+  });
+
+  @override
+  String toString() {
+    return "$latitude, $longitude";
+  }
+}
+
+class CustomPoi {
+  final String name;
+  final String description;
+  final int buildingId;
+  final int levelId;
+  final MapPosition mapPosition;
+
+  const CustomPoi(
+      {required this.name,
+      required this.description,
+      required this.buildingId,
+      required this.levelId,
+      required this.mapPosition});
+
+  @override
+  String toString() {
+    return "$name: $description - MAP($mapPosition)";
+  }
+}
+
 // Result callbacks.
 
 // WYF load callback.

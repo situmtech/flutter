@@ -14,6 +14,9 @@ import es.situm.sdk.model.cartography.Poi
 import es.situm.wayfinding.OnPoiSelectionListener
 import es.situm.wayfinding.SitumMapsLibrary
 import es.situm.wayfinding.actions.ActionsCallback
+import es.situm.maps.library.ui.util.Callback
+import es.situm.maps.library.domain.model.CustomSavedPoi;
+import es.situm.wayfinding.OnCustomPoiChangeListener
 import es.situm.wayfinding.navigation.Navigation
 import es.situm.wayfinding.navigation.NavigationError
 import es.situm.wayfinding.navigation.OnNavigationListener
@@ -45,6 +48,7 @@ class SitumMapPlatformView(
 
         const val ERROR_LIBRARY_NOT_LOADED = "ERROR_LIBRARY_NOT_LOADED"
         const val ERROR_SELECT_POI = "ERROR_SELECT_POI"
+        const val ERROR_SET_CUSTOM_POI = "ERROR_SET_CUSTOM_POI"
     }
 
     private var methodChannel: MethodChannel
@@ -81,7 +85,10 @@ class SitumMapPlatformView(
                 "stopPositioning" -> stopPositioning()
                 "stopNavigation" -> stopNavigation()
                 "filterPoisBy" -> filterPoisBy(arguments, result)
-                "findMyCarMode" -> findMyCarMode()
+                "findMyCarMode" -> findMyCarMode(arguments, result)
+                "selectCustomPoi" -> selectCustomPoi(result)
+                "removeCustomPoi" -> removeCustomPoi(result)
+                "getCustomPoi" -> getCustomPoi(result)
                 else -> result.notImplemented()
             }
         }
@@ -169,8 +176,45 @@ class SitumMapPlatformView(
         result.success("DONE")
     }
 
-    private fun findMyCarMode() {
-        library?.setCustomPoi(null)
+    private fun findMyCarMode(arguments: Map<String, Any>, result: MethodChannel.Result) {
+        val name = arguments["name"] as String
+        val description = arguments["description"] as String
+        library?.setCustomPoi(name, description, object : ActionsCallback {
+                override fun onActionConcluded() {
+                    Log.d(TAG, "Android> setCustomPoi success.")
+                    result.success("DONE")
+                }
+                override fun onActionCanceled() {
+                    Log.d(TAG, "Android> setCustomPoi canceled.")
+                    result.error(ERROR_SET_CUSTOM_POI, "Set custom poi canceled", null)
+                }
+            }
+        )
+    }
+
+    private fun removeCustomPoi(result: MethodChannel.Result) {
+        library?.removeCustomPoi(object: ActionsCallback {
+                override fun onActionConcluded() {
+                    Log.d(TAG, "Android> removeCustomPoi success.")
+                    result.success("DONE")
+                }
+            }
+        )
+    }
+
+    private fun selectCustomPoi(result: MethodChannel.Result) {
+        library?.selectCustomPoi(object: ActionsCallback {
+                override fun onActionConcluded() {
+                    Log.d(TAG, "Android> selectCustomPoi success.")
+                    result.success("DONE")
+                }
+            }
+        )
+    }
+
+    private fun getCustomPoi(result: MethodChannel.Result) {
+        Log.d(TAG, "Android> getCustomPoi success.")
+        result.success(library?.getCustomPoi()?.toMap())
     }
 
     // Callbacks

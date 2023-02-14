@@ -150,9 +150,26 @@ class SitumFlutterWayfinding {
     return await methodChannel.invokeMethod<String>('stopNavigation');
   }
 
-  Future<String?> findMyCarMode() async {
+  Future<String?> findMyCarMode(String name, String description) async {
     log("Dart findMyCarMode called, methodChannel will be invoked.");
-    return await methodChannel.invokeMethod<String>('findMyCarMode');
+    return await methodChannel.invokeMethod<String>('findMyCarMode',
+        <String, String>{'name': name, 'description': description});
+  }
+
+  Future<String?> removeCustomPoi() async {
+    log("Dart removeCustomPoi called, methodChannel will be invoked.");
+    return await methodChannel.invokeMethod<String>('removeCustomPoi');
+  }
+
+  Future<String?> selectCustomPoi() async {
+    log("Dart selectCustomPoi called, methodChannel will be invoked.");
+    return await methodChannel.invokeMethod<String>('selectCustomPoi');
+  }
+
+  Future<CustomPoi?> getCustomPoi() async {
+    log("Dart getCustomPoi called, methodChannel will be invoked.");
+    var result = await methodChannel.invokeMethod('getCustomPoi');
+    return result != null ? createCustomPoi(result) : null;
   }
 
   void onPoiSelected(OnPoiSelectedCallback callback) {
