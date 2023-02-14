@@ -93,7 +93,7 @@ class _MyTabsState extends State<MyTabs> {
     );
   }
 
-  Widget _createSitumMapTab() {
+  Widget _createSelectLocationTab() {
     // The Situm map:
     return Stack(children: [
       SitumMapView(
@@ -119,11 +119,67 @@ class _MyTabsState extends State<MyTabs> {
         ),
         loadCallback: _onSitumMapLoaded,
       ),
-      TextButton(
-        onPressed: () {
-          wyfController?.findMyCarMode();
-        },
-        child: const Text("Pulsame por favor"),
+      Container(
+          margin: const EdgeInsets.only(top: 70.0),
+          child: ButtonBar(
+            alignment: MainAxisAlignment.end,
+            overflowDirection: VerticalDirection.down,
+            children: [
+              ElevatedButton(
+                onPressed: () {
+                  wyfController?.findMyCarMode("My car", "This is my car");
+                },
+                child: const Text('Set Custom Position'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  wyfController?.removeCustomPoi();
+                },
+                child: const Text('Remove Custom Position'),
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  var customPoi = await wyfController?.getCustomPoi();
+                  _echo("WYF> GET: CUSTOM POI = $customPoi");
+                },
+                child: const Text('Get Custom Position'),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  wyfController?.selectCustomPoi();
+                },
+                child: const Text('Select Custom Position'),
+              ),
+            ],
+          ))
+    ]);
+  }
+
+  Widget _createSitumMapTab() {
+    // The Situm map:
+    return Stack(children: [
+      SitumMapView(
+        key: const Key("situm_map"),
+        // Your Situm credentials and building, see config.dart.
+        // Copy config.dart.example if you haven't already.
+        searchViewPlaceholder: "Situm Flutter Wayfinding",
+        situmUser: situmUser,
+        situmApiKey: situmApiKey,
+        buildingIdentifier: buildingIdentifier,
+        googleMapsApiKey: googleMapsApiKey,
+        useHybridComponents: true,
+        showPoiNames: true,
+        hasSearchView: true,
+        lockCameraToBuilding: true,
+        useRemoteConfig: true,
+        initialZoom: 16,
+        showNavigationIndications: true,
+        showFloorSelector: true,
+        navigationSettings: const NavigationSettings(
+          outsideRouteThreshold: 40,
+          distanceToGoalThreshold: 8,
+        ),
+        loadCallback: _onSitumMapLoaded,
       )
     ]);
   }
@@ -216,6 +272,7 @@ class _MyTabsState extends State<MyTabs> {
         children: [
           _createHomeTab(),
           _createSitumMapTab(),
+          _createSelectLocationTab()
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -227,6 +284,10 @@ class _MyTabsState extends State<MyTabs> {
           BottomNavigationBarItem(
             icon: Icon(Icons.map),
             label: 'Wayfinding',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.local_parking),
+            label: 'Find My Car',
           )
         ],
         currentIndex: _selectedIndex,
