@@ -7,7 +7,7 @@
 
 ### Changed
 * Update WYF iOS to 0.18.0.
-* Update WYF Android to 0.2X.X (TEMP).
+* Update WYF Android to 0.25.0.
 
 ### Fixed
 * Fixed STOPPED status not being communicated on calls to `removeUpdates()`.
