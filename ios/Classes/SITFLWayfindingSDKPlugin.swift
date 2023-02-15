@@ -114,6 +114,12 @@ import Flutter
             handleStopNavigation(call, result: result)
         }else if (call.method == "findMyCarMode") {
             handleFindMyCarMode(call, result: result)
+        } else if (call.method == "selectCustomPoi") {
+            handleSelectCustomPoi(call, result: result)
+        } else if (call.method == "removeCustomPoi") {
+            handleRemoveCustomPoi(call, result: result)
+        } else if (call.method == "getCustomPoi") {
+            handleGetCustomPoi(call, result: result)
         }
         else {
             print("Method not handled. ")
@@ -155,6 +161,31 @@ import Flutter
     func handleFindMyCarMode(_ call: FlutterMethodCall, result: @escaping FlutterResult){
         print("Find my car mode called")
         SITFLNativeMapView.library?.activateFindMyCarMode()
+        return result("SUCCESS")
+    }
+
+    func handleSelectCustomPoi(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+        print("Select custom poi called")
+        SITFLNativeMapView.library?.selectCustomPoi(completion: { result in
+                switch result {
+                case .success:
+                    print("SUCCESS")
+                case .failure(let reason):
+                    print("Failed to select custom poi \(reason)")
+                }
+            })
+        return result("SUCCESS")
+    }
+
+    func handleRemoveCustomPoi(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+        print("Remove custom poi called")
+        SITFLNativeMapView.library?.removeCustomPoi()
+        return result("SUCCESS")
+    }
+    
+    func handleGetCustomPoi(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+        print("Get custom marker called")
+        // TODO implement this function
         return result("SUCCESS")
     }
     
