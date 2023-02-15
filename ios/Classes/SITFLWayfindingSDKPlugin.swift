@@ -185,8 +185,22 @@ import Flutter
     
     func handleGetCustomPoi(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         print("Get custom marker called")
-        // TODO implement this function
-        return result("SUCCESS")
+        let customPoi = SITFLNativeMapView.library?.getCustomPoi()
+        if (customPoi != nil) {
+            let customPoiDict: [String: Any] = [
+                "name": customPoi!.name,
+                "description": customPoi!.description,
+                "buildingId": Int(customPoi!.buildingId),
+                "levelId": Int(customPoi!.floorId),
+                "mapPosition": [
+                    "latitude": customPoi!.latitude,
+                    "longitude": customPoi!.longitude,
+
+                ]
+            ]
+            return result(customPoiDict)
+        }
+        return result(nil)
     }
     
     // MARK: SITFLNativeMapViewDelegate methods implementation
