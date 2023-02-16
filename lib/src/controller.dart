@@ -33,6 +33,10 @@ class SitumFlutterWayfinding {
   OnNavigationErrorCallback? onNavigationErrorCallback;
   OnNavigationFinishedCallback? onNavigationFinishedCallback;
   OnNavigationStartedCallback? onNavigationStartedCallback;
+  OnCustomPoiSelectedCallback? onCustomPoiSelectedCallback;
+  OnCustomPoiDeselectedCallback? onCustomPoiDeselectedCallback;
+  OnCustomPoiSetCallback? onCustomPoiSetCallback;
+  OnCustomPoiRemovedCallback? onCustomPoiRemovedCallback;
 
   static final SitumFlutterWayfinding _controller =
       SitumFlutterWayfinding._internal();
@@ -196,6 +200,22 @@ class SitumFlutterWayfinding {
     onNavigationStartedCallback = callback;
   }
 
+  void onCustomPoiSet(OnCustomPoiSetCallback callback) {
+    onCustomPoiSetCallback = callback;
+  }
+
+  void onCustomPoiRemoved(OnCustomPoiRemovedCallback callback) {
+    onCustomPoiRemovedCallback = callback;
+  }
+
+  void onCustomPoiSelected(OnCustomPoiSelectedCallback callback) {
+    onCustomPoiSelectedCallback = callback;
+  }
+
+  void onCustomPoiDeselected(OnCustomPoiDeselectedCallback callback) {
+    onCustomPoiDeselectedCallback = callback;
+  }
+
   // Callbacks:
 
   Future<void> _methodCallHandler(MethodCall call) async {
@@ -217,6 +237,18 @@ class SitumFlutterWayfinding {
         break;
       case 'onNavigationStarted':
         _onNavigationStarted(call.arguments);
+        break;
+      case 'onCustomPoiSet':
+        _onCustomPoiSet(call.arguments);
+        break;
+      case 'onCustomPoiRemoved':
+        _onCustomPoiRemoved(call.arguments);
+        break;
+      case 'onCustomPoiSelected':
+        _onCustomPoiSelected(call.arguments);
+        break;
+      case 'onCustomPoiDeselected':
+        _onCustomPoiDeselected(call.arguments);
         break;
       default:
         print('Method ${call.method} not found!');
@@ -272,5 +304,25 @@ class SitumFlutterWayfinding {
   void _onNavigationStarted(arguments) {
     print("Situm> _onNavigationStarted invoked.");
     onNavigationStartedCallback?.call(createNavigationResult(arguments));
+  }
+
+  void _onCustomPoiSet(arguments) {
+    print("Situm> _onCustomPoiSet invoked.");
+    onCustomPoiSetCallback?.call(createCustomPoi(arguments));
+  }
+
+  void _onCustomPoiRemoved(arguments) {
+    print("Situm> _onCustomPoiRemoved invoked.");
+    onCustomPoiRemovedCallback?.call(arguments["poiId"]);
+  }
+
+  void _onCustomPoiSelected(arguments) {
+    print("Situm> _onCustomPoiSelected invoked.");
+    onCustomPoiSelectedCallback?.call(arguments["poiId"]);
+  }
+
+  void _onCustomPoiDeselected(arguments) {
+    print("Situm> _onCustomPoiDeselected invoked.");
+    onCustomPoiDeselectedCallback?.call(arguments["poiId"]);
   }
 }

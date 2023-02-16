@@ -258,4 +258,38 @@ import Flutter
         let arguments = ["destinationId":navigation.destination.identifier]
         self.channel?.invokeMethod("onNavigationFinished", arguments: arguments)
     }
+    
+    func onCustomPoiSet(customPoi: CustomPoi) {
+        print("Custom POI set")
+        let arguments: [String: Any] = [
+            "name": customPoi.name,
+            "description": customPoi.description,
+            "buildingId": Int(customPoi.buildingId),
+            "levelId": Int(customPoi.floorId),
+            "mapPosition": [
+                "latitude": customPoi.latitude,
+                "longitude": customPoi.longitude,
+
+            ]
+        ]
+        self.channel?.invokeMethod("onCustomPoiSet", arguments: arguments)
+    }
+    
+    func onCustomPoiRemoved(poiId: String) {
+        print("Custom POI removed")
+        let arguments = ["poiId": poiId]
+        self.channel?.invokeMethod("onCustomPoiRemoved", arguments: arguments)
+    }
+    
+    func onCustomPoiSelected(poiId: String) {
+        print("Custom POI selected")
+        let arguments = ["poiId": poiId]
+        self.channel?.invokeMethod("onCustomPoiSelected", arguments: arguments)
+    }
+    
+    func onCustomPoiDeselected(poiId: String) {
+        print("Custom POI deselected")
+        let arguments = ["poiId": poiId]
+        self.channel?.invokeMethod("onCustomPoiDeselected", arguments: arguments)
+    }
 }

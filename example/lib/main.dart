@@ -31,6 +31,8 @@ class _MyTabsState extends State<MyTabs> {
 
   int _selectedIndex = 0;
   String currentOutput = "---";
+  IconData _findMyCarIcon = Icons.directions_car_filled_rounded;
+  bool _isCustomPoiSaved = false;
 
   SitumFlutterWayfinding? wyfController;
 
@@ -93,68 +95,6 @@ class _MyTabsState extends State<MyTabs> {
     );
   }
 
-  Widget _createSelectLocationTab() {
-    // The Situm map:
-    return Stack(children: [
-      SitumMapView(
-        key: const Key("situm_map"),
-        // Your Situm credentials and building, see config.dart.
-        // Copy config.dart.example if you haven't already.
-        searchViewPlaceholder: "Situm Flutter Wayfinding",
-        situmUser: situmUser,
-        situmApiKey: situmApiKey,
-        buildingIdentifier: buildingIdentifier,
-        googleMapsApiKey: googleMapsApiKey,
-        useHybridComponents: true,
-        showPoiNames: true,
-        hasSearchView: true,
-        lockCameraToBuilding: true,
-        useRemoteConfig: true,
-        initialZoom: 16,
-        showNavigationIndications: true,
-        showFloorSelector: true,
-        navigationSettings: const NavigationSettings(
-          outsideRouteThreshold: 40,
-          distanceToGoalThreshold: 8,
-        ),
-        loadCallback: _onSitumMapLoaded,
-      ),
-      Container(
-          margin: const EdgeInsets.only(top: 70.0),
-          child: ButtonBar(
-            alignment: MainAxisAlignment.end,
-            overflowDirection: VerticalDirection.down,
-            children: [
-              ElevatedButton(
-                onPressed: () {
-                  wyfController?.findMyCarMode("My car", "This is my car");
-                },
-                child: const Text('Set Custom Position'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  wyfController?.removeCustomPoi();
-                },
-                child: const Text('Remove Custom Position'),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  var customPoi = await wyfController?.getCustomPoi();
-                  _echo("WYF> GET: CUSTOM POI = $customPoi");
-                },
-                child: const Text('Get Custom Position'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  wyfController?.selectCustomPoi();
-                },
-                child: const Text('Select Custom Position'),
-              ),
-            ],
-          ))
-    ]);
-  }
-
   Widget _createSitumMapTab() {
     // The Situm map:
     return Stack(children: [
@@ -180,11 +120,30 @@ class _MyTabsState extends State<MyTabs> {
           distanceToGoalThreshold: 8,
         ),
         loadCallback: _onSitumMapLoaded,
-      )
+      ), 
+      _createFindMyCarFab()
     ]);
   }
 
-  void _onSitumMapLoaded(SitumFlutterWayfinding controller) {
+  Widget _createFindMyCarFab() {
+    return Container(
+        margin: const EdgeInsets.only(top: 80.0, right: 20.0),
+        alignment: Alignment.topRight,
+        child: FloatingActionButton(
+          onPressed: () {
+            if (!_isCustomPoiSaved) {
+              wyfController?.findMyCarMode("My car", "This is my car");
+            } else {
+              wyfController?.selectCustomPoi();
+            }
+          },
+          backgroundColor: const Color.fromARGB(255, 40, 51, 128),
+          child: Icon(_findMyCarIcon),
+        )
+      );
+  }
+
+  void _onSitumMapLoaded(SitumFlutterWayfinding controller) async {
     // The Situm map was successfully loaded, use the given controller to
     // call the WYF API methods.
     print("WYF> Situm Map loaded!");
@@ -197,10 +156,42 @@ class _MyTabsState extends State<MyTabs> {
     controller.onNavigationStarted((navigation) {
       print("WYF> Nav started, distance = ${navigation.route?.distance}");
     });
+    controller.onCustomPoiSet((customPoi) {
+      print("WYF> Custom POI set: $customPoi");
+      setState(() {
+        _isCustomPoiSaved = true;
+        _findMyCarIcon = Icons.local_parking;
+      });
+      _showToast(context, "Custom POI set: $customPoi");
+    });
+    controller.onCustomPoiRemoved((poiId) {
+      print("WYF> Custom POI removed: $poiId");
+      setState(() {
+        _isCustomPoiSaved = false;
+        _findMyCarIcon = Icons.directions_car_filled_rounded;
+      });
+      _showToast(context, "Custom POI removed, ID $poiId");
+    });
+    controller.onCustomPoiSelected((poiId) {
+      print("WYF> Custom POI selected: $poiId");
+      _showToast(context, "Custom POI selected, ID: $poiId");
+    });
+    controller.onCustomPoiDeselected((poiId) {
+      print("WYF> Custom POI deselected: $poiId");
+      _showToast(context, "Custom POI deselected, ID $poiId");
+    });
     //controller.startPositioning();
     //controller.selectPoi(MY_POI_ID, buildingIdentifier);
 
     setState(() => wyfController = controller);
+
+    var customPoi = await controller.getCustomPoi();
+    if (customPoi != null) {
+      setState(() {
+        _isCustomPoiSaved = true;
+        _findMyCarIcon = Icons.local_parking;
+      });
+    }
   }
 
   @override
@@ -271,8 +262,7 @@ class _MyTabsState extends State<MyTabs> {
         index: _selectedIndex,
         children: [
           _createHomeTab(),
-          _createSitumMapTab(),
-          _createSelectLocationTab()
+          _createSitumMapTab()
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
@@ -285,10 +275,6 @@ class _MyTabsState extends State<MyTabs> {
             icon: Icon(Icons.map),
             label: 'Wayfinding',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.local_parking),
-            label: 'Find My Car',
-          )
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.amber[800],
@@ -301,6 +287,25 @@ class _MyTabsState extends State<MyTabs> {
     setState(() {
       _selectedIndex = index;
     });
+  }
+
+  void _showToast(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(message),
+            backgroundColor: Colors.grey,
+            duration: const Duration(milliseconds: 3000),
+            width: 400.0,
+            padding: const EdgeInsets.symmetric(
+              vertical: 15.0,
+              horizontal: 15.0,
+            ),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20.0),
+            ),
+          ),
+        );
   }
 }
 

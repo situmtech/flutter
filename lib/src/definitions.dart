@@ -136,3 +136,7 @@ typedef OnNavigationErrorCallback = void Function(
 typedef OnNavigationFinishedCallback = void Function(String destinationId);
 typedef OnNavigationStartedCallback = void Function(
     NavigationResult navigation);
+typedef OnCustomPoiSetCallback = void Function(CustomPoi customPoi);
+typedef OnCustomPoiRemovedCallback = void Function(String poiId);
+typedef OnCustomPoiSelectedCallback = void Function(String poiId);
+typedef OnCustomPoiDeselectedCallback = void Function(String poiId);
