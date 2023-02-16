@@ -148,6 +148,7 @@ import Flutter
     
     func handleUnload() {
         print("unload method detected")
+        SITFLWayfindingSDKPlugin.factory?.currentView.unloadView()
     }
     
     // MARK: SITFLNativeMapViewDelegate methods implementation

@@ -29,6 +29,9 @@ class MyTabs extends StatefulWidget {
 class _MyTabsState extends State<MyTabs> {
   late SitumFlutterSDK situmSdk;
 
+  String selectedBuildingId = buildingIdentifier;
+  SitumFlutterWayfinding? controller;
+  bool situmMapUnload = false;
   int _selectedIndex = 0;
   String currentOutput = "---";
 
@@ -85,13 +88,59 @@ class _MyTabsState extends State<MyTabs> {
                   child: const Text('Prefetch')),
             ],
           ),
-          Text(currentOutput)
+          ButtonBar(
+            alignment: MainAxisAlignment.center,
+            children: [
+              TextButton(
+                  onPressed: () {
+                    _echo("WYF> UNLOAD...");
+                    setState(() {
+                      situmMapUnload = true;
+                    });
+                  },
+                  child: const Text('Unload WYF')),
+              TextButton(
+                  onPressed: () {
+                    _echo("WYF> LOAD...");
+                    setState(() {
+                      situmMapUnload = false;
+                    });
+                  },
+                  child: const Text('Load WYF')),
+            ],
+          ),
+          TextField(
+            decoration: const InputDecoration(
+                hintText: 'Unload + Type building ID + Load'
+            ),
+            onChanged: (text) {
+              selectedBuildingId = text;
+            },
+          ),
+          Container(
+              margin: const EdgeInsets.all(20.0),
+              child: Column(
+                children: [
+                  const Text(
+                    "SDK Output:",
+                    style: TextStyle(
+                        decoration: TextDecoration.underline
+                    ),
+                  ),
+                  Text(currentOutput)
+                ],
+              )
+          )
         ],
       ),
     );
   }
 
   Widget _createSitumMapTab() {
+    if (situmMapUnload) {
+      controller?.unload();
+      return const Text('-');
+    }
     // The Situm map:
     return SitumMapView(
       key: const Key("situm_map"),
@@ -100,7 +149,7 @@ class _MyTabsState extends State<MyTabs> {
       searchViewPlaceholder: "Situm Flutter Wayfinding",
       situmUser: situmUser,
       situmApiKey: situmApiKey,
-      buildingIdentifier: buildingIdentifier,
+      buildingIdentifier: selectedBuildingId,
       googleMapsApiKey: googleMapsApiKey,
       useHybridComponents: true,
       showPoiNames: true,
@@ -119,6 +168,7 @@ class _MyTabsState extends State<MyTabs> {
   }
 
   void _onSitumMapLoaded(SitumFlutterWayfinding controller) {
+    this.controller = controller;
     // The Situm map was successfully loaded, use the given controller to
     // call the WYF API methods.
     print("WYF> Situm Map loaded!");

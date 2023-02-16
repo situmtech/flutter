@@ -125,14 +125,13 @@ class SitumMapLibraryLoader private constructor(
     }
 
     fun unload() {
-        // TODO: this needs furder analysis, unload() is producing unexpected errors.
-        /*if (loaded) {
+        if (loaded) {
             try {
                 library?.unload()
             } catch (e: Exception) {
                 Log.d(TAG, "Illegal call to unload(). This message can be ignored.", e)
             }
-        }*/
+        }
         library = null
         loaded = false
         loading = false
