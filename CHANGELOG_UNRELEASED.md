@@ -8,6 +8,8 @@
 ### Changed
 * Update WYF iOS to 0.18.0.
 * Update WYF Android to 0.25.0.
+* Updated `SitumFlutterSDKPlugin.kt` so that Wayfinding can react to the positioning even if it was
+  started from outside (using `SitumFlutterSDK`).
 
 ### Fixed
 * Fixed STOPPED status not being communicated on calls to `removeUpdates()`.
