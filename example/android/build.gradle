@@ -15,14 +15,6 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-        // TODO TEMP
-        maven { 
-            credentials {
-                username artifactoryUser
-                password artifactoryPassword
-            }
-            url "https://repo.situm.es/artifactory/libs-snapshot-local-private" 
-        }
         // TODO: right now, this line is a per-app requirement:
         maven { url "https://repo.situm.es/artifactory/libs-release-local" }
     }
