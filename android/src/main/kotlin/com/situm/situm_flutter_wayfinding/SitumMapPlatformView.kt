@@ -116,10 +116,10 @@ class SitumMapPlatformView(
         Log.d(TAG, "PlatformView unload called!")
         libraryLoader.unload()
         // Ensure this layout does not have a parent:
-        if (layout?.parent != null) {
-            (layout?.parent as ViewGroup).removeView(layout)
-        }
-        layout = null
+//        if (layout?.parent != null) {
+//            (layout?.parent as ViewGroup).removeView(layout)
+//        }
+//        layout = null
         methodResult?.success("DONE")
     }
 

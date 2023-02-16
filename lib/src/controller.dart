@@ -130,7 +130,7 @@ class SitumFlutterWayfinding {
   }
 
   Future<void> filterPoisBy(List<String> categoryIdsFilter) async {
-    log("Dart filterPoisBy called, methodChannel will be invoked.");
+    log("Dart filterPoisBy called with list=$categoryIdsFilter, methodChannel will be invoked.");
     return await methodChannel.invokeMethod<void>('filterPoisBy',
         <String, List<String>>{'categoryIdsFilter': categoryIdsFilter});
   }

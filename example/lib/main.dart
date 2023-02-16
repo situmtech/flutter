@@ -1,24 +1,41 @@
 import 'package:flash/flash.dart';
 import 'package:flutter/material.dart';
-import 'package:situm_flutter_wayfinding/situm_flutter_sdk.dart';
 import 'package:situm_flutter_wayfinding/situm_flutter_wayfinding.dart';
 import 'package:situm_flutter_wayfinding_example/config.dart';
 
 void main() => runApp(const MyApp());
 
 const _title = "Situm Flutter Wayfinding";
-const MY_POI_ID = "YOUR-SITUM-POI-IDENTIFIER";
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  State<StatefulWidget> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  SitumFlutterWayfinding? controller;
+
+  void onSitumFlutterWayfinding(SitumFlutterWayfinding controller) {
+    this.controller = controller;
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       routes: {
-        '/': (context) => HomeScreen(),
-        '/map': (context) => MapScreen(10),
-        '/otherMap': (context) => MapScreen(50)
+        '/': (context) => HomeScreen(controller: controller),
+        '/map': (context) => MapScreen(
+              sizedBoxHeight: 10,
+              selectedBuildingId: buildingIdentifier,
+              onSitumFlutterWayfinding: onSitumFlutterWayfinding,
+            ),
+        '/otherMap': (context) => MapScreen(
+              sizedBoxHeight: 50,
+              selectedBuildingId: anotherBuildingIdentifier,
+              onSitumFlutterWayfinding: onSitumFlutterWayfinding,
+            )
       },
       title: _title,
       //home: MyTabs(),
@@ -27,6 +44,13 @@ class MyApp extends StatelessWidget {
 }
 
 class HomeScreen extends StatefulWidget {
+  final SitumFlutterWayfinding? controller;
+
+  const HomeScreen({
+    super.key,
+    required this.controller,
+  });
+
   @override
   State<StatefulWidget> createState() => _HomeScreenState();
 }
@@ -41,19 +65,23 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Card(
         child: Column(
           children: [
+            Container(height: 15),
+            const Text("HOME"),
             ButtonBar(
               alignment: MainAxisAlignment.center,
               children: [
                 TextButton(
                     onPressed: () {
+                      widget.controller?.unload();
                       Navigator.of(context).pushReplacementNamed('/map');
                     },
-                    child: const Text('Go to map!')),
+                    child: const Text("Map for ($buildingIdentifier)")),
                 TextButton(
                     onPressed: () {
+                      widget.controller?.unload();
                       Navigator.of(context).pushReplacementNamed('/otherMap');
                     },
-                    child: const Text('Go to other map!')),
+                    child: const Text("Map ($anotherBuildingIdentifier)")),
               ],
             ),
           ],
@@ -64,12 +92,16 @@ class _HomeScreenState extends State<HomeScreen> {
 }
 
 class MapScreen extends StatefulWidget {
-  double sizedBoxHeight;
+  final double sizedBoxHeight;
+  final String selectedBuildingId;
+  final Function(SitumFlutterWayfinding controller) onSitumFlutterWayfinding;
 
-
-  MapScreen(
-    this.sizedBoxHeight,
-  );
+  const MapScreen({
+    super.key,
+    required this.sizedBoxHeight,
+    required this.selectedBuildingId,
+    required this.onSitumFlutterWayfinding,
+  });
 
   @override
   State<StatefulWidget> createState() => _MapScreenState();
@@ -93,7 +125,7 @@ class _MapScreenState extends State<MapScreen> {
                 onPressed: () {
                   Navigator.of(context).pushReplacementNamed('/');
                 },
-                child: const Text('Go to Home!'),
+                child: const Text('Navigate to Home!'),
               ),
               TextButton(
                 onPressed: () {
@@ -121,7 +153,7 @@ class _MapScreenState extends State<MapScreen> {
               searchViewPlaceholder: "Situm Flutter Wayfinding",
               situmUser: situmUser,
               situmApiKey: situmApiKey,
-              buildingIdentifier: buildingIdentifier,
+              buildingIdentifier: widget.selectedBuildingId,
               googleMapsApiKey: googleMapsApiKey,
               useHybridComponents: true,
               showPoiNames: true,
@@ -150,6 +182,7 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   void _onSitumMapLoaded(SitumFlutterWayfinding controller) {
+    widget.onSitumFlutterWayfinding(controller);
     controller.onPoiSelected((poiSelectedResult) {
       _showMessage("Selected ${poiSelectedResult.poiName}!!!");
     });
@@ -181,269 +214,5 @@ class _MapScreenState extends State<MapScreen> {
         );
       },
     );
-  }
-}
-
-class MyTabs extends StatefulWidget {
-  const MyTabs({super.key});
-
-  @override
-  State<MyTabs> createState() => _MyTabsState();
-}
-
-class _MyTabsState extends State<MyTabs> {
-  int _selectedIndex = 0;
-  SitumFlutterSDK? situmSdk;
-  SitumFlutterWayfinding? wayfinding;
-  List<String> filters = [];
-
-  late final List<Widget> _tabBarWidgets;
-
-   void _onSitumMapLoaded(SitumFlutterWayfinding controller) {
-    wayfinding = controller;
-    // The Situm map was successfully loaded, use the given controller to
-    // call the WYF API methods.
-    print("WYF> Situm Map loaded!");
-    controller.onPoiSelected((poiSelectedResult) {
-      print("WYF> Poi ${poiSelectedResult.poiName} selected!");
-      _showMessage("Selected ${poiSelectedResult.poiName}!!!");
-    });
-    controller.onPoiDeselected((poiDeselectedResult) {
-      print("WYF> Poi deselected!");
-    });
-    controller.onNavigationStarted((navigation) {
-      print("WYF> Nav started, distance = ${navigation.route?.distance}");
-    });
-    //controller.startPositioning();
-    //controller.selectPoi(MY_POI_ID, buildingIdentifier);
-  }
-
-  @override
-  void initState() {
-    // SitumSdk for flutter:
-    situmSdk = SitumFlutterSDK();
-    situmSdk?.init(situmUser, situmApiKey);
-    situmSdk?.setConfiguration(ConfigurationOptions(
-      useRemoteConfig: true,
-    ));
-    situmSdk?.onEnterGeofences((geofencesResult) {
-      print("SDK> Enter geofences: ${geofencesResult.geofences}.");
-    });
-    situmSdk?.onExitGeofences((geofencesResult) {
-      print("SDK> Exit geofences: ${geofencesResult.geofences}.");
-    });
-    super.initState();
-
-    _buildTabls();
-  }
-
-  void _requestUpdates() async {
-    situmSdk?.requestLocationUpdates(_MyLocationListener(), {});
-  }
-
-  void _removeUpdates() async {
-    situmSdk?.removeUpdates();
-  }
-
-  void _clearCache() async {
-    situmSdk?.clearCache();
-  }
-
-  void _prefetch() async {
-    var prefetch = await situmSdk?.prefetchPositioningInfo(
-      [buildingIdentifier],
-      options: PrefetchOptions(
-        preloadImages: true,
-      ),
-    );
-    print("SDK RESPONSE: PREFETCH = $prefetch");
-  }
-
-  void _fetchPois() async {
-    var pois = await situmSdk?.fetchPoisFromBuilding(buildingIdentifier);
-    print("SDK RESPONSE: POIS = $pois");
-  }
-
-  void _fetchCategories() async {
-    var categories = await situmSdk?.fetchPoiCategories();
-    print("SDK RESPONSE: CATEGORIES = $categories");
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // The typical app widget with bottom navigation:
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text(_title),
-      ),
-      body: Center(
-        child: _tabBarWidgets.elementAt(_selectedIndex),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _onFilterCoffee,
-        child: const Icon(Icons.coffee),
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.map),
-            label: 'Wayfinding',
-          )
-        ],
-        currentIndex: _selectedIndex,
-        selectedItemColor: Colors.amber[800],
-        onTap: _onItemTapped,
-      ),
-    );
-  }
-
-  void _onTitleTapped() {
-    // situmSdk?.selectPoi("126713");
-    // situmSdk?.filterPois(); // {"categories" : ["Coffee"]}
-  }
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-
-      if (index == 1) {
-        _onTitleTapped();
-      }
-    });
-  }
-
-  void _onFilterCoffee() {
-    if (filters.isEmpty) {
-      filters.add("1");
-    } else {
-      filters.clear();
-    }
-    wayfinding?.filterPoisBy(filters);
-  }
-
-  void _showMessage(String message) {
-    if (!mounted) return;
-    print("Snack message: $message");
-    showFlash(
-      context: context,
-      duration: const Duration(seconds: 3),
-      builder: (_, controller) {
-        return Flash(
-          controller: controller,
-          position: FlashPosition.top,
-          behavior: FlashBehavior.fixed,
-          child: FlashBar(
-            icon: const Icon(
-              Icons.info,
-              size: 36.0,
-              color: Colors.black54,
-            ),
-            content: Text(message),
-          ),
-        );
-      },
-    );
-  }
-  
-  void _buildTabls() {
-    _tabBarWidgets = <Widget>[
-    // Home:
-    Card(
-      child: Column(
-        children: [
-          const Text(
-            'SitumSdk',
-            style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-          ),
-          ButtonBar(
-            alignment: MainAxisAlignment.center,
-            children: [
-              TextButton(
-                  onPressed: () {
-                    _requestUpdates();
-                  },
-                  child: const Text('Start')),
-              TextButton(
-                  onPressed: () {
-                    _removeUpdates();
-                  },
-                  child: const Text('Stop')),
-              TextButton(
-                  onPressed: () {
-                    _clearCache();
-                  },
-                  child: const Text('Clear cache')),
-            ],
-          ),
-          ButtonBar(
-            alignment: MainAxisAlignment.center,
-            children: [
-              TextButton(
-                  onPressed: () {
-                    _fetchPois();
-                  },
-                  child: const Text('Pois')),
-              TextButton(
-                  onPressed: () {
-                    _fetchCategories();
-                  },
-                  child: const Text('Categories')),
-              TextButton(
-                  onPressed: () {
-                    _prefetch();
-                  },
-                  child: const Text('Prefetch')),
-            ],
-          ),
-        ],
-      ),
-    ),
-    // The Situm map:
-    SitumMapView(
-      key: Key("situm_map"),
-      // Your Situm credentials and building, see config.dart.
-      // Copy config.dart.example if you haven't already.
-      searchViewPlaceholder: "Situm Flutter Wayfinding",
-      situmUser: situmUser,
-      situmApiKey: situmApiKey,
-      buildingIdentifier: buildingIdentifier,
-      googleMapsApiKey: googleMapsApiKey,
-      useHybridComponents: true,
-      showPoiNames: true,
-      hasSearchView: true,
-      lockCameraToBuilding: true,
-      useRemoteConfig: true,
-      initialZoom: 15,
-      showNavigationIndications: true,
-      showFloorSelector: true,
-      navigationSettings: const NavigationSettings(
-        outsideRouteThreshold: 40,
-        distanceToGoalThreshold: 8,
-      ),
-      loadCallback: _onSitumMapLoaded,
-    )
-  ];
-  }
-}
-
-class _MyLocationListener implements LocationListener {
-  @override
-  void onError(Error error) {
-    print("SDK> ERROR: ${error.message}");
-  }
-
-  @override
-  void onLocationChanged(OnLocationChangedResult locationChangedResult) {
-    print(
-        "SDK> Location changed, building ID is: ${locationChangedResult.buildingId}");
-  }
-
-  @override
-  void onStatusChanged(String status) {
-    print("SDK> STATUS: $status");
   }
 }
