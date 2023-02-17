@@ -154,9 +154,10 @@ class SitumFlutterWayfinding {
     return await methodChannel.invokeMethod<String>('stopNavigation');
   }
 
-  Future<String?> findMyCarMode(String name, String description) async {
-    log("Dart findMyCarMode called, methodChannel will be invoked.");
-    return await methodChannel.invokeMethod<String>('findMyCarMode',
+  Future<String?> startCustomPoiSelection(
+      String name, String description) async {
+    log("Dart startCustomPoiSelection called, methodChannel will be invoked.");
+    return await methodChannel.invokeMethod<String>('startCustomPoiSelection',
         <String, String>{'name': name, 'description': description});
   }
 

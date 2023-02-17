@@ -120,7 +120,7 @@ class _MyTabsState extends State<MyTabs> {
           distanceToGoalThreshold: 8,
         ),
         loadCallback: _onSitumMapLoaded,
-      ), 
+      ),
       _createFindMyCarFab()
     ]);
   }
@@ -132,15 +132,15 @@ class _MyTabsState extends State<MyTabs> {
         child: FloatingActionButton(
           onPressed: () {
             if (!_isCustomPoiSaved) {
-              wyfController?.findMyCarMode("My car", "This is my car");
+              wyfController?.startCustomPoiSelection(
+                  "My car", "This is my car");
             } else {
               wyfController?.selectCustomPoi();
             }
           },
           backgroundColor: const Color.fromARGB(255, 40, 51, 128),
           child: Icon(_findMyCarIcon),
-        )
-      );
+        ));
   }
 
   void _onSitumMapLoaded(SitumFlutterWayfinding controller) async {
@@ -260,10 +260,7 @@ class _MyTabsState extends State<MyTabs> {
       ),
       body: IndexedStack(
         index: _selectedIndex,
-        children: [
-          _createHomeTab(),
-          _createSitumMapTab()
-        ],
+        children: [_createHomeTab(), _createSitumMapTab()],
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
@@ -291,21 +288,21 @@ class _MyTabsState extends State<MyTabs> {
 
   void _showToast(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(message),
-            backgroundColor: Colors.grey,
-            duration: const Duration(milliseconds: 3000),
-            width: 400.0,
-            padding: const EdgeInsets.symmetric(
-              vertical: 15.0,
-              horizontal: 15.0,
-            ),
-            behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20.0),
-            ),
-          ),
-        );
+      SnackBar(
+        content: Text(message),
+        backgroundColor: Colors.grey,
+        duration: const Duration(milliseconds: 3000),
+        width: 400.0,
+        padding: const EdgeInsets.symmetric(
+          vertical: 15.0,
+          horizontal: 15.0,
+        ),
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20.0),
+        ),
+      ),
+    );
   }
 }
 

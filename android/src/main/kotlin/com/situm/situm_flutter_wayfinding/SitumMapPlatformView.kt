@@ -86,7 +86,7 @@ class SitumMapPlatformView(
                 "stopPositioning" -> stopPositioning()
                 "stopNavigation" -> stopNavigation()
                 "filterPoisBy" -> filterPoisBy(arguments, result)
-                "findMyCarMode" -> findMyCarMode(arguments, result)
+                "startCustomPoiSelection" -> startCustomPoiSelection(arguments, result)
                 "selectCustomPoi" -> selectCustomPoi(result)
                 "removeCustomPoi" -> removeCustomPoi(result)
                 "getCustomPoi" -> getCustomPoi(result)
@@ -177,16 +177,16 @@ class SitumMapPlatformView(
         result.success("DONE")
     }
 
-    private fun findMyCarMode(arguments: Map<String, Any>, result: MethodChannel.Result) {
+    private fun startCustomPoiSelection(arguments: Map<String, Any>, result: MethodChannel.Result) {
         val name = arguments["name"] as String
         val description = arguments["description"] as String
-        library?.setCustomPoi(name, description, object : ActionsCallback {
+        library?.startCustomPoiSelection(name, description, object : ActionsCallback {
                 override fun onActionConcluded() {
-                    Log.d(TAG, "Android> setCustomPoi success.")
+                    Log.d(TAG, "Android> startCustomPoiSelection success.")
                     result.success("DONE")
                 }
                 override fun onActionCanceled() {
-                    Log.d(TAG, "Android> setCustomPoi failure.")
+                    Log.d(TAG, "Android> startCustomPoiSelection failure.")
                     result.error(ERROR_SET_CUSTOM_POI, "Custom POI could not be saved", null)
                 }
             }

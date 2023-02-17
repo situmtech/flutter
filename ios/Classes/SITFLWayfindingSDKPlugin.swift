@@ -112,8 +112,8 @@ import Flutter
             handleStopPositioning(call, result: result)
         }else if (call.method == "stopNavigation") {
             handleStopNavigation(call, result: result)
-        }else if (call.method == "findMyCarMode") {
-            handleFindMyCarMode(call, result: result)
+        }else if (call.method == "startCustomPoiSelection") {
+            handleStartCustomPoiSelection(call, result: result)
         } else if (call.method == "selectCustomPoi") {
             handleSelectCustomPoi(call, result: result)
         } else if (call.method == "removeCustomPoi") {
@@ -158,10 +158,13 @@ import Flutter
         print("unload method detected")
     }
 
-    func handleFindMyCarMode(_ call: FlutterMethodCall, result: @escaping FlutterResult){
+    func handleStartCustomPoiSelection(_ call: FlutterMethodCall, result: @escaping FlutterResult){
         print("Find my car mode called")
-        SITFLNativeMapView.library?.activateFindMyCarMode()
-        return result("SUCCESS")
+        if let args = call.arguments as? Dictionary<String, Any>{
+            SITFLNativeMapView.library?.startCustomPoiSelection(name: args["name"] as? String, description: args["description"] as? String)
+            return result("SUCCESS")
+        } 
+        return result(FlutterError.init(code: "bad args", message: "Could not parse arguments used for 'startCustomPoiSelection'", details: nil))
     }
 
     func handleSelectCustomPoi(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
