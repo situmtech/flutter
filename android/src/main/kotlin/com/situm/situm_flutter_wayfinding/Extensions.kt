@@ -51,7 +51,10 @@ fun MethodChannel.Result.notifySitumSdkError(error: Error) {
 
 fun LocationRequest.Builder.fromArguments(args: Map<String, Any>): LocationRequest.Builder {
     if (args.containsKey("buildingIdentifier")) {
-        buildingIdentifier(args["buildingIdentifier"] as String)
+        val buildingIdentifier = args["buildingIdentifier"] as String
+        if (buildingIdentifier.isNotBlank()) {
+            buildingIdentifier(buildingIdentifier)
+        }
     }
     return this
 }
