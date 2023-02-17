@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:situm_flutter_wayfinding/situm_flutter_sdk.dart';
 import 'package:situm_flutter_wayfinding/situm_flutter_wayfinding.dart';
 import 'package:situm_flutter_wayfinding_example/config.dart';
+import 'package:situm_flutter_wayfinding_example/find_my_car.dart';
 
 void main() => runApp(const MyApp());
 
@@ -31,8 +32,6 @@ class _MyTabsState extends State<MyTabs> {
 
   int _selectedIndex = 0;
   String currentOutput = "---";
-  IconData _findMyCarIcon = Icons.directions_car_filled_rounded;
-  bool _isCustomPoiSaved = false;
 
   SitumFlutterWayfinding? wyfController;
 
@@ -121,26 +120,10 @@ class _MyTabsState extends State<MyTabs> {
         ),
         loadCallback: _onSitumMapLoaded,
       ),
-      _createFindMyCarFab()
+      wyfController != null
+          ? FindMyCar(wyfController: wyfController)
+          : Container()
     ]);
-  }
-
-  Widget _createFindMyCarFab() {
-    return Container(
-        margin: const EdgeInsets.only(top: 80.0, right: 20.0),
-        alignment: Alignment.topRight,
-        child: FloatingActionButton(
-          onPressed: () {
-            if (!_isCustomPoiSaved) {
-              wyfController?.startCustomPoiSelection(
-                  "My car", "This is my car");
-            } else {
-              wyfController?.selectCustomPoi();
-            }
-          },
-          backgroundColor: const Color.fromARGB(255, 40, 51, 128),
-          child: Icon(_findMyCarIcon),
-        ));
   }
 
   void _onSitumMapLoaded(SitumFlutterWayfinding controller) async {
@@ -156,42 +139,10 @@ class _MyTabsState extends State<MyTabs> {
     controller.onNavigationStarted((navigation) {
       print("WYF> Nav started, distance = ${navigation.route?.distance}");
     });
-    controller.onCustomPoiSet((customPoi) {
-      print("WYF> Custom POI set: $customPoi");
-      setState(() {
-        _isCustomPoiSaved = true;
-        _findMyCarIcon = Icons.local_parking;
-      });
-      _showToast(context, "Custom POI set: $customPoi");
-    });
-    controller.onCustomPoiRemoved((poiId) {
-      print("WYF> Custom POI removed: $poiId");
-      setState(() {
-        _isCustomPoiSaved = false;
-        _findMyCarIcon = Icons.directions_car_filled_rounded;
-      });
-      _showToast(context, "Custom POI removed, ID $poiId");
-    });
-    controller.onCustomPoiSelected((poiId) {
-      print("WYF> Custom POI selected: $poiId");
-      _showToast(context, "Custom POI selected, ID: $poiId");
-    });
-    controller.onCustomPoiDeselected((poiId) {
-      print("WYF> Custom POI deselected: $poiId");
-      _showToast(context, "Custom POI deselected, ID $poiId");
-    });
-    //controller.startPositioning();
-    //controller.selectPoi(MY_POI_ID, buildingIdentifier);
 
-    setState(() => wyfController = controller);
-
-    var customPoi = await controller.getCustomPoi();
-    if (customPoi != null) {
-      setState(() {
-        _isCustomPoiSaved = true;
-        _findMyCarIcon = Icons.local_parking;
-      });
-    }
+    setState(() {
+      wyfController = controller;
+    });
   }
 
   @override
@@ -284,25 +235,6 @@ class _MyTabsState extends State<MyTabs> {
     setState(() {
       _selectedIndex = index;
     });
-  }
-
-  void _showToast(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        backgroundColor: Colors.grey,
-        duration: const Duration(milliseconds: 3000),
-        width: 400.0,
-        padding: const EdgeInsets.symmetric(
-          vertical: 15.0,
-          horizontal: 15.0,
-        ),
-        behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20.0),
-        ),
-      ),
-    );
   }
 }
 
