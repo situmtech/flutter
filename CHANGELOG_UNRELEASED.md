@@ -1,4 +1,4 @@
 ##[Unreleased]
 
 ### Added
-* customFields field to Poi object
+* Added `navigateToPoi(String id, String buildingId)` method.
