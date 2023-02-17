@@ -20,6 +20,7 @@ class SitumMapView extends StatefulWidget {
   final int maxZoom;
   final bool showNavigationIndications;
   final bool showFloorSelector;
+  final bool showPositioningButton;
   final NavigationSettings? navigationSettings;
   final DirectionsSettings? directionsSettings;
 
@@ -48,6 +49,7 @@ class SitumMapView extends StatefulWidget {
     this.maxZoom = 21,
     this.showNavigationIndications = true,
     this.showFloorSelector = true,
+    this.showPositioningButton = true,
     this.navigationSettings,
     this.directionsSettings,
   }) : super(key: key);
@@ -137,6 +139,7 @@ class _SitumMapViewState extends State<SitumMapView> {
       "minZoom": widget.minZoom,
       "maxZoom": widget.maxZoom,
       "showFloorSelector": widget.showFloorSelector,
+      "showPositioningButton": widget.showPositioningButton,
       "navigationSettings": widget.navigationSettings?.toMap(),
       "directionsSettings": widget.directionsSettings?.toMap(),
       "showNavigationIndications": widget.showNavigationIndications,

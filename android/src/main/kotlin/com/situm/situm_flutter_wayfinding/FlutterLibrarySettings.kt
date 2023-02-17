@@ -16,6 +16,7 @@ data class FlutterLibrarySettings(
     val buildingIdentifier: String
     val lockCameraToBuilding: Boolean
     val showFloorSelector: Boolean
+    val showPositioningButton: Boolean
 
     // Navigation settings:
     var hasNavigationSettings: Boolean = false
@@ -49,6 +50,7 @@ data class FlutterLibrarySettings(
         librarySettings.isShowNavigationIndications =
             map.mGet("showNavigationIndications", true) as Boolean
         showFloorSelector = map.mGet("showFloorSelector", true) as Boolean
+        showPositioningButton = map.mGet("showPositioningButton", true) as Boolean
         // Navigation settings:
         if (map.containsKey("navigationSettings")) {
             val navSettings: Map<String, Any>? = map["navigationSettings"] as Map<String, Any>?

@@ -112,6 +112,7 @@ class _MyTabsState extends State<MyTabs> {
       maxZoom: 21,
       showNavigationIndications: true,
       showFloorSelector: true,
+      showPositioningButton: false,
       navigationSettings: const NavigationSettings(
         outsideRouteThreshold: 40,
         distanceToGoalThreshold: 8,
@@ -162,7 +163,10 @@ class _MyTabsState extends State<MyTabs> {
   }
 
   void _requestUpdates() async {
-    situmSdk.requestLocationUpdates(_MyLocationListener(echoer: _echo), {});
+    situmSdk.requestLocationUpdates(
+      _MyLocationListener(echoer: _echo),
+      {"buildingIdentifier": buildingIdentifier},
+    );
   }
 
   void _removeUpdates() async {
@@ -234,12 +238,9 @@ class _MyTabsState extends State<MyTabs> {
 }
 
 class _MyLocationListener implements LocationListener {
-
   final Function echoer;
 
-  _MyLocationListener({
-    required this.echoer
-  });
+  _MyLocationListener({required this.echoer});
 
   @override
   void onError(Error error) {
@@ -248,7 +249,8 @@ class _MyLocationListener implements LocationListener {
 
   @override
   void onLocationChanged(OnLocationChangedResult locationChangedResult) {
-    echoer("SDK> Location changed, building ID is: ${locationChangedResult.buildingId}");
+    echoer(
+        "SDK> Location changed, building ID is: ${locationChangedResult.buildingId}");
   }
 
   @override

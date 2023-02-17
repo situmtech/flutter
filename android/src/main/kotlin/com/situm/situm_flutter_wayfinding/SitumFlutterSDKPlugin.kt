@@ -111,8 +111,7 @@ class SitumFlutterSDKPlugin : FlutterPlugin, ActivityAware, MethodChannel.Method
         locationListener?.let {
             SitumSdk.locationManager().removeLocationListener(it)
         }
-        val locationRequest = LocationRequest.Builder().build()
-        // TODO: fromArguments(arguments)
+        val locationRequest = LocationRequest.Builder().fromArguments(arguments).build()
         locationListener = object : LocationListener {
             override fun onLocationChanged(location: Location) {
                 val callbackArgs = mutableMapOf<String, String>(
