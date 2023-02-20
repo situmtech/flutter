@@ -8,6 +8,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 All non released changes should be in CHANGELOG_UNRELEASED.md file
 
 ---
+## [0.0.8] - 2023-02-20
+
+### Added
+* Added `navigateToPoi(String id, String buildingId)` method. Starts the navigation to a poi in the specified building. This will:
+    - Start the positioning if needed
+    - Calculate and draw the route from the current user location to the poi
+    - Provide the step-by-step instructions to reach the poi
 
 ## [0.0.7] - 2023-01-30
 
