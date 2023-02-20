@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:situm_flutter_wayfinding/situm_flutter_wayfinding.dart';
+import 'package:situm_flutter_wayfinding_example/config.dart';
 
 class FindMyCar extends StatefulWidget {
   final SitumFlutterWayfinding? wyfController;
@@ -43,7 +44,7 @@ class _FindMyCarState extends State<FindMyCar> {
 
   void _checkState() async {
     var customPoi = await widget.wyfController?.getCustomPoi();
-    if (customPoi != null) {
+    if (customPoi != null && customPoi.buildingId.toString() == buildingIdentifier) {
       setState(() {
         _isCustomPoiSaved = true;
         _findMyCarIcon = Icons.local_parking;
