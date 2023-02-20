@@ -150,6 +150,17 @@ class SitumFlutterWayfinding {
     return await methodChannel.invokeMethod<String>('stopNavigation');
   }
 
+  Future<String?> navigateToPoi(String id, String buildingId) async {
+    log("Dart navigateToPoi called, methodChannel will be invoked");
+    return await methodChannel.invokeMethod<String>(
+      'navigateToPoi',
+      <String, dynamic>{
+        'id': id,
+        'buildingId': buildingId,
+      },
+    );
+  }
+
   void onPoiSelected(OnPoiSelectedCallback callback) {
     onPoiSelectedCallback = callback;
   }
