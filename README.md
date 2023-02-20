@@ -27,7 +27,7 @@ up a Situm account.
 
 #### Running the example:
 
-Check the [README](./example/README.md) file at the example folder of this repository.
+Check the [example/README](./example/README.md) file of this repository to create your first Flutter application using Situm Wayfinding.
 
 ### Android
 
