@@ -112,9 +112,7 @@ class SitumMapLibraryLoader private constructor(
         if (!settings.showFloorSelector) { // Call only when explicitly wants to hide it.
             library.setFloorsListVisible(false)
         }
-        if (!settings.showPositioningButton) {
-            library.setPositioningFabVisible(false)
-        }
+        library.setPositioningFabVisible(settings.showPositioningButton)
         val callback = object : ActionsCallback {
             override fun onActionConcluded() {
                 result.onSuccess(library)
