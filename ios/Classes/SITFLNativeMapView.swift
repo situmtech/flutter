@@ -110,8 +110,8 @@ extension SITFLNativeMapView{
     }
     
     
-    internal func unloadView() {
-        // SITFLNativeMapView.library.
+    func unloadView() {
+        SITFLNativeMapView.wyfStarted = false
     }
     
 

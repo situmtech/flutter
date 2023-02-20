@@ -14,6 +14,7 @@
 * Updated `SitumFlutterSDKPlugin.kt` so that Wayfinding can react to the positioning even if it was
   started from outside (using `SitumFlutterSDK`).
 * Changed default values for `useRemoteConfig`, `useDashboardTheme` and `showPoiNames` to `true`.
+* Fixed `unload()` method.
 
 ### Fixed
 * Fixed STOPPED status not being communicated on calls to `removeUpdates()`.
