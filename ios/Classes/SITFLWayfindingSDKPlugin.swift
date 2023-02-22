@@ -118,6 +118,8 @@ import Flutter
             handleSelectCustomPoi(call, result: result)
         } else if (call.method == "removeCustomPoi") {
             handleRemoveCustomPoi(call, result: result)
+        } else if (call.method == "getCustomPoiById") {
+            handleGetCustomPoiById(call, result: result)
         } else if (call.method == "getCustomPoi") {
             handleGetCustomPoi(call, result: result)
         }
@@ -200,29 +202,41 @@ import Flutter
         return result(FlutterError.init(code: "bad args", message: "Could not parse arguments used for 'removeCustomPoi'", details: nil))
     }
     
-    func handleGetCustomPoi(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-        print("Get custom marker called")
+    func handleGetCustomPoiById(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+        print("Get custom poi by id called")
         
         if let args = call.arguments as? Dictionary<String, Any>{
-
-            let customPoi = SITFLNativeMapView.library?.getCustomPoi(id: args["poiId"] as? Int)
-            if (customPoi != nil) {
-                let customPoiDict: [String: Any] = [
-                    "name": customPoi!.name,
-                    "description": customPoi!.description,
-                    "buildingId": Int(customPoi!.buildingId),
-                    "levelId": Int(customPoi!.floorId),
-                    "mapPosition": [
-                        "latitude": customPoi!.latitude,
-                        "longitude": customPoi!.longitude,
-
-                    ]
-                ]
-                return result(customPoiDict)
-            }
-            return result(nil)
+            return result(_getCustomPoiMapped(poiId: args["poiId"] as? Int))
         }
         return result(FlutterError.init(code: "bad args", message: "Could not parse arguments used for 'getCustomPoi'", details: nil))
+    }
+
+    func handleGetCustomPoi(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+        print("Get custom poi called")
+        return result(_getCustomPoiMapped(poiId: nil))
+    }
+    
+    func _customPoiToDict(customPoi: CustomPoi) -> [String: Any]{
+        let customPoiDict: [String: Any] = [
+            "id": customPoi.id,
+            "name": customPoi.name,
+            "description": customPoi.description,
+            "buildingId": Int(customPoi.buildingId),
+            "levelId": Int(customPoi.floorId),
+            "mapPosition": [
+                "latitude": customPoi.latitude,
+                "longitude": customPoi.longitude,
+
+            ]
+        ]
+        return customPoiDict
+    }
+    
+    func _getCustomPoiMapped(poiId: Int?) -> [String: Any]?{
+        if let customPoi = SITFLNativeMapView.library?.getCustomPoi(id: poiId) {
+            return _customPoiToDict(customPoi: customPoi)
+        }
+        return nil
     }
     
     // MARK: SITFLNativeMapViewDelegate methods implementation
@@ -283,17 +297,7 @@ import Flutter
     
     func onCustomPoiSet(customPoi: CustomPoi) {
         print("Custom POI set")
-        let arguments: [String: Any] = [
-            "name": customPoi.name,
-            "description": customPoi.description,
-            "buildingId": Int(customPoi.buildingId),
-            "levelId": Int(customPoi.floorId),
-            "mapPosition": [
-                "latitude": customPoi.latitude,
-                "longitude": customPoi.longitude,
-
-            ]
-        ]
+        let arguments: [String: Any] = _customPoiToDict(customPoi: customPoi)
         self.channel?.invokeMethod("onCustomPoiSet", arguments: arguments)
     }
     
