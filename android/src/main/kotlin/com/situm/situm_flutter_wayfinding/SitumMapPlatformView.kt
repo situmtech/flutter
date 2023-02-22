@@ -14,8 +14,7 @@ import es.situm.sdk.model.cartography.Poi
 import es.situm.wayfinding.OnPoiSelectionListener
 import es.situm.wayfinding.SitumMapsLibrary
 import es.situm.wayfinding.actions.ActionsCallback
-import es.situm.maps.library.ui.util.Callback
-import es.situm.maps.library.domain.model.CustomSavedPoi;
+import es.situm.maps.library.domain.model.CustomSavedPoi
 import es.situm.wayfinding.OnCustomPoiChangeListener
 import es.situm.wayfinding.navigation.Navigation
 import es.situm.wayfinding.navigation.NavigationError
@@ -49,7 +48,6 @@ class SitumMapPlatformView(
         const val ERROR_LIBRARY_NOT_LOADED = "ERROR_LIBRARY_NOT_LOADED"
         const val ERROR_SELECT_POI = "ERROR_SELECT_POI"
         const val ERROR_SET_CUSTOM_POI = "ERROR_SET_CUSTOM_POI"
-        const val ERROR_SELECT_CUSTOM_POI = "ERROR_SELECT_CUSTOM_POI"
     }
 
     private var methodChannel: MethodChannel
@@ -86,9 +84,10 @@ class SitumMapPlatformView(
                 "stopPositioning" -> stopPositioning()
                 "stopNavigation" -> stopNavigation()
                 "filterPoisBy" -> filterPoisBy(arguments, result)
-                "startCustomPoiSelection" -> startCustomPoiSelection(arguments, result)
-                "selectCustomPoi" -> selectCustomPoi(result)
-                "removeCustomPoi" -> removeCustomPoi(result)
+                "startCustomPoiCreation" -> startCustomPoiCreation(arguments, result)
+                "selectCustomPoi" -> selectCustomPoi(arguments, result)
+                "removeCustomPoi" -> removeCustomPoi(arguments, result)
+                "getCustomPoiById" -> getCustomPoiById(arguments, result)
                 "getCustomPoi" -> getCustomPoi(result)
                 else -> result.notImplemented()
             }
@@ -177,10 +176,10 @@ class SitumMapPlatformView(
         result.success("DONE")
     }
 
-    private fun startCustomPoiSelection(arguments: Map<String, Any>, result: MethodChannel.Result) {
+    private fun startCustomPoiCreation(arguments: Map<String, Any>, result: MethodChannel.Result) {
         val name = arguments["name"] as String
         val description = arguments["description"] as String
-        library?.startCustomPoiSelection(name, description, object : ActionsCallback {
+        library?.startCustomPoiCreation(name, description, object : ActionsCallback {
                 override fun onActionConcluded() {
                     Log.d(TAG, "Android> startCustomPoiSelection success.")
                     result.success("DONE")
@@ -193,8 +192,9 @@ class SitumMapPlatformView(
         )
     }
 
-    private fun removeCustomPoi(result: MethodChannel.Result) {
-        library?.removeCustomPoi(object: ActionsCallback {
+    private fun removeCustomPoi(arguments: Map<String, Any>, result: MethodChannel.Result) {
+        val poiId = arguments["poiId"] as Int
+        library?.removeCustomPoi(poiId, object: ActionsCallback {
                 override fun onActionConcluded() {
                     Log.d(TAG, "Android> removeCustomPoi success.")
                     result.success("DONE")
@@ -203,8 +203,9 @@ class SitumMapPlatformView(
         )
     }
 
-    private fun selectCustomPoi(result: MethodChannel.Result) {
-        library?.selectCustomPoi(object: ActionsCallback {
+    private fun selectCustomPoi(arguments: Map<String, Any>, result: MethodChannel.Result) {
+        val poiId = arguments["poiId"] as Int
+        library?.selectCustomPoi(poiId, object: ActionsCallback {
                 override fun onActionConcluded() {
                     Log.d(TAG, "Android> selectCustomPoi success.")
                     result.success("DONE")
@@ -214,6 +215,12 @@ class SitumMapPlatformView(
                 }
             }
         )
+    }
+
+    private fun getCustomPoiById(arguments: Map<String, Any>, result: MethodChannel.Result) {
+        val poiId = arguments["poiId"] as Int
+        Log.d(TAG, "Android> getCustomPoi success.")
+        result.success(library?.getCustomPoi(poiId)?.toMap())
     }
 
     private fun getCustomPoi(result: MethodChannel.Result) {
@@ -286,22 +293,22 @@ class SitumMapPlatformView(
 
         library?.setOnCustomPoiChangeListener(object : OnCustomPoiChangeListener {
             override fun onCustomPoiSet(customPoi: CustomSavedPoi) {
-                val arguments = customPoi.toMap();
+                val arguments = customPoi.toMap()
                 methodChannel.invokeMethod("onCustomPoiSet", arguments)
             }
-            override fun onCustomPoiRemoved(poiIdentifier : String) {
+            override fun onCustomPoiRemoved(poiIdentifier : Int) {
                 val arguments = mutableMapOf(
                         "poiId" to poiIdentifier,
                 )
                 methodChannel.invokeMethod("onCustomPoiRemoved", arguments)
             }
-            override fun onCustomPoiDeselected(poiIdentifier : String) {
+            override fun onCustomPoiDeselected(poiIdentifier : Int) {
                 val arguments = mutableMapOf(
                         "poiId" to poiIdentifier,
                 )
                 methodChannel.invokeMethod("onCustomPoiDeselected", arguments)
             }
-            override fun onCustomPoiSelected(poiIdentifier : String) {
+            override fun onCustomPoiSelected(poiIdentifier : Int) {
                 val arguments = mutableMapOf(
                         "poiId" to poiIdentifier,
                 )

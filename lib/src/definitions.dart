@@ -100,6 +100,7 @@ class MapPosition {
 }
 
 class CustomPoi {
+  final int id;
   final String name;
   final String description;
   final int buildingId;
@@ -107,7 +108,8 @@ class CustomPoi {
   final MapPosition mapPosition;
 
   const CustomPoi(
-      {required this.name,
+      {required this.id,
+      required this.name,
       required this.description,
       required this.buildingId,
       required this.levelId,
@@ -115,7 +117,7 @@ class CustomPoi {
 
   @override
   String toString() {
-    return "$name: $description - MAP($mapPosition)";
+    return "[$id] $name: $description - MAP($mapPosition)";
   }
 }
 
@@ -137,6 +139,6 @@ typedef OnNavigationFinishedCallback = void Function(String destinationId);
 typedef OnNavigationStartedCallback = void Function(
     NavigationResult navigation);
 typedef OnCustomPoiSetCallback = void Function(CustomPoi customPoi);
-typedef OnCustomPoiRemovedCallback = void Function(String poiId);
-typedef OnCustomPoiSelectedCallback = void Function(String poiId);
-typedef OnCustomPoiDeselectedCallback = void Function(String poiId);
+typedef OnCustomPoiRemovedCallback = void Function(int poiId);
+typedef OnCustomPoiSelectedCallback = void Function(int poiId);
+typedef OnCustomPoiDeselectedCallback = void Function(int poiId);
