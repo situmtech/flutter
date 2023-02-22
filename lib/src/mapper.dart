@@ -13,6 +13,7 @@ NavigationResult createNavigationResult(arguments) {
 
 CustomPoi createCustomPoi(Map map) {
   return CustomPoi(
+      id: map["id"],
       name: map["name"],
       description: map["description"],
       buildingId: map["buildingId"],

@@ -14,6 +14,7 @@ class FindMyCar extends StatefulWidget {
 class _FindMyCarState extends State<FindMyCar> {
   IconData _findMyCarIcon = Icons.directions_car_filled_rounded;
   bool _isCustomPoiSaved = false;
+  String _customPoiId = "";
 
   @override
   void initState() {
@@ -34,7 +35,7 @@ class _FindMyCarState extends State<FindMyCar> {
               widget.wyfController
                   ?.startCustomPoiSelection("My car", "This is my car");
             } else {
-              widget.wyfController?.selectCustomPoi();
+              widget.wyfController?.selectCustomPoi(_customPoiId);
             }
           },
           backgroundColor: const Color.fromARGB(255, 40, 51, 128),
@@ -43,13 +44,13 @@ class _FindMyCarState extends State<FindMyCar> {
   }
 
   void _checkState() async {
-    var customPoi = await widget.wyfController?.getCustomPoi();
-    if (customPoi != null && customPoi.buildingId.toString() == buildingIdentifier) {
-      setState(() {
-        _isCustomPoiSaved = true;
-        _findMyCarIcon = Icons.local_parking;
-      });
-    }
+    // var customPoi = await widget.wyfController?.getCustomPoi();
+    // if (customPoi != null && customPoi.buildingId.toString() == buildingIdentifier) {
+    //   setState(() {
+    //     _isCustomPoiSaved = true;
+    //     _findMyCarIcon = Icons.local_parking;
+    //   });
+    // }
   }
 
   void _setUpListeners() {
@@ -58,6 +59,7 @@ class _FindMyCarState extends State<FindMyCar> {
       setState(() {
         _isCustomPoiSaved = true;
         _findMyCarIcon = Icons.local_parking;
+        _customPoiId = customPoi.id;
       });
     });
     widget.wyfController?.onCustomPoiRemoved((poiId) {

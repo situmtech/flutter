@@ -166,9 +166,9 @@ class SitumFlutterWayfinding {
     return await methodChannel.invokeMethod<String>('removeCustomPoi');
   }
 
-  Future<String?> selectCustomPoi() async {
+  Future<String?> selectCustomPoi(String poiId) async {
     log("Dart selectCustomPoi called, methodChannel will be invoked.");
-    return await methodChannel.invokeMethod<String>('selectCustomPoi');
+    return await methodChannel.invokeMethod<String>('selectCustomPoi', <String, String> {'poiId': poiId});
   }
 
   Future<CustomPoi?> getCustomPoi() async {
