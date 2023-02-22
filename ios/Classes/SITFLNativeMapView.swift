@@ -52,11 +52,11 @@ internal protocol SITFLNativeMapViewDelegate {
     
     func onCustomPoiSet(customPoi: CustomPoi)
     
-    func onCustomPoiRemoved(poiId: String)
+    func onCustomPoiRemoved(poiId: Int)
     
-    func onCustomPoiSelected(poiId: String)
+    func onCustomPoiSelected(poiId: Int)
     
-    func onCustomPoiDeselected(poiId: String)
+    func onCustomPoiDeselected(poiId: Int)
 }
 
 
@@ -265,21 +265,21 @@ extension SITFLNativeMapView : OnMapReadyListener, OnPoiSelectionListener, OnNav
         }
     }
     
-    public func onCustomPoiRemoved(poiId: String) {
+    public func onCustomPoiRemoved(poiId: Int) {
         print("On Custom Poi removed detected")
         if let del = SITFLNativeMapView.delegate {
             del.onCustomPoiRemoved(poiId: poiId)
         }
     }
 
-    public func onCustomPoiSelected(poiId: String) {
+    public func onCustomPoiSelected(poiId: Int) {
         print("On Custom Poi selected detected")
         if let del = SITFLNativeMapView.delegate {
             del.onCustomPoiSelected(poiId: poiId)
         }
     }
     
-    public func onCustomPoiDeselected(poiId: String) {
+    public func onCustomPoiDeselected(poiId: Int) {
         print("On Custom Poi deselected detected")
         if let del = SITFLNativeMapView.delegate {
             del.onCustomPoiDeselected(poiId: poiId)

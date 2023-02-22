@@ -112,8 +112,8 @@ import Flutter
             handleStopPositioning(call, result: result)
         }else if (call.method == "stopNavigation") {
             handleStopNavigation(call, result: result)
-        }else if (call.method == "startCustomPoiSelection") {
-            handleStartCustomPoiSelection(call, result: result)
+        }else if (call.method == "startCustomPoiCreation") {
+            handleStartCustomPoiCreation(call, result: result)
         } else if (call.method == "selectCustomPoi") {
             handleSelectCustomPoi(call, result: result)
         } else if (call.method == "removeCustomPoi") {
@@ -158,52 +158,71 @@ import Flutter
         print("unload method detected")
     }
 
-    func handleStartCustomPoiSelection(_ call: FlutterMethodCall, result: @escaping FlutterResult){
+    func handleStartCustomPoiCreation(_ call: FlutterMethodCall, result: @escaping FlutterResult){
         print("Find my car mode called")
         if let args = call.arguments as? Dictionary<String, Any>{
-            SITFLNativeMapView.library?.startCustomPoiSelection(name: args["name"] as? String, description: args["description"] as? String)
+            SITFLNativeMapView.library?.startCustomPoiCreation(name: args["name"] as? String, description: args["description"] as? String)
             return result("SUCCESS")
         } 
-        return result(FlutterError.init(code: "bad args", message: "Could not parse arguments used for 'startCustomPoiSelection'", details: nil))
+        return result(FlutterError.init(code: "bad args", message: "Could not parse arguments used for 'startCustomPoiCreation'", details: nil))
     }
 
     func handleSelectCustomPoi(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         print("Select custom poi called")
-        SITFLNativeMapView.library?.selectCustomPoi(completion: { result in
-                switch result {
-                case .success:
-                    print("SUCCESS")
-                case .failure(let reason):
-                    print("Failed to select custom poi \(reason)")
-                }
-            })
-        return result("SUCCESS")
+        if let args = call.arguments as? Dictionary<String, Any>{
+            if let poiId = args["poiId"] as? Int {
+                SITFLNativeMapView.library?.selectCustomPoi(id: poiId, completion: { result in
+                    switch result {
+                    case .success:
+                        print("SUCCESS")
+                    case .failure(let reason):
+                        print("Failed to select custom poi \(reason)")
+                    }
+                })
+                return result("SUCCESS")
+            } else {
+                return result(FlutterError.init(code: "bad args", message: "Argument 'poiId' is mandatory for 'selectCustomPoi'", details: nil))
+            }
+        }
+        return result(FlutterError.init(code: "bad args", message: "Could not parse arguments used for 'selectCustomPoi'", details: nil))
     }
 
     func handleRemoveCustomPoi(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         print("Remove custom poi called")
-        SITFLNativeMapView.library?.removeCustomPoi()
-        return result("SUCCESS")
+        if let args = call.arguments as? Dictionary<String, Any>{
+            if let poiId = args["poiId"] as? Int {
+                SITFLNativeMapView.library?.removeCustomPoi(id: poiId)
+                return result("SUCCESS")
+            } else {
+                return result(FlutterError.init(code: "bad args", message: "Argument 'poiId' is mandatory for 'removeCustomPoi'", details: nil))
+            }
+        }
+        return result(FlutterError.init(code: "bad args", message: "Could not parse arguments used for 'removeCustomPoi'", details: nil))
     }
     
     func handleGetCustomPoi(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         print("Get custom marker called")
-        let customPoi = SITFLNativeMapView.library?.getCustomPoi()
-        if (customPoi != nil) {
-            let customPoiDict: [String: Any] = [
-                "name": customPoi!.name,
-                "description": customPoi!.description,
-                "buildingId": Int(customPoi!.buildingId),
-                "levelId": Int(customPoi!.floorId),
-                "mapPosition": [
-                    "latitude": customPoi!.latitude,
-                    "longitude": customPoi!.longitude,
+        
+        if let args = call.arguments as? Dictionary<String, Any>{
 
+            let customPoi = SITFLNativeMapView.library?.getCustomPoi(id: args["poiId"] as? Int)
+            if (customPoi != nil) {
+                let customPoiDict: [String: Any] = [
+                    "name": customPoi!.name,
+                    "description": customPoi!.description,
+                    "buildingId": Int(customPoi!.buildingId),
+                    "levelId": Int(customPoi!.floorId),
+                    "mapPosition": [
+                        "latitude": customPoi!.latitude,
+                        "longitude": customPoi!.longitude,
+
+                    ]
                 ]
-            ]
-            return result(customPoiDict)
+                return result(customPoiDict)
+            }
+            return result(nil)
         }
-        return result(nil)
+        return result(FlutterError.init(code: "bad args", message: "Could not parse arguments used for 'getCustomPoi'", details: nil))
     }
     
     // MARK: SITFLNativeMapViewDelegate methods implementation
@@ -278,19 +297,19 @@ import Flutter
         self.channel?.invokeMethod("onCustomPoiSet", arguments: arguments)
     }
     
-    func onCustomPoiRemoved(poiId: String) {
+    func onCustomPoiRemoved(poiId: Int) {
         print("Custom POI removed")
         let arguments = ["poiId": poiId]
         self.channel?.invokeMethod("onCustomPoiRemoved", arguments: arguments)
     }
     
-    func onCustomPoiSelected(poiId: String) {
+    func onCustomPoiSelected(poiId: Int) {
         print("Custom POI selected")
         let arguments = ["poiId": poiId]
         self.channel?.invokeMethod("onCustomPoiSelected", arguments: arguments)
     }
     
-    func onCustomPoiDeselected(poiId: String) {
+    func onCustomPoiDeselected(poiId: Int) {
         print("Custom POI deselected")
         let arguments = ["poiId": poiId]
         self.channel?.invokeMethod("onCustomPoiDeselected", arguments: arguments)
