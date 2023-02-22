@@ -4,14 +4,14 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'situm_flutter_wayfinding'
-  s.version          = '0.0.1'
-  s.summary          = 'A new Flutter plugin project.'
+  s.version          = '0.0.8'
+  s.summary          = 'Situm Flutter plugin.'
   s.description      = <<-DESC
-A new Flutter plugin project.
+  Situm Flutter plugin.
                        DESC
-  s.homepage         = 'http://example.com'
+  s.homepage         = 'https://situm.com'
   s.license          = { :file => '../LICENSE' }
-  s.author           = { 'Situm Technologies' => 'mobile@situm.com' }
+  s.author           = { 'Situm Technologies S.L.' => 'situm@situm.com' }
   s.source           = { :path => '.' }
   s.source_files = 'Classes/**/*'
   s.dependency 'Flutter'
