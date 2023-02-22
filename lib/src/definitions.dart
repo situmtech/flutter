@@ -100,7 +100,7 @@ class MapPosition {
 }
 
 class CustomPoi {
-  final String id;
+  final int id;
   final String name;
   final String description;
   final int buildingId;
@@ -139,6 +139,6 @@ typedef OnNavigationFinishedCallback = void Function(String destinationId);
 typedef OnNavigationStartedCallback = void Function(
     NavigationResult navigation);
 typedef OnCustomPoiSetCallback = void Function(CustomPoi customPoi);
-typedef OnCustomPoiRemovedCallback = void Function(String poiId);
-typedef OnCustomPoiSelectedCallback = void Function(String poiId);
-typedef OnCustomPoiDeselectedCallback = void Function(String poiId);
+typedef OnCustomPoiRemovedCallback = void Function(int poiId);
+typedef OnCustomPoiSelectedCallback = void Function(int poiId);
+typedef OnCustomPoiDeselectedCallback = void Function(int poiId);

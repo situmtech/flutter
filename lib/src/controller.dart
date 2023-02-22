@@ -154,26 +154,35 @@ class SitumFlutterWayfinding {
     return await methodChannel.invokeMethod<String>('stopNavigation');
   }
 
-  Future<String?> startCustomPoiSelection(
+  Future<String?> startCustomPoiCreation(
       String name, String description) async {
-    log("Dart startCustomPoiSelection called, methodChannel will be invoked.");
-    return await methodChannel.invokeMethod<String>('startCustomPoiSelection',
+    log("Dart startCustomPoiCreation called, methodChannel will be invoked.");
+    return await methodChannel.invokeMethod<String>('startCustomPoiCreation',
         <String, String>{'name': name, 'description': description});
   }
 
-  Future<String?> removeCustomPoi() async {
+  Future<String?> removeCustomPoi(int poiId) async {
     log("Dart removeCustomPoi called, methodChannel will be invoked.");
-    return await methodChannel.invokeMethod<String>('removeCustomPoi');
+    return await methodChannel
+        .invokeMethod<String>('removeCustomPoi', <String, int>{'poiId': poiId});
   }
 
-  Future<String?> selectCustomPoi(String poiId) async {
+  Future<String?> selectCustomPoi(int poiId) async {
     log("Dart selectCustomPoi called, methodChannel will be invoked.");
-    return await methodChannel.invokeMethod<String>('selectCustomPoi', <String, String> {'poiId': poiId});
+    return await methodChannel
+        .invokeMethod<String>('selectCustomPoi', <String, int>{'poiId': poiId});
   }
 
   Future<CustomPoi?> getCustomPoi() async {
     log("Dart getCustomPoi called, methodChannel will be invoked.");
     var result = await methodChannel.invokeMethod('getCustomPoi');
+    return result != null ? createCustomPoi(result) : null;
+  }
+
+  Future<CustomPoi?> getCustomPoiById(int poiId) async {
+    log("Dart getCustomPoi called, methodChannel will be invoked.");
+    var result = await methodChannel
+        .invokeMethod('getCustomPoiById', <String, int>{'poiId': poiId});
     return result != null ? createCustomPoi(result) : null;
   }
 

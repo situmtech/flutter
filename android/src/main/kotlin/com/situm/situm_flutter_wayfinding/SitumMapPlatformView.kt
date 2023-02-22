@@ -84,10 +84,11 @@ class SitumMapPlatformView(
                 "stopPositioning" -> stopPositioning()
                 "stopNavigation" -> stopNavigation()
                 "filterPoisBy" -> filterPoisBy(arguments, result)
-                "startCustomPoiSelection" -> startCustomPoiSelection(arguments, result)
+                "startCustomPoiCreation" -> startCustomPoiCreation(arguments, result)
                 "selectCustomPoi" -> selectCustomPoi(arguments, result)
                 "removeCustomPoi" -> removeCustomPoi(arguments, result)
-                "getCustomPoi" -> getCustomPoi(arguments, result)
+                "getCustomPoiById" -> getCustomPoiById(arguments, result)
+                "getCustomPoi" -> getCustomPoi(result)
                 else -> result.notImplemented()
             }
         }
@@ -175,10 +176,10 @@ class SitumMapPlatformView(
         result.success("DONE")
     }
 
-    private fun startCustomPoiSelection(arguments: Map<String, Any>, result: MethodChannel.Result) {
+    private fun startCustomPoiCreation(arguments: Map<String, Any>, result: MethodChannel.Result) {
         val name = arguments["name"] as String
         val description = arguments["description"] as String
-        library?.startCustomPoiSelection(name, description, object : ActionsCallback {
+        library?.startCustomPoiCreation(name, description, object : ActionsCallback {
                 override fun onActionConcluded() {
                     Log.d(TAG, "Android> startCustomPoiSelection success.")
                     result.success("DONE")
@@ -192,7 +193,7 @@ class SitumMapPlatformView(
     }
 
     private fun removeCustomPoi(arguments: Map<String, Any>, result: MethodChannel.Result) {
-        val poiId = arguments["poiId"] as String
+        val poiId = arguments["poiId"] as Int
         library?.removeCustomPoi(poiId, object: ActionsCallback {
                 override fun onActionConcluded() {
                     Log.d(TAG, "Android> removeCustomPoi success.")
@@ -203,7 +204,7 @@ class SitumMapPlatformView(
     }
 
     private fun selectCustomPoi(arguments: Map<String, Any>, result: MethodChannel.Result) {
-        val poiId = arguments["poiId"] as String
+        val poiId = arguments["poiId"] as Int
         library?.selectCustomPoi(poiId, object: ActionsCallback {
                 override fun onActionConcluded() {
                     Log.d(TAG, "Android> selectCustomPoi success.")
@@ -216,10 +217,15 @@ class SitumMapPlatformView(
         )
     }
 
-    private fun getCustomPoi(arguments: Map<String, Any>, result: MethodChannel.Result) {
-        val poiId = arguments["poiId"] as String
+    private fun getCustomPoiById(arguments: Map<String, Any>, result: MethodChannel.Result) {
+        val poiId = arguments["poiId"] as Int
         Log.d(TAG, "Android> getCustomPoi success.")
         result.success(library?.getCustomPoi(poiId)?.toMap())
+    }
+
+    private fun getCustomPoi(result: MethodChannel.Result) {
+        Log.d(TAG, "Android> getCustomPoi success.")
+        result.success(library?.getCustomPoi()?.toMap())
     }
 
     // Callbacks
@@ -290,19 +296,19 @@ class SitumMapPlatformView(
                 val arguments = customPoi.toMap()
                 methodChannel.invokeMethod("onCustomPoiSet", arguments)
             }
-            override fun onCustomPoiRemoved(poiIdentifier : String) {
+            override fun onCustomPoiRemoved(poiIdentifier : Int) {
                 val arguments = mutableMapOf(
                         "poiId" to poiIdentifier,
                 )
                 methodChannel.invokeMethod("onCustomPoiRemoved", arguments)
             }
-            override fun onCustomPoiDeselected(poiIdentifier : String) {
+            override fun onCustomPoiDeselected(poiIdentifier : Int) {
                 val arguments = mutableMapOf(
                         "poiId" to poiIdentifier,
                 )
                 methodChannel.invokeMethod("onCustomPoiDeselected", arguments)
             }
-            override fun onCustomPoiSelected(poiIdentifier : String) {
+            override fun onCustomPoiSelected(poiIdentifier : Int) {
                 val arguments = mutableMapOf(
                         "poiId" to poiIdentifier,
                 )
