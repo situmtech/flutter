@@ -121,7 +121,11 @@ class _MyTabsState extends State<MyTabs> {
         loadCallback: _onSitumMapLoaded,
       ),
       wyfController != null
-          ? FindMyCar(wyfController: wyfController)
+          ? FindMyCar(
+              wyfController: wyfController,
+              selectedIconPath: 'resources/icon_selected.png',
+              unSelectedIconPath: 'resources/icon_unselected.png',
+            )
           : Container()
     ]);
   }

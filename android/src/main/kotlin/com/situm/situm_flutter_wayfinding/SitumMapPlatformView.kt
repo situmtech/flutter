@@ -1,6 +1,9 @@
 package com.situm.situm_flutter_wayfinding
 
 import android.annotation.SuppressLint
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.util.Base64
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -176,20 +179,33 @@ class SitumMapPlatformView(
         result.success("DONE")
     }
 
+    private fun decodeBitMapFromBase64(encodedBitmap: String): Bitmap? {
+        try{
+            val bytes = Base64.decode(encodedBitmap, Base64.DEFAULT)
+            return BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+        } catch (e: IllegalArgumentException) {
+            Log.d(TAG, "Android> Could not decode bitmap from base 64 string.")
+            return null
+        }
+    }
+
     private fun startCustomPoiCreation(arguments: Map<String, Any>, result: MethodChannel.Result) {
         val name = arguments["name"] as String
         val description = arguments["description"] as String
-        library?.startCustomPoiCreation(name, description, object : ActionsCallback {
-                override fun onActionConcluded() {
-                    Log.d(TAG, "Android> startCustomPoiSelection success.")
-                    result.success("DONE")
-                }
-                override fun onActionCanceled() {
-                    Log.d(TAG, "Android> startCustomPoiSelection failure.")
-                    result.error(ERROR_SET_CUSTOM_POI, "Custom POI could not be saved", null)
-                }
+        val selectedIconBitmap = decodeBitMapFromBase64(arguments["selectedIcon"] as String)
+        val unSelectedIconBitmap = decodeBitMapFromBase64(arguments["unSelectedIcon"] as String)
+
+        library?.startCustomPoiCreation(name, description,
+                selectedIconBitmap, unSelectedIconBitmap, object : ActionsCallback {
+            override fun onActionConcluded() {
+                Log.d(TAG, "Android> startCustomPoiSelection success.")
+                result.success("DONE")
             }
-        )
+            override fun onActionCanceled() {
+                Log.d(TAG, "Android> startCustomPoiSelection failure.")
+                result.error(ERROR_SET_CUSTOM_POI, "Custom POI could not be saved", null)
+            }
+        })
     }
 
     private fun removeCustomPoi(arguments: Map<String, Any>, result: MethodChannel.Result) {

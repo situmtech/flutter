@@ -1,11 +1,21 @@
+import 'dart:typed_data';
+import 'package:flutter/services.dart' show rootBundle;
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:situm_flutter_wayfinding/situm_flutter_wayfinding.dart';
 import 'package:situm_flutter_wayfinding_example/config.dart';
 
 class FindMyCar extends StatefulWidget {
   final SitumFlutterWayfinding? wyfController;
+  final String? selectedIconPath;
+  final String? unSelectedIconPath;
 
-  const FindMyCar({Key? key, this.wyfController}) : super(key: key);
+  const FindMyCar(
+      {Key? key,
+      this.wyfController,
+      this.selectedIconPath,
+      this.unSelectedIconPath})
+      : super(key: key);
 
   @override
   State<FindMyCar> createState() => _FindMyCarState();
@@ -29,10 +39,14 @@ class _FindMyCarState extends State<FindMyCar> {
         margin: const EdgeInsets.only(top: 110.0, right: 20.0),
         alignment: Alignment.topRight,
         child: FloatingActionButton(
-          onPressed: () {
+          onPressed: () async {
             if (_customPoi == null) {
-              widget.wyfController
-                  ?.startCustomPoiCreation("My car", "This is my car");
+              var encodedSelectedIcon =
+                  await _imageToBase64(widget.selectedIconPath!);
+              var encodedUnSelectedIcon =
+                  await _imageToBase64(widget.unSelectedIconPath!);
+              widget.wyfController?.startCustomPoiCreation("My car",
+                  "This is my car", encodedSelectedIcon, encodedUnSelectedIcon);
             } else {
               widget.wyfController?.selectCustomPoi(_customPoi!.id);
             }
@@ -74,5 +88,11 @@ class _FindMyCarState extends State<FindMyCar> {
     widget.wyfController?.onCustomPoiDeselected((poiId) {
       print("WYF> Custom POI deselected: $poiId");
     });
+  }
+
+  Future<String> _imageToBase64(String imagePath) async {
+    ByteData imageData = await rootBundle.load(imagePath);
+    Uint8List bytes = imageData.buffer.asUint8List();
+    return base64Encode(bytes);
   }
 }
