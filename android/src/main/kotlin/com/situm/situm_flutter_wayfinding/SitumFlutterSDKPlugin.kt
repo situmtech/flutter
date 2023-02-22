@@ -141,8 +141,11 @@ class SitumFlutterSDKPlugin : FlutterPlugin, ActivityAware, MethodChannel.Method
     }
 
     private fun removeUpdates(result: MethodChannel.Result) {
-        locationListener?.let {
-            SitumSdk.locationManager().removeUpdates(it)
+        SitumSdk.locationManager().let { manager ->
+            locationListener?.let {
+                manager.removeLocationListener(it)
+            }
+            manager.removeUpdates()
         }
         result.success("DONE")
     }
