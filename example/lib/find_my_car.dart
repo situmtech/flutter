@@ -13,8 +13,7 @@ class FindMyCar extends StatefulWidget {
 
 class _FindMyCarState extends State<FindMyCar> {
   IconData _findMyCarIcon = Icons.directions_car_filled_rounded;
-  bool _isCustomPoiSaved = false;
-  int _customPoiId = 0;
+  CustomPoi? _customPoi;
 
   @override
   void initState() {
@@ -27,15 +26,15 @@ class _FindMyCarState extends State<FindMyCar> {
   Widget build(BuildContext context) {
     // Find my car FAB
     return Container(
-        margin: const EdgeInsets.only(top: 80.0, right: 20.0),
+        margin: const EdgeInsets.only(top: 110.0, right: 20.0),
         alignment: Alignment.topRight,
         child: FloatingActionButton(
           onPressed: () {
-            if (!_isCustomPoiSaved) {
+            if (_customPoi == null) {
               widget.wyfController
                   ?.startCustomPoiCreation("My car", "This is my car");
             } else {
-              widget.wyfController?.selectCustomPoi(_customPoiId);
+              widget.wyfController?.selectCustomPoi(_customPoi!.id);
             }
           },
           backgroundColor: const Color.fromARGB(255, 40, 51, 128),
@@ -48,8 +47,7 @@ class _FindMyCarState extends State<FindMyCar> {
     if (customPoi != null &&
         customPoi.buildingId.toString() == buildingIdentifier) {
       setState(() {
-        _isCustomPoiSaved = true;
-        _customPoiId = customPoi.id;
+        _customPoi = customPoi;
         _findMyCarIcon = Icons.local_parking;
       });
     }
@@ -59,16 +57,14 @@ class _FindMyCarState extends State<FindMyCar> {
     widget.wyfController?.onCustomPoiSet((customPoi) {
       print("WYF> Custom POI set: $customPoi");
       setState(() {
-        _customPoiId = customPoi.id;
-        _isCustomPoiSaved = true;
+        _customPoi = customPoi;
         _findMyCarIcon = Icons.local_parking;
       });
     });
     widget.wyfController?.onCustomPoiRemoved((poiId) {
       print("WYF> Custom POI removed: $poiId");
       setState(() {
-        _customPoiId = poiId;
-        _isCustomPoiSaved = false;
+        _customPoi = null;
         _findMyCarIcon = Icons.directions_car_filled_rounded;
       });
     });
