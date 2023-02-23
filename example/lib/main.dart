@@ -123,8 +123,9 @@ class _MyTabsState extends State<MyTabs> {
       wyfController != null
           ? FindMyCar(
               wyfController: wyfController,
-              selectedIconPath: 'resources/icon_selected.png',
-              unSelectedIconPath: 'resources/icon_unselected.png',
+              buildingIdentifier: buildingIdentifier,
+              selectedIconPath: 'resources/car_selected_icon.png',
+              unSelectedIconPath: 'resources/car_unselected_icon.png',
             )
           : Container()
     ]);

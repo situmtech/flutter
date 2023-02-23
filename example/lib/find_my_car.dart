@@ -3,16 +3,17 @@ import 'package:flutter/services.dart' show rootBundle;
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:situm_flutter_wayfinding/situm_flutter_wayfinding.dart';
-import 'package:situm_flutter_wayfinding_example/config.dart';
 
 class FindMyCar extends StatefulWidget {
   final SitumFlutterWayfinding? wyfController;
+  final String? buildingIdentifier;
   final String? selectedIconPath;
   final String? unSelectedIconPath;
 
   const FindMyCar(
       {Key? key,
       this.wyfController,
+      this.buildingIdentifier,
       this.selectedIconPath,
       this.unSelectedIconPath})
       : super(key: key);
@@ -59,7 +60,7 @@ class _FindMyCarState extends State<FindMyCar> {
   void _checkState() async {
     var customPoi = await widget.wyfController?.getCustomPoi();
     if (customPoi != null &&
-        customPoi.buildingId.toString() == buildingIdentifier) {
+        customPoi.buildingId.toString() == widget.buildingIdentifier) {
       setState(() {
         _customPoi = customPoi;
         _findMyCarIcon = Icons.local_parking;
