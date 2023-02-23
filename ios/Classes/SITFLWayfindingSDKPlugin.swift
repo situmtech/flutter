@@ -163,7 +163,25 @@ import Flutter
     func handleStartCustomPoiCreation(_ call: FlutterMethodCall, result: @escaping FlutterResult){
         print("Find my car mode called")
         if let args = call.arguments as? Dictionary<String, Any>{
-            SITFLNativeMapView.library?.startCustomPoiCreation(name: args["name"] as? String, description: args["description"] as? String)
+            var markerIcon: UIImage?
+            var markerIconSelected: UIImage?
+            if let unselectedIconString = args["unSelectedIcon"] as? String {
+                let markerIconData: Data = Data(base64Encoded: unselectedIconString, options: .ignoreUnknownCharacters)!
+                markerIcon = UIImage(data: markerIconData)
+            }
+            
+            if let selectedIconString = args["selectedIcon"] as? String {
+                let markerIconSelectedData: Data = Data(base64Encoded: selectedIconString, options: .ignoreUnknownCharacters)!
+                markerIconSelected = UIImage(data: markerIconSelectedData)
+            }
+                                             
+
+            SITFLNativeMapView.library?.startCustomPoiCreation(
+                name: args["name"] as? String,
+                description: args["description"] as? String,
+                markerIcon: markerIcon,
+                markerIconSelected: markerIconSelected
+            )
             return result("SUCCESS")
         } 
         return result(FlutterError.init(code: "bad args", message: "Could not parse arguments used for 'startCustomPoiCreation'", details: nil))
