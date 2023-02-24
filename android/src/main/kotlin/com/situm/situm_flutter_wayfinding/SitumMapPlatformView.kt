@@ -310,7 +310,7 @@ class SitumMapPlatformView(
         library?.setOnCustomPoiChangeListener(object : OnCustomPoiChangeListener {
             override fun onCustomPoiCreated(customPoi: CustomPoi) {
                 val arguments = customPoi.toMap()
-                methodChannel.invokeMethod("onCustomPoiSet", arguments)
+                methodChannel.invokeMethod("onCustomPoiCreated", arguments)
             }
             override fun onCustomPoiRemoved(customPoi: CustomPoi) {
                 val arguments = customPoi.toMap()

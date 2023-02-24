@@ -69,25 +69,25 @@ class _FindMyCarState extends State<FindMyCar> {
   }
 
   void _setUpListeners() {
-    widget.wyfController?.onCustomPoiSet((customPoi) {
+    widget.wyfController?.onCustomPoiCreated((customPoi) {
       print("WYF> Custom POI set: $customPoi");
       setState(() {
         _customPoi = customPoi;
         _findMyCarIcon = Icons.local_parking;
       });
     });
-    widget.wyfController?.onCustomPoiRemoved((poiId) {
-      print("WYF> Custom POI removed: $poiId");
+    widget.wyfController?.onCustomPoiRemoved((customPoi) {
+      print("WYF> Custom POI removed: $customPoi");
       setState(() {
         _customPoi = null;
         _findMyCarIcon = Icons.directions_car_filled_rounded;
       });
     });
-    widget.wyfController?.onCustomPoiSelected((poiId) {
-      print("WYF> Custom POI selected: $poiId");
+    widget.wyfController?.onCustomPoiSelected((customPoi) {
+      print("WYF> Custom POI selected: $customPoi");
     });
-    widget.wyfController?.onCustomPoiDeselected((poiId) {
-      print("WYF> Custom POI deselected: $poiId");
+    widget.wyfController?.onCustomPoiDeselected((customPoi) {
+      print("WYF> Custom POI deselected: $customPoi");
     });
   }
 
