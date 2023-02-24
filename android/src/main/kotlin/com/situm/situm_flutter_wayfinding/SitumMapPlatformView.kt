@@ -17,8 +17,8 @@ import es.situm.sdk.model.cartography.Poi
 import es.situm.wayfinding.OnPoiSelectionListener
 import es.situm.wayfinding.SitumMapsLibrary
 import es.situm.wayfinding.actions.ActionsCallback
-import es.situm.maps.library.domain.model.CustomSavedPoi
-import es.situm.wayfinding.OnCustomPoiChangeListener
+import es.situm.wayfinding.customPoi.CustomPoi
+import es.situm.wayfinding.customPoi.OnCustomPoiChangeListener
 import es.situm.wayfinding.navigation.Navigation
 import es.situm.wayfinding.navigation.NavigationError
 import es.situm.wayfinding.navigation.OnNavigationListener
@@ -308,26 +308,20 @@ class SitumMapPlatformView(
         })
 
         library?.setOnCustomPoiChangeListener(object : OnCustomPoiChangeListener {
-            override fun onCustomPoiSet(customPoi: CustomSavedPoi) {
+            override fun onCustomPoiCreated(customPoi: CustomPoi) {
                 val arguments = customPoi.toMap()
                 methodChannel.invokeMethod("onCustomPoiSet", arguments)
             }
-            override fun onCustomPoiRemoved(poiIdentifier : Int) {
-                val arguments = mutableMapOf(
-                        "poiId" to poiIdentifier,
-                )
+            override fun onCustomPoiRemoved(customPoi: CustomPoi) {
+                val arguments = customPoi.toMap()
                 methodChannel.invokeMethod("onCustomPoiRemoved", arguments)
             }
-            override fun onCustomPoiDeselected(poiIdentifier : Int) {
-                val arguments = mutableMapOf(
-                        "poiId" to poiIdentifier,
-                )
+            override fun onCustomPoiDeselected(customPoi: CustomPoi) {
+                val arguments = customPoi.toMap()
                 methodChannel.invokeMethod("onCustomPoiDeselected", arguments)
             }
-            override fun onCustomPoiSelected(poiIdentifier : Int) {
-                val arguments = mutableMapOf(
-                        "poiId" to poiIdentifier,
-                )
+            override fun onCustomPoiSelected(customPoi: CustomPoi) {
+                val arguments = customPoi.toMap()
                 methodChannel.invokeMethod("onCustomPoiSelected", arguments)
             }
         })

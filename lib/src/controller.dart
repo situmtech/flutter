@@ -35,7 +35,7 @@ class SitumFlutterWayfinding {
   OnNavigationStartedCallback? onNavigationStartedCallback;
   OnCustomPoiSelectedCallback? onCustomPoiSelectedCallback;
   OnCustomPoiDeselectedCallback? onCustomPoiDeselectedCallback;
-  OnCustomPoiSetCallback? onCustomPoiSetCallback;
+  OnCustomPoiCreatedCallback? onCustomPoiSetCallback;
   OnCustomPoiRemovedCallback? onCustomPoiRemovedCallback;
 
   static final SitumFlutterWayfinding _controller =
@@ -215,7 +215,7 @@ class SitumFlutterWayfinding {
     onNavigationStartedCallback = callback;
   }
 
-  void onCustomPoiSet(OnCustomPoiSetCallback callback) {
+  void onCustomPoiCreated(OnCustomPoiCreatedCallback callback) {
     onCustomPoiSetCallback = callback;
   }
 
@@ -253,8 +253,8 @@ class SitumFlutterWayfinding {
       case 'onNavigationStarted':
         _onNavigationStarted(call.arguments);
         break;
-      case 'onCustomPoiSet':
-        _onCustomPoiSet(call.arguments);
+      case 'onCustomPoiCreated':
+        _onCustomPoiCreated(call.arguments);
         break;
       case 'onCustomPoiRemoved':
         _onCustomPoiRemoved(call.arguments);
@@ -321,23 +321,23 @@ class SitumFlutterWayfinding {
     onNavigationStartedCallback?.call(createNavigationResult(arguments));
   }
 
-  void _onCustomPoiSet(arguments) {
-    print("Situm> _onCustomPoiSet invoked.");
+  void _onCustomPoiCreated(arguments) {
+    print("Situm> _onCustomPoiCreated invoked.");
     onCustomPoiSetCallback?.call(createCustomPoi(arguments));
   }
 
   void _onCustomPoiRemoved(arguments) {
     print("Situm> _onCustomPoiRemoved invoked.");
-    onCustomPoiRemovedCallback?.call(arguments["poiId"]);
+    onCustomPoiRemovedCallback?.call(createCustomPoi(arguments));
   }
 
   void _onCustomPoiSelected(arguments) {
     print("Situm> _onCustomPoiSelected invoked.");
-    onCustomPoiSelectedCallback?.call(arguments["poiId"]);
+    onCustomPoiSelectedCallback?.call(createCustomPoi(arguments));
   }
 
   void _onCustomPoiDeselected(arguments) {
     print("Situm> _onCustomPoiDeselected invoked.");
-    onCustomPoiDeselectedCallback?.call(arguments["poiId"]);
+    onCustomPoiDeselectedCallback?.call(createCustomPoi(arguments));
   }
 }

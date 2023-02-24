@@ -84,11 +84,11 @@ class NavigationResult {
   });
 }
 
-class MapPosition {
+class Coordinates {
   final double latitude;
   final double longitude;
 
-  MapPosition({
+  Coordinates({
     required this.latitude,
     required this.longitude,
   });
@@ -105,7 +105,7 @@ class CustomPoi {
   final String description;
   final int buildingId;
   final int levelId;
-  final MapPosition mapPosition;
+  final Coordinates coordinates;
 
   const CustomPoi(
       {required this.id,
@@ -113,11 +113,11 @@ class CustomPoi {
       required this.description,
       required this.buildingId,
       required this.levelId,
-      required this.mapPosition});
+      required this.coordinates});
 
   @override
   String toString() {
-    return "[$id] $name: $description - MAP($mapPosition)";
+    return "[$id] $name: $description - MAP($coordinates)";
   }
 }
 
@@ -138,7 +138,7 @@ typedef OnNavigationErrorCallback = void Function(
 typedef OnNavigationFinishedCallback = void Function(String destinationId);
 typedef OnNavigationStartedCallback = void Function(
     NavigationResult navigation);
-typedef OnCustomPoiSetCallback = void Function(CustomPoi customPoi);
-typedef OnCustomPoiRemovedCallback = void Function(int poiId);
-typedef OnCustomPoiSelectedCallback = void Function(int poiId);
-typedef OnCustomPoiDeselectedCallback = void Function(int poiId);
+typedef OnCustomPoiCreatedCallback = void Function(CustomPoi customPoi);
+typedef OnCustomPoiRemovedCallback = void Function(CustomPoi poiId);
+typedef OnCustomPoiSelectedCallback = void Function(CustomPoi poiId);
+typedef OnCustomPoiDeselectedCallback = void Function(CustomPoi poiId);

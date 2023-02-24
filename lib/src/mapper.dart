@@ -18,9 +18,9 @@ CustomPoi createCustomPoi(Map map) {
       description: map["description"],
       buildingId: map["buildingId"],
       levelId: map["levelId"],
-      mapPosition: createMapPosition(map["mapPosition"]));
+      coordinates: createCoorindates(map["coordinates"]));
 }
 
-MapPosition createMapPosition(Map map) {
-  return MapPosition(latitude: map["latitude"], longitude: map["longitude"]);
+Coordinates createCoorindates(Map map) {
+  return Coordinates(latitude: map["latitude"], longitude: map["longitude"]);
 }
