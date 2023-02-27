@@ -136,7 +136,7 @@ class _MyTabsState extends State<MyTabs> {
     ]);
   }
 
-  void _onSitumMapLoaded(SitumFlutterWayfinding controller) async {
+  void _onSitumMapLoaded(SitumFlutterWayfinding controller) {
     // The Situm map was successfully loaded, use the given controller to
     // call the WYF API methods.
     print("WYF> Situm Map loaded!");
