@@ -28,12 +28,8 @@ class MyTabs extends StatefulWidget {
 
 class _MyTabsState extends State<MyTabs> {
   late SitumFlutterSDK situmSdk;
-  String selectedBuildingId = buildingIdentifier;
-  SitumFlutterWayfinding? controller;
-  bool situmMapUnload = true;
   int _selectedIndex = 0;
   String currentOutput = "---";
-  bool selectedShowPositioningButton = false;
 
   Widget _createHomeTab() {
     // Home:
@@ -88,41 +84,6 @@ class _MyTabsState extends State<MyTabs> {
                   child: const Text('Prefetch')),
             ],
           ),
-          ButtonBar(
-            alignment: MainAxisAlignment.center,
-            children: [
-              TextButton(
-                  onPressed: () {
-                    _echo("WYF> UNLOAD...");
-                    setState(() {
-                      situmMapUnload = true;
-                    });
-                  },
-                  child: const Text('Unload WYF')),
-              TextButton(
-                  onPressed: () {
-                    _echo("WYF> LOAD...");
-                    setState(() {
-                      situmMapUnload = false;
-                    });
-                  },
-                  child: const Text('Load WYF')),
-              Switch(
-                  value: selectedShowPositioningButton,
-                  onChanged: (bool value) {
-                    setState(() {
-                      selectedShowPositioningButton = value;
-                    });
-                  })
-            ],
-          ),
-          TextField(
-            decoration: const InputDecoration(
-                hintText: 'Unload + Type building ID + Load'),
-            onChanged: (text) {
-              selectedBuildingId = text;
-            },
-          ),
           Container(
             margin: const EdgeInsets.all(20.0),
             child: SingleChildScrollView(child: Text(currentOutput)),
@@ -133,10 +94,6 @@ class _MyTabsState extends State<MyTabs> {
   }
 
   Widget _createSitumMapTab() {
-    if (situmMapUnload) {
-      controller?.unload();
-      return const Center(child: Text('Unloaded'));
-    }
     // The Situm map:
     return SitumMapView(
       key: const Key("situm_map"),
@@ -145,7 +102,7 @@ class _MyTabsState extends State<MyTabs> {
       searchViewPlaceholder: "Situm Flutter Wayfinding",
       situmUser: situmUser,
       situmApiKey: situmApiKey,
-      buildingIdentifier: selectedBuildingId,
+      buildingIdentifier: buildingIdentifier,
       googleMapsApiKey: googleMapsApiKey,
       useHybridComponents: true,
       //showPoiNames: true,
@@ -157,7 +114,7 @@ class _MyTabsState extends State<MyTabs> {
       maxZoom: 20,
       showNavigationIndications: true,
       showFloorSelector: true,
-      showPositioningButton: selectedShowPositioningButton,
+      showPositioningButton: true,
       navigationSettings: const NavigationSettings(
         outsideRouteThreshold: 40,
         distanceToGoalThreshold: 8,
@@ -167,7 +124,6 @@ class _MyTabsState extends State<MyTabs> {
   }
 
   void _onSitumMapLoaded(SitumFlutterWayfinding controller) {
-    this.controller = controller;
     // The Situm map was successfully loaded, use the given controller to
     // call the WYF API methods.
     print("WYF> Situm Map loaded!");
@@ -209,11 +165,9 @@ class _MyTabsState extends State<MyTabs> {
   }
 
   void _requestUpdates() async {
-    Map<String, dynamic> locRequest = selectedBuildingId == "no" ? {} : {"buildingIdentifier": selectedBuildingId};
-    print("Current loc request: $locRequest");
     situmSdk.requestLocationUpdates(
       _MyLocationListener(echoer: _echo),
-      locRequest,
+      {"buildingIdentifier": buildingIdentifier},
     );
   }
 
