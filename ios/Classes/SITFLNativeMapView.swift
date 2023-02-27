@@ -118,8 +118,8 @@ extension SITFLNativeMapView{
     }
     
     
-    internal func unloadView() {
-        // SITFLNativeMapView.library.
+    func unloadView() {
+        SITFLNativeMapView.wyfStarted = false
     }
     
 
@@ -140,7 +140,10 @@ extension SITFLNativeMapView{
            let showSearchBar = arguments["hasSearchView"] as? Bool,
            let enablePoiClustering = arguments["enablePoiClustering"] as? Bool,
            let useRemoteConfig = arguments["useRemoteConfig"] as? Bool,
-           let floorListVisible = arguments["showFloorSelector"] as? Bool
+           let floorListVisible = arguments["showFloorSelector"] as? Bool,
+           let minZoom = arguments["minZoom"] as? Float,
+           let maxZoom = arguments["maxZoom"] as? Float,
+           let positioningFabVisible = arguments["showPositioningButton"] as? Bool
         {
             SITFLNativeMapView.buildingId = buildingId
             let credentials = Credentials(user: situmUser, apiKey: situmApikey, googleMapsApiKey: googleMapsApiKey)
@@ -152,7 +155,11 @@ extension SITFLNativeMapView{
                 .setShowSearchBar(showSearchBar: showSearchBar)
                 .setUseRemoteConfig(useRemoteConfig: useRemoteConfig)
                 .setShowBackButton(showBackButton: false)
-                .setShowNavigationIndications(showNavigationIndications: false).setFloorsListVisible(floorsListVisible:floorListVisible)
+                .setShowNavigationIndications(showNavigationIndications: false)
+                .setFloorsListVisible(floorsListVisible:floorListVisible)
+                .setMinZoom(minZoom: minZoom)
+                .setMaxZoom(maxZoom: maxZoom)
+                .setPositioningFabVisible(positioningFabVisible: positioningFabVisible)
                 .build()
             let library = SitumMapsLibrary(containedBy: mapView!, controlledBy: controller, withSettings: settings)
             // Set delegates

@@ -29,7 +29,6 @@ class MyTabs extends StatefulWidget {
 
 class _MyTabsState extends State<MyTabs> {
   late SitumFlutterSDK situmSdk;
-
   int _selectedIndex = 0;
   String currentOutput = "---";
 
@@ -88,7 +87,10 @@ class _MyTabsState extends State<MyTabs> {
                   child: const Text('Prefetch')),
             ],
           ),
-          Text(currentOutput)
+          Container(
+            margin: const EdgeInsets.all(20.0),
+            child: SingleChildScrollView(child: Text(currentOutput)),
+          )
         ],
       ),
     );
@@ -107,11 +109,14 @@ class _MyTabsState extends State<MyTabs> {
         buildingIdentifier: buildingIdentifier,
         googleMapsApiKey: googleMapsApiKey,
         useHybridComponents: true,
-        showPoiNames: true,
+        // showPoiNames: true,
         hasSearchView: true,
         lockCameraToBuilding: true,
-        useRemoteConfig: true,
-        initialZoom: 16,
+        // useRemoteConfig: true,
+        initialZoom: 20,
+        minZoom: 19,
+        maxZoom: 20,
+        showPositioningButton: true,
         showNavigationIndications: true,
         showFloorSelector: true,
         navigationSettings: const NavigationSettings(
@@ -175,7 +180,10 @@ class _MyTabsState extends State<MyTabs> {
   }
 
   void _requestUpdates() async {
-    situmSdk.requestLocationUpdates(_MyLocationListener(), {});
+    situmSdk.requestLocationUpdates(
+      _MyLocationListener(echoer: _echo),
+      {"buildingIdentifier": buildingIdentifier},
+    );
   }
 
   void _removeUpdates() async {
@@ -244,19 +252,23 @@ class _MyTabsState extends State<MyTabs> {
 }
 
 class _MyLocationListener implements LocationListener {
+  final Function echoer;
+
+  _MyLocationListener({required this.echoer});
+
   @override
   void onError(Error error) {
-    print("SDK> ERROR: ${error.message}");
+    echoer("SDK> ERROR: ${error.message}");
   }
 
   @override
   void onLocationChanged(OnLocationChangedResult locationChangedResult) {
-    print(
+    echoer(
         "SDK> Location changed, building ID is: ${locationChangedResult.buildingId}");
   }
 
   @override
   void onStatusChanged(String status) {
-    print("SDK> STATUS: $status");
+    echoer("SDK> STATUS: $status");
   }
 }

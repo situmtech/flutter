@@ -104,6 +104,8 @@ import Flutter
             handleUnload()
         } else if (call.method == "selectPoi") {
             handleSelectPoi(call, result: result)
+        } else if (call.method == "navigateToPoi") {
+            handleNavigateToPoi(call, result: result)
         } else if (call.method == "filterPoisBy") {
             handleFilterPois(call, result: result)
         }else if (call.method == "startPositioning") {
@@ -158,6 +160,41 @@ import Flutter
     
     func handleUnload() {
         print("unload method detected")
+        SITFLWayfindingSDKPlugin.factory?.currentView!.unloadView()
+    }
+
+    @objc func handleNavigateToPoi(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+        if let args = call.arguments as? Dictionary<String, String>,
+           let poiIdentifier = args["id"],
+           let buildingIdentifier = args["buildingId"] {
+            // Retrieve poi from dart
+            
+            if (SITFLNativeMapView.wyfLoaded == false) {
+                print("Library not loaded, wait before select poi")
+                return
+            }
+            
+            let selectedPoi = SITPOI(identifier: poiIdentifier, createdAt: Date(), updatedAt: Date(), customFields: [:])
+            SITCommunicationManager.shared().fetchBuildingInfo(buildingIdentifier, withOptions: nil, success: { [weak self] mapping in
+                guard mapping != nil, let buildingInfo = mapping!["results"] as? SITBuildingInfo else {return}
+                let pois = buildingInfo.indoorPois.sorted(by: { $0.name > $1.name })
+                
+                for poi in pois {
+                    if poi.identifier == selectedPoi.identifier {
+                        if let lib = SITFLNativeMapView.library {
+                            lib.navigateToPoi(poi: poi)
+                        } else {
+                            print("Library not found")
+                        }
+                    }
+                }
+                
+            }, failure: { error in
+                print("fetchBuildingInfo \(error)")
+            })
+
+        }
+
     }
 
     func handleStartCustomPoiCreation(_ call: FlutterMethodCall, result: @escaping FlutterResult){

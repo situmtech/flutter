@@ -83,6 +83,7 @@ class SitumMapPlatformView(
                 // Add here all the library methods:
                 "unload" -> unload(result)
                 "selectPoi" -> selectPoi(arguments, result)
+                "navigateToPoi" -> navigateToPoi(arguments, result)
                 "startPositioning" -> startPositioning()
                 "stopPositioning" -> stopPositioning()
                 "stopNavigation" -> stopNavigation()
@@ -126,11 +127,6 @@ class SitumMapPlatformView(
     private fun unload(methodResult: MethodChannel.Result?) {
         Log.d(TAG, "PlatformView unload called!")
         libraryLoader.unload()
-        // Ensure this layout does not have a parent:
-        if (layout?.parent != null) {
-            (layout?.parent as ViewGroup).removeView(layout)
-        }
-        layout = null
         methodResult?.success("DONE")
     }
 
@@ -163,6 +159,27 @@ class SitumMapPlatformView(
                             methodResult.success(poiId)
                         }
                     })
+                }
+
+                override fun onError(message: String) {
+                    Log.e(TAG, "Android> Library selectPoi error: $message.")
+                    methodResult.error(ERROR_SELECT_POI, message, null)
+                }
+            })
+    }
+
+    // Navigate to a given Situm poi
+    private fun navigateToPoi(arguments: Map<String, Any>, methodResult: MethodChannel.Result) {
+        Log.d(TAG, "Android> Plugin navigateToPoi call.")
+        val buildingId = arguments["buildingId"] as String
+        val poiId = arguments["id"] as String
+        FlutterCommunicationManager.fetchPoi(
+            buildingId,
+            poiId,
+            object : FlutterCommunicationManager.Callback<Poi> {
+                override fun onSuccess(result: Poi) {
+                    Log.d(TAG, "Android> Library selectPoi call.")
+                    library?.findRouteToPoi(result)
                 }
 
                 override fun onError(message: String) {
