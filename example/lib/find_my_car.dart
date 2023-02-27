@@ -70,7 +70,7 @@ class _FindMyCarState extends State<FindMyCar> {
 
   void _setUpListeners() {
     widget.wyfController?.onCustomPoiCreated((customPoi) {
-      print("WYF> Custom POI set: $customPoi");
+      print("WYF> Custom POI created: $customPoi");
       setState(() {
         _customPoi = customPoi;
         _findMyCarIcon = Icons.local_parking;

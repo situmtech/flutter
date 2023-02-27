@@ -35,7 +35,7 @@ class SitumFlutterWayfinding {
   OnNavigationStartedCallback? onNavigationStartedCallback;
   OnCustomPoiSelectedCallback? onCustomPoiSelectedCallback;
   OnCustomPoiDeselectedCallback? onCustomPoiDeselectedCallback;
-  OnCustomPoiCreatedCallback? onCustomPoiSetCallback;
+  OnCustomPoiCreatedCallback? onCustomPoiCreatedCallback;
   OnCustomPoiRemovedCallback? onCustomPoiRemovedCallback;
 
   static final SitumFlutterWayfinding _controller =
@@ -216,7 +216,7 @@ class SitumFlutterWayfinding {
   }
 
   void onCustomPoiCreated(OnCustomPoiCreatedCallback callback) {
-    onCustomPoiSetCallback = callback;
+    onCustomPoiCreatedCallback = callback;
   }
 
   void onCustomPoiRemoved(OnCustomPoiRemovedCallback callback) {
@@ -323,7 +323,7 @@ class SitumFlutterWayfinding {
 
   void _onCustomPoiCreated(arguments) {
     print("Situm> _onCustomPoiCreated invoked.");
-    onCustomPoiSetCallback?.call(createCustomPoi(arguments));
+    onCustomPoiCreatedCallback?.call(createCustomPoi(arguments));
   }
 
   void _onCustomPoiRemoved(arguments) {

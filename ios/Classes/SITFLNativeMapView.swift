@@ -50,13 +50,13 @@ internal protocol SITFLNativeMapViewDelegate {
     
     func onNavigationFinished(navigation: Navigation)
     
-    func onCustomPoiSet(customPoi: CustomPoi)
+    func onCustomPoiCreated(customPoi: CustomPoi)
     
-    func onCustomPoiRemoved(poiId: Int)
+    func onCustomPoiRemoved(customPoi: CustomPoi)
     
-    func onCustomPoiSelected(poiId: Int)
+    func onCustomPoiSelected(customPoi: CustomPoi)
     
-    func onCustomPoiDeselected(poiId: Int)
+    func onCustomPoiDeselected(customPoi: CustomPoi)
 }
 
 
@@ -258,31 +258,31 @@ extension SITFLNativeMapView : OnMapReadyListener, OnPoiSelectionListener, OnNav
         }
     }
     
-    public func onCustomPoiSet(customPoi: CustomPoi) {
-        print("On Custom Poi set detected")
+    public func onCustomPoiCreated(customPoi: CustomPoi) {
+        print("On Custom Poi created detected")
         if let del = SITFLNativeMapView.delegate {
-            del.onCustomPoiSet(customPoi: customPoi)
+            del.onCustomPoiCreated(customPoi: customPoi)
         }
     }
     
-    public func onCustomPoiRemoved(poiId: Int) {
+    public func onCustomPoiRemoved(customPoi: CustomPoi) {
         print("On Custom Poi removed detected")
         if let del = SITFLNativeMapView.delegate {
-            del.onCustomPoiRemoved(poiId: poiId)
+            del.onCustomPoiRemoved(customPoi: customPoi)
         }
     }
 
-    public func onCustomPoiSelected(poiId: Int) {
+    public func onCustomPoiSelected(customPoi: CustomPoi) {
         print("On Custom Poi selected detected")
         if let del = SITFLNativeMapView.delegate {
-            del.onCustomPoiSelected(poiId: poiId)
+            del.onCustomPoiSelected(customPoi: customPoi)
         }
     }
     
-    public func onCustomPoiDeselected(poiId: Int) {
+    public func onCustomPoiDeselected(customPoi: CustomPoi) {
         print("On Custom Poi deselected detected")
         if let del = SITFLNativeMapView.delegate {
-            del.onCustomPoiDeselected(poiId: poiId)
+            del.onCustomPoiDeselected(customPoi: customPoi)
         }
     }
 }

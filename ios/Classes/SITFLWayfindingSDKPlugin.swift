@@ -231,7 +231,8 @@ import Flutter
 
     func handleGetCustomPoi(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         print("Get custom poi called")
-        return result(_getCustomPoiMapped(poiId: nil))
+        let test = _getCustomPoiMapped(poiId: nil)
+        return result(test)
     }
     
     func _customPoiToDict(customPoi: CustomPoi) -> [String: Any]{
@@ -241,7 +242,7 @@ import Flutter
             "description": customPoi.description,
             "buildingId": Int(customPoi.buildingId),
             "levelId": Int(customPoi.floorId),
-            "mapPosition": [
+            "coordinates": [
                 "latitude": customPoi.latitude,
                 "longitude": customPoi.longitude,
 
@@ -313,27 +314,27 @@ import Flutter
         self.channel?.invokeMethod("onNavigationFinished", arguments: arguments)
     }
     
-    func onCustomPoiSet(customPoi: CustomPoi) {
+    func onCustomPoiCreated(customPoi: CustomPoi) {
         print("Custom POI set")
         let arguments: [String: Any] = _customPoiToDict(customPoi: customPoi)
-        self.channel?.invokeMethod("onCustomPoiSet", arguments: arguments)
+        self.channel?.invokeMethod("onCustomPoiCreated", arguments: arguments)
     }
     
-    func onCustomPoiRemoved(poiId: Int) {
+    func onCustomPoiRemoved(customPoi: CustomPoi) {
         print("Custom POI removed")
-        let arguments = ["poiId": poiId]
+        let arguments: [String: Any] = _customPoiToDict(customPoi: customPoi)
         self.channel?.invokeMethod("onCustomPoiRemoved", arguments: arguments)
     }
     
-    func onCustomPoiSelected(poiId: Int) {
+    func onCustomPoiSelected(customPoi: CustomPoi) {
         print("Custom POI selected")
-        let arguments = ["poiId": poiId]
+        let arguments: [String: Any] = _customPoiToDict(customPoi: customPoi)
         self.channel?.invokeMethod("onCustomPoiSelected", arguments: arguments)
     }
     
-    func onCustomPoiDeselected(poiId: Int) {
+    func onCustomPoiDeselected(customPoi: CustomPoi) {
         print("Custom POI deselected")
-        let arguments = ["poiId": poiId]
+        let arguments: [String: Any] = _customPoiToDict(customPoi: customPoi)
         self.channel?.invokeMethod("onCustomPoiDeselected", arguments: arguments)
     }
 }
