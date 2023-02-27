@@ -28,6 +28,10 @@ Create a new `config.dart` file with your Situm credentials. You can use the con
 Follow the [Wayfinding guide](https://situm.com/docs/first-steps-for-wayfinding/) if you haven't set
 up a Situm account.
 
+#### Running the example:
+
+Check the [example/README](./example/README.md) file of this repository to create your first Flutter application using Situm Wayfinding.
+
 ### Android
 
 The following steps have already been done for you in the example application of this repository, but they are required for a new project:

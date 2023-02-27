@@ -150,6 +150,7 @@ import Flutter
     
     func handleUnload() {
         print("unload method detected")
+        SITFLWayfindingSDKPlugin.factory?.currentView!.unloadView()
     }
 
     @objc func handleNavigateToPoi(_ call: FlutterMethodCall, result: @escaping FlutterResult) {

@@ -112,6 +112,7 @@ class SitumMapLibraryLoader private constructor(
         if (!settings.showFloorSelector) { // Call only when explicitly wants to hide it.
             library.setFloorsListVisible(false)
         }
+        library.setPositioningFabVisible(settings.showPositioningButton)
         val callback = object : ActionsCallback {
             override fun onActionConcluded() {
                 result.onSuccess(library)
@@ -125,14 +126,13 @@ class SitumMapLibraryLoader private constructor(
     }
 
     fun unload() {
-        // TODO: this needs furder analysis, unload() is producing unexpected errors.
-        /*if (loaded) {
+        if (loaded) {
             try {
                 library?.unload()
             } catch (e: Exception) {
                 Log.d(TAG, "Illegal call to unload(). This message can be ignored.", e)
             }
-        }*/
+        }
         library = null
         loaded = false
         loading = false

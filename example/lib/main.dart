@@ -28,9 +28,12 @@ class MyTabs extends StatefulWidget {
 
 class _MyTabsState extends State<MyTabs> {
   late SitumFlutterSDK situmSdk;
-
+  String selectedBuildingId = buildingIdentifier;
+  SitumFlutterWayfinding? controller;
+  bool situmMapUnload = true;
   int _selectedIndex = 0;
   String currentOutput = "---";
+  bool selectedShowPositioningButton = false;
 
   Widget _createHomeTab() {
     // Home:
@@ -85,13 +88,55 @@ class _MyTabsState extends State<MyTabs> {
                   child: const Text('Prefetch')),
             ],
           ),
-          Text(currentOutput)
+          ButtonBar(
+            alignment: MainAxisAlignment.center,
+            children: [
+              TextButton(
+                  onPressed: () {
+                    _echo("WYF> UNLOAD...");
+                    setState(() {
+                      situmMapUnload = true;
+                    });
+                  },
+                  child: const Text('Unload WYF')),
+              TextButton(
+                  onPressed: () {
+                    _echo("WYF> LOAD...");
+                    setState(() {
+                      situmMapUnload = false;
+                    });
+                  },
+                  child: const Text('Load WYF')),
+              Switch(
+                  value: selectedShowPositioningButton,
+                  onChanged: (bool value) {
+                    setState(() {
+                      selectedShowPositioningButton = value;
+                    });
+                  })
+            ],
+          ),
+          TextField(
+            decoration: const InputDecoration(
+                hintText: 'Unload + Type building ID + Load'),
+            onChanged: (text) {
+              selectedBuildingId = text;
+            },
+          ),
+          Container(
+            margin: const EdgeInsets.all(20.0),
+            child: SingleChildScrollView(child: Text(currentOutput)),
+          )
         ],
       ),
     );
   }
 
   Widget _createSitumMapTab() {
+    if (situmMapUnload) {
+      controller?.unload();
+      return const Center(child: Text('Unloaded'));
+    }
     // The Situm map:
     return SitumMapView(
       key: const Key("situm_map"),
@@ -100,16 +145,19 @@ class _MyTabsState extends State<MyTabs> {
       searchViewPlaceholder: "Situm Flutter Wayfinding",
       situmUser: situmUser,
       situmApiKey: situmApiKey,
-      buildingIdentifier: buildingIdentifier,
+      buildingIdentifier: selectedBuildingId,
       googleMapsApiKey: googleMapsApiKey,
       useHybridComponents: true,
-      showPoiNames: true,
+      //showPoiNames: true,
       hasSearchView: true,
       lockCameraToBuilding: true,
-      useRemoteConfig: true,
-      initialZoom: 16,
+      //useRemoteConfig: true,
+      initialZoom: 20,
+      minZoom: 19,
+      maxZoom: 20,
       showNavigationIndications: true,
       showFloorSelector: true,
+      showPositioningButton: selectedShowPositioningButton,
       navigationSettings: const NavigationSettings(
         outsideRouteThreshold: 40,
         distanceToGoalThreshold: 8,
@@ -119,6 +167,7 @@ class _MyTabsState extends State<MyTabs> {
   }
 
   void _onSitumMapLoaded(SitumFlutterWayfinding controller) {
+    this.controller = controller;
     // The Situm map was successfully loaded, use the given controller to
     // call the WYF API methods.
     print("WYF> Situm Map loaded!");
@@ -160,7 +209,12 @@ class _MyTabsState extends State<MyTabs> {
   }
 
   void _requestUpdates() async {
-    situmSdk.requestLocationUpdates(_MyLocationListener(), {});
+    Map<String, dynamic> locRequest = selectedBuildingId == "no" ? {} : {"buildingIdentifier": selectedBuildingId};
+    print("Current loc request: $locRequest");
+    situmSdk.requestLocationUpdates(
+      _MyLocationListener(echoer: _echo),
+      locRequest,
+    );
   }
 
   void _removeUpdates() async {
@@ -232,19 +286,23 @@ class _MyTabsState extends State<MyTabs> {
 }
 
 class _MyLocationListener implements LocationListener {
+  final Function echoer;
+
+  _MyLocationListener({required this.echoer});
+
   @override
   void onError(Error error) {
-    print("SDK> ERROR: ${error.message}");
+    echoer("SDK> ERROR: ${error.message}");
   }
 
   @override
   void onLocationChanged(OnLocationChangedResult locationChangedResult) {
-    print(
+    echoer(
         "SDK> Location changed, building ID is: ${locationChangedResult.buildingId}");
   }
 
   @override
   void onStatusChanged(String status) {
-    print("SDK> STATUS: $status");
+    echoer("SDK> STATUS: $status");
   }
 }
