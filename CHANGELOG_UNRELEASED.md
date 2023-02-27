@@ -9,7 +9,7 @@
   This makes possible to override the remote configuration with an specific building identifier.
 
 ### Changed
-* Update WYF iOS to 0.18.1.
+* Update WYF iOS to 0.18.2.
 * Update WYF Android to 0.25.0.
 * Updated `SitumFlutterSDKPlugin.kt` so that Wayfinding can react to the positioning even if it was
   started from outside (using `SitumFlutterSDK`).
