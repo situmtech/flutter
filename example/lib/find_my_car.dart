@@ -91,15 +91,15 @@ class _FindMyCarState extends State<FindMyCar> {
     });
   }
 
-  Future<String> _imageToBase64(String imagePath) async {
+  Future<String?> _imageToBase64(String imagePath) async {
     try {
       ByteData imageData = await rootBundle.load(imagePath);
       Uint8List bytes = imageData.buffer.asUint8List();
       return base64Encode(bytes);
     } catch (e) {
       print(
-          "FIND MY CAR> Could not encode image: ${e.toString()} The default icon will be used.");
-      return "";
+          "FIND MY CAR> Could not encode image: ${e.toString()}. The default icon will be used.");
+      return null;
     }
   }
 }

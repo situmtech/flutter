@@ -154,11 +154,11 @@ class SitumFlutterWayfinding {
     return await methodChannel.invokeMethod<String>('stopNavigation');
   }
 
-  Future<String?> startCustomPoiCreation(String name, String description,
-      String encodedSelectedIcon, String encodedUnSelectedIcon) async {
+  Future<String?> startCustomPoiCreation(String? name, String? description,
+      String? encodedSelectedIcon, String? encodedUnSelectedIcon) async {
     log("Dart startCustomPoiCreation called, methodChannel will be invoked.");
     return await methodChannel
-        .invokeMethod<String>('startCustomPoiCreation', <String, String>{
+        .invokeMethod<String>('startCustomPoiCreation', <String, String?>{
       'name': name,
       'description': description,
       'selectedIcon': encodedSelectedIcon,

@@ -2,12 +2,9 @@ package com.situm.situm_flutter_wayfinding
 
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.util.Base64
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
@@ -196,21 +193,17 @@ class SitumMapPlatformView(
         result.success("DONE")
     }
 
-    private fun decodeBitMapFromBase64(encodedBitmap: String): Bitmap? {
-        try{
-            val bytes = Base64.decode(encodedBitmap, Base64.DEFAULT)
-            return BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-        } catch (e: IllegalArgumentException) {
-            Log.d(TAG, "Android> Could not decode bitmap from base 64 string.")
-            return null
-        }
-    }
-
     private fun startCustomPoiCreation(arguments: Map<String, Any>, result: MethodChannel.Result) {
-        val name = arguments["name"] as String
-        val description = arguments["description"] as String
-        val selectedIconBitmap = decodeBitMapFromBase64(arguments["selectedIcon"] as String)
-        val unSelectedIconBitmap = decodeBitMapFromBase64(arguments["unSelectedIcon"] as String)
+        val name = arguments["name"] as String?
+        val description = arguments["description"] as String?
+        var selectedIconBitmap : Bitmap? = null
+        var unSelectedIconBitmap : Bitmap? = null
+        arguments["selectedIcon"]?.let { iconString ->
+            selectedIconBitmap = Utils.decodeBitMapFromBase64(iconString as String)
+        }
+        arguments["unSelectedIcon"]?.let { iconString ->
+            unSelectedIconBitmap = Utils.decodeBitMapFromBase64(iconString as String)
+        }
 
         library?.startCustomPoiCreation(name, description,
                 selectedIconBitmap, unSelectedIconBitmap, object : ActionsCallback {
