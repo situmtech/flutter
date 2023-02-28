@@ -29,7 +29,7 @@ class _FindMyCarState extends State<FindMyCar> {
   @override
   void initState() {
     super.initState();
-    _checkState();
+    _setupState();
     _setUpListeners();
   }
 
@@ -42,10 +42,13 @@ class _FindMyCarState extends State<FindMyCar> {
         child: FloatingActionButton(
           onPressed: () async {
             if (_customPoi == null) {
-              var encodedSelectedIcon =
-                  await _imageToBase64(widget.selectedIconPath!);
-              var encodedUnSelectedIcon =
-                  await _imageToBase64(widget.unSelectedIconPath!);
+              String? encodedSelectedIcon = widget.selectedIconPath != null
+                  ? await _imageToBase64(widget.selectedIconPath!)
+                  : null;
+              String? encodedUnSelectedIcon = widget.unSelectedIconPath != null
+                  ? await _imageToBase64(widget.unSelectedIconPath!)
+                  : null;
+
               widget.wyfController?.startCustomPoiCreation("My car",
                   "This is my car", encodedSelectedIcon, encodedUnSelectedIcon);
             } else {
@@ -57,7 +60,7 @@ class _FindMyCarState extends State<FindMyCar> {
         ));
   }
 
-  void _checkState() async {
+  void _setupState() async {
     var customPoi = await widget.wyfController?.getCustomPoi();
     if (customPoi != null &&
         customPoi.buildingId.toString() == widget.buildingIdentifier) {
