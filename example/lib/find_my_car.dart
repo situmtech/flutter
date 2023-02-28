@@ -42,12 +42,10 @@ class _FindMyCarState extends State<FindMyCar> {
         child: FloatingActionButton(
           onPressed: () async {
             if (_customPoi == null) {
-              String? encodedSelectedIcon = widget.selectedIconPath != null
-                  ? await _imageToBase64(widget.selectedIconPath!)
-                  : null;
-              String? encodedUnSelectedIcon = widget.unSelectedIconPath != null
-                  ? await _imageToBase64(widget.unSelectedIconPath!)
-                  : null;
+              String? encodedSelectedIcon =
+                  await _imageToBase64(widget.selectedIconPath);
+              String? encodedUnSelectedIcon =
+                  await _imageToBase64(widget.unSelectedIconPath);
 
               widget.wyfController?.startCustomPoiCreation("My car",
                   "This is my car", encodedSelectedIcon, encodedUnSelectedIcon);
@@ -94,7 +92,8 @@ class _FindMyCarState extends State<FindMyCar> {
     });
   }
 
-  Future<String?> _imageToBase64(String imagePath) async {
+  Future<String?> _imageToBase64(String? imagePath) async {
+    if (imagePath == null) return null;
     try {
       ByteData imageData = await rootBundle.load(imagePath);
       Uint8List bytes = imageData.buffer.asUint8List();
