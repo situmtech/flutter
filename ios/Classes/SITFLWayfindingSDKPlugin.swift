@@ -199,63 +199,63 @@ import Flutter
 
     func handleStartCustomPoiCreation(_ call: FlutterMethodCall, result: @escaping FlutterResult){
         print("Find my car mode called")
-        if let args = call.arguments as? Dictionary<String, Any>{
-            var markerIcon: UIImage?
-            var markerIconSelected: UIImage?
-            if let unselectedIconString = args["unSelectedIcon"] as? String {
-                let markerIconData: Data = Data(base64Encoded: unselectedIconString, options: .ignoreUnknownCharacters)!
-                markerIcon = UIImage(data: markerIconData)
-            }
-            
-            if let selectedIconString = args["selectedIcon"] as? String {
-                let markerIconSelectedData: Data = Data(base64Encoded: selectedIconString, options: .ignoreUnknownCharacters)!
-                markerIconSelected = UIImage(data: markerIconSelectedData)
-            }
-                                             
-
-            SITFLNativeMapView.library?.startCustomPoiCreation(
-                name: args["name"] as? String,
-                description: args["description"] as? String,
-                markerIcon: markerIcon,
-                markerIconSelected: markerIconSelected
-            )
-            return result("SUCCESS")
-        } 
-        return result(FlutterError.init(code: "bad args", message: "Could not parse arguments used for 'startCustomPoiCreation'", details: nil))
+        guard let args = call.arguments as? Dictionary<String, Any> else {
+            result(FlutterError.init(code: "bad args", message: "Could not parse arguments used for 'startCustomPoiCreation'", details: nil))
+            return
+        }
+        var markerIcon: UIImage?
+        var markerIconSelected: UIImage?
+        if let unselectedIconString = args["unSelectedIcon"] as? String {
+            let markerIconData: Data = Data(base64Encoded: unselectedIconString, options: .ignoreUnknownCharacters)!
+            markerIcon = UIImage(data: markerIconData)
+        }
+        
+        if let selectedIconString = args["selectedIcon"] as? String {
+            let markerIconSelectedData: Data = Data(base64Encoded: selectedIconString, options: .ignoreUnknownCharacters)!
+            markerIconSelected = UIImage(data: markerIconSelectedData)
+        }
+        
+        SITFLNativeMapView.library?.startCustomPoiCreation(
+            name: args["name"] as? String,
+            description: args["description"] as? String,
+            markerIcon: markerIcon,
+            markerIconSelected: markerIconSelected
+        )
+        result("SUCCESS")
     }
 
     func handleSelectCustomPoi(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         print("Select custom poi called")
-        if let args = call.arguments as? Dictionary<String, Any>{
-            if let poiId = args["poiId"] as? Int {
-                var operationResult: String?;
-                SITFLNativeMapView.library?.selectCustomPoi(id: poiId, completion: { result in
-                    switch result {
-                    case .success:
-                        operationResult = nil
-                    case .failure(let reason):
-                        operationResult = reason.localizedDescription
-                    }
-                })
-                return result(operationResult == nil ? "SUCCESS" : FlutterError.init(code: "Error selecting custom poi", message: operationResult, details: nil))
-            } else {
-                return result(FlutterError.init(code: "bad args", message: "Argument 'poiId' is mandatory for 'selectCustomPoi'", details: nil))
-            }
+        guard let args = call.arguments as? Dictionary<String, Any> else {
+            result(FlutterError.init(code: "bad args", message: "Could not parse arguments used for 'selectCustomPoi'", details: nil))
+            return
         }
-        return result(FlutterError.init(code: "bad args", message: "Could not parse arguments used for 'selectCustomPoi'", details: nil))
+        guard let poiId = args["poiId"] as? Int else {
+            result(FlutterError.init(code: "bad args", message: "Argument 'poiId' is mandatory for 'selectCustomPoi'", details: nil))
+            return
+        }
+        SITFLNativeMapView.library?.selectCustomPoi(id: poiId, completion: { selectCustomPoiResult in
+            switch selectCustomPoiResult {
+            case .success:
+                result("SUCCESS")
+            case .failure(let reason):
+                result(FlutterError.init(code: "Error selecting custom poi", message: reason.localizedDescription, details: nil))
+            }
+        })
     }
 
     func handleRemoveCustomPoi(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         print("Remove custom poi called")
-        if let args = call.arguments as? Dictionary<String, Any>{
-            if let poiId = args["poiId"] as? Int {
-                SITFLNativeMapView.library?.removeCustomPoi(id: poiId)
-                return result("SUCCESS")
-            } else {
-                return result(FlutterError.init(code: "bad args", message: "Argument 'poiId' is mandatory for 'removeCustomPoi'", details: nil))
-            }
+        guard let args = call.arguments as? Dictionary<String, Any> else {
+            result(FlutterError.init(code: "bad args", message: "Could not parse arguments used for 'selectCustomPoi'", details: nil))
+            return
         }
-        return result(FlutterError.init(code: "bad args", message: "Could not parse arguments used for 'removeCustomPoi'", details: nil))
+        guard let poiId = args["poiId"] as? Int else {
+            result(FlutterError.init(code: "bad args", message: "Argument 'poiId' is mandatory for 'selectCustomPoi'", details: nil))
+            return
+        }
+        SITFLNativeMapView.library?.removeCustomPoi(id: poiId)
+        result("SUCCESS")
     }
     
     func handleGetCustomPoiById(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
