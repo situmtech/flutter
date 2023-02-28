@@ -272,25 +272,9 @@ import Flutter
         return result(test)
     }
     
-    func _customPoiToDict(customPoi: CustomPoi) -> [String: Any]{
-        let customPoiDict: [String: Any] = [
-            "id": customPoi.id,
-            "name": customPoi.name,
-            "description": customPoi.description,
-            "buildingId": Int(customPoi.buildingId),
-            "levelId": Int(customPoi.floorId),
-            "coordinates": [
-                "latitude": customPoi.latitude,
-                "longitude": customPoi.longitude,
-
-            ]
-        ]
-        return customPoiDict
-    }
-    
     func _getCustomPoiMapped(poiId: Int?) -> [String: Any]?{
         if let customPoi = SITFLNativeMapView.library?.getCustomPoi(id: poiId) {
-            return _customPoiToDict(customPoi: customPoi)
+            return customPoi.toMap()
         }
         return nil
     }
@@ -353,25 +337,25 @@ import Flutter
     
     func onCustomPoiCreated(customPoi: CustomPoi) {
         print("Custom POI set")
-        let arguments: [String: Any] = _customPoiToDict(customPoi: customPoi)
+        let arguments: [String: Any] = customPoi.toMap()
         self.channel?.invokeMethod("onCustomPoiCreated", arguments: arguments)
     }
     
     func onCustomPoiRemoved(customPoi: CustomPoi) {
         print("Custom POI removed")
-        let arguments: [String: Any] = _customPoiToDict(customPoi: customPoi)
+        let arguments: [String: Any] = customPoi.toMap()
         self.channel?.invokeMethod("onCustomPoiRemoved", arguments: arguments)
     }
     
     func onCustomPoiSelected(customPoi: CustomPoi) {
         print("Custom POI selected")
-        let arguments: [String: Any] = _customPoiToDict(customPoi: customPoi)
+        let arguments: [String: Any] = customPoi.toMap()
         self.channel?.invokeMethod("onCustomPoiSelected", arguments: arguments)
     }
     
     func onCustomPoiDeselected(customPoi: CustomPoi) {
         print("Custom POI deselected")
-        let arguments: [String: Any] = _customPoiToDict(customPoi: customPoi)
+        let arguments: [String: Any] = customPoi.toMap()
         self.channel?.invokeMethod("onCustomPoiDeselected", arguments: arguments)
     }
 }
