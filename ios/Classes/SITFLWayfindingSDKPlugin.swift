@@ -268,8 +268,7 @@ import Flutter
 
     func handleGetCustomPoi(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         print("Get custom poi called")
-        let test = _getCustomPoiMapped(poiId: nil)
-        return result(test)
+        return result(_getCustomPoiMapped(poiId: nil))
     }
     
     func _getCustomPoiMapped(poiId: Int?) -> [String: Any]?{
