@@ -9,7 +9,10 @@ object Utils {
 
     const val TAG = "Situm>"
 
-    fun decodeBitMapFromBase64(encodedBitmap: String): Bitmap? {
+    fun decodeBitMapFromBase64(encodedBitmap: String?): Bitmap? {
+        if (encodedBitmap == null) {
+            return null;
+        }
         try{
             val bytes = Base64.decode(encodedBitmap, Base64.DEFAULT)
             return BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
