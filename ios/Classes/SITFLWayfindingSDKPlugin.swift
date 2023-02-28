@@ -228,15 +228,16 @@ import Flutter
         print("Select custom poi called")
         if let args = call.arguments as? Dictionary<String, Any>{
             if let poiId = args["poiId"] as? Int {
+                var operationResult: String?;
                 SITFLNativeMapView.library?.selectCustomPoi(id: poiId, completion: { result in
                     switch result {
                     case .success:
-                        print("SUCCESS")
+                        operationResult = nil
                     case .failure(let reason):
-                        print("Failed to select custom poi \(reason)")
+                        operationResult = reason.localizedDescription
                     }
                 })
-                return result("SUCCESS")
+                return result(operationResult == nil ? "SUCCESS" : FlutterError.init(code: "Error selecting custom poi", message: operationResult, details: nil))
             } else {
                 return result(FlutterError.init(code: "bad args", message: "Argument 'poiId' is mandatory for 'selectCustomPoi'", details: nil))
             }
