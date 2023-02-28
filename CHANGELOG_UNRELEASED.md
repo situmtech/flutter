@@ -1,7 +1,7 @@
 ##[Unreleased]
 
 ### Added
-* Added mapping for `startCustomPoiSelection`, `selectCustomPoi`, `deleteCustomPoi` and `getCustomPoi`
+* Added mapping for `startCustomPoiCreation`, `selectCustomPoi`, `deleteCustomPoi` and `getCustomPoi`
 * New widget to display find my car functionality
 * customFields field to Poi object
 * Added `showPositioningButton` parameter to show or hide the positioning button of the Wayfinding
