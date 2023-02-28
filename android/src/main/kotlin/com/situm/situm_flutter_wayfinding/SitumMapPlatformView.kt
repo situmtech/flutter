@@ -196,14 +196,8 @@ class SitumMapPlatformView(
     private fun startCustomPoiCreation(arguments: Map<String, Any>, result: MethodChannel.Result) {
         val name = arguments["name"] as String?
         val description = arguments["description"] as String?
-        var selectedIconBitmap : Bitmap? = null
-        var unSelectedIconBitmap : Bitmap? = null
-        arguments["selectedIcon"]?.let { iconString ->
-            selectedIconBitmap = Utils.decodeBitMapFromBase64(iconString as String)
-        }
-        arguments["unSelectedIcon"]?.let { iconString ->
-            unSelectedIconBitmap = Utils.decodeBitMapFromBase64(iconString as String)
-        }
+        val selectedIconBitmap : Bitmap? = Utils.decodeBitMapFromBase64(arguments["selectedIcon"] as String?)
+        val unSelectedIconBitmap : Bitmap? = Utils.decodeBitMapFromBase64(arguments["unSelectedIcon"] as String?)
 
         library?.startCustomPoiCreation(name, description,
                 selectedIconBitmap, unSelectedIconBitmap, object : ActionsCallback {
