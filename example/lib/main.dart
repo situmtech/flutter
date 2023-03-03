@@ -82,6 +82,12 @@ class _MyTabsState extends State<MyTabs> {
                     _prefetch();
                   },
                   child: const Text('Prefetch')),
+              TextButton(
+                  onPressed: () {
+                    _echo("SDK> BUILDING INFO...");
+                    _fetchBuildings();
+                  },
+                  child: const Text('Buildings')),
             ],
           ),
           Container(
@@ -198,6 +204,11 @@ class _MyTabsState extends State<MyTabs> {
   void _fetchCategories() async {
     var categories = await situmSdk.fetchPoiCategories();
     _echo("SDK> RESPONSE: CATEGORIES = $categories");
+  }
+
+  void _fetchBuildings() async {
+    var buildings = await situmSdk.fetchBuildings();
+    _echo("SDK> RESPONSE: BUILDINGS = $buildings");
   }
 
   @override

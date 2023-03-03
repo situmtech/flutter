@@ -39,6 +39,69 @@ class NamedResource {
   }
 }
 
+// TODO: this class already exists
+class Coordinate {
+  final double latitude;
+  final double longitude;
+  Coordinate({
+    required this.latitude,
+    required this.longitude,
+  });
+}
+
+class Bounds {
+  final Coordinate northEast;
+  final Coordinate northWest;
+  final Coordinate southEast;
+  final Coordinate southWest;
+  Bounds({
+    required this.northEast,
+    required this.northWest,
+    required this.southEast,
+    required this.southWest,
+  });
+}
+
+class Building extends NamedResource {
+  final String address;
+  final Bounds bounds;
+  final Bounds boundsRotated;
+  final Coordinate center;
+  final double width;
+  final double height;
+  final String infoHtml;
+  final String pictureThumbUrl;
+  final String pictureUrl;
+  final double rotation;
+  final String userIdentifier;
+  final Map<String, dynamic> customFields;
+  final String createdAt;
+  final String updatedAt;
+  Building({
+    required super.id,
+    required super.name,
+    required this.address,
+    required this.bounds,
+    required this.boundsRotated,
+    required this.center,
+    required this.width,
+    required this.height,
+    required this.infoHtml,
+    required this.pictureThumbUrl,
+    required this.pictureUrl,
+    required this.rotation,
+    required this.userIdentifier,
+    required this.customFields,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  @override
+  String toString() {
+    return "$name:$id - NAME($name) - USER ID($userIdentifier) - DIMENSIONS(${width.toStringAsFixed(2)}, ${height.toStringAsFixed(2)})";
+  }
+}
+
 class Geofence extends NamedResource {
   Geofence({
     required super.id,

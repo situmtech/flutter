@@ -6,6 +6,7 @@
 //
 
 #import "SITFSDKPlugin.h"
+#import "SITFSDKMapper.h"
 
 #import <SitumSDK/SitumSDK.h>
 
@@ -59,6 +60,9 @@
     } else if ([@"setConfiguration" isEqualToString:call.method]) {
         [self handleSetConfiguration: call 
                               result: result];
+    } else if ([@"handleFetchBuildings" isEqualToString:call.method]) {
+        [self handleFetchBuildings:call
+                                   result:result];
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -200,10 +204,27 @@
                                                   details:nil];
         result(ferror); // Send error
     }];
-    
 }
 
-
+- (void)handleFetchBuildings:(FlutterMethodCall*)call result:(FlutterResult)result {
+   
+    [self.comManager fetchBuildingsWithOptions: nil
+                                       success:^(NSDictionary * _Nullable mapping) {
+        
+        NSMutableArray *exportedArray = [NSMutableArray new];
+        for (SITBuilding *building in mapping[@"results"]) {                   
+            [exportedArray addObject:[SITFSDKMapper buildingToDict: building]];
+        }
+        result(exportedArray);
+        
+    } failure:^(NSError * _Nullable error) {
+        FlutterError *ferror = [FlutterError errorWithCode:@"errorFetchBuildings"
+                                                  message:[NSString stringWithFormat:@"Failed with error: %@", error]
+                                                  details:nil];
+        result(ferror); // Send error
+    }];
+    
+}
 
 - (void)handleFetchCategories:(FlutterMethodCall*)call
                        result:(FlutterResult)result {

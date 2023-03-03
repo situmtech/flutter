@@ -13,6 +13,12 @@ fun List<MapperInterface>.toMap(): List<Map<String, Any>> {
     }
 }
 
+fun Collection<MapperInterface>.toMap(): List<Map<String, Any>> {
+    return map {
+        it.toMap()
+    }
+}
+
 fun Collection<Poi>.toPoisMap(): List<Map<String, Any>> {
     return map {
         mapOf(

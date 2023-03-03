@@ -11,6 +11,7 @@ import es.situm.sdk.location.GeofenceListener
 import es.situm.sdk.location.LocationListener
 import es.situm.sdk.location.LocationRequest
 import es.situm.sdk.location.LocationStatus
+import es.situm.sdk.model.cartography.Building
 import es.situm.sdk.model.cartography.Geofence
 import es.situm.sdk.model.cartography.Poi
 import es.situm.sdk.model.cartography.PoiCategory
@@ -59,6 +60,7 @@ class SitumFlutterSDKPlugin : FlutterPlugin, ActivityAware, MethodChannel.Method
             "fetchPoisFromBuilding" -> fetchPoisFromBuilding(arguments, result)
             "fetchCategories" -> fetchCategories(result)
             "clearCache" -> clearCache(result)
+            "fetchBuildings" -> fetchBuildings(result)
             else -> result.notImplemented()
         }
     }
@@ -70,6 +72,19 @@ class SitumFlutterSDKPlugin : FlutterPlugin, ActivityAware, MethodChannel.Method
             SitumSdk.configuration().isUseRemoteConfig = arguments["useRemoteConfig"] as Boolean
         }
         result.success("DONE")
+    }
+
+    private fun fetchBuildings(result: MethodChannel.Result) {
+        SitumSdk.communicationManager().fetchBuildings(object: Handler<Collection<Building>> {
+            override fun onSuccess(buildings: Collection<Building>) {
+                result.success(buildings.toMap())
+            }
+
+            override fun onFailure(error: Error) {
+                result.notifySitumSdkError(error)
+            }
+
+        })
     }
 
     private fun fetchCategories(result: MethodChannel.Result) {

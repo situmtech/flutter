@@ -11,7 +11,6 @@ class SitumFlutterSDK {
     methodChannel = const MethodChannel(CHANNEL_SDK_ID);
     methodChannel.setMethodCallHandler(_methodCallHandler);
     // Stablish callback
-
   }
 
   // Calls
@@ -39,7 +38,8 @@ class SitumFlutterSDK {
       LocationListener listener, Map<String, dynamic> locationRequest) async {
     if (!identical(locationListener, listener)) {
       locationListener = listener;
-      await methodChannel.invokeMethod('requestLocationUpdates', locationRequest);
+      await methodChannel.invokeMethod(
+          'requestLocationUpdates', locationRequest);
     }
   }
 
@@ -49,6 +49,11 @@ class SitumFlutterSDK {
 
   Future<void> removeUpdates() async {
     await methodChannel.invokeMethod('removeUpdates');
+  }
+
+  Future<List<Building>> fetchBuildings() async {
+    List response = await methodChannel.invokeMethod("fetchBuildings");
+    return createBuildings(response);
   }
 
   Future<String> prefetchPositioningInfo(
