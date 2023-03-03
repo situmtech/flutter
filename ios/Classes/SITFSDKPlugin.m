@@ -60,7 +60,7 @@
     } else if ([@"setConfiguration" isEqualToString:call.method]) {
         [self handleSetConfiguration: call 
                               result: result];
-    } else if ([@"handleFetchBuildings" isEqualToString:call.method]) {
+    } else if ([@"fetchBuildings" isEqualToString:call.method]) {
         [self handleFetchBuildings:call
                                    result:result];
     } else {

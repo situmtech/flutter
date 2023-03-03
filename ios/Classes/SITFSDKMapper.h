@@ -2,7 +2,7 @@
 
 @interface SITFSDKMapper : NSObject
 
-+ (NSDictionary *) buildingToDict:(SITBuilding *);
-+ (NSDictionary *) poiToDict:(SITPOI *);
++ (NSDictionary *) buildingToDict:(SITBuilding *) building;
++ (NSDictionary *) poiToDict:(SITPOI *) poi;
 
 @end
