@@ -1,5 +1,15 @@
 part of situm_flutter_sdk;
 
+BuildingInfo createBuildingInfo(Map map) {
+  return BuildingInfo(
+      building: createBuilding(map["building"]),
+      floors: createList<Floor>(map["floors"], createFloor),
+      indoorPois: createList<Poi>(map["indoorPOIs"], createPoi),
+      outdoorPois: createList<Poi>(map["outdoorPOIs"], createPoi),
+      geofences: createList<Geofence>(map["geofences"], createGeofence),
+      events: createList<Event>(map["events"], createEvent));
+}
+
 Coordinate createCoordinate(Map map) {
   return Coordinate(latitude: map["latitude"], longitude: map["longitude"]);
 }
@@ -12,6 +22,20 @@ Bounds createBounds(Map map) {
       southWest: createCoordinate(map["southWest"]));
 }
 
+Floor createFloor(Map map) {
+  return Floor(
+    id: map["floorIdentifier"],
+    name: map["name"],
+    buildingIdentifier: map["buildingIdentifier"],
+    floorIndex: map["floor"],
+    mapUrl: map["mapUrl"],
+    scale: map["scale"],
+    createdAt: map["createdAt"],
+    updatedAt: map["updatedAt"],
+    customFields: Map<String, dynamic>.from(map["customFields"]),
+  );
+}
+
 Building createBuilding(Map map) {
   return Building(
       id: map["buildingIdentifier"],
@@ -22,7 +46,6 @@ Building createBuilding(Map map) {
       center: createCoordinate(map["center"]),
       width: map["dimensions"]["width"],
       height: map["dimensions"]["height"],
-      infoHtml: map["infoHtml"],
       pictureThumbUrl: map["pictureThumbUrl"],
       pictureUrl: map["pictureUrl"],
       rotation: map["rotation"],
@@ -32,41 +55,24 @@ Building createBuilding(Map map) {
       updatedAt: map["updatedAt"]);
 }
 
-List<Building> createBuildings(List maps) {
-  List<Building> buildings = [];
-  for (Map map in maps) {
-    buildings.add(createBuilding(map));
-  }
-  return buildings;
-}
-
 Poi createPoi(Map map) {
   return Poi(
     id: map["identifier"],
     name: map["poiName"],
     buildingId: map["buildingIdentifier"],
-    poiCategory: createCategory(map["poiCategory"]),
+    poiCategory: createCategory(map["category"]),
     position: createPoint(map["position"]),
     customFields: Map<String, dynamic>.from(map["customFields"]),
   );
 }
 
-List<Poi> createPois(List maps) {
-  List<Poi> pois = [];
-  for (Map map in maps) {
-    pois.add(createPoi(map));
-  }
-  return pois;
-}
-
 PoiCategory createCategory(Map map) {
   return PoiCategory(
-    id: map["id"],
+    id: map["identifier"],
     name: map["poiCategoryName"],
   );
 }
 
-// TODO: set latitude longitude as coordinates?
 Point createPoint(Map map) {
   return Point(
     buildingId: map["buildingIdentifier"],
@@ -76,25 +82,39 @@ Point createPoint(Map map) {
   );
 }
 
-List<PoiCategory> createCategories(List maps) {
-  List<PoiCategory> categories = [];
-  for (Map map in maps) {
-    categories.add(createCategory(map));
-  }
-  return categories;
-}
-
 Geofence createGeofence(Map map) {
   return Geofence(
-    id: map["identifier"],
-    name: map["name"],
-  );
+      id: map["identifier"],
+      name: map["name"],
+      buildingIdentifier: map["buildingIdentifier"],
+      floorIdentifier: map["floorIdentifier"],
+      polygonPoints: createList<Point>(map["polygonPoints"], createPoint),
+      customFields: Map<String, dynamic>.from(map["customFields"]),
+      createdAt: map["createdAt"],
+      updatedAt: map["updatedAt"]);
 }
 
 List<Geofence> createGeofences(List maps) {
-  List<Geofence> geofences = [];
-  for (Map map in maps) {
-    geofences.add(createGeofence(map));
-  }
-  return geofences;
+  return maps.map((geofence) => createGeofence(geofence)).toList();
+}
+
+CircleArea createCircleArea(Map map) {
+  return CircleArea(
+    center: createPoint(map["center"]),
+    radius: map["radius"],
+  );
+}
+
+Event createEvent(Map map) {
+  return Event(
+      id: map["identifier"],
+      name: map["name"],
+      buildingIdentifier: map["buildingIdentifier"],
+      floorIdentifier: map["floorIdentifier"],
+      customFields: Map<String, dynamic>.from(map["customFields"]),
+      trigger: createCircleArea(map["trigger"]));
+}
+
+List<T> createList<T>(List maps, Function mapper) {
+  return maps.map((o) => mapper(o)).toList().cast<T>();
 }
