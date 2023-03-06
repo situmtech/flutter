@@ -11,7 +11,11 @@ import es.situm.sdk.location.GeofenceListener
 import es.situm.sdk.location.LocationListener
 import es.situm.sdk.location.LocationRequest
 import es.situm.sdk.location.LocationStatus
-import es.situm.sdk.model.cartography.BuildingInfo
+import es.situm.sdk.model.cartography.Building;
+import es.situm.sdk.model.cartography.BuildingInfo;
+import es.situm.sdk.model.cartography.Poi;
+import es.situm.sdk.model.cartography.PoiCategory;
+import es.situm.sdk.model.cartography.Geofence;
 import es.situm.sdk.model.location.Location
 import es.situm.sdk.utils.Handler
 import io.flutter.embedding.engine.plugins.FlutterPlugin
