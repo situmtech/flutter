@@ -6,7 +6,6 @@
 //
 
 #import "SITFSDKPlugin.h"
-#import "SITFSDKMapper.h"
 
 #import <SitumSDK/SitumSDK.h>
 
@@ -175,7 +174,11 @@
                              withOptions:nil
                                  success:^(NSDictionary * _Nullable mapping) {
 
-        result([SITFSDKMapper poisToDictArray: mapping[@"results"]]);
+        NSMutableArray *exportedArray = [NSMutableArray new];
+        for (SITPOI* poi in mapping[@"results"]) {
+            [exportedArray addObject:poi.toDictionary];
+        }
+        result(exportedArray);
         
     } failure:^(NSError * _Nullable error) {
         FlutterError *ferror = [FlutterError errorWithCode:@"errorPrefetch"
@@ -190,9 +193,10 @@
     [self.comManager fetchBuildingsWithOptions: nil
                                        success:^(NSDictionary * _Nullable mapping) {
         
+        // TODO: problem with rotation (it is saved as a SITAngle not a number, so not serializable?
         NSMutableArray *exportedArray = [NSMutableArray new];
         for (SITBuilding *building in mapping[@"results"]) {                   
-            [exportedArray addObject:[SITFSDKMapper buildingToDict: building]];
+            [exportedArray addObject:building.toDictionary];
         }
         result(exportedArray);
         
@@ -220,7 +224,7 @@
     [self.comManager fetchBuildingInfo:buildingId
                            withOptions:nil
                                success:^(NSDictionary * _Nullable mapping) {
-        result([SITFSDKMapper buildingInfoToDict:mapping[@"results"]]);
+        result(((SITBuildingInfo*) mapping[@"results"]).toDictionary);
         
     } failure:^(NSError * _Nullable error) {
         FlutterError *ferror = [FlutterError errorWithCode:@"errorFetchBuildingInfo"
@@ -238,8 +242,12 @@
                                                       message:[NSString stringWithFormat:@"Failed with error: %@", error]
                                                       details:nil];
             result(ferror); // Send error
-        } else {           
-            result([SITFSDKMapper poiCategoriesToDictArray:categories]);
+        } else {
+            NSMutableArray *exportedArray = [NSMutableArray new];
+            for (SITPOICategory *category in categories) {
+                [exportedArray addObject:category.toDictionary];
+            }
+            result(exportedArray);
         }
     }];
 }
@@ -292,12 +300,21 @@ didInitiatedWithRequest:(SITLocationRequest *)request
 
 - (void)didEnteredGeofences:(NSArray<SITGeofence *> *)geofences {
     NSLog(@"location Manager did entered geofences");
-    [self.channel invokeMethod:@"onEnteredGeofences" arguments:[SITFSDKMapper geofencesToDictArray:geofences]];
+    [self.channel invokeMethod:@"onEnteredGeofences" arguments: geofenceToArray(geofences)];
 }
 
 - (void)didExitedGeofences:(NSArray<SITGeofence *> *)geofences {
     NSLog(@"location Manager did exited geofences");
-    [self.channel invokeMethod:@"onExitedGeofences" arguments:[SITFSDKMapper geofencesToDictArray:geofences]];
+    [self.channel invokeMethod:@"onExitedGeofences" arguments: geofenceToArray(geofences)];
+}
+
+
+static NSArray* geofenceToArray(NSArray<SITGeofence *> * geofences) {
+    NSMutableArray *exportedArray = [NSMutableArray new];
+    for (SITGeofence* geofence in geofences) {
+        [exportedArray addObject:geofence.toDictionary];
+    }
+    return exportedArray;
 }
 
 - (void) handleGeofenceCallbacksRequested :(FlutterMethodCall*)call
