@@ -6,6 +6,7 @@
 //
 
 #import "SITFSDKPlugin.h"
+#import "SITFSDKUtils.h"
 
 #import <SitumSDK/SitumSDK.h>
 
@@ -173,12 +174,7 @@
     [self.comManager fetchPoisOfBuilding:buildingId
                              withOptions:nil
                                  success:^(NSDictionary * _Nullable mapping) {
-
-        NSMutableArray *exportedArray = [NSMutableArray new];
-        for (SITPOI* poi in mapping[@"results"]) {
-            [exportedArray addObject:poi.toDictionary];
-        }
-        result(exportedArray);
+        result([SITFSDKUtils objectToDictArray: mapping[@"results"]]);
         
     } failure:^(NSError * _Nullable error) {
         FlutterError *ferror = [FlutterError errorWithCode:@"errorPrefetch"
@@ -194,11 +190,7 @@
                                        success:^(NSDictionary * _Nullable mapping) {
         
         // TODO: problem with rotation (it is saved as a SITAngle not a number, so not serializable?
-        NSMutableArray *exportedArray = [NSMutableArray new];
-        for (SITBuilding *building in mapping[@"results"]) {                   
-            [exportedArray addObject:building.toDictionary];
-        }
-        result(exportedArray);
+        result([SITFSDKUtils objectToDictArray: mapping[@"results"]]);
         
     } failure:^(NSError * _Nullable error) {
         FlutterError *ferror = [FlutterError errorWithCode:@"errorFetchBuildings"
@@ -243,11 +235,7 @@
                                                       details:nil];
             result(ferror); // Send error
         } else {
-            NSMutableArray *exportedArray = [NSMutableArray new];
-            for (SITPOICategory *category in categories) {
-                [exportedArray addObject:category.toDictionary];
-            }
-            result(exportedArray);
+            result([SITFSDKUtils objectToDictArray: categories]);
         }
     }];
 }
@@ -300,21 +288,12 @@ didInitiatedWithRequest:(SITLocationRequest *)request
 
 - (void)didEnteredGeofences:(NSArray<SITGeofence *> *)geofences {
     NSLog(@"location Manager did entered geofences");
-    [self.channel invokeMethod:@"onEnteredGeofences" arguments: geofenceToArray(geofences)];
+    [self.channel invokeMethod:@"onEnteredGeofences" arguments: [SITFSDKUtils objectToDictArray: geofences]];
 }
 
 - (void)didExitedGeofences:(NSArray<SITGeofence *> *)geofences {
     NSLog(@"location Manager did exited geofences");
-    [self.channel invokeMethod:@"onExitedGeofences" arguments: geofenceToArray(geofences)];
-}
-
-
-static NSArray* geofenceToArray(NSArray<SITGeofence *> * geofences) {
-    NSMutableArray *exportedArray = [NSMutableArray new];
-    for (SITGeofence* geofence in geofences) {
-        [exportedArray addObject:geofence.toDictionary];
-    }
-    return exportedArray;
+    [self.channel invokeMethod:@"onExitedGeofences" arguments: [SITFSDKUtils objectToDictArray: geofences]];
 }
 
 - (void) handleGeofenceCallbacksRequested :(FlutterMethodCall*)call
