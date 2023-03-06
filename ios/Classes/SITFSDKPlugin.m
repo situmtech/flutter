@@ -174,7 +174,7 @@
     [self.comManager fetchPoisOfBuilding:buildingId
                              withOptions:nil
                                  success:^(NSDictionary * _Nullable mapping) {
-        result([SITFSDKUtils objectToDictArray: mapping[@"results"]]);
+        result([SITFSDKUtils toDictArray: mapping[@"results"]]);
         
     } failure:^(NSError * _Nullable error) {
         FlutterError *ferror = [FlutterError errorWithCode:@"errorPrefetch"
@@ -190,7 +190,7 @@
                                        success:^(NSDictionary * _Nullable mapping) {
         
         // TODO: problem with rotation (it is saved as a SITAngle not a number, so not serializable?
-        result([SITFSDKUtils objectToDictArray: mapping[@"results"]]);
+        result([SITFSDKUtils toDictArray: mapping[@"results"]]);
         
     } failure:^(NSError * _Nullable error) {
         FlutterError *ferror = [FlutterError errorWithCode:@"errorFetchBuildings"
@@ -235,7 +235,7 @@
                                                       details:nil];
             result(ferror); // Send error
         } else {
-            result([SITFSDKUtils objectToDictArray: categories]);
+            result([SITFSDKUtils toDictArray: categories]);
         }
     }];
 }
@@ -288,12 +288,12 @@ didInitiatedWithRequest:(SITLocationRequest *)request
 
 - (void)didEnteredGeofences:(NSArray<SITGeofence *> *)geofences {
     NSLog(@"location Manager did entered geofences");
-    [self.channel invokeMethod:@"onEnteredGeofences" arguments: [SITFSDKUtils objectToDictArray: geofences]];
+    [self.channel invokeMethod:@"onEnteredGeofences" arguments: [SITFSDKUtils toDictArray: geofences]];
 }
 
 - (void)didExitedGeofences:(NSArray<SITGeofence *> *)geofences {
     NSLog(@"location Manager did exited geofences");
-    [self.channel invokeMethod:@"onExitedGeofences" arguments: [SITFSDKUtils objectToDictArray: geofences]];
+    [self.channel invokeMethod:@"onExitedGeofences" arguments: [SITFSDKUtils toDictArray: geofences]];
 }
 
 - (void) handleGeofenceCallbacksRequested :(FlutterMethodCall*)call
