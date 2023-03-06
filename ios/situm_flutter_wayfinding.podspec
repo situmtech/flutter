@@ -4,18 +4,18 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'situm_flutter_wayfinding'
-  s.version          = '0.0.1'
-  s.summary          = 'A new Flutter plugin project.'
+  s.version          = '0.0.9'
+  s.summary          = 'Situm Flutter plugin.'
   s.description      = <<-DESC
-A new Flutter plugin project.
+  Situm Flutter plugin.
                        DESC
-  s.homepage         = 'http://example.com'
+  s.homepage         = 'https://situm.com'
   s.license          = { :file => '../LICENSE' }
-  s.author           = { 'Situm Technologies' => 'mobile@situm.com' }
+  s.author           = { 'Situm Technologies S.L.' => 'situm@situm.com' }
   s.source           = { :path => '.' }
   s.source_files = 'Classes/**/*'
   s.dependency 'Flutter'
-  s.dependency 'SitumWayfinding', '~> 0.17.1'
+  s.dependency 'SitumWayfinding', '~> 0.18.2'
   s.platform = :ios, '9.0'
 
   # Flutter.framework does not contain a i386 slice.

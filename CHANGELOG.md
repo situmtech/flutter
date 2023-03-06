@@ -2,12 +2,33 @@
 
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
-and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/)
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 All non released changes should be in CHANGELOG_UNRELEASED.md file
 
 ---
+## [0.0.9] - 2023-03-06
+
+### Added
+* Added `showPositioningButton` parameter to show or hide the positioning button on Wayfinding. The
+  default value is `true`.
+* Added `minZoom` and `maxZoom` parameters to limit the underlying map zoom levels.
+* Now you can override the remote configuration with an specific building identifier on calls to
+  `requestLocationUpdates(LocationListener listener, Map<String, dynamic> locationRequest)`. This is
+  possible by setting a `buildingIdentifier` to the `locationRequest` parameter.
+
+### Changed
+* Update WYF iOS to [0.18.2](https://situm.com/docs/ios-wyf-changelog/).
+* Update WYF Android to [0.26.0](https://situm.com/docs/android-wyf-changelog/#version-0260alpha--march-3-2023).
+* Updated plugin so that Wayfinding can react to the positioning even if it was started using
+  `SitumFlutterSDK`.
+* Changed default values for `useRemoteConfig`, `useDashboardTheme` and `showPoiNames` to `true`.
+
+### Fixed
+* Fixed `STOPPED` status not being communicated on calls to `removeUpdates()`.
+* Fixed `unload()` method.
+
 ## [0.0.8] - 2023-02-20
 
 ### Added

@@ -109,10 +109,9 @@ class SitumFlutterSDKPlugin : FlutterPlugin, ActivityAware, MethodChannel.Method
 
     private fun requestLocationUpdates(arguments: Map<String, Any>, result: MethodChannel.Result) {
         locationListener?.let {
-            SitumSdk.locationManager().removeUpdates(it)
+            SitumSdk.locationManager().removeLocationListener(it)
         }
-        val locationRequest = LocationRequest.Builder().build()
-        // TODO: fromArguments(arguments)
+        val locationRequest = LocationRequest.Builder().fromArguments(arguments).build()
         locationListener = object : LocationListener {
             override fun onLocationChanged(location: Location) {
                 val callbackArgs = mutableMapOf<String, String>(
@@ -136,13 +135,17 @@ class SitumFlutterSDKPlugin : FlutterPlugin, ActivityAware, MethodChannel.Method
                 }
             }
         }
-        SitumSdk.locationManager().requestLocationUpdates(locationRequest, locationListener!!)
+        SitumSdk.locationManager().addLocationListener(locationListener!!)
+        SitumSdk.locationManager().requestLocationUpdates(locationRequest)
         result.success("DONE")
     }
 
     private fun removeUpdates(result: MethodChannel.Result) {
-        locationListener?.let {
-            SitumSdk.locationManager().removeUpdates(it)
+        SitumSdk.locationManager().let { manager ->
+            manager.removeUpdates()
+            locationListener?.let {
+                manager.removeLocationListener(it)
+            }
         }
         result.success("DONE")
     }

@@ -103,15 +103,20 @@
                               result:(FlutterResult)result {
     
     CLLocationManager *lManager = [CLLocationManager new];
-    
     [lManager requestWhenInUseAuthorization];
-    
-    self.locManager.delegate = self;
-    [self.locManager requestLocationUpdates:nil];
-    
-    
-    
+    [self.locManager addDelegate:self];
+    SITLocationRequest * locationRequest = [self createLocationRequest:call.arguments];
+    [self.locManager requestLocationUpdates:locationRequest];
     result(@"DONE");
+}
+
+-(SITLocationRequest *)createLocationRequest:(NSDictionary *)arguments{
+    SITLocationRequest *locationRequest = [SITLocationRequest new];
+    NSString *buildingID = arguments[@"buildingIdentifier"];
+    if (buildingID){
+        locationRequest.buildingID = buildingID;
+    }
+    return locationRequest;
 }
 
 - (void)handleRemoveUpdates:(FlutterMethodCall*)call result:(FlutterResult)result {
