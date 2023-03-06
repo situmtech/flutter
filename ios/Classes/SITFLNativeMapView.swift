@@ -112,6 +112,7 @@ extension SITFLNativeMapView{
     
     func unloadView() {
         SITFLNativeMapView.wyfStarted = false
+        SITFLNativeMapView.library?.unload()
     }
     
 
