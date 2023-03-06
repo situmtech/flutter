@@ -49,14 +49,14 @@ class _MyTabsState extends State<MyTabs> {
                   shrinkWrap: true,
                   childAspectRatio: 1.5,
                   children: [
-                    _buildSDKButton('Start', _requestUpdates),
-                    _buildSDKButton('Stop', _removeUpdates),
-                    _buildSDKButton('Pois', _fetchPois),
-                    _buildSDKButton('Building Info', _fetchBuildingInfo),
-                    _buildSDKButton('Clear cache', _clearCache),
-                    _buildSDKButton('Prefetch', _prefetch),
-                    _buildSDKButton('Categories', _fetchCategories),
-                    _buildSDKButton('Buildings', _fetchBuildings),
+                    _sdkButton('Start', _requestUpdates),
+                    _sdkButton('Stop', _removeUpdates),
+                    _sdkButton('Pois', _fetchPois),
+                    _sdkButton('Building Info', _fetchBuildingInfo),
+                    _sdkButton('Clear cache', _clearCache),
+                    _sdkButton('Prefetch', _prefetch),
+                    _sdkButton('Categories', _fetchCategories),
+                    _sdkButton('Buildings', _fetchBuildings),
                   ])),
           Expanded(
               child: SingleChildScrollView(
@@ -68,7 +68,7 @@ class _MyTabsState extends State<MyTabs> {
     );
   }
 
-  Widget _buildSDKButton(String buttonText, void Function() onPressed) {
+  Widget _sdkButton(String buttonText, void Function() onPressed) {
     return TextButton(
         onPressed: () {
           onPressed();

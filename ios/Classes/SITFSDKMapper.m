@@ -58,7 +58,7 @@ NSString* enforceToString(NSString *str) {
 + (NSArray *) poiCategoriesToDictArray:(NSArray<SITPOICategory *> *) categories {
     NSMutableArray *array = [NSMutableArray new];
     for (SITPOICategory* category in categories) {
-        [array addObject:[SITFSDKMapper poiCategoryToDict:category]];
+        [array addObject:[SITFSDKMapper poiCategoryToDict: category]];
     }
     return array;
 }
@@ -73,7 +73,7 @@ NSString* enforceToString(NSString *str) {
 
 + (NSDictionary *) circleAreaToDict:(SITCircularArea *) circle {
     NSMutableDictionary *dict  = [NSMutableDictionary new];
-    dict[@"center"] = [SITFSDKMapper pointToDict:circle.center];
+    dict[@"center"] = [SITFSDKMapper pointToDict: circle.center];
     dict[@"radius"] = circle.radius;
     
     return dict;
@@ -82,7 +82,7 @@ NSString* enforceToString(NSString *str) {
 + (NSArray *) eventsToDictArray:(NSArray<SITEvent *> *) events {
     NSMutableArray *array = [NSMutableArray new];
     for (SITEvent* event in events) {
-        [array addObject:[SITFSDKMapper eventToDict:event]];
+        [array addObject:[SITFSDKMapper eventToDict: event]];
     }
     return array;
 }
@@ -93,7 +93,7 @@ NSString* enforceToString(NSString *str) {
     dict[@"buildingIdentifier"] = enforceToString(event.trigger.center.buildingIdentifier);
     dict[@"floorIdentifier"] = enforceToString(event.trigger.center.floorIdentifier);
     dict[@"name"] = enforceToString(event.name);
-    dict[@"trigger"] = [SITFSDKMapper circleAreaToDict:event.trigger];
+    dict[@"trigger"] = [SITFSDKMapper circleAreaToDict: event.trigger];
     dict[@"customFields"] = event.customFields ? event.customFields : [NSDictionary new];
     
     return dict;
@@ -102,7 +102,7 @@ NSString* enforceToString(NSString *str) {
 + (NSArray *) geofencesToDictArray:(NSArray<SITGeofence *> *) geofences {
     NSMutableArray *array = [NSMutableArray new];
     for (SITGeofence* geofence in geofences) {
-        [array addObject:[SITFSDKMapper geofenceToDict:geofence]];
+        [array addObject:[SITFSDKMapper geofenceToDict: geofence]];
     }
     return array;
 }
@@ -119,8 +119,8 @@ NSString* enforceToString(NSString *str) {
     
     NSDateFormatter *formatter = [NSDateFormatter new];
     [formatter setDateFormat:DATE_FORMAT];
-    dict[@"createdAt"] = enforceToString([formatter stringFromDate:geofence.createdAt]);
-    dict[@"updatedAt"] = enforceToString([formatter stringFromDate:geofence.updatedAt]);
+    dict[@"createdAt"] = enforceToString([formatter stringFromDate: geofence.createdAt]);
+    dict[@"updatedAt"] = enforceToString([formatter stringFromDate: geofence.updatedAt]);
     
     return dict;
 }
@@ -173,7 +173,7 @@ NSString* enforceToString(NSString *str) {
     dict[@"createdAt"] = enforceToString([formatter stringFromDate: building.createdAt]);
     dict[@"updatedAt"] = enforceToString([formatter stringFromDate: building.updatedAt]);
     
-    return dict.copy;
+    return dict;
 }
 
 + (NSArray *) poisToDictArray:(NSArray<SITPOI *> *) pois {
@@ -192,7 +192,7 @@ NSString* enforceToString(NSString *str) {
     dict[@"categoryId"] = poi.category ? enforceToString(poi.category.identifier) : @"";
     dict[@"buildingIdentifier"] = enforceToString(poi.buildingIdentifier);
     dict[@"customFields"] = poi.customFields ? poi.customFields : [NSDictionary new];
-    dict[@"category"] = [SITFSDKMapper poiCategoryToDict:poi.category];
+    dict[@"category"] = [SITFSDKMapper poiCategoryToDict: poi.category];
     dict[@"position"] = [SITFSDKMapper pointToDict: poi.position];
     
     return dict;

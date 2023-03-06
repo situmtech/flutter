@@ -191,7 +191,7 @@ class Geofence extends NamedResource {
 
 class Poi extends NamedResource {
   final String buildingId;
-  final PoiCategory? poiCategory;
+  final PoiCategory poiCategory;
   final Point position;
   final Map<String, dynamic> customFields;
 
@@ -206,7 +206,7 @@ class Poi extends NamedResource {
 
   @override
   String toString() {
-    return "$name:$id - CAT(${poiCategory?.name}:${poiCategory?.id}) - POS($position) - CUSTOM_FIELDS($customFields)";
+    return "$name:$id - CAT(${poiCategory.name}:${poiCategory.id}) - POS($position) - CUSTOM_FIELDS($customFields)";
   }
 }
 

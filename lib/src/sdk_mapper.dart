@@ -94,10 +94,6 @@ Geofence createGeofence(Map map) {
       updatedAt: map["updatedAt"]);
 }
 
-List<Geofence> createGeofences(List maps) {
-  return maps.map((geofence) => createGeofence(geofence)).toList();
-}
-
 CircleArea createCircleArea(Map map) {
   return CircleArea(
     center: createPoint(map["center"]),
