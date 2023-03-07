@@ -1,7 +1,6 @@
 part of situm_flutter_sdk;
 
 BuildingInfo createBuildingInfo(Map map) {
-  print(map);
   return BuildingInfo(
       id: map["building"]["buildingIdentifier"],
       name: map["building"]["name"],
