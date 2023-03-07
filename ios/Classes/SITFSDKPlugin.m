@@ -189,7 +189,6 @@
     [self.comManager fetchBuildingsWithOptions: nil
                                        success:^(NSDictionary * _Nullable mapping) {
         
-        // TODO: problem with rotation (it is saved as a SITAngle not a number, so not serializable?
         result([SITFSDKUtils toArrayDict: mapping[@"results"]]);
         
     } failure:^(NSError * _Nullable error) {
