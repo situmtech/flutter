@@ -3,6 +3,7 @@ library situm_flutter_sdk;
 import 'dart:async';
 import 'dart:developer';
 import 'dart:ffi';
+import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';

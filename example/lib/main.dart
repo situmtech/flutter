@@ -36,9 +36,11 @@ class _MyTabsState extends State<MyTabs> {
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 30, horizontal: 0),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const Text(
             'SitumSdk',
+            textAlign: TextAlign.center,
             style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
           ),
           SizedBox(
@@ -51,17 +53,17 @@ class _MyTabsState extends State<MyTabs> {
                   children: [
                     _sdkButton('Start', _requestUpdates),
                     _sdkButton('Stop', _removeUpdates),
-                    _sdkButton('Pois', _fetchPois),
-                    _sdkButton('Building Info', _fetchBuildingInfo),
-                    _sdkButton('Clear cache', _clearCache),
                     _sdkButton('Prefetch', _prefetch),
+                    _sdkButton('Clear cache', _clearCache),
+                    _sdkButton('Pois', _fetchPois),
                     _sdkButton('Categories', _fetchCategories),
                     _sdkButton('Buildings', _fetchBuildings),
+                    _sdkButton('Building Info', _fetchBuildingInfo),
                   ])),
           Expanded(
               child: SingleChildScrollView(
                   padding:
-                      const EdgeInsets.symmetric(vertical: 20, horizontal: 30),
+                      const EdgeInsets.all(30),
                   child: Text(currentOutput)))
         ],
       ),
@@ -178,28 +180,25 @@ class _MyTabsState extends State<MyTabs> {
   void _fetchPois() async {
     _echo("SDK> POIS...");
     var pois = await situmSdk.fetchPoisFromBuilding(buildingIdentifier);
-    final String parsedPois = pois.join('\n\n');
-    _echo("SDK> RESPONSE: POIS = \n\n$parsedPois");
+    _echo("SDK> RESPONSE: POIS = \n\n$pois");
   }
 
   void _fetchCategories() async {
     _echo("SDK> CATEGORIES...");
     var categories = await situmSdk.fetchPoiCategories();
-    final String parsedCategories = categories.join('\n');
-    _echo("SDK> RESPONSE: CATEGORIES = \n\n$parsedCategories");
+    _echo("SDK> RESPONSE: CATEGORIES = \n\n$categories");
   }
 
   void _fetchBuildingInfo() async {
     _echo("SDK> BUILDING INFO...");
     var building = await situmSdk.fetchBuildingInfo(buildingIdentifier);
-    _echo("SDK> RESPONSE: BUILDING INFO = \n\n$building");
+    _echo("SDK> RESPONSE: BUILDING INFO = \n\n$building)");
   }
 
   void _fetchBuildings() async {
     _echo("SDK> BUILDINGS...");
     var buildings = await situmSdk.fetchBuildings();
-    final String parsedBuildings = buildings.join('\n\n');
-    _echo("SDK> RESPONSE: BUILDINGS = \n\n$parsedBuildings");
+    _echo("SDK> RESPONSE: BUILDINGS = \n\n$buildings");
   }
 
   @override

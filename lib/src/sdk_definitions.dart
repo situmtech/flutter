@@ -33,9 +33,11 @@ class NamedResource {
     required this.name,
   });
 
+  Map<String, dynamic> toJson() => {"id": id, "name": name};
+
   @override
   String toString() {
-    return "$name:$id";
+    return const JsonEncoder.withIndent('\t\t').convert(toJson());
   }
 }
 
@@ -46,6 +48,9 @@ class Coordinate {
     required this.latitude,
     required this.longitude,
   });
+
+  Map<String, dynamic> toJson() =>
+      {"latitude": latitude, "longitude": longitude};
 }
 
 class Bounds {
@@ -59,9 +64,16 @@ class Bounds {
     required this.southEast,
     required this.southWest,
   });
+
+  Map<String, dynamic> toJson() => {
+        "northEast": northEast.toJson(),
+        "northWest": northWest.toJson(),
+        "southEast": southEast.toJson(),
+        "southWest": southWest.toJson()
+      };
 }
 
-class BuildingInfo {
+class BuildingInfo extends NamedResource {
   final Building building;
   final List<Floor> floors;
   final List<Poi> indoorPois;
@@ -69,6 +81,8 @@ class BuildingInfo {
   final List<Geofence> geofences;
   final List<Event> events;
   BuildingInfo({
+    required super.id,
+    required super.name,
     required this.building,
     required this.floors,
     required this.indoorPois,
@@ -78,13 +92,20 @@ class BuildingInfo {
   });
 
   @override
-  String toString() {
-    return "${building.name}: ${building.id} - \nFLOORS(${floors.join("\n")})\n - \nINDOOR_POIS(${indoorPois.join("\n")})\n - \nOUTDOOR_POIS(${outdoorPois.join("\n")})\n - \nGEOFENCES(${geofences.join("\n")})";
-  }
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "name": name,
+        "building": building.toJson(),
+        "floors": floors.map((i) => i.toJson()).toList(),
+        "indoorPois": indoorPois.map((i) => i.toJson()).toList(),
+        "outdoorPois": outdoorPois.map((i) => i.toJson()).toList(),
+        "geofences": geofences.map((i) => i.toJson()).toList(),
+        "events": events.map((i) => i.toJson()).toList()
+      };
 }
 
 class Floor extends NamedResource {
-  final String buildingIdentifier;
+  final String buildingId;
   final int floorIndex;
   final String mapUrl;
   final double scale;
@@ -94,13 +115,24 @@ class Floor extends NamedResource {
   Floor(
       {required super.id,
       required super.name,
-      required this.buildingIdentifier,
+      required this.buildingId,
       required this.floorIndex,
       required this.mapUrl,
       required this.scale,
       required this.createdAt,
       required this.updatedAt,
       required this.customFields});
+
+  @override
+  Map<String, dynamic> toJson() => {
+        "buildingId": buildingId,
+        "floorIndex": floorIndex,
+        "mapUrl": mapUrl,
+        "scale": scale,
+        "createdAt": createdAt,
+        "updatedAt": updatedAt,
+        "customFields": customFields
+      };
 }
 
 class Building extends NamedResource {
@@ -136,9 +168,23 @@ class Building extends NamedResource {
   });
 
   @override
-  String toString() {
-    return "$name: $id - NAME($name) - USER_ID($userIdentifier) - DIMENSIONS(${width.toStringAsFixed(2)}, ${height.toStringAsFixed(2)})";
-  }
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "name": name,
+        "address": address,
+        "bounds": bounds.toJson(),
+        "boundsRotated": boundsRotated.toJson(),
+        "center": center.toJson(),
+        "width": width,
+        "height": height,
+        "pictureThumbUrl": pictureThumbUrl,
+        "pictureUrl": pictureUrl,
+        "rotation": rotation,
+        "userIdentifier": userIdentifier,
+        "customFields": customFields,
+        "createdAt": createdAt,
+        "updatedAt": updatedAt
+      };
 }
 
 class CircleArea {
@@ -148,26 +194,35 @@ class CircleArea {
     required this.center,
     required this.radius,
   });
+
+  Map<String, dynamic> toJson() => {
+        "center": center.toJson(),
+        "radius": radius,
+      };
 }
 
 class Event extends NamedResource {
-  final String buildingIdentifier;
-  final String floorIdentifier;
   final Map<String, dynamic> customFields;
   final CircleArea trigger;
   Event({
     required super.id,
     required super.name,
-    required this.buildingIdentifier,
-    required this.floorIdentifier,
     required this.customFields,
     required this.trigger,
   });
+
+  @override
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "name": name,
+        "trigger": trigger.toJson(),
+        "customFields": customFields,
+      };
 }
 
 class Geofence extends NamedResource {
-  final String buildingIdentifier;
-  final String floorIdentifier;
+  final String buildingId;
+  final String floorId;
   final List<Point> polygonPoints;
   final Map<String, dynamic> customFields;
   final String createdAt;
@@ -175,8 +230,8 @@ class Geofence extends NamedResource {
   Geofence({
     required super.id,
     required super.name,
-    required this.buildingIdentifier,
-    required this.floorIdentifier,
+    required this.buildingId,
+    required this.floorId,
     required this.polygonPoints,
     required this.createdAt,
     required this.updatedAt,
@@ -184,9 +239,16 @@ class Geofence extends NamedResource {
   });
 
   @override
-  String toString() {
-    return "$name: $id - BUILDING_ID($buildingIdentifier) - FLOOR_ID($floorIdentifier) POINTS($polygonPoints) - CUSTOM_FIELDS($customFields)";
-  }
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "name": name,
+        "buildingId": buildingId,
+        "floorId": floorId,
+        "polygonPoints": polygonPoints,
+        "customFields": customFields,
+        "createdAt": createdAt,
+        "updatedAt": updatedAt,
+      };
 }
 
 class Poi extends NamedResource {
@@ -205,9 +267,14 @@ class Poi extends NamedResource {
   });
 
   @override
-  String toString() {
-    return "$name:$id - CAT(${poiCategory.name}:${poiCategory.id}) - POS($position) - CUSTOM_FIELDS($customFields)";
-  }
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "name": name,
+        "buildingId": buildingId,
+        "poiCategory": poiCategory.toJson(),
+        "position": position.toJson(),
+        "customFields": customFields,
+      };
 }
 
 class Point {
@@ -223,10 +290,12 @@ class Point {
     required this.longitude,
   });
 
-  @override
-  String toString() {
-    return "($latitude, $longitude)";
-  }
+  Map<String, dynamic> toJson() => {
+        "buildingId": buildingId,
+        "floorId": floorId,
+        "latitude": latitude,
+        "longitude": longitude,
+      };
 }
 
 class PoiCategory extends NamedResource {

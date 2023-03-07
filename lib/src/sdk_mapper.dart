@@ -1,7 +1,10 @@
 part of situm_flutter_sdk;
 
 BuildingInfo createBuildingInfo(Map map) {
+  print(map);
   return BuildingInfo(
+      id: map["building"]["buildingIdentifier"],
+      name: map["building"]["name"],
       building: createBuilding(map["building"]),
       floors: createList<Floor>(map["floors"], createFloor),
       indoorPois: createList<Poi>(map["indoorPOIs"], createPoi),
@@ -26,7 +29,7 @@ Floor createFloor(Map map) {
   return Floor(
     id: map["floorIdentifier"],
     name: map["name"],
-    buildingIdentifier: map["buildingIdentifier"],
+    buildingId: map["buildingIdentifier"],
     floorIndex: map["floor"],
     mapUrl: map["mapUrl"],
     scale: map["scale"],
@@ -68,7 +71,7 @@ Poi createPoi(Map map) {
 
 PoiCategory createCategory(Map map) {
   return PoiCategory(
-    id: map["identifier"],
+    id: map["identifier"].toString(),
     name: map["poiCategoryName"],
   );
 }
@@ -86,8 +89,8 @@ Geofence createGeofence(Map map) {
   return Geofence(
       id: map["identifier"],
       name: map["name"],
-      buildingIdentifier: map["buildingIdentifier"],
-      floorIdentifier: map["floorIdentifier"],
+      buildingId: map["buildingIdentifier"],
+      floorId: map["floorIdentifier"],
       polygonPoints: createList<Point>(map["polygonPoints"], createPoint),
       customFields: Map<String, dynamic>.from(map["customFields"]),
       createdAt: map["createdAt"],
@@ -103,10 +106,8 @@ CircleArea createCircleArea(Map map) {
 
 Event createEvent(Map map) {
   return Event(
-      id: map["identifier"],
+      id: map["identifier"].toString(),
       name: map["name"],
-      buildingIdentifier: map["buildingIdentifier"],
-      floorIdentifier: map["floorIdentifier"],
       customFields: Map<String, dynamic>.from(map["customFields"]),
       trigger: createCircleArea(map["trigger"]));
 }
