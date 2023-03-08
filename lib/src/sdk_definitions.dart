@@ -37,7 +37,7 @@ class NamedResource {
 
   @override
   String toString() {
-    return const JsonEncoder.withIndent('\t\t').convert(toJson());
+    return const JsonEncoder.withIndent('\t').convert(toJson());
   }
 }
 
@@ -97,8 +97,8 @@ class BuildingInfo extends NamedResource {
         "name": name,
         "building": building.toJson(),
         "floors": floors.map((i) => i.toJson()).toList(),
-        "indoorPois": indoorPois.map((i) => i.toJson()).toList(),
-        "outdoorPois": outdoorPois.map((i) => i.toJson()).toList(),
+        "indoorPOIs": indoorPois.map((i) => i.toJson()).toList(),
+        "outdoorPOIs": outdoorPois.map((i) => i.toJson()).toList(),
         "geofences": geofences.map((i) => i.toJson()).toList(),
         "events": events.map((i) => i.toJson()).toList()
       };
