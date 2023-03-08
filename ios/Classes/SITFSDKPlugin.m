@@ -25,6 +25,8 @@
 
 @implementation SITFSDKPlugin
 
+static NSString* RESULTS_KEY = @"results";
+
 +(void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
     FlutterMethodChannel *channel = [FlutterMethodChannel methodChannelWithName:@"situm.com/flutter_sdk" binaryMessenger:[registrar messenger]];
     SITFSDKPlugin* instance = [[SITFSDKPlugin alloc] init];
@@ -174,7 +176,7 @@
     [self.comManager fetchPoisOfBuilding:buildingId
                              withOptions:nil
                                  success:^(NSDictionary * _Nullable mapping) {
-        result([SITFSDKUtils toArrayDict: mapping[@"results"]]);
+        result([SITFSDKUtils toArrayDict: mapping[RESULTS_KEY]]);
         
     } failure:^(NSError * _Nullable error) {
         FlutterError *ferror = [FlutterError errorWithCode:@"errorPrefetch"
@@ -189,7 +191,7 @@
     [self.comManager fetchBuildingsWithOptions: nil
                                        success:^(NSDictionary * _Nullable mapping) {
         
-        result([SITFSDKUtils toArrayDict: mapping[@"results"]]);
+        result([SITFSDKUtils toArrayDict: mapping[RESULTS_KEY]]);
         
     } failure:^(NSError * _Nullable error) {
         FlutterError *ferror = [FlutterError errorWithCode:@"errorFetchBuildings"
@@ -215,7 +217,7 @@
     [self.comManager fetchBuildingInfo:buildingId
                            withOptions:nil
                                success:^(NSDictionary * _Nullable mapping) {
-        result(((SITBuildingInfo*) mapping[@"results"]).toDictionary);
+        result(((SITBuildingInfo*) mapping[RESULTS_KEY]).toDictionary);
         
     } failure:^(NSError * _Nullable error) {
         FlutterError *ferror = [FlutterError errorWithCode:@"errorFetchBuildingInfo"
