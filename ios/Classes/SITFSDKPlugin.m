@@ -25,7 +25,7 @@
 
 @implementation SITFSDKPlugin
 
-static NSString* RESULTS_KEY = @"results";
+const NSString* RESULTS_KEY = @"results";
 
 +(void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
     FlutterMethodChannel *channel = [FlutterMethodChannel methodChannelWithName:@"situm.com/flutter_sdk" binaryMessenger:[registrar messenger]];
