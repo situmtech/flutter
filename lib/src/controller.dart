@@ -33,6 +33,10 @@ class SitumFlutterWayfinding {
   OnNavigationErrorCallback? onNavigationErrorCallback;
   OnNavigationFinishedCallback? onNavigationFinishedCallback;
   OnNavigationStartedCallback? onNavigationStartedCallback;
+  OnCustomPoiSelectedCallback? onCustomPoiSelectedCallback;
+  OnCustomPoiDeselectedCallback? onCustomPoiDeselectedCallback;
+  OnCustomPoiCreatedCallback? onCustomPoiCreatedCallback;
+  OnCustomPoiRemovedCallback? onCustomPoiRemovedCallback;
 
   static final SitumFlutterWayfinding _controller =
       SitumFlutterWayfinding._internal();
@@ -150,6 +154,43 @@ class SitumFlutterWayfinding {
     return await methodChannel.invokeMethod<String>('stopNavigation');
   }
 
+  Future<String?> startCustomPoiCreation(String? name, String? description,
+      String? encodedSelectedIcon, String? encodedUnSelectedIcon) async {
+    log("Dart startCustomPoiCreation called, methodChannel will be invoked.");
+    return await methodChannel
+        .invokeMethod<String>('startCustomPoiCreation', <String, String?>{
+      'name': name,
+      'description': description,
+      'selectedIcon': encodedSelectedIcon,
+      'unSelectedIcon': encodedUnSelectedIcon
+    });
+  }
+
+  Future<String?> removeCustomPoi(int poiId) async {
+    log("Dart removeCustomPoi called, methodChannel will be invoked.");
+    return await methodChannel
+        .invokeMethod<String>('removeCustomPoi', <String, int>{'poiId': poiId});
+  }
+
+  Future<String?> selectCustomPoi(int poiId) async {
+    log("Dart selectCustomPoi called, methodChannel will be invoked.");
+    return await methodChannel
+        .invokeMethod<String>('selectCustomPoi', <String, int>{'poiId': poiId});
+  }
+
+  Future<CustomPoi?> getCustomPoi() async {
+    log("Dart getCustomPoi called, methodChannel will be invoked.");
+    var result = await methodChannel.invokeMethod('getCustomPoi');
+    return result != null ? createCustomPoi(result) : null;
+  }
+
+  Future<CustomPoi?> getCustomPoiById(int poiId) async {
+    log("Dart getCustomPoi called, methodChannel will be invoked.");
+    var result = await methodChannel
+        .invokeMethod('getCustomPoiById', <String, int>{'poiId': poiId});
+    return result != null ? createCustomPoi(result) : null;
+  }
+
   Future<String?> navigateToPoi(String id, String buildingId) async {
     log("Dart navigateToPoi called, methodChannel will be invoked");
     return await methodChannel.invokeMethod<String>(
@@ -185,6 +226,22 @@ class SitumFlutterWayfinding {
     onNavigationStartedCallback = callback;
   }
 
+  void onCustomPoiCreated(OnCustomPoiCreatedCallback callback) {
+    onCustomPoiCreatedCallback = callback;
+  }
+
+  void onCustomPoiRemoved(OnCustomPoiRemovedCallback callback) {
+    onCustomPoiRemovedCallback = callback;
+  }
+
+  void onCustomPoiSelected(OnCustomPoiSelectedCallback callback) {
+    onCustomPoiSelectedCallback = callback;
+  }
+
+  void onCustomPoiDeselected(OnCustomPoiDeselectedCallback callback) {
+    onCustomPoiDeselectedCallback = callback;
+  }
+
   // Callbacks:
 
   Future<void> _methodCallHandler(MethodCall call) async {
@@ -206,6 +263,18 @@ class SitumFlutterWayfinding {
         break;
       case 'onNavigationStarted':
         _onNavigationStarted(call.arguments);
+        break;
+      case 'onCustomPoiCreated':
+        _onCustomPoiCreated(call.arguments);
+        break;
+      case 'onCustomPoiRemoved':
+        _onCustomPoiRemoved(call.arguments);
+        break;
+      case 'onCustomPoiSelected':
+        _onCustomPoiSelected(call.arguments);
+        break;
+      case 'onCustomPoiDeselected':
+        _onCustomPoiDeselected(call.arguments);
         break;
       default:
         print('Method ${call.method} not found!');
@@ -261,5 +330,25 @@ class SitumFlutterWayfinding {
   void _onNavigationStarted(arguments) {
     print("Situm> _onNavigationStarted invoked.");
     onNavigationStartedCallback?.call(createNavigationResult(arguments));
+  }
+
+  void _onCustomPoiCreated(arguments) {
+    print("Situm> _onCustomPoiCreated invoked.");
+    onCustomPoiCreatedCallback?.call(createCustomPoi(arguments));
+  }
+
+  void _onCustomPoiRemoved(arguments) {
+    print("Situm> _onCustomPoiRemoved invoked.");
+    onCustomPoiRemovedCallback?.call(createCustomPoi(arguments));
+  }
+
+  void _onCustomPoiSelected(arguments) {
+    print("Situm> _onCustomPoiSelected invoked.");
+    onCustomPoiSelectedCallback?.call(createCustomPoi(arguments));
+  }
+
+  void _onCustomPoiDeselected(arguments) {
+    print("Situm> _onCustomPoiDeselected invoked.");
+    onCustomPoiDeselectedCallback?.call(createCustomPoi(arguments));
   }
 }
