@@ -11,4 +11,4 @@
 - Unified mapping functions on both iOS and Android.
 - Added mapping for `startCustomPoiCreation`, `selectCustomPoi`, `deleteCustomPoi` and `getCustomPoi`.
 - New widget to display find my car functionality.
-- Updated WYF version to 2.59.0
+- Updated WYF iOS version to 0.20.0
