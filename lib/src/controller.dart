@@ -202,6 +202,22 @@ class SitumFlutterWayfinding {
     );
   }
 
+  Future<String?> setDirectionsRequest(
+      DirectionsRequest? directionsRequest) async {
+    log("Dart setDirectionsRequest called, methodChannel will be invoked");
+    List<Map<String, dynamic>> exclusionsArray = [];
+    directionsRequest?.exclusions?.forEach((circle) {
+      exclusionsArray.add(circleToMap(circle));
+    });
+
+    return await methodChannel.invokeMethod<String>(
+      'setDirectionsRequest',
+      <String, dynamic>{
+        'exclusions': exclusionsArray,
+      },
+    );
+  }
+
   void onPoiSelected(OnPoiSelectedCallback callback) {
     onPoiSelectedCallback = callback;
   }

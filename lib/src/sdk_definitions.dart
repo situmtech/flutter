@@ -81,6 +81,18 @@ class Point {
   });
 }
 
+class Circle extends Point {
+  final double radius;
+
+  Circle({
+    required super.buildingId,
+    required super.floorId,
+    required super.latitude,
+    required super.longitude,
+    required this.radius
+  });
+}
+
 class PoiCategory extends NamedResource {
   PoiCategory({
     required super.id,

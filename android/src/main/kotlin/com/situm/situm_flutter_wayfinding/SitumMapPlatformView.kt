@@ -8,6 +8,7 @@ import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
+import com.situm.situm_flutter_wayfinding.adapter.DirectionsRequestData
 import es.situm.sdk.model.cartography.Building
 import es.situm.sdk.model.cartography.Floor
 import es.situm.sdk.model.cartography.Poi
@@ -48,9 +49,11 @@ class SitumMapPlatformView(
         const val ERROR_LIBRARY_NOT_LOADED = "ERROR_LIBRARY_NOT_LOADED"
         const val ERROR_SELECT_POI = "ERROR_SELECT_POI"
         const val ERROR_SET_CUSTOM_POI = "ERROR_SET_CUSTOM_POI"
+        const val ERROR_SET_DIRECTIONS_REQUEST = "ERROR_SET_DIRECTIONS_REQUEST"
     }
 
     private var methodChannel: MethodChannel
+    private var directionsRequestData: DirectionsRequestData? = null
 
     init {
         libraryLoader = SitumMapLibraryLoader.fromActivity(activity)
@@ -90,6 +93,7 @@ class SitumMapPlatformView(
                 "removeCustomPoi" -> removeCustomPoi(arguments, result)
                 "getCustomPoiById" -> getCustomPoiById(arguments, result)
                 "getCustomPoi" -> getCustomPoi(result)
+                "setDirectionsRequest" -> setDirectionsRequest(arguments, result)
                 else -> result.notImplemented()
             }
         }
@@ -196,45 +200,47 @@ class SitumMapPlatformView(
     private fun startCustomPoiCreation(arguments: Map<String, Any>, result: MethodChannel.Result) {
         val name = arguments["name"] as String?
         val description = arguments["description"] as String?
-        val selectedIconBitmap : Bitmap? = Utils.decodeBitMapFromBase64(arguments["selectedIcon"] as String?)
-        val unSelectedIconBitmap : Bitmap? = Utils.decodeBitMapFromBase64(arguments["unSelectedIcon"] as String?)
+        val selectedIconBitmap: Bitmap? =
+            Utils.decodeBitMapFromBase64(arguments["selectedIcon"] as String?)
+        val unSelectedIconBitmap: Bitmap? =
+            Utils.decodeBitMapFromBase64(arguments["unSelectedIcon"] as String?)
 
         library?.startCustomPoiCreation(name, description,
-                selectedIconBitmap, unSelectedIconBitmap, object : ActionsCallback {
-            override fun onActionConcluded() {
-                Log.d(TAG, "Android> startCustomPoiSelection success.")
-                result.success("DONE")
-            }
-            override fun onActionCanceled() {
-                Log.d(TAG, "Android> startCustomPoiSelection failure.")
-                result.error(ERROR_SET_CUSTOM_POI, "Custom POI could not be saved", null)
-            }
-        })
+            selectedIconBitmap, unSelectedIconBitmap, object : ActionsCallback {
+                override fun onActionConcluded() {
+                    Log.d(TAG, "Android> startCustomPoiSelection success.")
+                    result.success("DONE")
+                }
+
+                override fun onActionCanceled() {
+                    Log.d(TAG, "Android> startCustomPoiSelection failure.")
+                    result.error(ERROR_SET_CUSTOM_POI, "Custom POI could not be saved", null)
+                }
+            })
     }
 
     private fun removeCustomPoi(arguments: Map<String, Any>, result: MethodChannel.Result) {
         val poiId = arguments["poiId"] as Int
-        library?.removeCustomPoi(poiId, object: ActionsCallback {
-                override fun onActionConcluded() {
-                    Log.d(TAG, "Android> removeCustomPoi success.")
-                    result.success("DONE")
-                }
+        library?.removeCustomPoi(poiId, object : ActionsCallback {
+            override fun onActionConcluded() {
+                Log.d(TAG, "Android> removeCustomPoi success.")
+                result.success("DONE")
             }
-        )
+        })
     }
 
     private fun selectCustomPoi(arguments: Map<String, Any>, result: MethodChannel.Result) {
         val poiId = arguments["poiId"] as Int
-        library?.selectCustomPoi(poiId, object: ActionsCallback {
-                override fun onActionConcluded() {
-                    Log.d(TAG, "Android> selectCustomPoi success.")
-                    result.success("DONE")
-                }
-                override fun onActionCanceled() {
-                    Log.d(TAG, "Android> selectCustomPoi failure.")
-                }
+        library?.selectCustomPoi(poiId, object : ActionsCallback {
+            override fun onActionConcluded() {
+                Log.d(TAG, "Android> selectCustomPoi success.")
+                result.success("DONE")
             }
-        )
+
+            override fun onActionCanceled() {
+                Log.d(TAG, "Android> selectCustomPoi failure.")
+            }
+        })
     }
 
     private fun getCustomPoiById(arguments: Map<String, Any>, result: MethodChannel.Result) {
@@ -246,6 +252,21 @@ class SitumMapPlatformView(
     private fun getCustomPoi(result: MethodChannel.Result) {
         Log.d(TAG, "Android> getCustomPoi success.")
         result.success(library?.getCustomPoi()?.toMap())
+    }
+
+    private fun setDirectionsRequest(arguments: Map<String, Any>, result: MethodChannel.Result) {
+        Log.d(TAG, "Android> setDirectionsRequest, args=$arguments")
+        directionsRequestData = DirectionsRequestData().apply {
+            populateFromArguments(arguments, object : DirectionsRequestData.Callback {
+                override fun onSuccess() {
+                    result.success("DONE")
+                }
+
+                override fun onError(message: String) {
+                    result.error(ERROR_SET_DIRECTIONS_REQUEST, message, null)
+                }
+            })
+        }
     }
 
     // Callbacks
@@ -316,19 +337,30 @@ class SitumMapPlatformView(
                 val arguments = customPoi.toMap()
                 methodChannel.invokeMethod("onCustomPoiCreated", arguments)
             }
+
             override fun onCustomPoiRemoved(customPoi: CustomPoi) {
                 val arguments = customPoi.toMap()
                 methodChannel.invokeMethod("onCustomPoiRemoved", arguments)
             }
+
             override fun onCustomPoiDeselected(customPoi: CustomPoi) {
                 val arguments = customPoi.toMap()
                 methodChannel.invokeMethod("onCustomPoiDeselected", arguments)
             }
+
             override fun onCustomPoiSelected(customPoi: CustomPoi) {
                 val arguments = customPoi.toMap()
                 methodChannel.invokeMethod("onCustomPoiSelected", arguments)
             }
         })
+
+        library?.addDirectionsRequestInterceptor { builder ->
+            directionsRequestData?.let {
+                it.exclusions.forEach { circle ->
+                    builder.excluding(circle)
+                }
+            }
+        }
     }
 
     // Utils

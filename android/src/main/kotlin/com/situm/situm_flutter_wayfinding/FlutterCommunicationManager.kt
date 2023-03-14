@@ -3,6 +3,7 @@ package com.situm.situm_flutter_wayfinding
 import android.util.Log
 import es.situm.sdk.SitumSdk
 import es.situm.sdk.error.Error
+import es.situm.sdk.model.cartography.BuildingInfo
 import es.situm.sdk.model.cartography.Poi
 import es.situm.sdk.utils.Handler
 
@@ -36,6 +37,23 @@ class FlutterCommunicationManager {
 
                     override fun onFailure(error: Error) {
                         Log.e(TAG, "Error getting POI $poiId.")
+                        callback.onError(error.message)
+                    }
+                })
+        }
+
+        /**
+         * Get a BuildingInfo instance object.
+         */
+        fun fetchBuildingInfo(buildingId: String, callback: Callback<BuildingInfo>) {
+            SitumSdk.communicationManager()
+                .fetchBuildingInfo(buildingId, object : Handler<BuildingInfo> {
+                    override fun onSuccess(buildingInfo: BuildingInfo) {
+                        callback.onSuccess(buildingInfo)
+                    }
+
+                    override fun onFailure(error: Error) {
+                        Log.e(TAG, "Error getting building info for $buildingId.")
                         callback.onError(error.message)
                     }
                 })

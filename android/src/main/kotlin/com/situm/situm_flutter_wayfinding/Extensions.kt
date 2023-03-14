@@ -3,8 +3,8 @@ package com.situm.situm_flutter_wayfinding
 import es.situm.sdk.error.Error
 import es.situm.sdk.location.LocationRequest
 import es.situm.sdk.model.MapperInterface
-import es.situm.sdk.model.cartography.Poi
-import es.situm.sdk.model.cartography.PoiCategory
+import es.situm.sdk.model.cartography.*
+import es.situm.sdk.model.location.Coordinate
 import io.flutter.plugin.common.MethodChannel
 
 fun List<MapperInterface>.toMap(): List<Map<String, Any>> {
@@ -57,4 +57,23 @@ fun LocationRequest.Builder.fromArguments(args: Map<String, Any>): LocationReque
         }
     }
     return this
+}
+
+fun Building.createPoint(
+    floorId: String,
+    latitude: Double,
+    longitude: Double
+): Point {
+    val coordinate = Coordinate(latitude, longitude)
+    return Point(this, floorId, coordinate)
+}
+
+fun Building.createCircle(
+    floorId: String,
+    latitude: Double,
+    longitude: Double,
+    radius: Double
+): Circle {
+    val point = createPoint(floorId, latitude, longitude)
+    return Circle(point, radius.toFloat())
 }

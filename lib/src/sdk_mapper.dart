@@ -35,6 +35,21 @@ Point createPoint(Map map) {
   );
 }
 
+Map<String, dynamic> pointToMap(Point point) {
+  return <String, dynamic>{
+    'buildingId': point.buildingId,
+    'floorId': point.floorId,
+    'latitude': point.latitude,
+    'longitude': point.longitude,
+  };
+}
+
+Map<String, dynamic> circleToMap(Circle circle) {
+  var map = pointToMap(circle);
+  map["radius"] = circle.radius;
+  return map;
+}
+
 List<PoiCategory> createCategories(List maps) {
   List<PoiCategory> categories = [];
   for (Map map in maps) {

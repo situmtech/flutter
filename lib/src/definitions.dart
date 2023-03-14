@@ -107,18 +107,27 @@ class CustomPoi {
   final int levelId;
   final Coordinates coordinates;
 
-  const CustomPoi(
-      {required this.id,
-      required this.name,
-      required this.description,
-      required this.buildingId,
-      required this.levelId,
-      required this.coordinates});
+  const CustomPoi({
+    required this.id,
+    required this.name,
+    required this.description,
+    required this.buildingId,
+    required this.levelId,
+    required this.coordinates,
+  });
 
   @override
   String toString() {
     return "[$id] $name: $description - MAP($coordinates)";
   }
+}
+
+class DirectionsRequest {
+  List<Circle>? exclusions;
+
+  DirectionsRequest({
+    this.exclusions,
+  });
 }
 
 // Result callbacks.
