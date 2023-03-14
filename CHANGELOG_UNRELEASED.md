@@ -9,3 +9,5 @@
 ### Changed
 
 - Unified mapping functions on both iOS and Android.
+- Added mapping for `startCustomPoiCreation`, `selectCustomPoi`, `deleteCustomPoi` and `getCustomPoi`.
+- New widget to display find my car functionality.

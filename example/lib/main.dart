@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:situm_flutter_wayfinding/situm_flutter_sdk.dart';
 import 'package:situm_flutter_wayfinding/situm_flutter_wayfinding.dart';
 import 'package:situm_flutter_wayfinding_example/config.dart';
+import 'package:situm_flutter_wayfinding_example/find_my_car.dart';
 
 void main() => runApp(const MyApp());
 
@@ -30,6 +31,8 @@ class _MyTabsState extends State<MyTabs> {
   late SitumFlutterSDK situmSdk;
   int _selectedIndex = 0;
   String currentOutput = "---";
+
+  SitumFlutterWayfinding? wyfController;
 
   Widget _createHomeTab() {
     // Home:
@@ -80,32 +83,42 @@ class _MyTabsState extends State<MyTabs> {
 
   Widget _createSitumMapTab() {
     // The Situm map:
-    return SitumMapView(
-      key: const Key("situm_map"),
-      // Your Situm credentials and building, see config.dart.
-      // Copy config.dart.example if you haven't already.
-      searchViewPlaceholder: "Situm Flutter Wayfinding",
-      situmUser: situmUser,
-      situmApiKey: situmApiKey,
-      buildingIdentifier: buildingIdentifier,
-      googleMapsApiKey: googleMapsApiKey,
-      useHybridComponents: true,
-      showPoiNames: true,
-      hasSearchView: true,
-      lockCameraToBuilding: true,
-      useRemoteConfig: true,
-      initialZoom: 20,
-      minZoom: 16,
-      maxZoom: 21,
-      showNavigationIndications: true,
-      showFloorSelector: true,
-      showPositioningButton: true,
-      navigationSettings: const NavigationSettings(
-        outsideRouteThreshold: 40,
-        distanceToGoalThreshold: 8,
+    return Stack(children: [
+      SitumMapView(
+        key: const Key("situm_map"),
+        // Your Situm credentials and building, see config.dart.
+        // Copy config.dart.example if you haven't already.
+        searchViewPlaceholder: "Situm Flutter Wayfinding",
+        situmUser: situmUser,
+        situmApiKey: situmApiKey,
+        buildingIdentifier: buildingIdentifier,
+        googleMapsApiKey: googleMapsApiKey,
+        useHybridComponents: true,
+        showPoiNames: true,
+        hasSearchView: true,
+        lockCameraToBuilding: true,
+        useRemoteConfig: true,
+        initialZoom: 20,
+        minZoom: 16,
+        maxZoom: 20,
+        showPositioningButton: true,
+        showNavigationIndications: true,
+        showFloorSelector: true,
+        navigationSettings: const NavigationSettings(
+          outsideRouteThreshold: 40,
+          distanceToGoalThreshold: 8,
+        ),
+        loadCallback: _onSitumMapLoaded,
       ),
-      loadCallback: _onSitumMapLoaded,
-    );
+      wyfController != null
+          ? FindMyCar(
+              wyfController: wyfController,
+              buildingIdentifier: buildingIdentifier,
+              selectedIconPath: 'resources/car_selected_icon.png',
+              unSelectedIconPath: 'resources/car_unselected_icon.png',
+            )
+          : Container()
+    ]);
   }
 
   void _onSitumMapLoaded(SitumFlutterWayfinding controller) {
@@ -121,8 +134,10 @@ class _MyTabsState extends State<MyTabs> {
     controller.onNavigationStarted((navigation) {
       print("WYF> Nav started, distance = ${navigation.route?.distance}");
     });
-    //controller.startPositioning();
-    //controller.selectPoi(MY_POI_ID, buildingIdentifier);
+
+    setState(() {
+      wyfController = controller;
+    });
   }
 
   @override
@@ -210,10 +225,7 @@ class _MyTabsState extends State<MyTabs> {
       ),
       body: IndexedStack(
         index: _selectedIndex,
-        children: [
-          _createHomeTab(),
-          _createSitumMapTab(),
-        ],
+        children: [_createHomeTab(), _createSitumMapTab()],
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
@@ -224,7 +236,7 @@ class _MyTabsState extends State<MyTabs> {
           BottomNavigationBarItem(
             icon: Icon(Icons.map),
             label: 'Wayfinding',
-          )
+          ),
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.amber[800],
