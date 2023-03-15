@@ -37,63 +37,48 @@ class _MyTabsState extends State<MyTabs> {
   Widget _createHomeTab() {
     // Home:
     return Card(
+      margin: const EdgeInsets.symmetric(vertical: 30, horizontal: 0),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           const Text(
             'SitumSdk',
+            textAlign: TextAlign.center,
             style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
           ),
-          ButtonBar(
-            alignment: MainAxisAlignment.center,
-            children: [
-              TextButton(
-                  onPressed: () {
-                    _requestUpdates();
-                  },
-                  child: const Text('Start')),
-              TextButton(
-                  onPressed: () {
-                    _removeUpdates();
-                  },
-                  child: const Text('Stop')),
-              TextButton(
-                  onPressed: () {
-                    _echo("SDK> RESPONSE: CLEAR CACHE...");
-                    _clearCache();
-                  },
-                  child: const Text('Clear cache')),
-            ],
-          ),
-          ButtonBar(
-            alignment: MainAxisAlignment.center,
-            children: [
-              TextButton(
-                  onPressed: () {
-                    _echo("SDK> POIS...");
-                    _fetchPois();
-                  },
-                  child: const Text('Pois')),
-              TextButton(
-                  onPressed: () {
-                    _echo("SDK> CATEGORIES...");
-                    _fetchCategories();
-                  },
-                  child: const Text('Categories')),
-              TextButton(
-                  onPressed: () {
-                    _echo("SDK> PREFETCH...");
-                    _prefetch();
-                  },
-                  child: const Text('Prefetch')),
-            ],
-          ),
-          Container(
-            margin: const EdgeInsets.all(20.0),
-            child: SingleChildScrollView(child: Text(currentOutput)),
-          )
+          SizedBox(
+              height: 150,
+              child: GridView.count(
+                  crossAxisCount: 4,
+                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                  shrinkWrap: true,
+                  childAspectRatio: 1.5,
+                  children: [
+                    _sdkButton('Start', _requestUpdates),
+                    _sdkButton('Stop', _removeUpdates),
+                    _sdkButton('Prefetch', _prefetch),
+                    _sdkButton('Clear cache', _clearCache),
+                    _sdkButton('Pois', _fetchPois),
+                    _sdkButton('Categories', _fetchCategories),
+                    _sdkButton('Buildings', _fetchBuildings),
+                    _sdkButton('Building Info', _fetchBuildingInfo),
+                  ])),
+          Expanded(
+              child: SingleChildScrollView(
+                  padding:
+                      const EdgeInsets.all(30),
+                  child: Text(currentOutput)))
         ],
       ),
     );
+  }
+
+  Widget _sdkButton(String buttonText, void Function() onPressed) {
+    return TextButton(
+        onPressed: () {
+          onPressed();
+        },
+        child: Text(buttonText));
   }
 
   Widget _createSitumMapTab() {
@@ -191,11 +176,13 @@ class _MyTabsState extends State<MyTabs> {
   }
 
   void _clearCache() async {
+    _echo("SDK> RESPONSE: CLEAR CACHE...");
     await situmSdk.clearCache();
     _echo("SDK> RESPONSE: CLEAR CACHE = DONE");
   }
 
   void _prefetch() async {
+    _echo("SDK> PREFETCH...");
     var prefetch = await situmSdk.prefetchPositioningInfo(
       [buildingIdentifier],
       options: PrefetchOptions(
@@ -206,13 +193,27 @@ class _MyTabsState extends State<MyTabs> {
   }
 
   void _fetchPois() async {
+    _echo("SDK> POIS...");
     var pois = await situmSdk.fetchPoisFromBuilding(buildingIdentifier);
-    _echo("SDK> RESPONSE: POIS = $pois");
+    _echo("SDK> RESPONSE: POIS = \n\n$pois");
   }
 
   void _fetchCategories() async {
+    _echo("SDK> CATEGORIES...");
     var categories = await situmSdk.fetchPoiCategories();
-    _echo("SDK> RESPONSE: CATEGORIES = $categories");
+    _echo("SDK> RESPONSE: CATEGORIES = \n\n$categories");
+  }
+
+  void _fetchBuildingInfo() async {
+    _echo("SDK> BUILDING INFO...");
+    var building = await situmSdk.fetchBuildingInfo(buildingIdentifier);
+    _echo("SDK> RESPONSE: BUILDING INFO = \n\n$building)");
+  }
+
+  void _fetchBuildings() async {
+    _echo("SDK> BUILDINGS...");
+    var buildings = await situmSdk.fetchBuildings();
+    _echo("SDK> RESPONSE: BUILDINGS = \n\n$buildings");
   }
 
   @override

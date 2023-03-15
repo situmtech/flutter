@@ -2,6 +2,7 @@ library situm_flutter_sdk;
 
 import 'dart:async';
 import 'dart:ffi';
+import 'dart:convert';
 
 import 'package:flutter/services.dart';
 

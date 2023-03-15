@@ -18,6 +18,7 @@ class DirectionsRequestData {
         }
 
         // Get exclusions (depends on asynchronous call to fetchBuildingInfo):
+        exclusions.clear()
         if (args.containsKey("exclusions")) {
             populateExclusions(args["exclusions"] as List<Map<String, Any>>, callback)
         } else {
@@ -29,33 +30,37 @@ class DirectionsRequestData {
         exclusionsArgs: List<Map<String, Any>>,
         callback: Callback
     ) {
-        exclusions.clear()
-        // Exclusion circles depends on Building, which we must obtain asynchronously.
-        if (exclusionsArgs.isNotEmpty()) {
-            val buildingId = exclusionsArgs.first()["buildingId"] as String
-            FlutterCommunicationManager.fetchBuildingInfo(
-                buildingId,
-                object : FlutterCommunicationManager.Callback<BuildingInfo> {
-                    override fun onSuccess(result: BuildingInfo) {
-                        exclusionsArgs.forEach {
-                            exclusions.add(
-                                result.building.createCircle(
-                                    it["floorId"] as String,
-                                    it["latitude"] as Double,
-                                    it["longitude"] as Double,
-                                    it["radius"] as Double,
-                                )
-                            )
-                        }
-                    }
-
-                    override fun onError(message: String) {
-                        callback.onError(message)
-                    }
-                })
-        } else {
+        if (exclusionsArgs.isEmpty()) {
             callback.onSuccess()
+            return
         }
+        // Exclusion circles depends on Building, which we must obtain asynchronously.
+        // Get the buildingId from the very first exclusion area:
+        val firstCenter = exclusionsArgs.first()["center"] as Map<String, Any>
+        val buildingId = firstCenter["buildingId"] as String
+        // Get the Building for the given buildingId and populate exclusions:
+        FlutterCommunicationManager.fetchBuildingInfo(
+            buildingId,
+            object : FlutterCommunicationManager.Callback<BuildingInfo> {
+                // Got building!
+                override fun onSuccess(result: BuildingInfo) {
+                    exclusionsArgs.forEach {
+                        val centerMap = it["center"] as Map<String, Any>
+                        exclusions.add(
+                            result.building.createCircle(
+                                centerMap["floorId"] as String,
+                                centerMap["latitude"] as Double,
+                                centerMap["longitude"] as Double,
+                                it["radius"] as Double,
+                            )
+                        )
+                    }
+                }
+
+                override fun onError(message: String) {
+                    callback.onError(message)
+                }
+            })
     }
 
     interface Callback {

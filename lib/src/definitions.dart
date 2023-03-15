@@ -51,7 +51,7 @@ class NavigationSettings {
 
 class DirectionsSettings {
   final bool? minimizeFloorChanges;
-  final List<Circle>? exclusions;
+  final List<CircleArea>? exclusions;
 
   const DirectionsSettings({
     this.minimizeFloorChanges,
@@ -65,7 +65,7 @@ class DirectionsSettings {
       map['minimizeFloorChanges'] = minimizeFloorChanges;
     }
     if (exclusions != null) {
-      map['exclusions'] = exclusions!.map((e) => (e.toMap())).toList();
+      map['exclusions'] = exclusions!.map((e) => (e.toJson())).toList();
     }
     return map;
   }
