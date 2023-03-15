@@ -7,34 +7,9 @@ import es.situm.sdk.model.cartography.Poi
 import es.situm.sdk.model.cartography.PoiCategory
 import io.flutter.plugin.common.MethodChannel
 
-fun List<MapperInterface>.toMap(): List<Map<String, Any>> {
+fun Collection<MapperInterface>.toMap(): List<Map<String, Any>> {
     return map {
         it.toMap()
-    }
-}
-
-fun Collection<Poi>.toPoisMap(): List<Map<String, Any>> {
-    return map {
-        mapOf(
-            // Create a map for each Poi.
-            // TODO: pending category identifier, then delete this method.
-            "poiCategory" to it.category.ftToMap(),
-        ) + it.toMap()
-    }
-}
-
-fun PoiCategory.ftToMap(): Map<String, Any> {
-    return mapOf(
-        // Create a map for the current poi category.
-        // TODO: fix SDK, add identifier, then delete this method.
-        "id" to identifier,
-    ) + toMap()
-}
-
-fun Collection<PoiCategory>.toCategoriesMap(): List<Map<String, Any>> {
-    // TODO: pending category identifier, then delete this method.
-    return map {
-        it.ftToMap()
     }
 }
 
