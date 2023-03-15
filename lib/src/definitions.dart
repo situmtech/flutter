@@ -51,9 +51,11 @@ class NavigationSettings {
 
 class DirectionsSettings {
   final bool? minimizeFloorChanges;
+  final List<Circle>? exclusions;
 
   const DirectionsSettings({
     this.minimizeFloorChanges,
+    this.exclusions
   });
 
   Map<String, dynamic> toMap() {
@@ -61,6 +63,9 @@ class DirectionsSettings {
 
     if (minimizeFloorChanges != null) {
       map['minimizeFloorChanges'] = minimizeFloorChanges;
+    }
+    if (exclusions != null) {
+      map['exclusions'] = exclusions!.map((e) => (e.toMap())).toList();
     }
     return map;
   }
@@ -120,14 +125,6 @@ class CustomPoi {
   String toString() {
     return "[$id] $name: $description - MAP($coordinates)";
   }
-}
-
-class DirectionsRequest {
-  List<Circle>? exclusions;
-
-  DirectionsRequest({
-    this.exclusions,
-  });
 }
 
 // Result callbacks.

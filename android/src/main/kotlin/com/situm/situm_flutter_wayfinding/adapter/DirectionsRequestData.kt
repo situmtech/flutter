@@ -7,14 +7,17 @@ import es.situm.sdk.model.cartography.Circle
 
 class DirectionsRequestData {
     val exclusions: ArrayList<Circle> = ArrayList()
+    var minimizeFloorChanges: Boolean? = null
 
     fun populateFromArguments(
         args: Map<String, Any>,
         callback: Callback
     ) {
-        // Other DirectionsRequest parameters here.
-        // ...
-        // Get exclusions:
+        if (args.containsKey("minimizeFloorChanges")) {
+            minimizeFloorChanges = args["minimizeFloorChanges"] as Boolean
+        }
+
+        // Get exclusions (depends on asynchronous call to fetchBuildingInfo):
         if (args.containsKey("exclusions")) {
             populateExclusions(args["exclusions"] as List<Map<String, Any>>, callback)
         } else {

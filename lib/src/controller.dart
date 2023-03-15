@@ -3,6 +3,8 @@ part of situm_flutter_wayfinding;
 class SitumFlutterWayfinding {
   late final MethodChannel methodChannel;
 
+  SitumMapView? widget;
+
   // Load callback/Update callback.
   SitumMapViewCallback? situmMapLoadCallback;
   SitumMapViewCallback? situmMapDidUpdateCallback;
@@ -58,17 +60,14 @@ class SitumFlutterWayfinding {
   // Calls:
 
   Future<String?> load({
-    SitumMapViewCallback? situmMapLoadCallback,
-    SitumMapViewCallback? situmMapDidUpdateCallback,
+    SitumMapView? widget,
     Map<String, dynamic>? creationParams,
   }) async {
-    if (situmMapLoadCallback != null) {
-      this.situmMapLoadCallback = situmMapLoadCallback;
+    if (widget != null) {
+      this.widget = widget;
+      situmMapLoadCallback = widget.loadCallback;
+      situmMapDidUpdateCallback = widget.didUpdateCallback;
     }
-    if (situmMapDidUpdateCallback != null) {
-      this.situmMapDidUpdateCallback = situmMapDidUpdateCallback;
-    }
-
     print("Situm> Dart load() invoked.");
     if (defaultTargetPlatform == TargetPlatform.android) {
       // iOS will handle multiple load calls with presentInNewView().
@@ -89,8 +88,16 @@ class SitumFlutterWayfinding {
     print("Situm> Got load result: $result");
     situmMapLoading = false;
     situmMapLoaded = true;
+    handleSitumMapLoaded();
     notifyLoadCallbacks();
     return result;
+  }
+
+  void handleSitumMapLoaded() {
+    // Call setDirectionsSettings immediately using the widget parameter.
+    if (widget?.directionsSettings != null) {
+      setDirectionsSettings(widget!.directionsSettings);
+    }
   }
 
   void notifyLoadCallbacksIfNeeded() {
@@ -202,19 +209,12 @@ class SitumFlutterWayfinding {
     );
   }
 
-  Future<String?> setDirectionsRequest(
-      DirectionsRequest? directionsRequest) async {
-    log("Dart setDirectionsRequest called, methodChannel will be invoked");
-    List<Map<String, dynamic>> exclusionsArray = [];
-    directionsRequest?.exclusions?.forEach((circle) {
-      exclusionsArray.add(circleToMap(circle));
-    });
-
+  Future<String?> setDirectionsSettings(
+      DirectionsSettings? directionsSettings) async {
+    log("Dart directionsSettings called, methodChannel will be invoked");
     return await methodChannel.invokeMethod<String>(
-      'setDirectionsRequest',
-      <String, dynamic>{
-        'exclusions': exclusionsArray,
-      },
+      'setDirectionsSettings',
+      directionsSettings?.toMap(),
     );
   }
 

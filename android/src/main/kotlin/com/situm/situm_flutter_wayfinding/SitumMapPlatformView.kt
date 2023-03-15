@@ -93,7 +93,7 @@ class SitumMapPlatformView(
                 "removeCustomPoi" -> removeCustomPoi(arguments, result)
                 "getCustomPoiById" -> getCustomPoiById(arguments, result)
                 "getCustomPoi" -> getCustomPoi(result)
-                "setDirectionsRequest" -> setDirectionsRequest(arguments, result)
+                "setDirectionsSettings" -> setDirectionsSettings(arguments, result)
                 else -> result.notImplemented()
             }
         }
@@ -254,8 +254,8 @@ class SitumMapPlatformView(
         result.success(library?.getCustomPoi()?.toMap())
     }
 
-    private fun setDirectionsRequest(arguments: Map<String, Any>, result: MethodChannel.Result) {
-        Log.d(TAG, "Android> setDirectionsRequest, args=$arguments")
+    private fun setDirectionsSettings(arguments: Map<String, Any>, result: MethodChannel.Result) {
+        Log.d(TAG, "Android> setDirectionsSettings, args=$arguments")
         directionsRequestData = DirectionsRequestData().apply {
             populateFromArguments(arguments, object : DirectionsRequestData.Callback {
                 override fun onSuccess() {

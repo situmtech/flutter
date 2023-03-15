@@ -80,8 +80,7 @@ class _SitumMapViewState extends State<SitumMapView> {
     Map<String, dynamic> loadParams = _createLoadParams();
     controller = SitumFlutterWayfinding();
     controller!.load(
-        situmMapLoadCallback: widget.loadCallback,
-        situmMapDidUpdateCallback: widget.didUpdateCallback,
+        widget: widget,
         creationParams: loadParams);
   }
 
@@ -141,6 +140,7 @@ class _SitumMapViewState extends State<SitumMapView> {
       "showFloorSelector": widget.showFloorSelector,
       "showPositioningButton": widget.showPositioningButton,
       "navigationSettings": widget.navigationSettings?.toMap(),
+      // TODO: delete when setDirectionsSettings is implemented in iOS.
       "directionsSettings": widget.directionsSettings?.toMap(),
       "showNavigationIndications": widget.showNavigationIndications,
     };

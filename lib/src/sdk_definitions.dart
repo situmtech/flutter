@@ -79,6 +79,15 @@ class Point {
     required this.latitude,
     required this.longitude,
   });
+
+  Map<String, dynamic> toMap() {
+    return <String, dynamic>{
+      'buildingId': buildingId,
+      'floorId': floorId,
+      'latitude': latitude,
+      'longitude': longitude,
+    };
+  }
 }
 
 class Circle extends Point {
@@ -89,8 +98,15 @@ class Circle extends Point {
     required super.floorId,
     required super.latitude,
     required super.longitude,
-    required this.radius
+    required this.radius,
   });
+
+  @override
+  Map<String, dynamic> toMap() {
+    var map = super.toMap();
+    map["radius"] = radius;
+    return map;
+  }
 }
 
 class PoiCategory extends NamedResource {
