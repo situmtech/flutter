@@ -6,6 +6,7 @@
 //
 
 #import "SITFSDKPlugin.h"
+#import "SITFSDKUtils.h"
 
 #import <SitumSDK/SitumSDK.h>
 
@@ -23,6 +24,8 @@
 @end
 
 @implementation SITFSDKPlugin
+
+const NSString* RESULTS_KEY = @"results";
 
 +(void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
     FlutterMethodChannel *channel = [FlutterMethodChannel methodChannelWithName:@"situm.com/flutter_sdk" binaryMessenger:[registrar messenger]];
@@ -59,6 +62,12 @@
     } else if ([@"setConfiguration" isEqualToString:call.method]) {
         [self handleSetConfiguration: call 
                               result: result];
+    } else if ([@"fetchBuildings" isEqualToString:call.method]) {
+        [self handleFetchBuildings:call
+                                   result:result];
+    } else if ([@"fetchBuildingInfo" isEqualToString:call.method]) {
+        [self handleFetchBuildingInfo:call
+                                   result:result];
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -167,32 +176,7 @@
     [self.comManager fetchPoisOfBuilding:buildingId
                              withOptions:nil
                                  success:^(NSDictionary * _Nullable mapping) {
-        
-        NSMutableArray *exportedArray = [NSMutableArray new];
-        for (SITPOI *poi in mapping[@"results"]) {
-            
-            NSMutableDictionary *dict = [NSMutableDictionary new];
-            dict[@"identifier"] = [NSString stringWithFormat:@"%@", poi.identifier];
-            dict[@"poiName"] = poi.name ? poi.name : @"";
-            dict[@"categoryId"] = [NSString stringWithFormat:@"%@", poi.category.identifier];
-            dict[@"buildingIdentifier"] = [NSString stringWithFormat:@"%@", poi.buildingIdentifier];
-            dict[@"customFields"] = poi.customFields ? poi.customFields : [NSDictionary new];
-            
-            dict[@"poiCategory"] =[NSMutableDictionary new];
-            dict[@"poiCategory"][@"id"] = [NSString stringWithFormat:@"%@", poi.category.identifier];
-            dict[@"poiCategory"][@"poiCategoryName"] = poi.category.name.value;
-
-            dict[@"position"] =[NSMutableDictionary new];
-            dict[@"position"][@"buildingIdentifier"] = [NSString stringWithFormat:@"%@", poi.position.buildingIdentifier];
-            dict[@"position"][@"floorIdentifier"] = [NSString stringWithFormat:@"%@", poi.position.floorIdentifier];
-
-            dict[@"position"][@"coordinate"] =[NSMutableDictionary new];
-            dict[@"position"][@"coordinate"][@"latitude"] = [NSNumber numberWithFloat: poi.position.coordinate.latitude];
-            dict[@"position"][@"coordinate"][@"longitude"] = [NSNumber numberWithFloat: poi.position.coordinate.longitude];
-            
-            [exportedArray addObject:dict];
-        }
-        result(exportedArray);
+        result([SITFSDKUtils toArrayDict: mapping[RESULTS_KEY]]);
         
     } failure:^(NSError * _Nullable error) {
         FlutterError *ferror = [FlutterError errorWithCode:@"errorPrefetch"
@@ -200,10 +184,48 @@
                                                   details:nil];
         result(ferror); // Send error
     }];
-    
 }
 
+- (void)handleFetchBuildings:(FlutterMethodCall*)call result:(FlutterResult)result {
+   
+    [self.comManager fetchBuildingsWithOptions: nil
+                                       success:^(NSDictionary * _Nullable mapping) {
+        
+        result([SITFSDKUtils toArrayDict: mapping[RESULTS_KEY]]);
+        
+    } failure:^(NSError * _Nullable error) {
+        FlutterError *ferror = [FlutterError errorWithCode:@"errorFetchBuildings"
+                                                  message:[NSString stringWithFormat:@"Failed with error: %@", error]
+                                                  details:nil];
+        result(ferror); // Send error
+    }];
+}
 
+- (void)handleFetchBuildingInfo:(FlutterMethodCall*)call result:(FlutterResult)result {
+    
+    NSString *buildingId = call.arguments[@"buildingId"];
+    
+    if (!buildingId) {
+        FlutterError *error = [FlutterError errorWithCode:@"errorFetchBuildingInfo"
+                                                  message:@"Unable to retrieve buildingId string on arguments"
+                                                  details:nil];
+
+        result(error); // Send error
+        return;
+        
+    }
+    [self.comManager fetchBuildingInfo:buildingId
+                           withOptions:nil
+                               success:^(NSDictionary * _Nullable mapping) {
+        result(((SITBuildingInfo*) mapping[RESULTS_KEY]).toDictionary);
+        
+    } failure:^(NSError * _Nullable error) {
+        FlutterError *ferror = [FlutterError errorWithCode:@"errorFetchBuildingInfo"
+                                                  message:[NSString stringWithFormat:@"Failed with error: %@", error]
+                                                  details:nil];
+        result(ferror); // Send error
+    }];
+}
 
 - (void)handleFetchCategories:(FlutterMethodCall*)call
                        result:(FlutterResult)result {
@@ -214,20 +236,7 @@
                                                       details:nil];
             result(ferror); // Send error
         } else {
-            NSMutableArray *exportedArray = [NSMutableArray new];
-            
-            
-            for (SITPOICategory *category in categories) {
-                NSMutableDictionary *dict = [NSMutableDictionary new];
-                
-                dict[@"id"] = [NSString stringWithFormat:@"%@",  category.identifier ];
-                dict[@"poiCategoryName"] = category.name.value;
-                
-                
-                [exportedArray addObject:dict];
-            }
-            
-            result(exportedArray);
+            result([SITFSDKUtils toArrayDict: categories]);
         }
     }];
 }
@@ -280,23 +289,12 @@ didInitiatedWithRequest:(SITLocationRequest *)request
 
 - (void)didEnteredGeofences:(NSArray<SITGeofence *> *)geofences {
     NSLog(@"location Manager did entered geofences");
-    [self.channel invokeMethod:@"onEnteredGeofences" arguments:[self nativeGeofenceArrayToDart:geofences]];
+    [self.channel invokeMethod:@"onEnteredGeofences" arguments: [SITFSDKUtils toArrayDict: geofences]];
 }
 
 - (void)didExitedGeofences:(NSArray<SITGeofence *> *)geofences {
     NSLog(@"location Manager did exited geofences");
-    [self.channel invokeMethod:@"onExitedGeofences" arguments:[self nativeGeofenceArrayToDart:geofences]];
-}
-
--(NSArray<NSDictionary *> *)nativeGeofenceArrayToDart:(NSArray<SITGeofence *> *)nativeGeofences{
-    NSMutableArray *dartGeofences = [NSMutableArray new];
-    for (SITGeofence * geofence in nativeGeofences){
-        NSMutableDictionary *dartGeofence = [NSMutableDictionary new];
-        dartGeofence[@"identifier"] = geofence.identifier;
-        dartGeofence[@"name"] = geofence.name;
-        [dartGeofences addObject:dartGeofence];
-    }
-    return dartGeofences;
+    [self.channel invokeMethod:@"onExitedGeofences" arguments: [SITFSDKUtils toArrayDict: geofences]];
 }
 
 - (void) handleGeofenceCallbacksRequested :(FlutterMethodCall*)call

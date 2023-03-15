@@ -1,10 +1,10 @@
 package com.situm.situm_flutter_wayfinding
 
 import android.annotation.SuppressLint
+import android.graphics.Bitmap
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
@@ -14,6 +14,8 @@ import es.situm.sdk.model.cartography.Poi
 import es.situm.wayfinding.OnPoiSelectionListener
 import es.situm.wayfinding.SitumMapsLibrary
 import es.situm.wayfinding.actions.ActionsCallback
+import es.situm.wayfinding.customPoi.CustomPoi
+import es.situm.wayfinding.customPoi.OnCustomPoiChangeListener
 import es.situm.wayfinding.navigation.Navigation
 import es.situm.wayfinding.navigation.NavigationError
 import es.situm.wayfinding.navigation.OnNavigationListener
@@ -45,6 +47,7 @@ class SitumMapPlatformView(
 
         const val ERROR_LIBRARY_NOT_LOADED = "ERROR_LIBRARY_NOT_LOADED"
         const val ERROR_SELECT_POI = "ERROR_SELECT_POI"
+        const val ERROR_SET_CUSTOM_POI = "ERROR_SET_CUSTOM_POI"
     }
 
     private var methodChannel: MethodChannel
@@ -82,6 +85,11 @@ class SitumMapPlatformView(
                 "stopPositioning" -> stopPositioning()
                 "stopNavigation" -> stopNavigation()
                 "filterPoisBy" -> filterPoisBy(arguments, result)
+                "startCustomPoiCreation" -> startCustomPoiCreation(arguments, result)
+                "selectCustomPoi" -> selectCustomPoi(arguments, result)
+                "removeCustomPoi" -> removeCustomPoi(arguments, result)
+                "getCustomPoiById" -> getCustomPoiById(arguments, result)
+                "getCustomPoi" -> getCustomPoi(result)
                 else -> result.notImplemented()
             }
         }
@@ -185,6 +193,61 @@ class SitumMapPlatformView(
         result.success("DONE")
     }
 
+    private fun startCustomPoiCreation(arguments: Map<String, Any>, result: MethodChannel.Result) {
+        val name = arguments["name"] as String?
+        val description = arguments["description"] as String?
+        val selectedIconBitmap : Bitmap? = Utils.decodeBitMapFromBase64(arguments["selectedIcon"] as String?)
+        val unSelectedIconBitmap : Bitmap? = Utils.decodeBitMapFromBase64(arguments["unSelectedIcon"] as String?)
+
+        library?.startCustomPoiCreation(name, description,
+                selectedIconBitmap, unSelectedIconBitmap, object : ActionsCallback {
+            override fun onActionConcluded() {
+                Log.d(TAG, "Android> startCustomPoiSelection success.")
+                result.success("DONE")
+            }
+            override fun onActionCanceled() {
+                Log.d(TAG, "Android> startCustomPoiSelection failure.")
+                result.error(ERROR_SET_CUSTOM_POI, "Custom POI could not be saved", null)
+            }
+        })
+    }
+
+    private fun removeCustomPoi(arguments: Map<String, Any>, result: MethodChannel.Result) {
+        val poiId = arguments["poiId"] as Int
+        library?.removeCustomPoi(poiId, object: ActionsCallback {
+                override fun onActionConcluded() {
+                    Log.d(TAG, "Android> removeCustomPoi success.")
+                    result.success("DONE")
+                }
+            }
+        )
+    }
+
+    private fun selectCustomPoi(arguments: Map<String, Any>, result: MethodChannel.Result) {
+        val poiId = arguments["poiId"] as Int
+        library?.selectCustomPoi(poiId, object: ActionsCallback {
+                override fun onActionConcluded() {
+                    Log.d(TAG, "Android> selectCustomPoi success.")
+                    result.success("DONE")
+                }
+                override fun onActionCanceled() {
+                    Log.d(TAG, "Android> selectCustomPoi failure.")
+                }
+            }
+        )
+    }
+
+    private fun getCustomPoiById(arguments: Map<String, Any>, result: MethodChannel.Result) {
+        val poiId = arguments["poiId"] as Int
+        Log.d(TAG, "Android> getCustomPoi success.")
+        result.success(library?.getCustomPoi(poiId)?.toMap())
+    }
+
+    private fun getCustomPoi(result: MethodChannel.Result) {
+        Log.d(TAG, "Android> getCustomPoi success.")
+        result.success(library?.getCustomPoi()?.toMap())
+    }
+
     // Callbacks
 
     fun initCallbacks() {
@@ -245,6 +308,25 @@ class SitumMapPlatformView(
                     )
                 }
                 methodChannel.invokeMethod("onNavigationStarted", arguments)
+            }
+        })
+
+        library?.setOnCustomPoiChangeListener(object : OnCustomPoiChangeListener {
+            override fun onCustomPoiCreated(customPoi: CustomPoi) {
+                val arguments = customPoi.toMap()
+                methodChannel.invokeMethod("onCustomPoiCreated", arguments)
+            }
+            override fun onCustomPoiRemoved(customPoi: CustomPoi) {
+                val arguments = customPoi.toMap()
+                methodChannel.invokeMethod("onCustomPoiRemoved", arguments)
+            }
+            override fun onCustomPoiDeselected(customPoi: CustomPoi) {
+                val arguments = customPoi.toMap()
+                methodChannel.invokeMethod("onCustomPoiDeselected", arguments)
+            }
+            override fun onCustomPoiSelected(customPoi: CustomPoi) {
+                val arguments = customPoi.toMap()
+                methodChannel.invokeMethod("onCustomPoiSelected", arguments)
             }
         })
     }
