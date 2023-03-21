@@ -14,4 +14,4 @@ First of all we initialize the widget's state and we try to obtain the custom PO
 
 - If no custom POI is saved we call `startCustomPoiCreation` to enter the creation mode and to either select a custom location which will be assignated to the custom POI or cancel the operation. In this example the custom POI is saved with a custom icon that is provided to `startCustomPoiCreation` as an argument.
 
-- If there is a custom location saved, the FAB will call `selectCustomPoi`, which results on the camera focusing on the custom POI and its selection.
+- If there is a custom location saved, the widget will call `selectCustomPoi`, which results on the camera focusing on the custom POI and its selection.
