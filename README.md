@@ -17,13 +17,20 @@
 
 ## Getting Started
 
+There is a comprehensive tutorial on how to set-up a new application using this plugin on the Situm [documentation page](https://situm.com/docs/a-basic-flutter-app/).
+
+Below you will find the basic steps to install and configure the plugin on your Flutter project.
+
 ### Set up your Situm credentials
 
-Copy the contents of `config.dart.example` to a new file `config.dart` and fill your Situm email,
-API key and building identifier.
+Create a new `config.dart` file with your Situm credentials. You can use the contents of `example/config.dart.example` as example.
 
 Follow the [Wayfinding guide](https://situm.com/docs/first-steps-for-wayfinding/) if you haven't set
 up a Situm account.
+
+#### Running the example:
+
+Check the [example/README](./example/README.md) file of this repository to create your first Flutter application using Situm Wayfinding.
 
 ### Android
 
@@ -84,18 +91,7 @@ class MainActivity : FlutterAppCompatActivity() {
 
 The following steps have already been done for you in the example application of this project, but we list them as required documentation for a new project:
 
-1. Include the Situm Wayfinding dependency in your iOS app directory. We use Cocoapods por this. So create a new Podfile if not already created and update with the following contents:
-
-```
-target 'Runner' do
-  use_frameworks!
-  source 'https://github.com/CocoaPods/Specs.git'
-  platform :ios, '10.0'
-  pod 'SitumWayfinding', '0.16.1'
-end
-```
-
-Then run `pod install` or `pod update` to bring the dependencies to your project.
+1. After including the dependecy on your project through Run `pod install` or `pod update` to bring the dependencies to your project.
 
 2. In order for the wayfinding module to successfully activate positioning you will need to declare the following permissions in your app's `Info.plist` file:
 
@@ -165,5 +161,5 @@ More info is available at our [Developers Page](https://situm.com/docs/01-introd
 
 ## Support information
 
-For any question or bug report, please send an email to [support@situm.es](mailto:support@situm.es)
+For any question or bug report, please send an email to [support@situm.com](mailto:support@situm.com)
 

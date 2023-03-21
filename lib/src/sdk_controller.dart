@@ -11,7 +11,6 @@ class SitumFlutterSDK {
     methodChannel = const MethodChannel(CHANNEL_SDK_ID);
     methodChannel.setMethodCallHandler(_methodCallHandler);
     // Stablish callback
-
   }
 
   // Calls
@@ -39,7 +38,8 @@ class SitumFlutterSDK {
       LocationListener listener, Map<String, dynamic> locationRequest) async {
     if (!identical(locationListener, listener)) {
       locationListener = listener;
-      await methodChannel.invokeMethod('requestLocationUpdates', locationRequest);
+      await methodChannel.invokeMethod(
+          'requestLocationUpdates', locationRequest);
     }
   }
 
@@ -48,8 +48,18 @@ class SitumFlutterSDK {
   }
 
   Future<void> removeUpdates() async {
-    locationListener = null;
     await methodChannel.invokeMethod('removeUpdates');
+  }
+
+  Future<List<Building>> fetchBuildings() async {
+    List response = await methodChannel.invokeMethod("fetchBuildings");
+    return createList<Building>(response, createBuilding);
+  }
+
+  Future<BuildingInfo> fetchBuildingInfo(String buildingId) async {
+    Map response = await methodChannel
+        .invokeMethod("fetchBuildingInfo", {"buildingId": buildingId});
+    return createBuildingInfo(response);
   }
 
   Future<String> prefetchPositioningInfo(
@@ -72,12 +82,12 @@ class SitumFlutterSDK {
     List response = await methodChannel.invokeMethod("fetchPoisFromBuilding", {
       "buildingId": buildingId,
     });
-    return createPois(response);
+    return createList<Poi>(response, createPoi);
   }
 
   Future<List<PoiCategory>> fetchPoiCategories() async {
     List response = await methodChannel.invokeMethod("fetchCategories");
-    return createCategories(response);
+    return createList<PoiCategory>(response, createCategory);
   }
 
   Future<void> onEnterGeofences(OnEnteredGeofencesCallback callback) async {
@@ -136,7 +146,8 @@ class SitumFlutterSDK {
   }
 
   void _onEnterGeofences(arguments) {
-    List<Geofence> geofencesList = createGeofences(arguments);
+    List<Geofence> geofencesList =
+        createList<Geofence>(arguments, createGeofence);
     if (geofencesList.isNotEmpty) {
       onEnteredGeofencesCallback
           ?.call(OnEnteredGeofenceResult(geofences: geofencesList));
@@ -144,7 +155,8 @@ class SitumFlutterSDK {
   }
 
   void _onExitGeofences(arguments) {
-    List<Geofence> geofencesList = createGeofences(arguments);
+    List<Geofence> geofencesList =
+        createList<Geofence>(arguments, createGeofence);
     if (geofencesList.isNotEmpty) {
       onExitedGeofencesCallback
           ?.call(OnExitedGeofenceResult(geofences: geofencesList));

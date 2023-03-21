@@ -49,6 +49,14 @@ internal protocol SITFLNativeMapViewDelegate {
     func onNavigationError(navigation: Navigation, error: Error)
     
     func onNavigationFinished(navigation: Navigation)
+    
+    func onCustomPoiCreated(customPoi: CustomPoi)
+    
+    func onCustomPoiRemoved(customPoi: CustomPoi)
+    
+    func onCustomPoiSelected(customPoi: CustomPoi)
+    
+    func onCustomPoiDeselected(customPoi: CustomPoi)
 }
 
 
@@ -110,8 +118,9 @@ extension SITFLNativeMapView{
     }
     
     
-    internal func unloadView() {
-        // SITFLNativeMapView.library.
+    func unloadView() {
+        SITFLNativeMapView.wyfStarted = false
+        SITFLNativeMapView.library?.unload()
     }
     
 
@@ -132,7 +141,10 @@ extension SITFLNativeMapView{
            let showSearchBar = arguments["hasSearchView"] as? Bool,
            let enablePoiClustering = arguments["enablePoiClustering"] as? Bool,
            let useRemoteConfig = arguments["useRemoteConfig"] as? Bool,
-           let floorListVisible = arguments["showFloorSelector"] as? Bool
+           let floorListVisible = arguments["showFloorSelector"] as? Bool,
+           let minZoom = arguments["minZoom"] as? Float,
+           let maxZoom = arguments["maxZoom"] as? Float,
+           let positioningFabVisible = arguments["showPositioningButton"] as? Bool
         {
             SITFLNativeMapView.buildingId = buildingId
             let credentials = Credentials(user: situmUser, apiKey: situmApikey, googleMapsApiKey: googleMapsApiKey)
@@ -144,13 +156,18 @@ extension SITFLNativeMapView{
                 .setShowSearchBar(showSearchBar: showSearchBar)
                 .setUseRemoteConfig(useRemoteConfig: useRemoteConfig)
                 .setShowBackButton(showBackButton: false)
-                .setShowNavigationIndications(showNavigationIndications: false).setFloorsListVisible(floorsListVisible:floorListVisible)
+                .setShowNavigationIndications(showNavigationIndications: false)
+                .setFloorsListVisible(floorsListVisible:floorListVisible)
+                .setMinZoom(minZoom: minZoom)
+                .setMaxZoom(maxZoom: maxZoom)
+                .setPositioningFabVisible(positioningFabVisible: positioningFabVisible)
                 .build()
             let library = SitumMapsLibrary(containedBy: mapView!, controlledBy: controller, withSettings: settings)
             // Set delegates
             library.setOnMapReadyListener(listener: self)
             library.setOnPoiSelectionListener(listener: self)
             library.setOnNavigationListener(listener: self)
+            library.setOnCustomPoiChangeListener(listener: self)
             configureNavigationRequest(for: library, arguments: arguments)
             configureDirectionsRequest(for: library, arguments: arguments)
             
@@ -187,7 +204,7 @@ extension SITFLNativeMapView{
 }
 
 //Extension for callbacks
-extension SITFLNativeMapView : OnMapReadyListener, OnPoiSelectionListener, OnNavigationListener {
+extension SITFLNativeMapView : OnMapReadyListener, OnPoiSelectionListener, OnNavigationListener, OnCustomPoiChangeListener {
     // MARK: OnMapReadyListener
     public func onMapReady(map: SitumWayfinding.SitumMap) {
         print("On Map Ready")
@@ -249,4 +266,31 @@ extension SITFLNativeMapView : OnMapReadyListener, OnPoiSelectionListener, OnNav
         }
     }
     
+    public func onCustomPoiCreated(customPoi: CustomPoi) {
+        print("On Custom Poi created detected")
+        if let del = SITFLNativeMapView.delegate {
+            del.onCustomPoiCreated(customPoi: customPoi)
+        }
+    }
+    
+    public func onCustomPoiRemoved(customPoi: CustomPoi) {
+        print("On Custom Poi removed detected")
+        if let del = SITFLNativeMapView.delegate {
+            del.onCustomPoiRemoved(customPoi: customPoi)
+        }
+    }
+
+    public func onCustomPoiSelected(customPoi: CustomPoi) {
+        print("On Custom Poi selected detected")
+        if let del = SITFLNativeMapView.delegate {
+            del.onCustomPoiSelected(customPoi: customPoi)
+        }
+    }
+    
+    public func onCustomPoiDeselected(customPoi: CustomPoi) {
+        print("On Custom Poi deselected detected")
+        if let del = SITFLNativeMapView.delegate {
+            del.onCustomPoiDeselected(customPoi: customPoi)
+        }
+    }
 }

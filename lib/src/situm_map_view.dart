@@ -16,8 +16,11 @@ class SitumMapView extends StatefulWidget {
   final bool lockCameraToBuilding;
   final bool useRemoteConfig;
   final int initialZoom;
+  final int minZoom;
+  final int maxZoom;
   final bool showNavigationIndications;
   final bool showFloorSelector;
+  final bool showPositioningButton;
   final NavigationSettings? navigationSettings;
   final DirectionsSettings? directionsSettings;
 
@@ -36,14 +39,17 @@ class SitumMapView extends StatefulWidget {
     this.directionality = TextDirection.ltr,
     this.enablePoiClustering = true,
     this.searchViewPlaceholder = "Situm Flutter Wayfinding",
-    this.useDashboardTheme = false,
-    this.showPoiNames = false,
+    this.useDashboardTheme = true,
+    this.showPoiNames = true,
     this.hasSearchView = true,
     this.lockCameraToBuilding = false,
-    this.useRemoteConfig = false,
+    this.useRemoteConfig = true,
     this.initialZoom = 18,
+    this.minZoom = 15,
+    this.maxZoom = 21,
     this.showNavigationIndications = true,
     this.showFloorSelector = true,
+    this.showPositioningButton = true,
     this.navigationSettings,
     this.directionsSettings,
   }) : super(key: key);
@@ -130,7 +136,10 @@ class _SitumMapViewState extends State<SitumMapView> {
       "lockCameraToBuilding": widget.lockCameraToBuilding,
       "useRemoteConfig": widget.useRemoteConfig,
       "initialZoom": widget.initialZoom,
+      "minZoom": widget.minZoom,
+      "maxZoom": widget.maxZoom,
       "showFloorSelector": widget.showFloorSelector,
+      "showPositioningButton": widget.showPositioningButton,
       "navigationSettings": widget.navigationSettings?.toMap(),
       "directionsSettings": widget.directionsSettings?.toMap(),
       "showNavigationIndications": widget.showNavigationIndications,
