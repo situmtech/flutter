@@ -34,6 +34,7 @@ class _MyTabsState extends State<MyTabs> {
 
   SitumFlutterWayfinding? wyfController;
 
+  // Widget to showcase some SDK API functions
   Widget _createHomeTab() {
     // Home:
     return Card(
@@ -80,6 +81,7 @@ class _MyTabsState extends State<MyTabs> {
         child: Text(buttonText));
   }
 
+  // Widget that for the Wayfinding module
   Widget _createSitumMapTab() {
     // The Situm map:
     return Stack(children: [
@@ -127,9 +129,11 @@ class _MyTabsState extends State<MyTabs> {
     controller.onPoiSelected((poiSelectedResult) {
       print("WYF> Poi ${poiSelectedResult.poiName} selected!");
     });
+    // This function is called whenever a poi is deselected
     controller.onPoiDeselected((poiDeselectedResult) {
       print("WYF> Poi deselected!");
     });
+    // This function is called whenever navigation starts
     controller.onNavigationStarted((navigation) {
       print("WYF> Nav started, distance = ${navigation.route?.distance}");
     });
@@ -139,14 +143,19 @@ class _MyTabsState extends State<MyTabs> {
     });
   }
 
+  /*
+  * On the state initialization of this widget, we initialize Situm SDK
+  */
   @override
   void initState() {
-    // SitumSdk for flutter:
     situmSdk = SitumFlutterSDK();
+    // Set up your credentials
     situmSdk.init(situmUser, situmApiKey);
+    // Configure SDK
     situmSdk.setConfiguration(ConfigurationOptions(
       useRemoteConfig: true,
     ));
+    // Set up listener for events on geofences
     situmSdk.onEnterGeofences((geofencesResult) {
       _echo("SDK> Enter geofences: ${geofencesResult.geofences}.");
     });
@@ -163,6 +172,9 @@ class _MyTabsState extends State<MyTabs> {
     });
   }
 
+  /*
+  * SDK auxiliary functions
+  */
   void _requestUpdates() async {
     situmSdk.requestLocationUpdates(
       _MyLocationListener(echoer: _echo),
@@ -214,6 +226,8 @@ class _MyTabsState extends State<MyTabs> {
     var buildings = await situmSdk.fetchBuildings();
     _echo("SDK> RESPONSE: BUILDINGS = \n\n$buildings");
   }
+
+  /* --- */
 
   @override
   Widget build(BuildContext context) {
