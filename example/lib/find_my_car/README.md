@@ -1,6 +1,6 @@
 ## Find my car
 
-Within this example we added the widget `FindMyCar` which implements the basic functionality of a Find My Car application using the SitumWayfinding plugin under the hood. This Find My Car is implemeted using [custom points of interest](), which let us save points of interest on any location on the map, as long as this location is inside of the current building's canvas.
+Within this example we added the widget `FindMyCar` which implements the basic functionality of a Find My Car application using the SitumWayfinding plugin under the hood. This Find My Car is implemeted using [custom points of interest]() -> falta referencia a docs de situm, which let us save points of interest on any location on the map, as long as this location is inside of the current building's canvas.
 
 This custom POIs will be used later on to pinpont the location of our car.
 

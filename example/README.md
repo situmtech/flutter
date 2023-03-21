@@ -42,7 +42,7 @@ cd flutter-wayfinding/example
 flutter pub get
 ```
 
-### Step 2: Set your Situm credentials and Google Maps <a name="config"/>
+### Step 2: Set up Google Maps and your Situm credentials <a name="config"/>
 
 Your credentials should be stored inside a file by the name of `config.dart`, this file also includes a google API key and the building identifier of the building that is to be used inside the Wayfinding module. This example provides you with a template on `lib/config.dart.example`:
 
