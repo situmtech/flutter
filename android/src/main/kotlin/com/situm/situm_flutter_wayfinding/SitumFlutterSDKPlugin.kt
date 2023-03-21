@@ -11,9 +11,11 @@ import es.situm.sdk.location.GeofenceListener
 import es.situm.sdk.location.LocationListener
 import es.situm.sdk.location.LocationRequest
 import es.situm.sdk.location.LocationStatus
-import es.situm.sdk.model.cartography.Geofence
-import es.situm.sdk.model.cartography.Poi
-import es.situm.sdk.model.cartography.PoiCategory
+import es.situm.sdk.model.cartography.Building;
+import es.situm.sdk.model.cartography.BuildingInfo;
+import es.situm.sdk.model.cartography.Poi;
+import es.situm.sdk.model.cartography.PoiCategory;
+import es.situm.sdk.model.cartography.Geofence;
 import es.situm.sdk.model.location.Location
 import es.situm.sdk.utils.Handler
 import io.flutter.embedding.engine.plugins.FlutterPlugin
@@ -59,6 +61,8 @@ class SitumFlutterSDKPlugin : FlutterPlugin, ActivityAware, MethodChannel.Method
             "fetchPoisFromBuilding" -> fetchPoisFromBuilding(arguments, result)
             "fetchCategories" -> fetchCategories(result)
             "clearCache" -> clearCache(result)
+            "fetchBuildingInfo" -> fetchBuildingInfo(arguments, result)
+            "fetchBuildings" -> fetchBuildings(result)
             else -> result.notImplemented()
         }
     }
@@ -72,11 +76,38 @@ class SitumFlutterSDKPlugin : FlutterPlugin, ActivityAware, MethodChannel.Method
         result.success("DONE")
     }
 
+    private fun fetchBuildings(result: MethodChannel.Result) {
+        SitumSdk.communicationManager().fetchBuildings(object: Handler<Collection<Building>> {
+            override fun onSuccess(buildings: Collection<Building>) {
+                result.success(buildings.toMap())
+            }
+
+            override fun onFailure(error: Error) {
+                result.notifySitumSdkError(error)
+            }
+
+        })
+    }
+
+    private fun fetchBuildingInfo(arguments: Map<String, Any>, result: MethodChannel.Result) {
+        val buildingId = arguments["buildingId"] as String
+        SitumSdk.communicationManager()
+            .fetchBuildingInfo(buildingId, object : Handler<BuildingInfo> {
+                override fun onSuccess(buildingInfo: BuildingInfo) {
+                    result.success(buildingInfo.toMap())
+                }
+
+                override fun onFailure(error: Error) {
+                    result.notifySitumSdkError(error)
+                }
+            })
+    }
+
     private fun fetchCategories(result: MethodChannel.Result) {
         SitumSdk.communicationManager()
             .fetchPoiCategories(object : Handler<Collection<PoiCategory>> {
                 override fun onSuccess(categories: Collection<PoiCategory>) {
-                    result.success(categories.toCategoriesMap())
+                    result.success(categories.toMap())
                 }
 
                 override fun onFailure(error: Error) {
@@ -91,7 +122,7 @@ class SitumFlutterSDKPlugin : FlutterPlugin, ActivityAware, MethodChannel.Method
         SitumSdk.communicationManager()
             .fetchIndoorPOIsFromBuilding(buildingId, object : Handler<Collection<Poi>> {
                 override fun onSuccess(pois: Collection<Poi>) {
-                    result.success(pois.toPoisMap())
+                    result.success(pois.toMap())
                 }
 
                 override fun onFailure(error: Error) {

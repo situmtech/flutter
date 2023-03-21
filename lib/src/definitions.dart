@@ -84,6 +84,43 @@ class NavigationResult {
   });
 }
 
+class Coordinates {
+  final double latitude;
+  final double longitude;
+
+  Coordinates({
+    required this.latitude,
+    required this.longitude,
+  });
+
+  @override
+  String toString() {
+    return "$latitude, $longitude";
+  }
+}
+
+class CustomPoi {
+  final int id;
+  final String name;
+  final String description;
+  final int buildingId;
+  final int levelId;
+  final Coordinates coordinates;
+
+  const CustomPoi(
+      {required this.id,
+      required this.name,
+      required this.description,
+      required this.buildingId,
+      required this.levelId,
+      required this.coordinates});
+
+  @override
+  String toString() {
+    return "[$id] $name: $description - MAP($coordinates)";
+  }
+}
+
 // Result callbacks.
 
 // WYF load callback.
@@ -101,3 +138,7 @@ typedef OnNavigationErrorCallback = void Function(
 typedef OnNavigationFinishedCallback = void Function(String destinationId);
 typedef OnNavigationStartedCallback = void Function(
     NavigationResult navigation);
+typedef OnCustomPoiCreatedCallback = void Function(CustomPoi customPoi);
+typedef OnCustomPoiRemovedCallback = void Function(CustomPoi poiId);
+typedef OnCustomPoiSelectedCallback = void Function(CustomPoi poiId);
+typedef OnCustomPoiDeselectedCallback = void Function(CustomPoi poiId);
