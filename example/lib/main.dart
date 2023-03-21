@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:situm_flutter_wayfinding/situm_flutter_sdk.dart';
 import 'package:situm_flutter_wayfinding/situm_flutter_wayfinding.dart';
 import 'package:situm_flutter_wayfinding_example/config.dart';
-import 'package:situm_flutter_wayfinding_example/find_my_car.dart';
+import 'package:situm_flutter_wayfinding_example/find_my_car/find_my_car.dart';
 
 void main() => runApp(const MyApp());
 
@@ -65,8 +65,7 @@ class _MyTabsState extends State<MyTabs> {
                   ])),
           Expanded(
               child: SingleChildScrollView(
-                  padding:
-                      const EdgeInsets.all(30),
+                  padding: const EdgeInsets.all(30),
                   child: Text(currentOutput)))
         ],
       ),

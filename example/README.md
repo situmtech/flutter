@@ -2,19 +2,63 @@
 <h1 align="center">Situm Flutter Wayfinding Example</h1>
 </p>
 
-# Overview
+<div align="center" style="text-align:center">
 
-This folder contains the necessary source code for an example application using the SitumWayfinding plugin. It also showcases how to implement a Find My Car using the Wayfinding module.
+A sample Flutter application to start learning the power of [Situm's Flutter Wayfinding Plugin](../README.md).
+
+</div>
+
+<div align="center" style="text-align:center">
+
+[![npm](https://img.shields.io/npm/dm/react-native-situm-plugin.svg)](https://www.npmjs.com/package/react-native-situm-plugin) [![npm](https://img.shields.io/npm/v/react-native-situm-plugin.svg)](https://www.npmjs.com/package/react-native-situm-plugin) [![TypeScript](https://badges.frapsoft.com/typescript/code/typescript.svg?v=101)](https://github.com/ellerbrock/typescript-badges/)
+
+</div>
 
 ## Getting Started
 
-Starting point for a Flutter Wayfinding application.
+<div align="center" style="display: flex;">
+    <img src="./docs/assets/home_preview.png" alt="home_preview">
+    <img src="./docs/assets/wyf_preview.png" alt="wyf_preview">
+</div>
 
-### To run this example application:
+## What's in here <a name="whatsinhere"/>
 
-1. Rename the file `lib/config.dart.example` to `lib/config.dart` and replace the contents of the file with your own data.
-2. In Android: add your Google Maps API Key also to the project string resources.
-   The awaited identifier is `@string/google_api_key`:
+This folder contains the necessary source code for an example application using the **SitumWayfinding plugin**. It also showcases how to implement a Find My Car using the Wayfinding module.
+
+## How to run the app <a name="howtorun"/>
+
+### Step 1: Install the dependencies <a name="dependencies"/>
+
+The first step is to download this repo:
+
+```bash
+git clone https://github.com/situmtech/flutter-wayfinding.git
+```
+
+And then install the plugin dependencies alongside the `example` app dependecies as follows:
+
+```bash
+cd flutter-wayfinding/example
+flutter pub get
+```
+
+### Step 2: Set your Situm credentials and Google Maps <a name="config"/>
+
+Your credentials should be stored inside a file by the name of `config.dart`, this file also includes a google API key and the building identifier of the building that is to be used inside the Wayfinding module. This example provides you with a template on `lib/config.dart.example`:
+
+```dart
+const situmUser = "YOUR-SITUM-USER";
+const situmApiKey = "YOUR-SITUM-API-KEY";
+const buildingIdentifier = "YOUR-SITUM-BUILDING-IDENTIFIER";
+const googleMapsApiKey = "YOUR-GOOGLE-MAPS-API-KEY";
+```
+
+To set up the credentials on Flutter simply rename the file `lib/config.dart.example` to `lib/config.dart` and replace the contents of the file with your own data.
+
+#### Android
+
+Additionally on Android, add your Google Maps API Key also to the project string resources.
+The awaited identifier is `@string/google_api_key`:
 
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
@@ -23,22 +67,29 @@ Starting point for a Flutter Wayfinding application.
     ...
 ```
 
-3. In iOS: check the project [code signing](https://developer.apple.com/support/code-signing/) before you run the example.
-4. Launch the application: (1) from your IDE opening the project folder or (2) from the command line executing `flutter run`.
+### Step 3: Sign your app <a name="signapplication"></a> (iOS only)
 
-## Find my car
+In iOS: check the project [code signing](https://developer.apple.com/support/code-signing/) before you run the example.
 
-Within this example we added the widget `FindMyCar` which implements the basic functionality of a Find My Car application using the SitumWayfinding plugin under the hood. This Find My Car is implemeted using [custom points of interest](), which let us save points of interest on any location on the map, as long as this location is inside of the current building's canvas.
+### Step 4: Run the app <a name="runapplication"></a>
 
-This custom POIs will be used later on to pinpont the location of our car.
+Finally, in order to run the app, from the `example` folder execute the following command which works on both Android and iOS devices:
 
-This new widget uses the following methods:
+```bash
+flutter run
+```
 
-- [`startCustomPoiCreation`](https://pub.dev/documentation/situm_flutter_wayfinding/latest/situm_flutter_wayfinding/SitumFlutterWayfinding/startCustomPoiCreation.html)
-- [`getCustomPoi`](https://pub.dev/documentation/situm_flutter_wayfinding/latest/situm_flutter_wayfinding/SitumFlutterWayfinding/getCustomPoi.html)
-- [`selectCustomPoi`](https://pub.dev/documentation/situm_flutter_wayfinding/latest/situm_flutter_wayfinding/SitumFlutterWayfinding/selectCustomPoi.html)
+You can also execute it from your IDE:
 
-First of all we initialize the widget's state and we try to obtain the custom POI currently stored by using the method `getCustomPoi`. From then on, depending on the current state of the application, one of two Wayfinding API methods are used:
+- On Android: open `example/android/` with Android Studio.
+- On iOS: open `example/ios/Runner.xcworkspace` with XCode.
 
-- If no custom POI is saved we call `startCustomPoiCreation` to enter the creation mode and to either select a custom location which will be assignated to the custom POI or cancel the operation. In this example the custom POI is saved with a custom icon that is provided to `startCustomPoiCreation` as an argument.
-- If there is a custom location saved, the FAB will call `selectCustomPoi`, which results on the camera focusing on the custom POI and its selection.
+## Documentation <a name="documentation"/>
+
+More information on how to use the official Flutter plugin and the set of APIs, the functions, parameters and results each function accepts and provides can be found in our [API Reference](https://pub.dev/documentation/situm_flutter_wayfinding/latest/).
+
+### Examples
+
+In case you want to learn how to use our plugin, you may want to take a look at our code samples of the basics functionalities:
+
+1. [**Find my Car**]():
