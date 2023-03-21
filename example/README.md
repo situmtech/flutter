@@ -10,7 +10,8 @@ A sample Flutter application to start learning the power of [Situm's Flutter Way
 
 <div align="center" style="text-align:center">
 
-[![npm](https://img.shields.io/npm/dm/react-native-situm-plugin.svg)](https://www.npmjs.com/package/react-native-situm-plugin) [![npm](https://img.shields.io/npm/v/react-native-situm-plugin.svg)](https://www.npmjs.com/package/react-native-situm-plugin) [![TypeScript](https://badges.frapsoft.com/typescript/code/typescript.svg?v=101)](https://github.com/ellerbrock/typescript-badges/)
+[![Pub Version](https://img.shields.io/pub/v/situm_flutter_wayfinding?color=blueviolet)](https://pub.dev/packages/situm_flutter_wayfinding)
+[![points](https://img.shields.io/pub/points/situm_flutter_wayfinding?logo=dart)](https://pub.dev/packages/situm_flutter_wayfinding/score)
 
 </div>
 
@@ -94,3 +95,27 @@ In case you want to learn how to use our plugin, you may want to take a look at 
 
 1. [**Basic SDK and WYF functionality**](https://github.com/situmtech/flutter-wayfinding/blob/master/example/lib/main.dart): showcases how to initialize the Situm SDK (refer to the [quickstart guide](https://situm.com/docs/a-basic-flutter-app/) for more information) and how to use some basic features like positioning and obtaining the information of a given building. It also shows how to use the Situm Wayfinding module (refer to the refer to the [quickstart guide](https://situm.com/docs/flutter-quickstart-guide/) for more information).
 2. [**Find my Car**](https://github.com/situmtech/flutter-wayfinding/tree/doc-find-my-car/example/lib/find_my_car): exemplifies how to impliment a widget for a find my car application by using [custom POIs]() -> reference to custom POI situm docs.
+
+## Versioning
+
+We use [SemVer](http://semver.org/) for versioning.
+
+Please refer to [CHANGELOG.md](../CHANGELOG.md) for a list of notables changes for each version of the library.
+
+You can also see the [tags on this repository](https://github.com/situmtech/flutter-wayfinding/tags).
+
+## Submitting Contributions <a name="contributions"/>
+
+You will need to sign a Contributor License Agreement (CLA) before making a submission. [Learn more here.](https://situm.com/contributions/)
+
+## License
+
+This project is licensed under the MIT - see the [LICENSE](../LICENSE) file for details.
+
+## More information <a name="more-info"/>
+
+More info is available at our [Developers Page](https://situm.com/docs/01-introduction/).
+
+## Support information <a name="support"/>
+
+For any question or bug report, please send an email to [support@situm.es](mailto:support@situm.es)
