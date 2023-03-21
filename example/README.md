@@ -69,7 +69,7 @@ The awaited identifier is `@string/google_api_key`:
 
 ### Step 3: Sign your app <a name="signapplication"></a> (iOS only)
 
-In iOS: check the project [code signing](https://developer.apple.com/support/code-signing/) before you run the example.
+Check out the project [code signing](https://developer.apple.com/support/code-signing/) before you run the example.
 
 ### Step 4: Run the app <a name="runapplication"></a>
 
@@ -86,10 +86,11 @@ You can also execute it from your IDE:
 
 ## Documentation <a name="documentation"/>
 
-More information on how to use the official Flutter plugin and the set of APIs, the functions, parameters and results each function accepts and provides can be found in our [API Reference](https://pub.dev/documentation/situm_flutter_wayfinding/latest/).
+More information on how to use the official Flutter plugin and the set of APIs, the functions, parameters and results each function accepts and provides can be found in our [SDK API Reference](https://pub.dev/documentation/situm_flutter_wayfinding/latest/situm_flutter_sdk/situm_flutter_sdk-library.html) and [Wayfinding API Reference](https://pub.dev/documentation/situm_flutter_wayfinding/latest/situm_flutter_wayfinding/situm_flutter_wayfinding-library.html).
 
 ### Examples
 
 In case you want to learn how to use our plugin, you may want to take a look at our code samples of the basics functionalities:
 
-1. [**Find my Car**]():
+1. [**Basic SDK and WYF functionality**](https://github.com/situmtech/flutter-wayfinding/blob/master/example/lib/main.dart): showcases how to initialize the Situm SDK (refer to the [quickstart guide](https://situm.com/docs/a-basic-flutter-app/) for more information) and how to use some basic features like positioning and obtaining the information of a given building. It also shows how to use the Situm Wayfinding module (refer to the refer to the [quickstart guide](https://situm.com/docs/flutter-quickstart-guide/) for more information).
+2. [**Find my Car**](https://github.com/situmtech/flutter-wayfinding/tree/doc-find-my-car/example/lib/find_my_car): exemplifies how to impliment a widget for a find my car application by using [custom POIs]() -> reference to custom POI situm docs.
