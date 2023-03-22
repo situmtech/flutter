@@ -10,8 +10,9 @@ A sample Flutter application to start learning the power of [Situm's Flutter Way
 
 <div align="center" style="text-align:center">
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Pub Version](https://img.shields.io/pub/v/situm_flutter_wayfinding?color=blueviolet)](https://pub.dev/packages/situm_flutter_wayfinding)
-[![points](https://img.shields.io/pub/points/situm_flutter_wayfinding?logo=dart)](https://pub.dev/packages/situm_flutter_wayfinding/score)
+[![Flutter](https://img.shields.io/badge/{/}-flutter-blueviolet)](https://flutter.dev/)
 
 </div>
 
