@@ -94,8 +94,8 @@ More information on how to use the official Flutter plugin and the set of APIs, 
 
 In case you want to learn how to use our plugin, you may want to take a look at our code samples of the basics functionalities:
 
-1. [**Basic SDK and WYF functionality**](https://github.com/situmtech/flutter-wayfinding/blob/master/example/lib/main.dart): showcases how to initialize the Situm SDK (refer to the [flutter sdk quickstart guide](https://situm.com/docs/a-basic-flutter-app/) for more information) and how to use some basic features like positioning and obtaining the information of a given building. It also shows how to use the Situm Wayfinding module (refer to the [flutter wayfinding quickstart guide](https://situm.com/docs/flutter-quickstart-guide/) for more information).
-2. [**Find my Car**](https://github.com/situmtech/flutter-wayfinding/tree/master/example/lib/find_my_car): exemplifies how to impliment a widget for a find my car application by using [custom POIs](https://situm.com/docs/06-using-custom-pois-in-wyf/).
+1. [**Basic SDK and WYF functionality**](./lib/main.dart): showcases how to initialize the Situm SDK (refer to the [flutter sdk quickstart guide](https://situm.com/docs/a-basic-flutter-app/) for more information) and how to use some basic features like positioning and obtaining the information of a given building. It also shows how to use the Situm Wayfinding module (refer to the [flutter wayfinding quickstart guide](https://situm.com/docs/flutter-quickstart-guide/) for more information).
+2. [**Find my Car**](./lib/find_my_car): exemplifies how to impliment a widget for a find my car application by using [custom POIs](https://situm.com/docs/06-using-custom-pois-in-wyf/).
 
 ## Versioning
 
