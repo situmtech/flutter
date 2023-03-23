@@ -11,6 +11,7 @@
 <div align="center" style="text-align:center">
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![Pub Version](https://img.shields.io/pub/v/situm_flutter_wayfinding?color=blueviolet)](https://pub.dev/packages/situm_flutter_wayfinding)
 [![Flutter](https://img.shields.io/badge/{/}-flutter-blueviolet)](https://flutter.dev/)
 
 </div>
@@ -37,6 +38,7 @@ Check the [example/README](./example/README.md) file of this repository to creat
 The following steps have already been done for you in the example application of this repository, but they are required for a new project:
 
 1. Include the Situm repository in your project level `build.gradle`:
+
 ```groovy
 allprojects {
     repositories {
@@ -45,13 +47,17 @@ allprojects {
     }
 }
 ```
+
 2. Make sure AppCompat library is in your `build.gradle` dependencies:
+
 ```groovy
 implementation 'androidx.appcompat:appcompat:1.4.1'
 ```
+
 3. Make sure your `MainActivity` extends the provided `FlutterAppCompatActivity`.
    This class was duplicated from `FlutterFragmentActivity` to add support to androidx `AppCompatActivity`, which is not currently supported by Flutter.
    The WYF plugin must also be registered manually from your `MainActivity`:
+
 ```kotlin
 ...
 import io.flutter.embedding.android.FlutterAppCompatActivity
@@ -71,8 +77,10 @@ class MainActivity : FlutterAppCompatActivity() {
     }
 }
 ```
+
 4. Review your `styles.xml` file and make sure the application theme extends `Theme.AppCompat.Light.DarkActionBar`.
    Also remove the action bar in your theme:
+
 ```xml
 <style name="NormalTheme" parent="Theme.AppCompat.Light.DarkActionBar">
     ...
@@ -80,7 +88,9 @@ class MainActivity : FlutterAppCompatActivity() {
     <item name="windowNoTitle">true</item>
 </style>
 ```
+
 5. Add your Google Maps API Key to the `AndroidManifest.xml` file:
+
 ```xml
 <meta-data
     android:name="com.google.android.geo.API_KEY"
@@ -124,15 +134,18 @@ that only one of them can be alive at the same time: ensure that `dispose()` is 
 `SitumMapView` before initializing another one.
 
 ### [Navigator](https://docs.flutter.dev/development/ui/navigation)
+
 Take care to keep your navigation stack clean. The following sequence will crash your application:
+
 1. State A: app displays page A containing WYF.
 2. Navigate to page B using `Navigator.push(routeToB)`.
 3. Navigate again to page A: `Navigator.push(routeToA)`.
 4. Crashes: `the view returned from PlatformView#getView() was already added to a parent view`.
 
 To solve it:
-* Fix the previous sequence calling `Navigator.pop()` instead of `Navigator.push(routeToA)`.
-* Or ensure that `dispose()` is called over A, for example replacing `push` with
+
+- Fix the previous sequence calling `Navigator.pop()` instead of `Navigator.push(routeToA)`.
+- Or ensure that `dispose()` is called over A, for example replacing `push` with
   `Navigator.pushReplacementNamed()`.
 
 ## Versioning
@@ -145,10 +158,12 @@ You can also see the [tags on this repository](./tags).
 
 ## Submitting contributions
 
-You will need to sign a Contributor License Agreement (CLA) before making a submission. [Learn more here](https://situm.com/contributions/). 
+You will need to sign a Contributor License Agreement (CLA) before making a submission. [Learn more here](https://situm.com/contributions/).
 
 ---
+
 ## License
+
 This project is licensed under the MIT - see the [LICENSE](./LICENSE) file for further details.
 
 ---
@@ -162,4 +177,3 @@ More info is available at our [Developers Page](https://situm.com/docs/01-introd
 ## Support information
 
 For any question or bug report, please send an email to [support@situm.com](mailto:support@situm.com)
-
