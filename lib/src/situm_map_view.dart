@@ -60,29 +60,60 @@ class SitumMapView extends StatefulWidget {
 
 class _SitumMapViewState extends State<SitumMapView> {
   SitumFlutterWayfinding? controller;
+  late final WebViewController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+
+    final WebViewController controller =
+        WebViewController.fromPlatformCreationParams(
+            const PlatformWebViewControllerCreationParams());
+
+    controller
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setBackgroundColor(const Color(0x00000000))
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onProgress: (int progress) {
+            debugPrint('WebView is loading (progress : $progress%)');
+          },
+          onPageStarted: (String url) {
+            debugPrint('Page started loading: $url');
+          },
+          onPageFinished: (String url) {
+            debugPrint('Page finished loading: $url');
+          },
+          onWebResourceError: (WebResourceError error) {
+            debugPrint('''
+Page resource error:
+  code: ${error.errorCode}
+  description: ${error.description}
+  errorType: ${error.errorType}
+  isForMainFrame: ${error.isForMainFrame}
+          ''');
+          },
+          onNavigationRequest: (NavigationRequest request) {
+            return NavigationDecision.navigate;
+          },
+        ),
+      )
+      ..addJavaScriptChannel(
+        'map-viewer-channel',
+        onMessageReceived: (JavaScriptMessage message) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(message.message)),
+          );
+        },
+      )
+      ..loadRequest(Uri.parse('https://map-viewer.situm.com/'));
+
+    _controller = controller;
+  }
 
   @override
   Widget build(BuildContext context) {
-    Map<String, dynamic> platformViewParams = <String, dynamic>{
-      // TODO: add view specific creation params.
-    };
-    if (defaultTargetPlatform == TargetPlatform.android) {
-      return _buildAndroidView(
-          context, platformViewParams, widget.directionality);
-    } else if (defaultTargetPlatform == TargetPlatform.iOS) {
-      return _buildiOS(context, platformViewParams, widget.directionality);
-    }
-    return Text('$defaultTargetPlatform is not supported by the Situm plugin');
-  }
-
-  Future<void> _onPlatformViewCreated(int id) async {
-    print("Situm> _onPlatformViewCreated called");
-    Map<String, dynamic> loadParams = _createLoadParams();
-    controller = SitumFlutterWayfinding();
-    controller!.load(
-        situmMapLoadCallback: widget.loadCallback,
-        situmMapDidUpdateCallback: widget.didUpdateCallback,
-        creationParams: loadParams);
+    return WebViewWidget(controller: _controller);
   }
 
   @override
@@ -97,114 +128,5 @@ class _SitumMapViewState extends State<SitumMapView> {
   void dispose() {
     super.dispose();
     controller?.onWidgetDisposed();
-  }
-
-  // ==========================================================================
-  // iOS
-  // ==========================================================================
-
-  Widget _buildiOS(
-    BuildContext context,
-    Map<String, dynamic> creationParams,
-    TextDirection directionality,
-  ) {
-    const String viewType = '<platform-view-type>';
-
-    Map<String, dynamic> loadParams = _createLoadParams();
-
-    return UiKitView(
-      viewType: viewType,
-      layoutDirection: directionality,
-      creationParams: loadParams,
-      creationParamsCodec: const StandardMessageCodec(),
-      onPlatformViewCreated: _onPlatformViewCreated,
-    );
-  }
-
-  Map<String, dynamic> _createLoadParams() {
-    return <String, dynamic>{
-      "situmUser": widget.situmUser,
-      "situmApiKey": widget.situmApiKey,
-      "buildingIdentifier": widget.buildingIdentifier,
-      "googleMapsApiKey": widget.googleMapsApiKey,
-      "enablePoiClustering": widget.enablePoiClustering,
-      "useHybridComponents": widget.useHybridComponents,
-      "searchViewPlaceholder": widget.searchViewPlaceholder,
-      "useDashboardTheme": widget.useDashboardTheme,
-      "showPoiNames": widget.showPoiNames,
-      "hasSearchView": widget.hasSearchView,
-      "lockCameraToBuilding": widget.lockCameraToBuilding,
-      "useRemoteConfig": widget.useRemoteConfig,
-      "initialZoom": widget.initialZoom,
-      "minZoom": widget.minZoom,
-      "maxZoom": widget.maxZoom,
-      "showFloorSelector": widget.showFloorSelector,
-      "showPositioningButton": widget.showPositioningButton,
-      "navigationSettings": widget.navigationSettings?.toMap(),
-      "directionsSettings": widget.directionsSettings?.toMap(),
-      "showNavigationIndications": widget.showNavigationIndications,
-    };
-  }
-
-  // ==========================================================================
-  // ANDROID
-  // ==========================================================================
-
-  Widget _buildAndroidView(
-    BuildContext context,
-    Map<String, dynamic> creationParams,
-    TextDirection directionality,
-  ) {
-    if (widget.useHybridComponents) {
-      return _buildHybrid(context, creationParams, directionality);
-    }
-    return _buildVirtualDisplay(context, creationParams);
-  }
-
-  Widget _buildHybrid(
-    BuildContext context,
-    Map<String, dynamic> creationParams,
-    TextDirection directionality,
-  ) {
-    print("Situm> Using hybrid components");
-    return PlatformViewLink(
-      viewType: CHANNEL_ID,
-      surfaceFactory: (context, controller) {
-        return AndroidViewSurface(
-          controller: controller as ExpensiveAndroidViewController,
-          gestureRecognizers: const <Factory<OneSequenceGestureRecognizer>>{},
-          hitTestBehavior: PlatformViewHitTestBehavior.opaque,
-        );
-      },
-      onCreatePlatformView: (params) {
-        final AndroidViewController controller =
-            PlatformViewsService.initExpensiveAndroidView(
-          id: params.id,
-          viewType: CHANNEL_ID,
-          layoutDirection: directionality,
-          creationParams: creationParams,
-          creationParamsCodec: const StandardMessageCodec(),
-          onFocus: () {
-            params.onFocusChanged(true);
-          },
-        );
-        controller
-            .addOnPlatformViewCreatedListener(params.onPlatformViewCreated);
-        controller.addOnPlatformViewCreatedListener(_onPlatformViewCreated);
-        controller.create();
-        return controller;
-      },
-    );
-  }
-
-  Widget _buildVirtualDisplay(
-      BuildContext context, Map<String, dynamic> creationParams) {
-    print("Situm> Using virtual display");
-    return AndroidView(
-      viewType: CHANNEL_ID,
-      creationParams: creationParams,
-      creationParamsCodec: const StandardMessageCodec(),
-      onPlatformViewCreated: _onPlatformViewCreated,
-    );
   }
 }

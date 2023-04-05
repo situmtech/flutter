@@ -1,11 +1,60 @@
 part of situm_flutter_sdk;
 
-class OnLocationChangedResult {
+class Location {
+  final Coordinate coordinate;
+  final CartesianCoordinate cartesianCoordinate;
   final String buildingId;
+  final String floorId;
+  final Bearing bearing;
+  final Bearing cartesianBearing;
+  final double accuracy;
+  final bool isIndoor;
+  final bool hasCartesianBearing;
+  final int timestamp;
 
-  const OnLocationChangedResult({
+  Location({
+    required this.coordinate,
+    required this.cartesianCoordinate,
     required this.buildingId,
+    required this.floorId,
+    required this.bearing,
+    required this.cartesianBearing,
+    required this.accuracy,
+    required this.isIndoor,
+    required this.hasCartesianBearing,
+    required this.timestamp,
   });
+
+  static Location fromArguments(dynamic args) {
+    return Location(
+      coordinate: Coordinate(
+        latitude: args["coordinate"]["latitude"],
+        longitude: args["coordinate"]["longitude"],
+      ),
+      cartesianCoordinate: CartesianCoordinate(
+        x: args["cartesianCoordinate"]["x"],
+        y: args["cartesianCoordinate"]["y"],
+      ),
+      bearing: Bearing(
+        degrees: args["bearing"]["degrees"],
+        degreesClockwise: args["bearing"]["degreesClockwise"],
+        radians: args["bearing"]["radians"],
+        radiansMinusPiPi: args["bearing"]["radiansMinusPiPi"],
+      ),
+      cartesianBearing: Bearing(
+        degrees: args["cartesianBearing"]["degrees"],
+        degreesClockwise: args["cartesianBearing"]["degreesClockwise"],
+        radians: args["cartesianBearing"]["radians"],
+        radiansMinusPiPi: args["cartesianBearing"]["radiansMinusPiPi"],
+      ),
+      accuracy: args["accuracy"],
+      buildingId: args["buildingIdentifier"],
+      floorId: args["floorIdentifier"],
+      hasCartesianBearing: args["hasCartesianBearing"],
+      isIndoor: args["isIndoor"],
+      timestamp: args["timestamp"],
+    );
+  }
 }
 
 class OnEnteredGeofenceResult {
@@ -44,6 +93,7 @@ class NamedResource {
 class Coordinate {
   final double latitude;
   final double longitude;
+
   Coordinate({
     required this.latitude,
     required this.longitude,
@@ -53,11 +103,24 @@ class Coordinate {
       {"latitude": latitude, "longitude": longitude};
 }
 
+class CartesianCoordinate {
+  final double x;
+  final double y;
+
+  CartesianCoordinate({
+    required this.x,
+    required this.y,
+  });
+
+  Map<String, dynamic> toJson() => {"x": x, "y": y};
+}
+
 class Bounds {
   final Coordinate northEast;
   final Coordinate northWest;
   final Coordinate southEast;
   final Coordinate southWest;
+
   Bounds({
     required this.northEast,
     required this.northWest,
@@ -73,6 +136,20 @@ class Bounds {
       };
 }
 
+class Bearing {
+  final double radiansMinusPiPi;
+  final double radians;
+  final double degreesClockwise;
+  final double degrees;
+
+  const Bearing({
+    required this.radiansMinusPiPi,
+    required this.radians,
+    required this.degreesClockwise,
+    required this.degrees,
+  });
+}
+
 class BuildingInfo extends NamedResource {
   final Building building;
   final List<Floor> floors;
@@ -80,6 +157,7 @@ class BuildingInfo extends NamedResource {
   final List<Poi> outdoorPois;
   final List<Geofence> geofences;
   final List<Event> events;
+
   BuildingInfo({
     required super.id,
     required super.name,
@@ -112,6 +190,7 @@ class Floor extends NamedResource {
   final String createdAt;
   final String updatedAt;
   final Map<String, dynamic> customFields;
+
   Floor(
       {required super.id,
       required super.name,
@@ -149,6 +228,7 @@ class Building extends NamedResource {
   final Map<String, dynamic> customFields;
   final String createdAt;
   final String updatedAt;
+
   Building({
     required super.id,
     required super.name,
@@ -190,6 +270,7 @@ class Building extends NamedResource {
 class CircleArea {
   final Point center;
   final double radius;
+
   CircleArea({
     required this.center,
     required this.radius,
@@ -204,6 +285,7 @@ class CircleArea {
 class Event extends NamedResource {
   final Map<String, dynamic> customFields;
   final CircleArea trigger;
+
   Event({
     required super.id,
     required super.name,
@@ -227,6 +309,7 @@ class Geofence extends NamedResource {
   final Map<String, dynamic> customFields;
   final String createdAt;
   final String updatedAt;
+
   Geofence({
     required super.id,
     required super.name,
@@ -330,15 +413,10 @@ class Error {
 
 // Result callbacks.
 
-// Location updates.
-
-abstract class LocationListener {
-  void onError(Error error);
-
-  void onLocationChanged(OnLocationChangedResult locationChangedResult);
-
-  void onStatusChanged(String status);
-}
+// Location.
+typedef OnLocationChangeCallback = void Function(Location location);
+typedef OnStatusChangeCallback = void Function(String status);
+typedef OnErrorCallback = void Function(Error error);
 
 // On enter geofences.
 typedef OnEnteredGeofencesCallback = void Function(

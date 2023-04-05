@@ -1,5 +1,17 @@
 part of situm_flutter_wayfinding;
 
+class SitumFlutterWYF {
+  final WebViewController webViewController;
+
+  const SitumFlutterWYF({
+    required this.webViewController,
+  });
+
+  void setCurrentLocation() {
+    // TODO: post "situm.location" message.
+  }
+}
+
 class SitumFlutterWayfinding {
   late final MethodChannel methodChannel;
 

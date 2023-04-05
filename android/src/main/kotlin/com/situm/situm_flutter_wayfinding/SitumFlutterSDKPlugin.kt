@@ -145,10 +145,7 @@ class SitumFlutterSDKPlugin : FlutterPlugin, ActivityAware, MethodChannel.Method
         val locationRequest = LocationRequest.Builder().fromArguments(arguments).build()
         locationListener = object : LocationListener {
             override fun onLocationChanged(location: Location) {
-                val callbackArgs = mutableMapOf<String, String>(
-                    "buildingId" to location.buildingIdentifier
-                )
-                handler.post { channel.invokeMethod("onLocationChanged", callbackArgs) }
+                handler.post { channel.invokeMethod("onLocationChanged", location.toMap()) }
             }
 
             override fun onStatusChanged(status: LocationStatus) {

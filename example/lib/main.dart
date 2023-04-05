@@ -125,17 +125,17 @@ class _MyTabsState extends State<MyTabs> {
   void _onSitumMapLoaded(SitumFlutterWayfinding controller) {
     // The Situm map was successfully loaded, use the given controller to
     // call the WYF API methods.
-    print("WYF> Situm Map loaded!");
+    debugPrint("WYF> Situm Map loaded!");
     controller.onPoiSelected((poiSelectedResult) {
-      print("WYF> Poi ${poiSelectedResult.poiName} selected!");
+      debugPrint("WYF> Poi ${poiSelectedResult.poiName} selected!");
     });
     // This function is called whenever a poi is deselected
     controller.onPoiDeselected((poiDeselectedResult) {
-      print("WYF> Poi deselected!");
+      debugPrint("WYF> Poi deselected!");
     });
     // This function is called whenever navigation starts
     controller.onNavigationStarted((navigation) {
-      print("WYF> Nav started, distance = ${navigation.route?.distance}");
+      debugPrint("WYF> Nav started, distance = ${navigation.route?.distance}");
     });
 
     setState(() {
@@ -155,6 +155,16 @@ class _MyTabsState extends State<MyTabs> {
     situmSdk.setConfiguration(ConfigurationOptions(
       useRemoteConfig: true,
     ));
+    // Set up location listeners:
+    situmSdk.onLocationChange((location) {
+      _echo("SDK> Location changed: $location");
+    });
+    situmSdk.onStatusChange((status) {
+      _echo("SDK> STATUS: $status");
+    });
+    situmSdk.onError((error) {
+      _echo("SDK> Error: ${error.message}");
+    });
     // Set up listener for events on geofences
     situmSdk.onEnterGeofences((geofencesResult) {
       _echo("SDK> Enter geofences: ${geofencesResult.geofences}.");
@@ -168,7 +178,7 @@ class _MyTabsState extends State<MyTabs> {
   void _echo(String output) {
     setState(() {
       currentOutput = output;
-      print(currentOutput);
+      debugPrint(currentOutput);
     });
   }
 
@@ -177,7 +187,6 @@ class _MyTabsState extends State<MyTabs> {
   */
   void _requestUpdates() async {
     situmSdk.requestLocationUpdates(
-      _MyLocationListener(echoer: _echo),
       {"buildingIdentifier": buildingIdentifier},
     );
   }
@@ -262,27 +271,5 @@ class _MyTabsState extends State<MyTabs> {
     setState(() {
       _selectedIndex = index;
     });
-  }
-}
-
-class _MyLocationListener implements LocationListener {
-  final Function echoer;
-
-  _MyLocationListener({required this.echoer});
-
-  @override
-  void onError(Error error) {
-    echoer("SDK> ERROR: ${error.message}");
-  }
-
-  @override
-  void onLocationChanged(OnLocationChangedResult locationChangedResult) {
-    echoer(
-        "SDK> Location changed, building ID is: ${locationChangedResult.buildingId}");
-  }
-
-  @override
-  void onStatusChanged(String status) {
-    echoer("SDK> STATUS: $status");
   }
 }

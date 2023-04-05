@@ -3,7 +3,10 @@ part of situm_flutter_sdk;
 class SitumFlutterSDK {
   late final MethodChannel methodChannel;
 
-  LocationListener? locationListener;
+  OnLocationChangeCallback? onLocationChangeCallback;
+  OnStatusChangeCallback? onStatusChangeCallback;
+  OnErrorCallback? onErrorCallback;
+
   OnEnteredGeofencesCallback? onEnteredGeofencesCallback;
   OnExitedGeofencesCallback? onExitedGeofencesCallback;
 
@@ -35,12 +38,20 @@ class SitumFlutterSDK {
   }
 
   Future<void> requestLocationUpdates(
-      LocationListener listener, Map<String, dynamic> locationRequest) async {
-    if (!identical(locationListener, listener)) {
-      locationListener = listener;
-      await methodChannel.invokeMethod(
-          'requestLocationUpdates', locationRequest);
-    }
+      Map<String, dynamic> locationRequest) async {
+    await methodChannel.invokeMethod('requestLocationUpdates', locationRequest);
+  }
+
+  Future<void> onLocationChange(OnLocationChangeCallback callback) async {
+    onLocationChangeCallback = callback;
+  }
+
+  Future<void> onStatusChange(OnStatusChangeCallback callback) async {
+    onStatusChangeCallback = callback;
+  }
+
+  Future<void> onError(OnErrorCallback callback) async {
+    onErrorCallback = callback;
   }
 
   Future<void> clearCache() async {
@@ -124,22 +135,20 @@ class SitumFlutterSDK {
         _onExitGeofences(call.arguments);
         break;
       default:
-        print('Method ${call.method} not found!');
+        debugPrint('Method ${call.method} not found!');
     }
   }
 
   void _onLocationChanged(arguments) {
-    locationListener?.onLocationChanged(OnLocationChangedResult(
-      buildingId: arguments['buildingId'],
-    ));
+    onLocationChangeCallback?.call(Location.fromArguments(arguments));
   }
 
   void _onStatusChanged(arguments) {
-    locationListener?.onStatusChanged(arguments['status']);
+    onStatusChangeCallback?.call(arguments['status']);
   }
 
   void _onError(arguments) {
-    locationListener?.onError(Error(
+    onErrorCallback?.call(Error(
       code: arguments['code'],
       message: arguments['message'],
     ));
