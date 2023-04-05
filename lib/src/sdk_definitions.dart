@@ -427,7 +427,7 @@ class PrefetchOptions {
 }
 
 class Error {
-  final Int code;
+  final String code;
   final String message;
 
   const Error({required this.code, required this.message});

@@ -149,7 +149,7 @@ class SitumFlutterSDK {
 
   void _onError(arguments) {
     onErrorCallback?.call(Error(
-      code: arguments['code'],
+      code: "${arguments['code']}", // Ensure code is a string!
       message: arguments['message'],
     ));
   }
