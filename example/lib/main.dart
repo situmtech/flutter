@@ -164,11 +164,11 @@ class _MyTabsState extends State<MyTabs> {
     ));
     // Set up location listeners:
     situmSdk.onLocationChange((location) {
-      _echo("""SDK> Location changed:
-        B=${location.buildingId},
-        F=${location.floorId},
-        C=${location.coordinate.latitude}, ${location.coordinate.longitude}
-      """);
+      // _echo("""SDK> Location changed:
+      //   B=${location.buildingId},
+      //   F=${location.floorId},
+      //   C=${location.coordinate.latitude}, ${location.coordinate.longitude}
+      // """);
       situmFlutterWYF?.setCurrentLocation(location);
     });
     situmSdk.onStatusChange((status) {

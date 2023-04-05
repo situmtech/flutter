@@ -75,10 +75,10 @@ class _SitumMapViewState extends State<SitumMapView> {
       ..setNavigationDelegate(
         NavigationDelegate(
           onProgress: (int progress) {
-            debugPrint('WebView is loading (progress : $progress%)');
+            // Do nothing.
           },
           onPageStarted: (String url) {
-            debugPrint('Page started loading: $url');
+            // Do nothing.
           },
           onPageFinished: (String url) {
             debugPrint('Page finished loading: $url');
@@ -105,8 +105,8 @@ class _SitumMapViewState extends State<SitumMapView> {
       ..addJavaScriptChannel(
         WV_CHANNEL,
         onMessageReceived: (JavaScriptMessage message) {
-          debugPrint(
-              "Channel situm.location received message: ${message.message}");
+          Map<String, dynamic> map = jsonDecode(message.message);
+          wyfController?.onMapViewerMessage(map["type"], map["payload"] ?? {});
         },
       )
       ..loadRequest(Uri.parse(

@@ -96,6 +96,11 @@ class SitumFlutterSDK {
     return createList<Poi>(response, createPoi);
   }
 
+  Future<Poi?> fetchPoiFromBuilding(String buildingId, String poiId) async {
+    List<Poi> buildingPois = await fetchPoisFromBuilding(buildingId);
+    return buildingPois.cast<Poi?>().firstWhere((poi) => poi?.id == poiId, orElse: () => null);
+  }
+
   Future<List<PoiCategory>> fetchPoiCategories() async {
     List response = await methodChannel.invokeMethod("fetchCategories");
     return createList<PoiCategory>(response, createCategory);

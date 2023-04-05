@@ -1,7 +1,6 @@
 part of situm_flutter_wayfinding;
 
 class SitumFlutterWYF {
-
   // TODO: handle states.
   bool situmMapLoaded = false;
   bool onDisposeCalled = false;
@@ -16,15 +15,21 @@ class SitumFlutterWYF {
     _sendMessage(WV_CHANNEL_LOCATION, location.toMapViewer());
   }
 
+  void onMapViewerMessage(String type, Map<String, dynamic> payload) {
+    MessageHandler(type).handleMessage(this, payload);
+  }
+
+  // Lifecycle utils:
+  void onWidgetDisposed() {
+    onDisposeCalled = true;
+  }
+
+  // Private utils:
   void _sendMessage(String channel, String payload) {
     var message = "{type: '$channel', payload: $payload}";
     webViewController.runJavaScript("""
       window.postMessage($message)
     """);
-  }
-
-  void onWidgetDisposed() {
-    onDisposeCalled = true;
   }
 }
 
