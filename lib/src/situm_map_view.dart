@@ -5,8 +5,6 @@ class SitumMapView extends StatefulWidget {
   final String situmUser;
   final String situmApiKey;
   final String buildingIdentifier;
-  final String googleMapsApiKey;
-  final bool useHybridComponents;
   final TextDirection directionality;
   final bool enablePoiClustering;
   final String searchViewPlaceholder;
@@ -33,9 +31,7 @@ class SitumMapView extends StatefulWidget {
     required this.situmApiKey,
     required this.buildingIdentifier,
     required this.loadCallback,
-    this.googleMapsApiKey = "",
     this.didUpdateCallback,
-    this.useHybridComponents = true,
     this.directionality = TextDirection.ltr,
     this.enablePoiClustering = true,
     this.searchViewPlaceholder = "Situm Flutter Wayfinding",
@@ -59,8 +55,8 @@ class SitumMapView extends StatefulWidget {
 }
 
 class _SitumMapViewState extends State<SitumMapView> {
-  SitumFlutterWayfinding? controller;
-  late final WebViewController _controller;
+  SitumFlutterWYF? wyfController;
+  late final WebViewController webViewController;
 
   @override
   void initState() {
@@ -69,6 +65,9 @@ class _SitumMapViewState extends State<SitumMapView> {
     final WebViewController controller =
         WebViewController.fromPlatformCreationParams(
             const PlatformWebViewControllerCreationParams());
+
+    //const mapViewBaseUrl = "http://192.168.1.132:5173";
+    const mapViewBaseUrl = "https://map-viewer.situm.com";
 
     controller
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
@@ -83,14 +82,19 @@ class _SitumMapViewState extends State<SitumMapView> {
           },
           onPageFinished: (String url) {
             debugPrint('Page finished loading: $url');
+            wyfController = SitumFlutterWYF(
+              webViewController: webViewController,
+            );
+            wyfController!.situmMapLoaded = true;
+            widget.loadCallback(wyfController!);
           },
           onWebResourceError: (WebResourceError error) {
             debugPrint('''
-Page resource error:
-  code: ${error.errorCode}
-  description: ${error.description}
-  errorType: ${error.errorType}
-  isForMainFrame: ${error.isForMainFrame}
+              Page resource error:
+                code: ${error.errorCode}
+                description: ${error.description}
+                errorType: ${error.errorType}
+                isForMainFrame: ${error.isForMainFrame}
           ''');
           },
           onNavigationRequest: (NavigationRequest request) {
@@ -99,34 +103,34 @@ Page resource error:
         ),
       )
       ..addJavaScriptChannel(
-        'map-viewer-channel',
+        WV_CHANNEL,
         onMessageReceived: (JavaScriptMessage message) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(message.message)),
-          );
+          debugPrint(
+              "Channel situm.location received message: ${message.message}");
         },
       )
-      ..loadRequest(Uri.parse('https://map-viewer.situm.com/'));
+      ..loadRequest(Uri.parse(
+          "$mapViewBaseUrl/?email=${widget.situmUser}&apikey=${widget.situmApiKey}&buildingid=${widget.buildingIdentifier}&mode=embed"));
 
-    _controller = controller;
+    webViewController = controller;
   }
 
   @override
   Widget build(BuildContext context) {
-    return WebViewWidget(controller: _controller);
+    return WebViewWidget(controller: webViewController);
   }
 
   @override
   void didUpdateWidget(covariant SitumMapView oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (controller?.situmMapLoaded == true) {
-      widget.didUpdateCallback?.call(controller!);
+    if (wyfController?.situmMapLoaded == true) {
+      widget.didUpdateCallback?.call(wyfController!);
     }
   }
 
   @override
   void dispose() {
     super.dispose();
-    controller?.onWidgetDisposed();
+    wyfController?.onWidgetDisposed();
   }
 }

@@ -32,7 +32,10 @@ class _MyTabsState extends State<MyTabs> {
   int _selectedIndex = 0;
   String currentOutput = "---";
 
+  // TODO: delete!
   SitumFlutterWayfinding? wyfController;
+
+  SitumFlutterWYF? situmFlutterWYF;
 
   // Widget to showcase some SDK API functions
   Widget _createHomeTab() {
@@ -93,8 +96,7 @@ class _MyTabsState extends State<MyTabs> {
         situmUser: situmUser,
         situmApiKey: situmApiKey,
         buildingIdentifier: buildingIdentifier,
-        googleMapsApiKey: googleMapsApiKey,
-        useHybridComponents: true,
+        // Config:
         showPoiNames: true,
         hasSearchView: true,
         lockCameraToBuilding: true,
@@ -109,7 +111,8 @@ class _MyTabsState extends State<MyTabs> {
           outsideRouteThreshold: 40,
           distanceToGoalThreshold: 8,
         ),
-        loadCallback: _onSitumMapLoaded,
+        // loadCallback: _onSitumMapLoaded,
+        loadCallback: _onWYFLoaded,
       ),
       wyfController != null
           ? FindMyCar(
@@ -120,6 +123,10 @@ class _MyTabsState extends State<MyTabs> {
             )
           : Container()
     ]);
+  }
+
+  void _onWYFLoaded(SitumFlutterWYF controller) {
+    situmFlutterWYF = controller;
   }
 
   void _onSitumMapLoaded(SitumFlutterWayfinding controller) {
@@ -157,7 +164,12 @@ class _MyTabsState extends State<MyTabs> {
     ));
     // Set up location listeners:
     situmSdk.onLocationChange((location) {
-      _echo("SDK> Location changed: $location");
+      _echo("""SDK> Location changed:
+        B=${location.buildingId},
+        F=${location.floorId},
+        C=${location.coordinate.latitude}, ${location.coordinate.longitude}
+      """);
+      situmFlutterWYF?.setCurrentLocation(location);
     });
     situmSdk.onStatusChange((status) {
       _echo("SDK> STATUS: $status");
@@ -186,9 +198,10 @@ class _MyTabsState extends State<MyTabs> {
   * SDK auxiliary functions
   */
   void _requestUpdates() async {
-    situmSdk.requestLocationUpdates(
-      {"buildingIdentifier": buildingIdentifier},
-    );
+    situmSdk.requestLocationUpdates(LocationRequest(
+      buildingIdentifier: buildingIdentifier,
+      useDeadReckoning: false
+    ));
   }
 
   void _removeUpdates() async {

@@ -1,14 +1,30 @@
 part of situm_flutter_sdk;
 
+class LocationRequest {
+  final String buildingIdentifier;
+  final bool useDeadReckoning;
+
+  LocationRequest({
+    this.buildingIdentifier = "-1",
+    this.useDeadReckoning = false,
+  });
+
+  Map<String, dynamic> toJson() => {
+        "buildingIdentifier": buildingIdentifier,
+        "useDeadReckoning": useDeadReckoning,
+      };
+}
+
 class Location {
   final Coordinate coordinate;
   final CartesianCoordinate cartesianCoordinate;
   final String buildingId;
   final String floorId;
-  final Bearing bearing;
-  final Bearing cartesianBearing;
+  final Bearing? bearing;
+  final Bearing? cartesianBearing;
   final double accuracy;
   final bool isIndoor;
+  final bool hasBearing;
   final bool hasCartesianBearing;
   final int timestamp;
 
@@ -17,13 +33,18 @@ class Location {
     required this.cartesianCoordinate,
     required this.buildingId,
     required this.floorId,
-    required this.bearing,
-    required this.cartesianBearing,
     required this.accuracy,
     required this.isIndoor,
+    required this.hasBearing,
     required this.hasCartesianBearing,
+    this.bearing,
+    this.cartesianBearing,
     required this.timestamp,
   });
+
+  String toMapViewer() {
+    return "{latitude: ${coordinate.latitude}, longitude: ${coordinate.longitude}, accuracy: $accuracy, bearing: ${bearing?.degreesClockwise}, buildingId: $buildingId, floorId: $floorId, isIndoor: $isIndoor, isOutdoor: ${!isIndoor}, hasBearing: $hasBearing}";
+  }
 
   static Location fromArguments(dynamic args) {
     return Location(
@@ -50,6 +71,7 @@ class Location {
       accuracy: args["accuracy"],
       buildingId: args["buildingIdentifier"],
       floorId: args["floorIdentifier"],
+      hasBearing: args["hasBearing"],
       hasCartesianBearing: args["hasCartesianBearing"],
       isIndoor: args["isIndoor"],
       timestamp: args["timestamp"],

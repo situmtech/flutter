@@ -1,14 +1,30 @@
 part of situm_flutter_wayfinding;
 
 class SitumFlutterWYF {
+
+  // TODO: handle states.
+  bool situmMapLoaded = false;
+  bool onDisposeCalled = false;
+
   final WebViewController webViewController;
 
-  const SitumFlutterWYF({
+  SitumFlutterWYF({
     required this.webViewController,
   });
 
-  void setCurrentLocation() {
-    // TODO: post "situm.location" message.
+  void setCurrentLocation(Location location) {
+    _sendMessage(WV_CHANNEL_LOCATION, location.toMapViewer());
+  }
+
+  void _sendMessage(String channel, String payload) {
+    var message = "{type: '$channel', payload: $payload}";
+    webViewController.runJavaScript("""
+      window.postMessage($message)
+    """);
+  }
+
+  void onWidgetDisposed() {
+    onDisposeCalled = true;
   }
 }
 
@@ -113,8 +129,9 @@ class SitumFlutterWayfinding {
   }
 
   void notifyLoadCallbacks() {
-    situmMapLoadCallback?.call(this);
-    situmMapDidUpdateCallback?.call(this);
+    // TODO: delete!
+    // situmMapLoadCallback?.call(this);
+    // situmMapDidUpdateCallback?.call(this);
   }
 
   void onWidgetDisposed() {

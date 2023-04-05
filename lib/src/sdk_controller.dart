@@ -38,8 +38,8 @@ class SitumFlutterSDK {
   }
 
   Future<void> requestLocationUpdates(
-      Map<String, dynamic> locationRequest) async {
-    await methodChannel.invokeMethod('requestLocationUpdates', locationRequest);
+      LocationRequest locationRequest) async {
+    await methodChannel.invokeMethod('requestLocationUpdates', locationRequest.toJson());
   }
 
   Future<void> onLocationChange(OnLocationChangeCallback callback) async {

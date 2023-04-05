@@ -124,7 +124,7 @@ class CustomPoi {
 // Result callbacks.
 
 // WYF load callback.
-typedef SitumMapViewCallback = void Function(SitumFlutterWayfinding controller);
+typedef SitumMapViewCallback = void Function(SitumFlutterWYF controller);
 // POI selection callback.
 typedef OnPoiSelectedCallback = void Function(
     OnPoiSelectedResult poiSelectedResult);
