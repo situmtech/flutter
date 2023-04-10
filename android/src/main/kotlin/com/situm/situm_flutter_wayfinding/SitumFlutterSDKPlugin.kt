@@ -25,9 +25,6 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 
 // SitumFlutterSDKPlugin.
-// Right now WYF does not have a plugin class (extending FlutterPlugin), it does require
-// the view factory to be registered from the main activity.
-// TODO: create a separated plugin for SitumSdk.
 class SitumFlutterSDKPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCallHandler {
 
     private lateinit var channel: MethodChannel
@@ -149,11 +146,8 @@ class SitumFlutterSDKPlugin : FlutterPlugin, ActivityAware, MethodChannel.Method
             }
 
             override fun onStatusChanged(status: LocationStatus) {
-                val callbackArgs = mutableMapOf<String, String>(
-                    "status" to status.name
-                )
                 handler.post {
-                    channel.invokeMethod("onStatusChanged", callbackArgs)
+                    channel.invokeMethod("onStatusChanged", status.toMap())
                 }
             }
 

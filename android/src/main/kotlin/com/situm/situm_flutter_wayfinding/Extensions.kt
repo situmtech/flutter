@@ -3,9 +3,8 @@ package com.situm.situm_flutter_wayfinding
 import android.util.Log
 import es.situm.sdk.error.Error
 import es.situm.sdk.location.LocationRequest
+import es.situm.sdk.location.LocationStatus
 import es.situm.sdk.model.MapperInterface
-import es.situm.sdk.model.cartography.Poi
-import es.situm.sdk.model.cartography.PoiCategory
 import io.flutter.plugin.common.MethodChannel
 
 fun Collection<MapperInterface>.toMap(): List<Map<String, Any>> {

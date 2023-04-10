@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:situm_flutter_wayfinding/situm_flutter_sdk.dart';
 import 'package:situm_flutter_wayfinding/situm_flutter_wayfinding.dart';
 import 'package:situm_flutter_wayfinding_example/config.dart';
-import 'package:situm_flutter_wayfinding_example/find_my_car/find_my_car.dart';
 
 void main() => runApp(const MyApp());
 
@@ -32,9 +31,6 @@ class _MyTabsState extends State<MyTabs> {
   int _selectedIndex = 0;
   String currentOutput = "---";
 
-  // TODO: delete!
-  SitumFlutterWayfinding? wyfController;
-
   SitumFlutterWYF? situmFlutterWYF;
 
   // Widget to showcase some SDK API functions
@@ -54,7 +50,7 @@ class _MyTabsState extends State<MyTabs> {
               height: 150,
               child: GridView.count(
                   crossAxisCount: 4,
-                  padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+                  padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
                   shrinkWrap: true,
                   childAspectRatio: 1.5,
                   children: [
@@ -99,54 +95,16 @@ class _MyTabsState extends State<MyTabs> {
         // Config:
         showPoiNames: true,
         hasSearchView: true,
-        lockCameraToBuilding: true,
-        useRemoteConfig: true,
-        initialZoom: 20,
-        minZoom: 16,
-        maxZoom: 20,
-        showPositioningButton: true,
         showNavigationIndications: true,
-        showFloorSelector: true,
-        navigationSettings: const NavigationSettings(
-          outsideRouteThreshold: 40,
-          distanceToGoalThreshold: 8,
-        ),
-        // loadCallback: _onSitumMapLoaded,
         loadCallback: _onWYFLoaded,
       ),
-      wyfController != null
-          ? FindMyCar(
-              wyfController: wyfController,
-              buildingIdentifier: buildingIdentifier,
-              selectedIconPath: 'resources/car_selected_icon.png',
-              unSelectedIconPath: 'resources/car_unselected_icon.png',
-            )
-          : Container()
     ]);
   }
 
   void _onWYFLoaded(SitumFlutterWYF controller) {
     situmFlutterWYF = controller;
-  }
-
-  void _onSitumMapLoaded(SitumFlutterWayfinding controller) {
-    // The Situm map was successfully loaded, use the given controller to
-    // call the WYF API methods.
-    debugPrint("WYF> Situm Map loaded!");
     controller.onPoiSelected((poiSelectedResult) {
-      debugPrint("WYF> Poi ${poiSelectedResult.poiName} selected!");
-    });
-    // This function is called whenever a poi is deselected
-    controller.onPoiDeselected((poiDeselectedResult) {
-      debugPrint("WYF> Poi deselected!");
-    });
-    // This function is called whenever navigation starts
-    controller.onNavigationStarted((navigation) {
-      debugPrint("WYF> Nav started, distance = ${navigation.route?.distance}");
-    });
-
-    setState(() {
-      wyfController = controller;
+      debugPrint("WYF> onPoiSelected: ${poiSelectedResult.poiId}");
     });
   }
 
@@ -200,7 +158,7 @@ class _MyTabsState extends State<MyTabs> {
   void _requestUpdates() async {
     situmSdk.requestLocationUpdates(LocationRequest(
       buildingIdentifier: buildingIdentifier,
-      useDeadReckoning: false
+      useDeadReckoning: false,
     ));
   }
 

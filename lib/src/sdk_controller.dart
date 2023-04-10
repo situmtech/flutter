@@ -149,7 +149,7 @@ class SitumFlutterSDK {
   }
 
   void _onStatusChanged(arguments) {
-    onStatusChangeCallback?.call(arguments['status']);
+    onStatusChangeCallback?.call(arguments['statusName']);
   }
 
   void _onError(arguments) {

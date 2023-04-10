@@ -5,20 +5,14 @@ class SitumMapView extends StatefulWidget {
   final String situmUser;
   final String situmApiKey;
   final String buildingIdentifier;
+  final String situmMapUrl;
   final TextDirection directionality;
-  final bool enablePoiClustering;
   final String searchViewPlaceholder;
   final bool useDashboardTheme;
   final bool showPoiNames;
   final bool hasSearchView;
-  final bool lockCameraToBuilding;
-  final bool useRemoteConfig;
-  final int initialZoom;
-  final int minZoom;
-  final int maxZoom;
+  final bool enablePoiClustering;
   final bool showNavigationIndications;
-  final bool showFloorSelector;
-  final bool showPositioningButton;
   final NavigationSettings? navigationSettings;
   final DirectionsSettings? directionsSettings;
 
@@ -31,21 +25,15 @@ class SitumMapView extends StatefulWidget {
     required this.situmApiKey,
     required this.buildingIdentifier,
     required this.loadCallback,
+    this.situmMapUrl = "https://map-viewer.situm.com",
     this.didUpdateCallback,
     this.directionality = TextDirection.ltr,
-    this.enablePoiClustering = true,
     this.searchViewPlaceholder = "Situm Flutter Wayfinding",
     this.useDashboardTheme = true,
-    this.showPoiNames = true,
     this.hasSearchView = true,
-    this.lockCameraToBuilding = false,
-    this.useRemoteConfig = true,
-    this.initialZoom = 18,
-    this.minZoom = 15,
-    this.maxZoom = 21,
+    this.showPoiNames = true,
+    this.enablePoiClustering = true,
     this.showNavigationIndications = true,
-    this.showFloorSelector = true,
-    this.showPositioningButton = true,
     this.navigationSettings,
     this.directionsSettings,
   }) : super(key: key);
@@ -58,6 +46,25 @@ class _SitumMapViewState extends State<SitumMapView> {
   SitumFlutterWYF? wyfController;
   late final WebViewController webViewController;
 
+  String _createUri() {
+    String uri =
+        "${widget.situmMapUrl}/?email=${widget.situmUser}&apikey=${widget.situmApiKey}&buildingid=${widget.buildingIdentifier}&mode=embed";
+    List<String> elementsToHide = [];
+    if (!widget.hasSearchView) {
+      elementsToHide.add("ec");
+    }
+    if (!widget.showPoiNames) {
+      elementsToHide.add("pn");
+    }
+    if (!widget.enablePoiClustering) {
+      elementsToHide.add("pcl");
+    }
+    if (elementsToHide.isNotEmpty) {
+      uri = "$uri&hide=${elementsToHide.join(',')}";
+    }
+    return uri;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -66,8 +73,7 @@ class _SitumMapViewState extends State<SitumMapView> {
         WebViewController.fromPlatformCreationParams(
             const PlatformWebViewControllerCreationParams());
 
-    //const mapViewBaseUrl = "http://192.168.1.132:5173";
-    const mapViewBaseUrl = "https://map-viewer.situm.com";
+    final String uri = _createUri();
 
     controller
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
@@ -81,12 +87,14 @@ class _SitumMapViewState extends State<SitumMapView> {
             // Do nothing.
           },
           onPageFinished: (String url) {
-            debugPrint('Page finished loading: $url');
-            wyfController = SitumFlutterWYF(
-              webViewController: webViewController,
-            );
-            wyfController!.situmMapLoaded = true;
-            widget.loadCallback(wyfController!);
+            if (wyfController == null) {
+              debugPrint('Page finished loading, created wyfController: $url');
+              wyfController = SitumFlutterWYF(
+                webViewController: webViewController,
+              );
+              wyfController!.situmMapLoaded = true;
+              widget.loadCallback(wyfController!);
+            }
           },
           onWebResourceError: (WebResourceError error) {
             debugPrint('''
@@ -109,15 +117,28 @@ class _SitumMapViewState extends State<SitumMapView> {
           wyfController?.onMapViewerMessage(map["type"], map["payload"] ?? {});
         },
       )
-      ..loadRequest(Uri.parse(
-          "$mapViewBaseUrl/?email=${widget.situmUser}&apikey=${widget.situmApiKey}&buildingid=${widget.buildingIdentifier}&mode=embed"));
+      ..loadRequest(Uri.parse(uri));
 
     webViewController = controller;
   }
 
   @override
   Widget build(BuildContext context) {
-    return WebViewWidget(controller: webViewController);
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      debugPrint("""WYF> ANDROID ENVIRONMENT:
+        Using AndroidWebViewWidgetCreationParams with displayWithHybridComposition: true.
+      """);
+      return WebViewWidget.fromPlatformCreationParams(
+        params: AndroidWebViewWidgetCreationParams(
+          controller: webViewController.platform,
+          displayWithHybridComposition: true,
+        ),
+      );
+    }
+    return WebViewWidget(
+      controller: webViewController,
+      layoutDirection: widget.directionality,
+    );
   }
 
   @override

@@ -12,8 +12,6 @@
 
 #import <CoreLocation/CoreLocation.h>
 
-#import "situm_flutter_wayfinding-Swift.h"
-
 @interface SITFSDKPlugin() <SITLocationDelegate, SITGeofencesDelegate>
 
 @property (nonatomic, strong) SITCommunicationManager *comManager;
@@ -259,25 +257,18 @@ const NSString* RESULTS_KEY = @"results";
 
 - (void)locationManager:(id<SITLocationInterface> _Nonnull)locationManager
       didUpdateLocation:(SITLocation * _Nonnull)location {
-    
-    NSLog(@"location Manager on location: %@", location);
 
-    NSMutableDictionary *args = [NSMutableDictionary new];
-    args[@"buildingId"] = [NSString stringWithFormat:@"%@", location.position.buildingIdentifier];
-    // TODO: Complete location conversion
-    
+    NSLog(@"location Manager on location: %@", location);
+    NSDictionary *args = location.toDictionary;
     [self.channel invokeMethod:@"onLocationChanged" arguments:args];
 }
 
-- (void)locationManager:(id<SITLocationInterface> _Nonnull)locationManager didUpdateState:(SITLocationState)state {
-    
+- (void)locationManager:(id<SITLocationInterface> _Nonnull)locationManager
+         didUpdateState:(SITLocationState)state {
+
     NSLog(@"location Manager on state: %ld", state);
-
-    
     NSMutableDictionary *args = [NSMutableDictionary new];
-
-    args[@"status"] = [NSString stringWithFormat:@"%d", state];
-    
+    args[@"statusName"] = [NSString stringWithFormat:@"%d", state];
     [self.channel invokeMethod:@"onStatusChanged" arguments:args];
 }
 
