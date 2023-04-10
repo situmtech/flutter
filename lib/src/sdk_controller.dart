@@ -145,7 +145,7 @@ class SitumFlutterSDK {
   }
 
   void _onLocationChanged(arguments) {
-    onLocationChangeCallback?.call(Location.fromArguments(arguments));
+    onLocationChangeCallback?.call(createLocation(arguments));
   }
 
   void _onStatusChanged(arguments) {

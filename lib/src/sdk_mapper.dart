@@ -114,3 +114,39 @@ Event createEvent(Map map) {
 List<T> createList<T>(List maps, Function mapper) {
   return maps.map((o) => mapper(o)).toList().cast<T>();
 }
+
+Location createLocation(dynamic args) {
+  return Location(
+    coordinate: Coordinate(
+      latitude: args["coordinate"]["latitude"],
+      longitude: args["coordinate"]["longitude"],
+    ),
+    cartesianCoordinate: CartesianCoordinate(
+      x: args["cartesianCoordinate"]["x"],
+      y: args["cartesianCoordinate"]["y"],
+    ),
+    bearing: Bearing(
+      degrees: args["bearing"]["degrees"],
+      degreesClockwise: args["bearing"]["degreesClockwise"],
+      radians: args["bearing"]["radians"],
+      radiansMinusPiPi: args["bearing"]["radiansMinusPiPi"],
+    ),
+    cartesianBearing: Bearing(
+      degrees: args["cartesianBearing"]["degrees"],
+      degreesClockwise: args["cartesianBearing"]["degreesClockwise"],
+      radians: args["cartesianBearing"]["radians"],
+      radiansMinusPiPi: args["cartesianBearing"]["radiansMinusPiPi"],
+    ),
+    accuracy: args["accuracy"],
+    buildingId: args["buildingIdentifier"],
+    floorId: args["floorIdentifier"],
+    hasBearing: args["hasBearing"],
+    hasCartesianBearing: args["hasCartesianBearing"],
+    isIndoor: args["isIndoor"],
+    timestamp: args["timestamp"],
+  );
+}
+
+String createLocationPayload(Location location) {
+  return "{latitude: ${location.coordinate.latitude}, longitude: ${location.coordinate.longitude}, accuracy: ${location.accuracy}, bearing: ${location.bearing?.degreesClockwise}, buildingId: ${location.buildingId}, floorId: ${location.floorId}, isIndoor: ${location.isIndoor}, isOutdoor: ${!location.isIndoor}, hasBearing: ${location.hasBearing}}";
+}

@@ -19,7 +19,7 @@ class SitumFlutterWYF {
   });
 
   void setCurrentLocation(Location location) {
-    _sendMessage(WV_CHANNEL_LOCATION, location.toMapViewer());
+    _sendMessage(WV_CHANNEL_LOCATION, createLocationPayload(location));
   }
 
   void onMapViewerMessage(String type, Map<String, dynamic> payload) {
