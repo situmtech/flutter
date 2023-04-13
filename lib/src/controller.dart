@@ -5,12 +5,13 @@ class SitumFlutterWYF {
   bool situmMapLoaded = false;
   bool onDisposeCalled = false;
 
-  OnPoiSelectedCallback? onPoiSelectedCallback;
-  OnPoiDeselectedCallback? onPoiDeselectedCallback;
-  OnNavigationRequestedCallback? onNavigationRequestedCallback;
-  OnNavigationErrorCallback? onNavigationErrorCallback;
-  OnNavigationFinishedCallback? onNavigationFinishedCallback;
-  OnNavigationStartedCallback? onNavigationStartedCallback;
+  OnPoiSelectedCallback? _onPoiSelectedCallback;
+  OnPoiDeselectedCallback? _onPoiDeselectedCallback;
+  OnDirectionsRequestInterceptor? _onDirectionsRequestInterceptor;
+  OnNavigationRequestedCallback? _onNavigationRequestedCallback;
+  OnNavigationErrorCallback? _onNavigationErrorCallback;
+  OnNavigationFinishedCallback? _onNavigationFinishedCallback;
+  OnNavigationStartedCallback? _onNavigationStartedCallback;
 
   final WebViewController webViewController;
 
@@ -18,8 +19,9 @@ class SitumFlutterWYF {
     required this.webViewController,
   });
 
+  /// Tell the SitumMap where the user is located at.
   void setCurrentLocation(Location location) {
-    _sendMessage(WV_CHANNEL_LOCATION, createLocationPayload(location));
+    _sendMessage(WV_MESSAGE_LOCATION, location.toMap());
   }
 
   void onMapViewerMessage(String type, Map<String, dynamic> payload) {
@@ -32,34 +34,57 @@ class SitumFlutterWYF {
   }
 
   // Private utils:
-  void _sendMessage(String channel, String payload) {
+  void _sendMessage(String channel, Map payload) {
+    // Do not quote payload keys!
     var message = "{type: '$channel', payload: $payload}";
     webViewController.runJavaScript("""
       window.postMessage($message)
     """);
   }
 
+  // Actions:
+  void selectPoi(String id, String buildingId) async {
+
+  }
+
+  void navigateToPoi(String id, String buildingId) async {
+
+  }
+
+  void setRoute(SitumRoute situmRoute) async {
+
+  }
+
+  // Callbacks:
   void onPoiSelected(OnPoiSelectedCallback callback) {
-    onPoiSelectedCallback = callback;
+    _onPoiSelectedCallback = callback;
   }
 
   void onPoiDeselected(OnPoiDeselectedCallback callback) {
-    onPoiDeselectedCallback = callback;
+    _onPoiDeselectedCallback = callback;
+  }
+
+  void _onDirectionsRequested(DirectionsRequest directionsRequest) {
+    _onDirectionsRequestInterceptor?.call(directionsRequest);
+  }
+
+  void onDirectionsRequestInterceptor(OnDirectionsRequestInterceptor callback) {
+    _onDirectionsRequestInterceptor = callback;
   }
 
   void onNavigationRequested(OnNavigationRequestedCallback callback) {
-    onNavigationRequestedCallback = callback;
+    _onNavigationRequestedCallback = callback;
   }
 
   void onNavigationError(OnNavigationErrorCallback callback) {
-    onNavigationErrorCallback = callback;
+    _onNavigationErrorCallback = callback;
   }
 
   void onNavigationFinished(OnNavigationFinishedCallback callback) {
-    onNavigationFinishedCallback = callback;
+    _onNavigationFinishedCallback = callback;
   }
 
   void onNavigationStarted(OnNavigationStartedCallback callback) {
-    onNavigationStartedCallback = callback;
+    _onNavigationStartedCallback = callback;
   }
 }

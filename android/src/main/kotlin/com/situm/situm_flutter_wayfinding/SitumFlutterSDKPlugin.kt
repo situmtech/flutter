@@ -60,6 +60,7 @@ class SitumFlutterSDKPlugin : FlutterPlugin, ActivityAware, MethodChannel.Method
             "clearCache" -> clearCache(result)
             "fetchBuildingInfo" -> fetchBuildingInfo(arguments, result)
             "fetchBuildings" -> fetchBuildings(result)
+            "requestDirections" -> requestDirections(arguments, result)
             else -> result.notImplemented()
         }
     }
@@ -170,6 +171,10 @@ class SitumFlutterSDKPlugin : FlutterPlugin, ActivityAware, MethodChannel.Method
             }
         }
         result.success("DONE")
+    }
+
+    private fun requestDirections(arguments: Map<String, Any>, result: MethodChannel.Result) {
+
     }
 
     private fun prefetchPositioningInfo(arguments: Map<String, Any>, result: MethodChannel.Result) {

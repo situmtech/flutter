@@ -12,9 +12,9 @@ class SitumMapView extends StatefulWidget {
   final bool showPoiNames;
   final bool hasSearchView;
   final bool enablePoiClustering;
+  final bool enableDebugging;
   final bool showNavigationIndications;
   final NavigationSettings? navigationSettings;
-  final DirectionsSettings? directionsSettings;
 
   final SitumMapViewCallback loadCallback;
   final SitumMapViewCallback? didUpdateCallback;
@@ -33,9 +33,9 @@ class SitumMapView extends StatefulWidget {
     this.hasSearchView = true,
     this.showPoiNames = true,
     this.enablePoiClustering = true,
+    this.enableDebugging = false,
     this.showNavigationIndications = true,
     this.navigationSettings,
-    this.directionsSettings,
   }) : super(key: key);
 
   @override
@@ -119,15 +119,15 @@ class _SitumMapViewState extends State<SitumMapView> {
       )
       ..loadRequest(Uri.parse(uri));
 
+    if (controller.platform is AndroidWebViewController) {
+      AndroidWebViewController.enableDebugging(widget.enableDebugging);
+    }
     webViewController = controller;
   }
 
   @override
   Widget build(BuildContext context) {
     if (defaultTargetPlatform == TargetPlatform.android) {
-      debugPrint("""WYF> ANDROID ENVIRONMENT:
-        Using AndroidWebViewWidgetCreationParams with displayWithHybridComposition: true.
-      """);
       return WebViewWidget.fromPlatformCreationParams(
         params: AndroidWebViewWidgetCreationParams(
           controller: webViewController.platform,

@@ -2,6 +2,28 @@ part of situm_flutter_wayfinding;
 
 // Public definitions:
 
+class DirectionsMessage {
+  static const CATEGORY_POI = "POI";
+  static const CATEGORY_LOCATION = "LOCATION";
+  static const EMPTY_ID = "-1";
+
+  final String buildingId;
+  final String originCategory;
+  final String originId;
+  final String destinationCategory;
+  final String destinationId;
+  final DirectionsRequest directionsRequest;
+
+  DirectionsMessage({
+    required this.buildingId,
+    required this.originCategory,
+    this.originId = EMPTY_ID,
+    required this.destinationCategory,
+    this.destinationId = EMPTY_ID,
+    required this.directionsRequest,
+  });
+}
+
 class OnPoiSelectedResult {
   final String buildingId;
   final String buildingName;
@@ -49,76 +71,14 @@ class NavigationSettings {
   }
 }
 
-class DirectionsSettings {
-  final bool? minimizeFloorChanges;
-
-  const DirectionsSettings({
-    this.minimizeFloorChanges,
-  });
-
-  Map<String, dynamic> toMap() {
-    Map<String, dynamic> map = {};
-
-    if (minimizeFloorChanges != null) {
-      map['minimizeFloorChanges'] = minimizeFloorChanges;
-    }
-    return map;
-  }
-}
-
-class Route {
-  final double distance;
-
-  const Route({
-    this.distance = -1,
-  });
-}
-
 class NavigationResult {
   final String destinationId;
-  final Route? route;
+  final SitumRoute? route;
 
   const NavigationResult({
     required this.destinationId,
     this.route,
   });
-}
-
-class Coordinates {
-  final double latitude;
-  final double longitude;
-
-  Coordinates({
-    required this.latitude,
-    required this.longitude,
-  });
-
-  @override
-  String toString() {
-    return "$latitude, $longitude";
-  }
-}
-
-class CustomPoi {
-  final int id;
-  final String name;
-  final String description;
-  final int buildingId;
-  final int levelId;
-  final Coordinates coordinates;
-
-  const CustomPoi(
-      {required this.id,
-      required this.name,
-      required this.description,
-      required this.buildingId,
-      required this.levelId,
-      required this.coordinates});
-
-  @override
-  String toString() {
-    return "[$id] $name: $description - MAP($coordinates)";
-  }
 }
 
 // Result callbacks.
@@ -131,6 +91,9 @@ typedef OnPoiSelectedCallback = void Function(
 // POI deselection callback.
 typedef OnPoiDeselectedCallback = void Function(
     OnPoiDeselectedResult poiDeselectedResult);
+// DirectionsRequest interceptor.
+typedef OnDirectionsRequestInterceptor = void Function(
+    DirectionsRequest directionsRequest);
 // Navigation callbacks
 typedef OnNavigationRequestedCallback = void Function(String destinationId);
 typedef OnNavigationErrorCallback = void Function(
@@ -138,7 +101,3 @@ typedef OnNavigationErrorCallback = void Function(
 typedef OnNavigationFinishedCallback = void Function(String destinationId);
 typedef OnNavigationStartedCallback = void Function(
     NavigationResult navigation);
-typedef OnCustomPoiCreatedCallback = void Function(CustomPoi customPoi);
-typedef OnCustomPoiRemovedCallback = void Function(CustomPoi poiId);
-typedef OnCustomPoiSelectedCallback = void Function(CustomPoi poiId);
-typedef OnCustomPoiDeselectedCallback = void Function(CustomPoi poiId);

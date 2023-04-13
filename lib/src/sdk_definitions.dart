@@ -1,5 +1,6 @@
 part of situm_flutter_sdk;
 
+/// A data object that allows you to configure the positioning parameters.
 class LocationRequest {
   final String buildingIdentifier;
   final bool useDeadReckoning;
@@ -9,12 +10,43 @@ class LocationRequest {
     this.useDeadReckoning = false,
   });
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toMap() => {
         "buildingIdentifier": buildingIdentifier,
         "useDeadReckoning": useDeadReckoning,
       };
 }
 
+/// Parameters to request a route.
+class DirectionsRequest {
+  final Point from;
+  final Point to;
+  final double? fromBearing;
+  final bool? minimizeFloorChanges;
+
+  const DirectionsRequest({
+    required this.from,
+    required this.to,
+    this.fromBearing,
+    this.minimizeFloorChanges,
+  });
+
+  Map<String, dynamic> toMap() {
+    Map<String, dynamic> map = {
+      "from": from.toMap(),
+      "to": to.toMap(),
+    };
+    if (minimizeFloorChanges != null) {
+      map['minimizeFloorChanges'] = minimizeFloorChanges;
+    }
+    if (fromBearing != null) {
+      map['fromBearing'] = fromBearing;
+    }
+    return map;
+  }
+}
+
+/// A location. It can be indoor or outdoor, check isIndoor and isOutdoor.
+/// A valid indoor location has floorIdentifier and cartesianCoordinate.
 class Location {
   final Coordinate coordinate;
   final CartesianCoordinate cartesianCoordinate;
@@ -41,6 +73,18 @@ class Location {
     this.cartesianBearing,
     required this.timestamp,
   });
+
+  Map<String, dynamic> toMap() => {
+        "latitude": coordinate.latitude,
+        "longitude": coordinate.longitude,
+        "accuracy": accuracy,
+        "bearing": bearing?.degreesClockwise,
+        "buildingId": buildingId,
+        "floorId": floorId,
+        "isIndoor": isIndoor,
+        "isOutdoor": !isIndoor,
+        "hasBearing": hasBearing,
+      };
 }
 
 class OnEnteredGeofenceResult {
@@ -68,14 +112,18 @@ class NamedResource {
     required this.name,
   });
 
-  Map<String, dynamic> toJson() => {"id": id, "name": name};
+  Map<String, dynamic> toMap() => {
+        "id": id,
+        "name": name,
+      };
 
   @override
   String toString() {
-    return const JsonEncoder.withIndent('\t').convert(toJson());
+    return const JsonEncoder.withIndent('\t').convert(toMap());
   }
 }
 
+/// An structure that contains geographical coordinate.
 class Coordinate {
   final double latitude;
   final double longitude;
@@ -85,10 +133,13 @@ class Coordinate {
     required this.longitude,
   });
 
-  Map<String, dynamic> toJson() =>
-      {"latitude": latitude, "longitude": longitude};
+  Map<String, dynamic> toMap() => {
+        "latitude": latitude,
+        "longitude": longitude,
+      };
 }
 
+/// An structure that contains cartesian coordinate.
 class CartesianCoordinate {
   final double x;
   final double y;
@@ -98,9 +149,13 @@ class CartesianCoordinate {
     required this.y,
   });
 
-  Map<String, dynamic> toJson() => {"x": x, "y": y};
+  Map<String, dynamic> toMap() => {
+        "x": x,
+        "y": y,
+      };
 }
 
+/// Represents a rectangle bounds in a greographic 2D space.
 class Bounds {
   final Coordinate northEast;
   final Coordinate northWest;
@@ -114,14 +169,16 @@ class Bounds {
     required this.southWest,
   });
 
-  Map<String, dynamic> toJson() => {
-        "northEast": northEast.toJson(),
-        "northWest": northWest.toJson(),
-        "southEast": southEast.toJson(),
-        "southWest": southWest.toJson()
+  Map<String, dynamic> toMap() => {
+        "northEast": northEast.toMap(),
+        "northWest": northWest.toMap(),
+        "southEast": southEast.toMap(),
+        "southWest": southWest.toMap()
       };
 }
 
+/// Given a [Location], represents the bearing (in degrees) with respect to the
+/// Earth North.
 class Bearing {
   final double radiansMinusPiPi;
   final double radians;
@@ -134,8 +191,16 @@ class Bearing {
     required this.degreesClockwise,
     required this.degrees,
   });
+
+  Map<String, dynamic> toMap() => {
+        "radiansMinusPiPi": radiansMinusPiPi,
+        "radians": radians,
+        "degreesClockwise": degreesClockwise,
+        "degrees": degrees,
+      };
 }
 
+/// A building and its dependencies: [Floor]s, [Poi]s and [Geofence]s.
 class BuildingInfo extends NamedResource {
   final Building building;
   final List<Floor> floors;
@@ -156,18 +221,19 @@ class BuildingInfo extends NamedResource {
   });
 
   @override
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toMap() => {
         "id": id,
         "name": name,
-        "building": building.toJson(),
-        "floors": floors.map((i) => i.toJson()).toList(),
-        "indoorPOIs": indoorPois.map((i) => i.toJson()).toList(),
-        "outdoorPOIs": outdoorPois.map((i) => i.toJson()).toList(),
-        "geofences": geofences.map((i) => i.toJson()).toList(),
-        "events": events.map((i) => i.toJson()).toList()
+        "building": building.toMap(),
+        "floors": floors.map((i) => i.toMap()).toList(),
+        "indoorPOIs": indoorPois.map((i) => i.toMap()).toList(),
+        "outdoorPOIs": outdoorPois.map((i) => i.toMap()).toList(),
+        "geofences": geofences.map((i) => i.toMap()).toList(),
+        "events": events.map((i) => i.toMap()).toList()
       };
 }
 
+/// Floor of a [Building].
 class Floor extends NamedResource {
   final String buildingId;
   final int floorIndex;
@@ -189,7 +255,7 @@ class Floor extends NamedResource {
       required this.customFields});
 
   @override
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toMap() => {
         "buildingId": buildingId,
         "floorIndex": floorIndex,
         "mapUrl": mapUrl,
@@ -200,6 +266,7 @@ class Floor extends NamedResource {
       };
 }
 
+/// A building.
 class Building extends NamedResource {
   final String address;
   final Bounds bounds;
@@ -234,13 +301,13 @@ class Building extends NamedResource {
   });
 
   @override
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toMap() => {
         "id": id,
         "name": name,
         "address": address,
-        "bounds": bounds.toJson(),
-        "boundsRotated": boundsRotated.toJson(),
-        "center": center.toJson(),
+        "bounds": bounds.toMap(),
+        "boundsRotated": boundsRotated.toMap(),
+        "center": center.toMap(),
         "width": width,
         "height": height,
         "pictureThumbUrl": pictureThumbUrl,
@@ -262,8 +329,8 @@ class CircleArea {
     required this.radius,
   });
 
-  Map<String, dynamic> toJson() => {
-        "center": center.toJson(),
+  Map<String, dynamic> toMap() => {
+        "center": center.toMap(),
         "radius": radius,
       };
 }
@@ -280,14 +347,16 @@ class Event extends NamedResource {
   });
 
   @override
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toMap() => {
         "id": id,
         "name": name,
-        "trigger": trigger.toJson(),
+        "trigger": trigger.toMap(),
         "customFields": customFields,
       };
 }
 
+/// Represents a geographic region in a [Building]. Can be monitored to check if
+/// an user enter or exits the polygon and to get analytics.
 class Geofence extends NamedResource {
   final String buildingId;
   final String floorId;
@@ -308,7 +377,7 @@ class Geofence extends NamedResource {
   });
 
   @override
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toMap() => {
         "id": id,
         "name": name,
         "buildingId": buildingId,
@@ -320,6 +389,8 @@ class Geofence extends NamedResource {
       };
 }
 
+/// Point of Interest, associated to a [Building], regardless of whether it's
+/// place inside or outside the building.
 class Poi extends NamedResource {
   final String buildingId;
   final PoiCategory poiCategory;
@@ -336,37 +407,46 @@ class Poi extends NamedResource {
   });
 
   @override
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toMap() => {
         "id": id,
         "name": name,
         "buildingId": buildingId,
-        "poiCategory": poiCategory.toJson(),
-        "position": position.toJson(),
+        "poiCategory": poiCategory.toMap(),
+        "position": position.toMap(),
         "customFields": customFields,
       };
 }
 
+/// Associate geographical coordinate ([Location]) with [Building] and [Floor]
+/// (Cartography) and cartesian coordinate relative to that building.
 class Point {
   final String buildingId;
   final String floorId;
   final double latitude;
   final double longitude;
+  final double x;
+  final double y;
 
   Point({
     required this.buildingId,
     required this.floorId,
     required this.latitude,
     required this.longitude,
+    required this.x,
+    required this.y,
   });
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toMap() => {
         "buildingId": buildingId,
         "floorId": floorId,
         "latitude": latitude,
         "longitude": longitude,
+        "x": x,
+        "y": y,
       };
 }
 
+/// Category of Point of Interest.
 class PoiCategory extends NamedResource {
   PoiCategory({
     required super.id,
@@ -395,6 +475,14 @@ class Error {
   final String message;
 
   const Error({required this.code, required this.message});
+}
+
+class SitumRoute {
+  final double distance;
+
+  const SitumRoute({
+    this.distance = -1,
+  });
 }
 
 // Result callbacks.

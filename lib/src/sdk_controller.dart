@@ -3,12 +3,12 @@ part of situm_flutter_sdk;
 class SitumFlutterSDK {
   late final MethodChannel methodChannel;
 
-  OnLocationChangeCallback? onLocationChangeCallback;
-  OnStatusChangeCallback? onStatusChangeCallback;
-  OnErrorCallback? onErrorCallback;
+  OnLocationChangeCallback? _onLocationChangeCallback;
+  OnStatusChangeCallback? _onStatusChangeCallback;
+  OnErrorCallback? _onErrorCallback;
 
-  OnEnteredGeofencesCallback? onEnteredGeofencesCallback;
-  OnExitedGeofencesCallback? onExitedGeofencesCallback;
+  OnEnteredGeofencesCallback? _onEnteredGeofencesCallback;
+  OnExitedGeofencesCallback? _onExitedGeofencesCallback;
 
   SitumFlutterSDK() {
     methodChannel = const MethodChannel(CHANNEL_SDK_ID);
@@ -18,6 +18,8 @@ class SitumFlutterSDK {
 
   // Calls
 
+  /// Initialize SDK. You have to call this function prior any call to other
+  /// method.
   Future<void> init(String situmUser, String situmApiKey) async {
     await methodChannel.invokeMethod<String>(
       'init',
@@ -37,27 +39,44 @@ class SitumFlutterSDK {
     );
   }
 
-  Future<void> requestLocationUpdates(
-      LocationRequest locationRequest) async {
-    await methodChannel.invokeMethod('requestLocationUpdates', locationRequest.toJson());
+  /// Start positioning. Use [onLocationChange], [onStatusChange] and
+  /// [onError] callbacks to receive location updates, status changes and
+  /// positioning errors.
+  Future<void> requestLocationUpdates(LocationRequest locationRequest) async {
+    await methodChannel.invokeMethod(
+        'requestLocationUpdates', locationRequest.toMap());
   }
 
+  /// Get notified about location updates. See [requestLocationUpdates].
   Future<void> onLocationChange(OnLocationChangeCallback callback) async {
-    onLocationChangeCallback = callback;
+    _onLocationChangeCallback = callback;
   }
 
+  /// Get notified about positioning status changes. See
+  /// [requestLocationUpdates].
   Future<void> onStatusChange(OnStatusChangeCallback callback) async {
-    onStatusChangeCallback = callback;
+    _onStatusChangeCallback = callback;
   }
 
+  /// Get notified about positioning errors. See [requestLocationUpdates].
   Future<void> onError(OnErrorCallback callback) async {
-    onErrorCallback = callback;
+    _onErrorCallback = callback;
+  }
+
+  /// Request directions between two [Point]s, using the given
+  /// [DirectionsRequest].
+  Future<SitumRoute> requestDirections(
+      DirectionsRequest directionsRequest) async {
+    Map response = await methodChannel.invokeMethod(
+        'requestDirections', directionsRequest.toMap());
+    return createRoute(response);
   }
 
   Future<void> clearCache() async {
     await methodChannel.invokeMethod('clearCache');
   }
 
+  /// Stop positioning.
   Future<void> removeUpdates() async {
     await methodChannel.invokeMethod('removeUpdates');
   }
@@ -73,6 +92,9 @@ class SitumFlutterSDK {
     return createBuildingInfo(response);
   }
 
+  /// Download all the necessary information to start positioning. This includes
+  /// [Building], [BuildingInfo] and the building's model. Downloaded
+  /// information will be saved in cache.
   Future<String> prefetchPositioningInfo(
     List<String> buildingIdentifiers, {
     PrefetchOptions? options,
@@ -98,7 +120,9 @@ class SitumFlutterSDK {
 
   Future<Poi?> fetchPoiFromBuilding(String buildingId, String poiId) async {
     List<Poi> buildingPois = await fetchPoisFromBuilding(buildingId);
-    return buildingPois.cast<Poi?>().firstWhere((poi) => poi?.id == poiId, orElse: () => null);
+    return buildingPois
+        .cast<Poi?>()
+        .firstWhere((poi) => poi?.id == poiId, orElse: () => null);
   }
 
   Future<List<PoiCategory>> fetchPoiCategories() async {
@@ -106,15 +130,19 @@ class SitumFlutterSDK {
     return createList<PoiCategory>(response, createCategory);
   }
 
+  /// Get notified when the user enters a [Geofence]. Call this method before
+  /// the positioning is started.
   Future<void> onEnterGeofences(OnEnteredGeofencesCallback callback) async {
-    onEnteredGeofencesCallback = callback;
+    _onEnteredGeofencesCallback = callback;
     // Install the native listener only when it was explicitly required as it
     // supposes a computational costs.
     await methodChannel.invokeMethod('geofenceCallbacksRequested');
   }
 
+  /// Get notified when the user exits a [Geofence]. Call this method before the
+  /// positioning is started.
   Future<void> onExitGeofences(OnExitedGeofencesCallback callback) async {
-    onExitedGeofencesCallback = callback;
+    _onExitedGeofencesCallback = callback;
     // Install the native listener only when it was explicitly required as it
     // supposes a computational costs.
     await methodChannel.invokeMethod('geofenceCallbacksRequested');
@@ -145,15 +173,15 @@ class SitumFlutterSDK {
   }
 
   void _onLocationChanged(arguments) {
-    onLocationChangeCallback?.call(createLocation(arguments));
+    _onLocationChangeCallback?.call(createLocation(arguments));
   }
 
   void _onStatusChanged(arguments) {
-    onStatusChangeCallback?.call(arguments['statusName']);
+    _onStatusChangeCallback?.call(arguments['statusName']);
   }
 
   void _onError(arguments) {
-    onErrorCallback?.call(Error(
+    _onErrorCallback?.call(Error(
       code: "${arguments['code']}", // Ensure code is a string!
       message: arguments['message'],
     ));
@@ -163,7 +191,7 @@ class SitumFlutterSDK {
     List<Geofence> geofencesList =
         createList<Geofence>(arguments, createGeofence);
     if (geofencesList.isNotEmpty) {
-      onEnteredGeofencesCallback
+      _onEnteredGeofencesCallback
           ?.call(OnEnteredGeofenceResult(geofences: geofencesList));
     }
   }
@@ -172,7 +200,7 @@ class SitumFlutterSDK {
     List<Geofence> geofencesList =
         createList<Geofence>(arguments, createGeofence);
     if (geofencesList.isNotEmpty) {
-      onExitedGeofencesCallback
+      _onExitedGeofencesCallback
           ?.call(OnExitedGeofenceResult(geofences: geofencesList));
     }
   }

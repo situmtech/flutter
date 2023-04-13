@@ -93,9 +93,12 @@ class _MyTabsState extends State<MyTabs> {
         situmApiKey: situmApiKey,
         buildingIdentifier: buildingIdentifier,
         // Config:
+        situmMapUrl: "http://192.168.1.132:5173",
+        //situmMapUrl: "https://map-viewer-native.situm.com",
         showPoiNames: true,
         hasSearchView: true,
         showNavigationIndications: true,
+        enableDebugging: true,
         loadCallback: _onWYFLoaded,
       ),
     ]);
