@@ -226,7 +226,7 @@ class SitumFlutterSDKPlugin : FlutterPlugin, ActivityAware, MethodChannel.Method
     }
 
     private fun getDeviceId(result: MethodChannel.Result) {
-        val deivceId = String.SitumSdk.getDeviceID())
+        val deivceId = SitumSdk.getDeviceID()
         result.success(deivceId.toString())
     }
 
