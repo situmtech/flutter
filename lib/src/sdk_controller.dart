@@ -90,6 +90,11 @@ class SitumFlutterSDK {
     return createList<PoiCategory>(response, createCategory);
   }
 
+  Future<String> getDeviceId() async {
+    String response = await methodChannel.invokeMethod("getDeviceId");
+    return response;
+  }
+
   Future<void> onEnterGeofences(OnEnteredGeofencesCallback callback) async {
     onEnteredGeofencesCallback = callback;
     // Install the native listener only when it was explicitly required as it
