@@ -17,21 +17,27 @@ class LocationRequest {
 }
 
 /// Parameters to request a route.
-class DirectionsRequest {
+class DirectionsOptions {
+  // buildingId populated in the constructor body.
+  late String buildingId;
   final Point from;
   final Point to;
   final double? fromBearing;
   final bool? minimizeFloorChanges;
 
-  const DirectionsRequest({
+  DirectionsOptions({
     required this.from,
     required this.to,
     this.fromBearing,
     this.minimizeFloorChanges,
-  });
+  }) {
+    // This buildingId is useful on the native side.
+    buildingId = from.buildingId;
+  }
 
   Map<String, dynamic> toMap() {
     Map<String, dynamic> map = {
+      "buildingId": buildingId,
       "from": from.toMap(),
       "to": to.toMap(),
     };
@@ -42,6 +48,23 @@ class DirectionsRequest {
       map['fromBearing'] = fromBearing;
     }
     return map;
+  }
+}
+
+class NavigationOptions {
+  final double outsideRouteThreshold;
+  final double distanceToGoalThreshold;
+
+  const NavigationOptions({
+    this.outsideRouteThreshold = -1,
+    this.distanceToGoalThreshold = -1,
+  });
+
+  Map<String, dynamic> toMap() {
+    return {
+      "outsideRouteThreshold": outsideRouteThreshold,
+      "distanceToGoalThreshold": distanceToGoalThreshold
+    };
   }
 }
 
@@ -78,7 +101,8 @@ class Location {
         "latitude": coordinate.latitude,
         "longitude": coordinate.longitude,
         "accuracy": accuracy,
-        "bearing": bearing?.degreesClockwise,
+        // TODO: check WYF web: degrees vs radians.
+        "bearing": bearing?.degrees,
         "buildingId": buildingId,
         "floorId": floorId,
         "isIndoor": isIndoor,
@@ -478,10 +502,18 @@ class Error {
 }
 
 class SitumRoute {
-  final double distance;
+  final dynamic rawContent;
 
   const SitumRoute({
-    this.distance = -1,
+    required this.rawContent,
+  });
+}
+
+class RouteProgress {
+  final dynamic rawContent;
+
+  const RouteProgress({
+    required this.rawContent,
   });
 }
 
@@ -492,10 +524,13 @@ typedef OnLocationChangeCallback = void Function(Location location);
 typedef OnStatusChangeCallback = void Function(String status);
 typedef OnErrorCallback = void Function(Error error);
 
-// On enter geofences.
+// On enter/exit geofences.
 typedef OnEnteredGeofencesCallback = void Function(
     OnEnteredGeofenceResult onEnterGeofenceResult);
-
-// On exit geofences.
 typedef OnExitedGeofencesCallback = void Function(
     OnExitedGeofenceResult onExitGeofenceResult);
+
+// Navigation.
+typedef OnNavigationFinishedCallback = void Function();
+typedef OnNavigationProgressCallback = void Function(RouteProgress progress);
+typedef OnNavigationOutOfRouteCallback = void Function();

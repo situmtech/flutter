@@ -6,12 +6,8 @@ class SitumFlutterWYF {
   bool onDisposeCalled = false;
 
   OnPoiSelectedCallback? _onPoiSelectedCallback;
-  OnPoiDeselectedCallback? _onPoiDeselectedCallback;
-  OnDirectionsRequestInterceptor? _onDirectionsRequestInterceptor;
-  OnNavigationRequestedCallback? _onNavigationRequestedCallback;
-  OnNavigationErrorCallback? _onNavigationErrorCallback;
-  OnNavigationFinishedCallback? _onNavigationFinishedCallback;
-  OnNavigationStartedCallback? _onNavigationStartedCallback;
+  OnDirectionsOptionsInterceptor? _onDirectionsOptionsInterceptor;
+  OnNavigationOptionsInterceptor? _onNavigationOptionsInterceptor;
 
   final WebViewController webViewController;
 
@@ -34,7 +30,7 @@ class SitumFlutterWYF {
   }
 
   // Private utils:
-  void _sendMessage(String channel, Map payload) {
+  void _sendMessage(String channel, dynamic payload) {
     // Do not quote payload keys!
     var message = "{type: '$channel', payload: $payload}";
     webViewController.runJavaScript("""
@@ -44,47 +40,56 @@ class SitumFlutterWYF {
 
   // Actions:
   void selectPoi(String id, String buildingId) async {
-
+    // TODO.
   }
 
   void navigateToPoi(String id, String buildingId) async {
-
+    // TODO.
   }
 
-  void setRoute(SitumRoute situmRoute) async {
+  // By now, this method will not be exposed.
+  void _setRoute(
+    String originId,
+    String destinationId,
+    SitumRoute situmRoute,
+  ) async {
+    situmRoute.rawContent["originId"] = originId;
+    situmRoute.rawContent["destinationId"] = destinationId;
+    _sendMessage("situm.route.calculated", jsonEncode(situmRoute.rawContent));
+  }
 
+  void _setNavigationRoute(
+    String originId,
+    String destinationId,
+    SitumRoute situmRoute,
+  ) async {
+    situmRoute.rawContent["originId"] = originId;
+    situmRoute.rawContent["destinationId"] = destinationId;
+    _sendMessage(
+        "situm.route.response", jsonEncode(situmRoute.rawContent));
   }
 
   // Callbacks:
   void onPoiSelected(OnPoiSelectedCallback callback) {
+    // TODO: waiting for missing data from map-viewer.
     _onPoiSelectedCallback = callback;
   }
 
-  void onPoiDeselected(OnPoiDeselectedCallback callback) {
-    _onPoiDeselectedCallback = callback;
+  // Directions & Navigation Interceptors:
+
+  void _onDirectionsRequested(DirectionsOptions directionsOptions) {
+    _onDirectionsOptionsInterceptor?.call(directionsOptions);
   }
 
-  void _onDirectionsRequested(DirectionsRequest directionsRequest) {
-    _onDirectionsRequestInterceptor?.call(directionsRequest);
+  void _onNavigationRequested(NavigationOptions navigationOptions) {
+    _onNavigationOptionsInterceptor?.call(navigationOptions);
   }
 
-  void onDirectionsRequestInterceptor(OnDirectionsRequestInterceptor callback) {
-    _onDirectionsRequestInterceptor = callback;
+  void onDirectionsOptionsInterceptor(OnDirectionsOptionsInterceptor callback) {
+    _onDirectionsOptionsInterceptor = callback;
   }
 
-  void onNavigationRequested(OnNavigationRequestedCallback callback) {
-    _onNavigationRequestedCallback = callback;
-  }
-
-  void onNavigationError(OnNavigationErrorCallback callback) {
-    _onNavigationErrorCallback = callback;
-  }
-
-  void onNavigationFinished(OnNavigationFinishedCallback callback) {
-    _onNavigationFinishedCallback = callback;
-  }
-
-  void onNavigationStarted(OnNavigationStartedCallback callback) {
-    _onNavigationStartedCallback = callback;
+  void onNavigationOptionsInterceptor(OnNavigationOptionsInterceptor callback) {
+    _onNavigationOptionsInterceptor = callback;
   }
 }

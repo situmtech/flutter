@@ -147,11 +147,13 @@ Location createLocation(dynamic args) => Location(
       timestamp: args["timestamp"],
     );
 
-SitumRoute createRoute(arguments) => const SitumRoute(
-      distance: -1,
-    );
+SitumRoute createRoute(arguments) {
+  return SitumRoute(
+      rawContent: arguments
+  );
+}
 
-DirectionsRequest createDirectionsRequest(arguments) => DirectionsRequest(
+DirectionsOptions createDirectionsOptions(arguments) => DirectionsOptions(
       from: Point(
         buildingId: arguments["from"]["buildingId"],
         floorId: arguments["from"]["floorId"], // Hmm

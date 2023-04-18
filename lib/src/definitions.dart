@@ -12,7 +12,7 @@ class DirectionsMessage {
   final String originId;
   final String destinationCategory;
   final String destinationId;
-  final DirectionsRequest directionsRequest;
+  final DirectionsOptions directionsOptions;
 
   DirectionsMessage({
     required this.buildingId,
@@ -20,7 +20,7 @@ class DirectionsMessage {
     this.originId = EMPTY_ID,
     required this.destinationCategory,
     this.destinationId = EMPTY_ID,
-    required this.directionsRequest,
+    required this.directionsOptions,
   });
 }
 
@@ -54,23 +54,7 @@ class OnPoiDeselectedResult {
   });
 }
 
-class NavigationSettings {
-  final double outsideRouteThreshold;
-  final double distanceToGoalThreshold;
-
-  const NavigationSettings({
-    this.outsideRouteThreshold = -1,
-    this.distanceToGoalThreshold = -1,
-  });
-
-  Map<String, dynamic> toMap() {
-    return {
-      "outsideRouteThreshold": outsideRouteThreshold,
-      "distanceToGoalThreshold": distanceToGoalThreshold
-    };
-  }
-}
-
+// TODO: is this necessary?
 class NavigationResult {
   final String destinationId;
   final SitumRoute? route;
@@ -91,9 +75,11 @@ typedef OnPoiSelectedCallback = void Function(
 // POI deselection callback.
 typedef OnPoiDeselectedCallback = void Function(
     OnPoiDeselectedResult poiDeselectedResult);
-// DirectionsRequest interceptor.
-typedef OnDirectionsRequestInterceptor = void Function(
-    DirectionsRequest directionsRequest);
+// DirectionsOptions interceptor.
+typedef OnDirectionsOptionsInterceptor = void Function(
+    DirectionsOptions directionsOptions);
+typedef OnNavigationOptionsInterceptor = void Function(
+    NavigationOptions navigationOptions);
 // Navigation callbacks
 typedef OnNavigationRequestedCallback = void Function(String destinationId);
 typedef OnNavigationErrorCallback = void Function(

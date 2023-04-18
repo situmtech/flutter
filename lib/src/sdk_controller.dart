@@ -10,10 +10,13 @@ class SitumFlutterSDK {
   OnEnteredGeofencesCallback? _onEnteredGeofencesCallback;
   OnExitedGeofencesCallback? _onExitedGeofencesCallback;
 
+  OnNavigationFinishedCallback? _onNavigationFinishedCallback;
+  OnNavigationProgressCallback? _onNavigationProgressCallback;
+  OnNavigationOutOfRouteCallback? _onNavigationOORCallback;
+
   SitumFlutterSDK() {
     methodChannel = const MethodChannel(CHANNEL_SDK_ID);
     methodChannel.setMethodCallHandler(_methodCallHandler);
-    // Stablish callback
   }
 
   // Calls
@@ -64,12 +67,55 @@ class SitumFlutterSDK {
   }
 
   /// Request directions between two [Point]s, using the given
-  /// [DirectionsRequest].
+  /// [DirectionsOptions].
   Future<SitumRoute> requestDirections(
-      DirectionsRequest directionsRequest) async {
+      DirectionsOptions directionsOptions) async {
     Map response = await methodChannel.invokeMethod(
-        'requestDirections', directionsRequest.toMap());
+        'requestDirections', directionsOptions.toMap());
     return createRoute(response);
+  }
+
+  /// Request navigation between two [Point]s, using the given
+  /// [DirectionsOptions] and [NavigationRequest].
+  Future<SitumRoute> requestNavigation(DirectionsOptions directionsOptions,
+      NavigationOptions navigationOptions) async {
+    Map response = await methodChannel.invokeMethod('requestNavigation', {
+      // For convenience on the native side, set the buildingId here:
+      "buildingId": directionsOptions.buildingId,
+      // Set directions/navigation options:
+      "directionsOptions": directionsOptions.toMap(),
+      "navigationOptions": navigationOptions.toMap()
+    });
+    return createRoute(response);
+  }
+
+  /// Stop navigation if running.
+  Future<void> stopNavigation() async {
+    await methodChannel.invokeMethod("stopNavigation", {});
+  }
+
+  /// Set a callback that will be notified when the navigation finishes.
+  /// This will happen when the user is close to the destination of the current
+  /// route by less than the distanceToGoalThreshold of [NavigationOptions].
+  /// See [requestNavigation].
+  Future<void> onNavigationFinished(
+      OnNavigationFinishedCallback callback) async {
+    _onNavigationFinishedCallback = callback;
+  }
+
+  /// Set a callback that will be notified on every navigation progress.
+  /// See [requestNavigation].
+  Future<void> onNavigationProgress(
+      OnNavigationProgressCallback callback) async {
+    _onNavigationProgressCallback = callback;
+  }
+
+  /// Set a callback that will be notified when the current the user gets out
+  /// of the current route.
+  /// See [requestNavigation].
+  Future<void> onNavigationOutOfRoute(
+      OnNavigationOutOfRouteCallback callback) async {
+    _onNavigationOORCallback = callback;
   }
 
   Future<void> clearCache() async {
@@ -81,11 +127,15 @@ class SitumFlutterSDK {
     await methodChannel.invokeMethod('removeUpdates');
   }
 
+  /// Download all the buildings for the current user.
   Future<List<Building>> fetchBuildings() async {
     List response = await methodChannel.invokeMethod("fetchBuildings");
     return createList<Building>(response, createBuilding);
   }
 
+  /// Download all the building data for the selected building. This info
+  /// includes [Floor]s, indoor and outdoor [Poi]s, events and paths. It also
+  /// download floor maps and [PoiCategory] icons to local storage.
   Future<BuildingInfo> fetchBuildingInfo(String buildingId) async {
     Map response = await methodChannel
         .invokeMethod("fetchBuildingInfo", {"buildingId": buildingId});
@@ -167,10 +217,21 @@ class SitumFlutterSDK {
       case 'onExitedGeofences':
         _onExitGeofences(call.arguments);
         break;
+      case 'navigation.finished':
+        _onNavigationFinished();
+        break;
+      case 'navigation.progress':
+        _onNavigationProgress(call.arguments);
+        break;
+      case 'navigation.oor':
+        _onNavigationOutOfRoute();
+        break;
       default:
         debugPrint('Method ${call.method} not found!');
     }
   }
+
+  // LOCATION UPDATES:
 
   void _onLocationChanged(arguments) {
     _onLocationChangeCallback?.call(createLocation(arguments));
@@ -186,6 +247,8 @@ class SitumFlutterSDK {
       message: arguments['message'],
     ));
   }
+
+  // GEOFENCES:
 
   void _onEnterGeofences(arguments) {
     List<Geofence> geofencesList =
@@ -203,5 +266,19 @@ class SitumFlutterSDK {
       _onExitedGeofencesCallback
           ?.call(OnExitedGeofenceResult(geofences: geofencesList));
     }
+  }
+
+  // NAVIGATION UPDATES:
+
+  void _onNavigationFinished() {
+    _onNavigationFinishedCallback?.call();
+  }
+
+  void _onNavigationProgress(arguments) {
+    _onNavigationProgressCallback?.call(RouteProgress(rawContent: arguments));
+  }
+
+  void _onNavigationOutOfRoute() {
+    _onNavigationOORCallback?.call();
   }
 }

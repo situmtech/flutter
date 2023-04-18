@@ -4,6 +4,6 @@ DirectionsMessage createDirectionsMessage(arguments) => DirectionsMessage(
       buildingId: arguments["buildingId"],
       originCategory: arguments["originCategory"],
       destinationCategory: arguments["destinationCategory"],
-      directionsRequest:
-          createDirectionsRequest(arguments["directionsRequest"]),
+      directionsOptions:
+          createDirectionsOptions(arguments["directionsOptions"]),
     );

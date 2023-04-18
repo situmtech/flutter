@@ -41,12 +41,16 @@ class DirectionsMessageHandler implements MessageHandler {
     var sdk = SitumFlutterSDK();
     debugPrint("Got payload: $payload");
     var directionsMessage = createDirectionsMessage(payload);
-    var directionsRequest = directionsMessage.directionsRequest;
-    situmFlutterWYF._onDirectionsRequested(directionsRequest);
-    SitumRoute situmRoute = await sdk.requestDirections(directionsRequest);
-    // TODO: implement native requestDirections!!!
-    // TODO: map SitumRoute from native response!!!
-    situmFlutterWYF.setRoute(situmRoute);
+    var directionsOptions = directionsMessage.directionsOptions;
+    // Send DirectionsOptions so it can be intercepted.
+    situmFlutterWYF._onDirectionsRequested(directionsOptions);
+    // Calculate route and send it to the web-view.
+    SitumRoute situmRoute = await sdk.requestDirections(directionsOptions);
+    situmFlutterWYF._setRoute(
+      directionsMessage.originId,
+      directionsMessage.destinationId,
+      situmRoute,
+    );
   }
 }
 
@@ -57,14 +61,36 @@ class NavigationMessageHandler implements MessageHandler {
     Map<String, dynamic> payload,
   ) async {
     var sdk = SitumFlutterSDK();
-    debugPrint("Navigation payload: $payload");
-    String buildingId = "${payload["buildingID"]}";
-    String poiId = "${payload["destination"]}";
-    var poi = await sdk.fetchPoiFromBuilding(buildingId, poiId);
-    debugPrint("Got POI: ${poi?.toMap()}");
-    // TODO: SDK: simplify navigation???
-    // TODO: request directions & request navigation.
-    // TODO: send response to WV using situmFlutterWYF.
+    debugPrint("Got payload: $payload");
+    var directionsMessage = createDirectionsMessage(payload);
+    var directionsOptions = directionsMessage.directionsOptions;
+    situmFlutterWYF._onDirectionsRequested(directionsOptions);
+    var navigationOptions = const NavigationOptions();
+    situmFlutterWYF._onNavigationRequested(navigationOptions);
+    // TODO: this will overwrite any previously established callbacks!!!
+    sdk.onNavigationFinished(() {
+      situmFlutterWYF._sendMessage("situm.navigation.response", {
+        "type": "destination_reached",
+      });
+    });
+    sdk.onNavigationOutOfRoute(() {
+      situmFlutterWYF._sendMessage("situm.navigation.response", {
+        "type": "out_of_route",
+      });
+    });
+    sdk.onNavigationProgress((progress) {
+      // TODO: send route progress back to the map-viewer.
+      debugPrint("ROUTE PROGRESS: $progress");
+    });
+    SitumRoute situmRoute = await sdk.requestNavigation(
+      directionsOptions,
+      navigationOptions,
+    );
+    situmFlutterWYF._setNavigationRoute(
+      directionsMessage.originId,
+      directionsMessage.destinationId,
+      situmRoute,
+    );
   }
 }
 

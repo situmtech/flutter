@@ -14,7 +14,6 @@ class SitumMapView extends StatefulWidget {
   final bool enablePoiClustering;
   final bool enableDebugging;
   final bool showNavigationIndications;
-  final NavigationSettings? navigationSettings;
 
   final SitumMapViewCallback loadCallback;
   final SitumMapViewCallback? didUpdateCallback;
@@ -35,7 +34,6 @@ class SitumMapView extends StatefulWidget {
     this.enablePoiClustering = true,
     this.enableDebugging = false,
     this.showNavigationIndications = true,
-    this.navigationSettings,
   }) : super(key: key);
 
   @override
