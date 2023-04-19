@@ -2,14 +2,15 @@ part of situm_flutter_wayfinding;
 
 abstract class MessageHandler {
   factory MessageHandler(String type) {
+    debugPrint("GOT MESSAGE WITH type: $type");
     switch (type) {
-      case WV_MESSAGE_DIRECTIONS_REQUEST:
+      case WV_MESSAGE_DIRECTIONS_GET_DIRECTIONS:
         return DirectionsMessageHandler();
-      case WV_MESSAGE_NAVIGATION_START:
+      case WV_MESSAGE_NAVIGATION_REQUESTED:
         return NavigationMessageHandler();
       case WV_MESSAGE_NAVIGATION_STOP:
         return NavigationStopMessageHandler();
-      case WV_MESSAGE_POI_SELECTED:
+      case WV_MESSAGE_CARTOGRAPHY_POI_SELECTED:
         return PoiSelectedMessageHandler();
       default:
         debugPrint("EmptyMessageHandler handles message of type: $type");

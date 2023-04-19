@@ -30,9 +30,9 @@ class SitumFlutterWYF {
   }
 
   // Private utils:
-  void _sendMessage(String channel, dynamic payload) {
+  void _sendMessage(String type, dynamic payload) {
     // Do not quote payload keys!
-    var message = "{type: '$channel', payload: $payload}";
+    var message = "{type: '$type', payload: $payload}";
     webViewController.runJavaScript("""
       window.postMessage($message)
     """);
@@ -56,7 +56,7 @@ class SitumFlutterWYF {
   ) async {
     situmRoute.rawContent["originId"] = originId;
     situmRoute.rawContent["destinationId"] = destinationId;
-    _sendMessage("situm.route.calculated", jsonEncode(situmRoute.rawContent));
+    _sendMessage("directions.updated", jsonEncode(situmRoute.rawContent));
   }
 
   void _setNavigationRoute(
@@ -66,23 +66,24 @@ class SitumFlutterWYF {
   ) async {
     situmRoute.rawContent["originId"] = originId;
     situmRoute.rawContent["destinationId"] = destinationId;
-    _sendMessage("situm.route.response", jsonEncode(situmRoute.rawContent));
+    _sendMessage("navigation.started", jsonEncode(situmRoute.rawContent));
+    debugPrint("navigation.started has been sent");
   }
 
   void _setNavigationOutOfRoute() {
-    _sendMessage("situm.navigation.response", {
-      "type": "destination_reached",
-    });
-  }
-
-  void _setNavigationFinished() {
-    _sendMessage("situm.navigation.response", {
+    _sendMessage("navigation.updated", {
       "type": "out_of_route",
     });
   }
 
+  void _setNavigationFinished() {
+    _sendMessage("navigation.updated", {
+      "type": "destination_reached",
+    });
+  }
+
   void _setNavigationProgress(RouteProgress progress) {
-    _sendMessage("situm.navigation.response", jsonEncode(progress.rawContent));
+    _sendMessage("navigation.updated", jsonEncode(progress.rawContent));
   }
 
   // Callbacks:
