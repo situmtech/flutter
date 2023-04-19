@@ -39,7 +39,6 @@ class DirectionsMessageHandler implements MessageHandler {
     Map<String, dynamic> payload,
   ) async {
     var sdk = SitumFlutterSDK();
-    debugPrint("Got payload: $payload");
     var directionsMessage = createDirectionsMessage(payload);
     var directionsOptions = directionsMessage.directionsOptions;
     // Send DirectionsOptions so it can be intercepted.
@@ -61,26 +60,27 @@ class NavigationMessageHandler implements MessageHandler {
     Map<String, dynamic> payload,
   ) async {
     var sdk = SitumFlutterSDK();
-    debugPrint("Got payload: $payload");
     var directionsMessage = createDirectionsMessage(payload);
     var directionsOptions = directionsMessage.directionsOptions;
     situmFlutterWYF._onDirectionsRequested(directionsOptions);
     var navigationOptions = const NavigationOptions();
     situmFlutterWYF._onNavigationRequested(navigationOptions);
     // TODO: this will overwrite any previously established callbacks!!!
+    // Option 1: add private callbacks in SitumFlutterSDK. SDK and WYF libraries
+    // must be merged into one library...
+    // Option 2: add public "internal" callbacks.
+    // Option 3: replicate callbacks in wayfinding library. Only works if WYF
+    // has been loaded...
+    // Option 4: delete the following lines, let them be implemented by the
+    // integrator (code snippet). All the _internal methods must be exposed...
     sdk.onNavigationFinished(() {
-      situmFlutterWYF._sendMessage("situm.navigation.response", {
-        "type": "destination_reached",
-      });
+      situmFlutterWYF._setNavigationFinished();
     });
     sdk.onNavigationOutOfRoute(() {
-      situmFlutterWYF._sendMessage("situm.navigation.response", {
-        "type": "out_of_route",
-      });
+      situmFlutterWYF._setNavigationOutOfRoute();
     });
     sdk.onNavigationProgress((progress) {
-      // TODO: send route progress back to the map-viewer.
-      debugPrint("ROUTE PROGRESS: $progress");
+      situmFlutterWYF._setNavigationProgress(progress);
     });
     SitumRoute situmRoute = await sdk.requestNavigation(
       directionsOptions,

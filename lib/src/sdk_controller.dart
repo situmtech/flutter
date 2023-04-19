@@ -14,7 +14,18 @@ class SitumFlutterSDK {
   OnNavigationProgressCallback? _onNavigationProgressCallback;
   OnNavigationOutOfRouteCallback? _onNavigationOORCallback;
 
-  SitumFlutterSDK() {
+  static final SitumFlutterSDK _controller = SitumFlutterSDK._internal();
+
+  factory SitumFlutterSDK() {
+    // Factory: ensure only one controller exists.
+    return _controller;
+  }
+
+  SitumFlutterSDK._internal() {
+    _initializeMethodChannel();
+  }
+
+  _initializeMethodChannel() {
     methodChannel = const MethodChannel(CHANNEL_SDK_ID);
     methodChannel.setMethodCallHandler(_methodCallHandler);
   }

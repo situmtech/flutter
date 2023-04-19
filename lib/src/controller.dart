@@ -47,7 +47,8 @@ class SitumFlutterWYF {
     // TODO.
   }
 
-  // By now, this method will not be exposed.
+  // WYF internal utils:
+
   void _setRoute(
     String originId,
     String destinationId,
@@ -65,8 +66,23 @@ class SitumFlutterWYF {
   ) async {
     situmRoute.rawContent["originId"] = originId;
     situmRoute.rawContent["destinationId"] = destinationId;
-    _sendMessage(
-        "situm.route.response", jsonEncode(situmRoute.rawContent));
+    _sendMessage("situm.route.response", jsonEncode(situmRoute.rawContent));
+  }
+
+  void _setNavigationOutOfRoute() {
+    _sendMessage("situm.navigation.response", {
+      "type": "destination_reached",
+    });
+  }
+
+  void _setNavigationFinished() {
+    _sendMessage("situm.navigation.response", {
+      "type": "out_of_route",
+    });
+  }
+
+  void _setNavigationProgress(RouteProgress progress) {
+    _sendMessage("situm.navigation.response", jsonEncode(progress.rawContent));
   }
 
   // Callbacks:

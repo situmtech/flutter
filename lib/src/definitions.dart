@@ -54,17 +54,6 @@ class OnPoiDeselectedResult {
   });
 }
 
-// TODO: is this necessary?
-class NavigationResult {
-  final String destinationId;
-  final SitumRoute? route;
-
-  const NavigationResult({
-    required this.destinationId,
-    this.route,
-  });
-}
-
 // Result callbacks.
 
 // WYF load callback.
@@ -80,10 +69,3 @@ typedef OnDirectionsOptionsInterceptor = void Function(
     DirectionsOptions directionsOptions);
 typedef OnNavigationOptionsInterceptor = void Function(
     NavigationOptions navigationOptions);
-// Navigation callbacks
-typedef OnNavigationRequestedCallback = void Function(String destinationId);
-typedef OnNavigationErrorCallback = void Function(
-    String destinationId, String errorMessage);
-typedef OnNavigationFinishedCallback = void Function(String destinationId);
-typedef OnNavigationStartedCallback = void Function(
-    NavigationResult navigation);
