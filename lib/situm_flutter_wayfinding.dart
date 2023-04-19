@@ -23,3 +23,4 @@ const WV_MESSAGE_LOCATION = "situm.location";
 const WV_MESSAGE_DIRECTIONS_REQUEST = "situm.directions.request";
 const WV_MESSAGE_NAVIGATION_START = "situm.navigation.start";
 const WV_MESSAGE_POI_SELECTED = "situm.poi.select";
+const WV_MESSAGE_NAVIGATION_STOP = "situm.navigation.stop";

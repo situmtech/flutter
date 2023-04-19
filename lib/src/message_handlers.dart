@@ -7,6 +7,8 @@ abstract class MessageHandler {
         return DirectionsMessageHandler();
       case WV_MESSAGE_NAVIGATION_START:
         return NavigationMessageHandler();
+      case WV_MESSAGE_NAVIGATION_STOP:
+        return NavigationStopMessageHandler();
       case WV_MESSAGE_POI_SELECTED:
         return PoiSelectedMessageHandler();
       default:
@@ -91,6 +93,14 @@ class NavigationMessageHandler implements MessageHandler {
       directionsMessage.destinationId,
       situmRoute,
     );
+  }
+}
+
+class NavigationStopMessageHandler implements MessageHandler {
+  @override
+  void handleMessage(SitumFlutterWYF situmFlutterWYF, Map<String, dynamic> payload) {
+    var sdk = SitumFlutterSDK();
+    sdk.stopNavigation();
   }
 }
 
