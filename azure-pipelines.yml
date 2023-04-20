@@ -73,6 +73,11 @@ steps:
       export PATH="$PATH:`pwd`/flutter/bin"
       export PATH="$PATH:`pwd`/google-cloud-sdk/bin"
 
+      echo -e "\n[+] Fetch all branches\n"
+      git fetch
+
+      echo -e "\n[+] Checkout to $(currentBranch)\n"
+
       git checkout $(currentBranch)
 
       echo -e "\n[+] Change version in pubspec.yaml\n"
