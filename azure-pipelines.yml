@@ -99,6 +99,7 @@ steps:
       secureFile: key-file.json
 
   - bash: |
+      cp $(key_file.secureFilePath) .
       
       export PATH="$PATH:`pwd`/binaries/flutter/bin"
       export PATH="$PATH:`pwd`/binaries/google-cloud-sdk/bin"
