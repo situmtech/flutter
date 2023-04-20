@@ -43,6 +43,9 @@ steps:
     displayName: Initial Vars & Configs
 
   - bash: |
+
+      mkdir binaries
+      cd binaries
       echo -e "\n[+] Download Flutter version $(flutterLinuxVersion)\n"
 
       wget -q $(flutterLinuxVersion)
