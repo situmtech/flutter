@@ -63,6 +63,7 @@ class SitumFlutterSDKPlugin : FlutterPlugin, ActivityAware, MethodChannel.Method
             "clearCache" -> clearCache(result)
             "fetchBuildingInfo" -> fetchBuildingInfo(arguments, result)
             "fetchBuildings" -> fetchBuildings(result)
+            "getDeviceId" -> getDeviceId(result)
             else -> result.notImplemented()
         }
     }
@@ -222,6 +223,11 @@ class SitumFlutterSDKPlugin : FlutterPlugin, ActivityAware, MethodChannel.Method
     private fun clearCache(result: MethodChannel.Result) {
         SitumSdk.communicationManager().invalidateCache()
         result.success("DONE")
+    }
+
+    private fun getDeviceId(result: MethodChannel.Result) {
+        val deivceId = SitumSdk.getDeviceID()
+        result.success(deivceId.toString())
     }
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {

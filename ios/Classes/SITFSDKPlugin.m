@@ -60,24 +60,25 @@ const NSString* RESULTS_KEY = @"results";
         [self handleGeofenceCallbacksRequested: call
                                         result: result];
     } else if ([@"setConfiguration" isEqualToString:call.method]) {
-        [self handleSetConfiguration: call 
+        [self handleSetConfiguration: call
                               result: result];
     } else if ([@"fetchBuildings" isEqualToString:call.method]) {
         [self handleFetchBuildings:call
-                                   result:result];
+                            result:result];
     } else if ([@"fetchBuildingInfo" isEqualToString:call.method]) {
         [self handleFetchBuildingInfo:call
-                                   result:result];
-    } else {
+                               result:result];
+    }else if ([@"getDeviceId" isEqualToString:call.method]) {
+        [self getDeviceId:call result:result];
+    }
+    else {
         result(FlutterMethodNotImplemented);
     }
 }
 
 - (void)handleSetConfiguration:(FlutterMethodCall*)call result:(FlutterResult)result {
     BOOL useRemoteConfig = [call.arguments[@"useRemoteConfig"] boolValue];
-
     [SITServices setUseRemoteConfig:useRemoteConfig];
-
     result(@"DONE");
 }
 
@@ -141,7 +142,6 @@ const NSString* RESULTS_KEY = @"results";
         FlutterError *error = [FlutterError errorWithCode:@"errorPrefetch"
                                                   message:@"Unable to retrieve buildingIdentifiers string on arguments"
                                                   details:nil];
-
         result(error); // Send error
         return;
     }
@@ -151,8 +151,8 @@ const NSString* RESULTS_KEY = @"results";
                                           withCompletion:^(NSError * _Nullable error) {
         if (error) {
             FlutterError *ferror = [FlutterError errorWithCode:@"errorPrefetch"
-                                                      message:[NSString stringWithFormat:@"Failed with error: %@", error]
-                                                      details:nil];
+                                                       message:[NSString stringWithFormat:@"Failed with error: %@", error]
+                                                       details:nil];
             result(ferror); // Send error
         } else {
             result(@"DONE");
@@ -168,7 +168,7 @@ const NSString* RESULTS_KEY = @"results";
         FlutterError *error = [FlutterError errorWithCode:@"errorFetchPois"
                                                   message:@"Unable to retrieve buildingId string on arguments"
                                                   details:nil];
-
+        
         result(error); // Send error
         return;
     }
@@ -180,14 +180,14 @@ const NSString* RESULTS_KEY = @"results";
         
     } failure:^(NSError * _Nullable error) {
         FlutterError *ferror = [FlutterError errorWithCode:@"errorPrefetch"
-                                                  message:[NSString stringWithFormat:@"Failed with error: %@", error]
-                                                  details:nil];
+                                                   message:[NSString stringWithFormat:@"Failed with error: %@", error]
+                                                   details:nil];
         result(ferror); // Send error
     }];
 }
 
 - (void)handleFetchBuildings:(FlutterMethodCall*)call result:(FlutterResult)result {
-   
+    
     [self.comManager fetchBuildingsWithOptions: nil
                                        success:^(NSDictionary * _Nullable mapping) {
         
@@ -195,8 +195,8 @@ const NSString* RESULTS_KEY = @"results";
         
     } failure:^(NSError * _Nullable error) {
         FlutterError *ferror = [FlutterError errorWithCode:@"errorFetchBuildings"
-                                                  message:[NSString stringWithFormat:@"Failed with error: %@", error]
-                                                  details:nil];
+                                                   message:[NSString stringWithFormat:@"Failed with error: %@", error]
+                                                   details:nil];
         result(ferror); // Send error
     }];
 }
@@ -209,7 +209,7 @@ const NSString* RESULTS_KEY = @"results";
         FlutterError *error = [FlutterError errorWithCode:@"errorFetchBuildingInfo"
                                                   message:@"Unable to retrieve buildingId string on arguments"
                                                   details:nil];
-
+        
         result(error); // Send error
         return;
         
@@ -221,8 +221,8 @@ const NSString* RESULTS_KEY = @"results";
         
     } failure:^(NSError * _Nullable error) {
         FlutterError *ferror = [FlutterError errorWithCode:@"errorFetchBuildingInfo"
-                                                  message:[NSString stringWithFormat:@"Failed with error: %@", error]
-                                                  details:nil];
+                                                   message:[NSString stringWithFormat:@"Failed with error: %@", error]
+                                                   details:nil];
         result(ferror); // Send error
     }];
 }
@@ -232,15 +232,18 @@ const NSString* RESULTS_KEY = @"results";
     [self.comManager fetchCategoriesWithOptions:nil withCompletion:^(NSArray * _Nullable categories, NSError * _Nullable error) {
         if (error) {
             FlutterError *ferror = [FlutterError errorWithCode:@"errorFetchCategories"
-                                                      message:[NSString stringWithFormat:@"Failed with error: %@", error]
-                                                      details:nil];
+                                                       message:[NSString stringWithFormat:@"Failed with error: %@", error]
+                                                       details:nil];
             result(ferror); // Send error
         } else {
             result([SITFSDKUtils toArrayDict: categories]);
         }
     }];
 }
-
+- (void)getDeviceId:(FlutterMethodCall*)call result:(FlutterResult)result {
+    NSString *deviceID = SITServices.deviceID;
+    result(deviceID);
+}
 
 
 - (void)locationManager:(id<SITLocationInterface> _Nonnull)locationManager

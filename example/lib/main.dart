@@ -48,7 +48,7 @@ class _MyTabsState extends State<MyTabs> {
             style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
           ),
           SizedBox(
-              height: 150,
+              height: 225,
               child: GridView.count(
                   crossAxisCount: 4,
                   padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
@@ -57,6 +57,7 @@ class _MyTabsState extends State<MyTabs> {
                   children: [
                     _sdkButton('Start', _requestUpdates),
                     _sdkButton('Stop', _removeUpdates),
+                    _sdkButton('Device Id', _getDeviceId),
                     _sdkButton('Prefetch', _prefetch),
                     _sdkButton('Clear cache', _clearCache),
                     _sdkButton('Pois', _fetchPois),
@@ -225,6 +226,12 @@ class _MyTabsState extends State<MyTabs> {
     _echo("SDK> BUILDINGS...");
     var buildings = await situmSdk.fetchBuildings();
     _echo("SDK> RESPONSE: BUILDINGS = \n\n$buildings");
+  }
+
+    void _getDeviceId() async {
+    _echo("SDK> Device Id...");
+    var deviceId = await situmSdk.getDeviceId();
+    _echo("SDK> RESPONSE: DEVICEID = \n\n$deviceId");
   }
 
   /* --- */
