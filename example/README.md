@@ -25,7 +25,7 @@ A sample Flutter application to start learning the power of [Situm's Flutter Way
 
 ## What's in here <a name="whatsinhere"/>
 
-This folder contains the necessary source code for an example application using the **SitumWayfinding plugin**. It also showcases how to implement a Find My Car using the Wayfinding module.
+This folder contains the necessary source code for an example application using the **SitumWayfinding plugin**.
 
 ## How to run the app <a name="howtorun"/>
 
@@ -44,38 +44,13 @@ cd flutter-wayfinding/example
 flutter pub get
 ```
 
-### Step 2: Set up Google Maps and your Situm credentials <a name="config"/>
-
-Your credentials should be stored inside a file by the name of `config.dart`, this file also includes a google API key and the building identifier of the building that is to be used inside the Wayfinding module. This example provides you with a template on `lib/config.dart.example`:
-
-```dart
-const situmUser = "YOUR-SITUM-USER";
-const situmApiKey = "YOUR-SITUM-API-KEY";
-const buildingIdentifier = "YOUR-SITUM-BUILDING-IDENTIFIER";
-const googleMapsApiKey = "YOUR-GOOGLE-MAPS-API-KEY";
-```
-
-To set up the credentials on Flutter simply rename the file `lib/config.dart.example` to `lib/config.dart` and replace the contents of the file with your own data.
-
-#### Android
-
-Additionally on Android, add your Google Maps API Key also to the project string resources.
-The awaited identifier is `@string/google_api_key`:
-
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="google_api_key">YOUR_GOOGLE_MAPS_API_KEY</string>
-    ...
-```
-
-### Step 3: Sign your app <a name="signapplication"></a> (iOS only)
+### Step 2: Sign your app <a name="signapplication"></a> (iOS only)
 
 Check out the project [code signing](https://developer.apple.com/support/code-signing/) before you run the example.
 
-### Step 4: Run the app <a name="runapplication"></a>
+### Step 3: Run the app <a name="runapplication"></a>
 
-Finally, in order to run the app, from the `example` folder execute the following command which works on both Android and iOS devices:
+From the `example` folder execute the following command which works on both Android and iOS devices:
 
 ```bash
 flutter run
@@ -95,7 +70,6 @@ More information on how to use the official Flutter plugin and the set of APIs, 
 In case you want to learn how to use our plugin, you may want to take a look at our code samples of the basics functionalities:
 
 1. [**Basic SDK and WYF functionality**](./lib/main.dart): showcases how to initialize the Situm SDK (refer to the [flutter sdk quickstart guide](https://situm.com/docs/a-basic-flutter-app/) for more information) and how to use some basic features like positioning and obtaining the information of a given building. It also shows how to use the Situm Wayfinding module (refer to the [flutter wayfinding quickstart guide](https://situm.com/docs/flutter-quickstart-guide/) for more information).
-2. [**Find my Car**](./lib/find_my_car): exemplifies how to impliment a widget for a find my car application by using [custom POIs](https://situm.com/docs/06-using-custom-pois-in-wyf/).
 
 ## Versioning
 
