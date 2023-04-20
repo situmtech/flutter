@@ -94,7 +94,7 @@ steps:
     displayName: Set version
 
   - task: DownloadSecureFile@1
-    name: key-file.json
+    name: key_file
     inputs:
       secureFile: key-file.json
 
