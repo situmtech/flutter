@@ -4,7 +4,7 @@ abstract class MessageHandler {
   factory MessageHandler(String type) {
     debugPrint("GOT MESSAGE WITH type: $type");
     switch (type) {
-      case WV_MESSAGE_DIRECTIONS_GET_DIRECTIONS:
+      case WV_MESSAGE_DIRECTIONS_REQUESTED:
         return DirectionsMessageHandler();
       case WV_MESSAGE_NAVIGATION_REQUESTED:
         return NavigationMessageHandler();
