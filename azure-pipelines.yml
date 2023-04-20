@@ -1,0 +1,94 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger: none
+pr: none
+
+
+variables:
+  - group: Passwords
+  - group: SoftwareVersions
+
+parameters:
+  - name: flutterVersion
+    displayName: Set Flutter plugin Version
+    type: string
+    default: "0.0.0"
+
+pool:
+  vmImage: $(ubuntuVersion)
+
+steps:
+  - checkout: self
+    fetchTags: false
+    fetchDepth: 1
+    displayName: Checkout self
+
+  - bash: |
+      
+      echo "##vso[task.setvariable variable=version]$(echo ${{ parameters.flutterVersion }})"
+      currentBranch=$(echo $(Build.SourceBranch) | cut -d "/" -f 3,4)
+      echo "##vso[task.setvariable variable=currentBranch]$(echo $currentBranch)"
+      echo -e "\n[+] Defined versions:"
+      echo -e "\t[+] Flutter Plugin version: ${{ parameters.flutterVersion }}"
+      echo -e "\t[+] Current branch: $currentBranch"
+
+        
+      echo -e "\n[+] Setting git remote credentials\n"
+      git remote set-url origin https://situmops:$(github_token)@github.com/$(Build.Repository.Name).git
+      cat .git/config
+
+    displayName: Initial Vars & Configs
+
+  - bash: |
+      echo -e "\n[+] Download Flutter version $(flutterLinuxVersion)\n"
+
+      wget -q $(flutterLinuxVersion)
+
+      echo -e "\n[+] Untar Flutter version\n"
+      find . -iname "*.tar.xz" -exec tar xf {} \;
+
+
+      echo -e "\n[+] Install flutter\n"
+      export PATH="$PATH:`pwd`/flutter/bin"
+
+
+      echo -e "\n[+] Download gcloud cli version $(gcloudCliVersion)\n"
+      curl -O $(gcloudCliVersion)
+
+      echo -e "\n[+] Untar gcloud Cli version\n"
+      find . -iname  "*.tar.gz" -exec tar xzf {} \;
+
+      echo -e "\n[+] Install gcloud Cli"
+      export PATH="$PATH:`pwd`/google-cloud-sdk/bin"
+
+      gcloud --version
+
+    displayName: Install Binaries
+
+  - bash: |
+      #Export binary paths
+      export PATH="$PATH:`pwd`/flutter/bin"
+      export PATH="$PATH:`pwd`/google-cloud-sdk/bin"
+
+      git checkout $(currentBranch)
+
+      echo -e "\n[+] Change version in pubspec.yaml\n"
+      sed "s/^version:\s[0-9].*$/version: $(version)/g" -i pubspec.yaml  
+      echo -e "\n[+] Change version in situm_flutter_wayfinding.podspec"
+      sed "s/s.version\s.*= '[0-9\.].*'$/s.version          = '$(version)'/g" -i ios/situm_flutter_wayfinding.podspec
+      echo -e "\n[+] Set new plugin version in examples"
+      cd example
+      flutter pub get
+
+
+
+    displayName: Set version
+
+  - bash: |
+      
+      export PATH="$PATH:`pwd`/flutter/bin"
+
+    displayName: Publish package
