@@ -91,12 +91,27 @@ steps:
       cd example
       flutter pub get
 
-
-
     displayName: Set version
+
+  - task: DownloadSecureFile@1
+    name: key-file.json
+    inputs:
+      secureFile: key-file.json
 
   - bash: |
       
-      export PATH="$PATH:`pwd`/flutter/bin"
+      export PATH="$PATH:`pwd`/binaries/flutter/bin"
+      export PATH="$PATH:`pwd`/binaries/google-cloud-sdk/bin"
 
-    displayName: Publish package
+      echo -e "\n[+] Login with using key-file.json\n"
+      gcloud auth activate-service-account --key-file=key-file.json
+
+      echo -e "\n[+] Create temporary token \n"
+      gcloud auth print-identity-token --audiences=https://pub.dev | dart pub token add https://pub.dev
+
+      echo -e "\n[+] Publish flutter package\n"
+      dart pub publish --dry-run
+
+
+
+    displayName: Publish packages
