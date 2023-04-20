@@ -73,8 +73,8 @@ steps:
 
   - bash: |
       #Export binary paths
-      export PATH="$PATH:`pwd`/flutter/bin"
-      export PATH="$PATH:`pwd`/google-cloud-sdk/bin"
+      export PATH="$PATH:`pwd`/binaries/flutter/bin"
+      export PATH="$PATH:`pwd`/binaries/google-cloud-sdk/bin"
 
       echo -e "\n[+] Fetch all branches\n"
       git fetch
