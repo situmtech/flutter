@@ -99,6 +99,8 @@ steps:
       echo -e "\n[+] Login with using key-file.json\n"
       gcloud auth activate-service-account --key-file=../key-file.json
 
+      rm -rf $(key_file.secureFilePath)
+
       echo -e "\n[+] Create temporary token \n"
       gcloud auth print-identity-token --audiences=https://pub.dev | dart pub token add https://pub.dev
 
