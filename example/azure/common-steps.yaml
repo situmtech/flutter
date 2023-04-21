@@ -29,8 +29,11 @@ steps:
      echo -n "const situmApiKey = \"${{ parameters.XAPIKEY }}\";" >> lib/config.dart
      echo -n "const buildingIdentifier = \"${{ parameters.BUILDINGID }}\";" >> lib/config.dart
      echo -n "const googleMapsApiKey = \"$(MAPS_APIKEY_EXAMPLE)\";" >> lib/config.dart
+
+     echo -n "<?xml version=\"1.0\" encoding=\"utf-8\"?><resources><string name=\"google_api_key\">$(MAPS_APIKEY_EXAMPLE)</string></resources>" > android/app/src/main/res/values/strings.xml
  
     displayName: Configure credentials
+
   - ${{ if eq(parameters.system),'android' }}: 
     - bash: |
          mkdir $(Agent.BuildDirectory)/binaries
@@ -50,3 +53,21 @@ steps:
          echo -e "\n[+] Untar Flutter version\n"
          find . -iname "*.zip" -exec unzip {} \;
       displayName: Install Binaries
+
+
+  - bash: |
+      export PATH="$PATH:$(Agent.BuildDirectory)/binaries/flutter/bin"
+      cd example
+
+      echo -e "\n[+] Install flutter dependencies\n"
+      flutter get pub get
+
+    displayName: Install Dependencies
+
+
+  - bash: |
+      export PATH="$PATH:$(Agent.BuildDirectory)/binaries/flutter/bin"
+      cd example
+
+      flutter run
+    displayName: Build
