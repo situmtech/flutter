@@ -34,7 +34,7 @@ steps:
  
     displayName: Configure credentials
 
-  - ${{ if eq(parameters.system),'android' }}: 
+  - ${{ if eq(parameters.system,'android') }}: 
     - bash: |
          mkdir $(Agent.BuildDirectory)/binaries
          cd $(Agent.BuildDirectory)/binaries
@@ -44,7 +44,7 @@ steps:
          find . -iname "*.tar.xz" -exec tar xf {} \;
       displayName: Install Binaries
 
-  - ${{ if eq(parameters.system),'iOS' }}: 
+  - ${{ if eq(parameters.system,'iOS') }}: 
     - bash: |
          mkdir $(Agent.BuildDirectory)/binaries
          cd $(Agent.BuildDirectory)/binaries
