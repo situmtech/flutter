@@ -28,10 +28,6 @@ steps:
     displayName: Checkout self
 
   - bash: |
-      ls -lahrt
-      ls -lahrt ../
-      pwd
-      cd flutter-wayfinding 
       echo "##vso[task.setvariable variable=version]$(echo ${{ parameters.flutterVersion }})"
       currentBranch=$(echo $(Build.SourceBranch) | cut -d "/" -f 3,4)
       echo "##vso[task.setvariable variable=currentBranch]$(echo $currentBranch)"
@@ -48,8 +44,8 @@ steps:
 
   - bash: |
 
-      mkdir binaries
-      cd binaries
+      mkdir $(Agent.BuildDirectory)/binaries
+      cd $(Agent.BuildDirectory)/binaries
       echo -e "\n[+] Download Flutter version $(flutterLinuxVersion)\n"
 
       wget -q $(flutterLinuxVersion)
@@ -57,30 +53,19 @@ steps:
       echo -e "\n[+] Untar Flutter version\n"
       find . -iname "*.tar.xz" -exec tar xf {} \;
 
-
-      echo -e "\n[+] Install flutter\n"
-      export PATH="$PATH:`pwd`/flutter/bin"
-
-
       echo -e "\n[+] Download gcloud cli version $(gcloudCliVersion)\n"
       curl -O $(gcloudCliVersion)
 
       echo -e "\n[+] Untar gcloud Cli version\n"
       find . -iname  "*.tar.gz" -exec tar xzf {} \;
 
-      echo -e "\n[+] Install gcloud Cli"
-      export PATH="$PATH:`pwd`/google-cloud-sdk/bin"
-
-      gcloud --version
-
     displayName: Install Binaries
 
   - bash: |
-      cd flutter-wayfinding
 
       #Export binary paths
-      export PATH="$PATH:`pwd`/../binaries/flutter/bin"
-      export PATH="$PATH:`pwd`/../binaries/google-cloud-sdk/bin"
+      export PATH="$PATH:$(Agent.BuildDirectory)/binaries/flutter/bin"
+      export PATH="$PATH:$(Agent.BuildDirectory)/binaries/google-cloud-sdk/bin"
 
       echo -e "\n[+] Fetch all branches\n"
       git fetch
@@ -108,9 +93,8 @@ steps:
       
       cp $(key_file.secureFilePath) .
       
-      cd flutter-wayfinding
-      export PATH="$PATH:`pwd`/../binaries/flutter/bin"
-      export PATH="$PATH:`pwd`/../binaries/google-cloud-sdk/bin"
+      export PATH="$PATH:$(Agent.BuildDirectory)/binaries/flutter/bin"
+      export PATH="$PATH:$(Agent.BuildDirectory)/binaries/google-cloud-sdk/bin"
 
       echo -e "\n[+] Login with using key-file.json\n"
       gcloud auth activate-service-account --key-file=../key-file.json
