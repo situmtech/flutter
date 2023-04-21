@@ -69,5 +69,5 @@ steps:
       export PATH="$PATH:$(Agent.BuildDirectory)/binaries/flutter/bin"
       cd example
 
-      flutter run
+      flutter build
     displayName: Build
