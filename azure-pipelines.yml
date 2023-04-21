@@ -101,7 +101,7 @@ steps:
       flutter pub get
       
       echo -e "\n[+] Add,commit and push changes to $(currentBranch)"
-      git commit -am "Setting plugin Version to $(version)"
+      git commit -am "Update version to $(version)"
 
       git push --set-upstream origin $(currentBranch)
       git push
