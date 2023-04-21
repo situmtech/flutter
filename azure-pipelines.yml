@@ -101,6 +101,7 @@ steps:
       flutter pub get
       
       echo -e "\n[+] Add,commit and push changes to $(currentBranch)"
+      git pull origin $(currentBranch)
       git commit -am "Update version to $(version)"
 
       git push --set-upstream origin $(currentBranch)
@@ -114,6 +115,7 @@ steps:
         bitbucket_user: situmops
       system: "N/A"
       server: "github"
+      repofolder: "../flutter-wayfinding"
       mergeBranches:
         - "master-test"
         - "develop-test"
