@@ -17,11 +17,12 @@ parameters:
     type: string
     default: "0.0.0"
 
-repositories:
-  - repository: sys_kubernetes_templates
-    type: bitbucket
-    endpoint: Bitbucket - sistemas
-    name: situm/sys-kubernetes-templates.git
+resources:
+  repositories:
+    - repository: sys_kubernetes_templates
+      type: bitbucket
+      endpoint: Bitbucket - sistemas
+      name: situm/sys-kubernetes-templates.git
 
 pool:
   vmImage: $(ubuntuVersion)
