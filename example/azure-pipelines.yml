@@ -97,6 +97,6 @@ jobs:
 
     - template: azure/build-examples.yaml
       parameters:
-        system: $(ubuntuVersion)
+        system: $(macOSVersion)
         XAPIEMAIL: $(XAPIEMAIL)
         BUILDINGID: $(BUILDINGID)
