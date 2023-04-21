@@ -97,9 +97,9 @@ steps:
       export PATH="$PATH:$(Agent.BuildDirectory)/binaries/google-cloud-sdk/bin"
 
       echo -e "\n[+] Login with using key-file.json\n"
-      gcloud auth activate-service-account --key-file=../key-file.json
+      gcloud auth activate-service-account --key-file=key-file.json
 
-      rm -rf $(key_file.secureFilePath)
+      rm -rf key-file.json
 
       echo -e "\n[+] Create temporary token \n"
       gcloud auth print-identity-token --audiences=https://pub.dev | dart pub token add https://pub.dev
