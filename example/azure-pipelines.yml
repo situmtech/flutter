@@ -57,6 +57,12 @@ jobs:
         BUILDINGID: $(BUILDINGID)
         system: "Android"
 
+    - template: azure/build-examples.yaml
+      parameters:
+        system: $(ubuntuVersion)
+        XAPIEMAIL: $(XAPIEMAIL)
+        BUILDINGID: $(BUILDINGID)
+
 
   - job: iOS_app
 
@@ -88,3 +94,5 @@ jobs:
         XAPIEMAIL: $(XAPIEMAIL)
         BUILDINGID: $(BUILDINGID)
         system: "iOS"
+
+
