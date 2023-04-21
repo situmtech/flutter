@@ -24,10 +24,13 @@ steps:
   - checkout: self
     fetchTags: false
     fetchDepth: 1
-    path: s/flutter-wayfinding
+    path: flutter-wayfinding
     displayName: Checkout self
 
   - bash: |
+      ls -lahrt
+      ls -lahrt ../
+      pwd
       cd flutter-wayfinding 
       echo "##vso[task.setvariable variable=version]$(echo ${{ parameters.flutterVersion }})"
       currentBranch=$(echo $(Build.SourceBranch) | cut -d "/" -f 3,4)
