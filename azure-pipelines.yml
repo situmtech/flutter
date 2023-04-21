@@ -34,6 +34,13 @@ steps:
     displayName: Checkout self
 
   - bash: |
+
+      if [[ "${{ parameters.flutterVersion }}" == "0.0.0" ]];then
+        echo -e "\n[!] IMPORTANT: You don't set the plugin version when you run the release branch and I'm not fortune teller\n"
+        exit 1
+
+      fi
+
       echo "##vso[task.setvariable variable=version]$(echo ${{ parameters.flutterVersion }})"
       currentBranch=$(echo $(Build.SourceBranch) | cut -d "/" -f 3,4)
       echo "##vso[task.setvariable variable=currentBranch]$(echo $currentBranch)"
