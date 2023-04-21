@@ -64,10 +64,10 @@ steps:
 
     displayName: Install Dependencies
 
+  - ${{ if eq(parameters.system,'android') }}: 
+    - bash: |
+        export PATH="$PATH:$(Agent.BuildDirectory)/binaries/flutter/bin"
+        cd example
 
-  - bash: |
-      export PATH="$PATH:$(Agent.BuildDirectory)/binaries/flutter/bin"
-      cd example
-
-      flutter build
-    displayName: Build
+        flutter build apk
+      displayName: Build
