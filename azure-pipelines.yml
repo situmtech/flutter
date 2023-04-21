@@ -24,10 +24,11 @@ steps:
   - checkout: self
     fetchTags: false
     fetchDepth: 1
+    path: flutter-wayfinding
     displayName: Checkout self
 
   - bash: |
-      
+      cd flutter-wayfinding 
       echo "##vso[task.setvariable variable=version]$(echo ${{ parameters.flutterVersion }})"
       currentBranch=$(echo $(Build.SourceBranch) | cut -d "/" -f 3,4)
       echo "##vso[task.setvariable variable=currentBranch]$(echo $currentBranch)"
@@ -72,9 +73,11 @@ steps:
     displayName: Install Binaries
 
   - bash: |
+      cd flutter-wayfinding
+
       #Export binary paths
-      export PATH="$PATH:`pwd`/binaries/flutter/bin"
-      export PATH="$PATH:`pwd`/binaries/google-cloud-sdk/bin"
+      export PATH="$PATH:`pwd`/../binaries/flutter/bin"
+      export PATH="$PATH:`pwd`/../binaries/google-cloud-sdk/bin"
 
       echo -e "\n[+] Fetch all branches\n"
       git fetch
@@ -99,13 +102,15 @@ steps:
       secureFile: key-file.json
 
   - bash: |
+      
       cp $(key_file.secureFilePath) .
       
-      export PATH="$PATH:`pwd`/binaries/flutter/bin"
-      export PATH="$PATH:`pwd`/binaries/google-cloud-sdk/bin"
+      cd flutter-wayfinding
+      export PATH="$PATH:`pwd`/../binaries/flutter/bin"
+      export PATH="$PATH:`pwd`/../binaries/google-cloud-sdk/bin"
 
       echo -e "\n[+] Login with using key-file.json\n"
-      gcloud auth activate-service-account --key-file=key-file.json
+      gcloud auth activate-service-account --key-file=../key-file.json
 
       echo -e "\n[+] Create temporary token \n"
       gcloud auth print-identity-token --audiences=https://pub.dev | dart pub token add https://pub.dev
