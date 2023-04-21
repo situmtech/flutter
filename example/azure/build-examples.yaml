@@ -56,6 +56,10 @@ steps:
           echo -e "\n[+] Setting variables to deploy:"
           echo -e "\t[+] Set WHATS_NEW: $WHATS_NEW"
   
+
+          echo -e "\n[+] Pod install"
+          cd ..
+          pod install
   
           echo -e "\n[+] Build example with fastlane \n"
           fastlane ios beta
