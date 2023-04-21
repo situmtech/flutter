@@ -17,6 +17,8 @@ steps:
 
  - bash: |
 
+    cd example
+
     echo -e "\n[+] Credentials:"
     echo -e "\t[+] XAPIEMAIL: ${{ parameters.XAPIEMAIL }}"
     echo -e "\t[+] XAPIKEY: ${{ parameters.XAPIKEY }}"
