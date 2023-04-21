@@ -111,7 +111,7 @@ steps:
       gcloud auth print-identity-token --audiences=https://pub.dev | dart pub token add https://pub.dev
 
       echo -e "\n[+] Publish flutter package\n"
-      dart pub publish --dry-run
+      dart pub publish --dry-run --verbose
 
 
 
