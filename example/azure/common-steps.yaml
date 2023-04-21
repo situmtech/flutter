@@ -21,6 +21,7 @@ steps:
     echo -e "\t[+] XAPIEMAIL: ${{ parameters.XAPIEMAIL }}"
     echo -e "\t[+] XAPIKEY: ${{ parameters.XAPIKEY }}"
     echo -e "\t[+] BUILDINGID: ${{ parameters.BUILDINGID }}"
+    echo -e "\t[+] WORKING DIR: $(pwd)"
 
     echo -n "const situmUser = \"${{ parameters.XAPIEMAIL }}\";" > lib/config.dart
     echo -n "const situmApiKey = \"${{ parameters.XAPIKEY }}\";" >> lib/config.dart
