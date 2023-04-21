@@ -24,7 +24,7 @@ steps:
   - checkout: self
     fetchTags: false
     fetchDepth: 1
-    path: flutter-wayfinding
+    path: s/flutter-wayfinding
     displayName: Checkout self
 
   - bash: |
