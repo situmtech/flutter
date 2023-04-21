@@ -99,3 +99,4 @@ jobs:
       parameters:
         system: $(ubuntuVersion)
         XAPIEMAIL: $(XAPIEMAIL)
+        BUILDINGID: $(BUILDINGID)
