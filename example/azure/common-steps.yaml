@@ -1,0 +1,30 @@
+parameters:
+  - name: system
+    type: string
+  - name: XAPIEMAIL
+    type: string
+  - name: XAPIKEY
+    type: string
+  - name: BUILDINGID
+    type: string
+
+steps:
+ - checkout: self
+   fetchDepth: 1
+   fetchTags: false
+   displayName: Clone repository
+
+
+ - bash: |
+
+    echo -e "\n[+] Credentials:"
+    echo -e "\t[+] XAPIEMAIL: ${{ parameters.XAPIEMAIL }}"
+    echo -e "\t[+] XAPIKEY: ${{ parameters.XAPIKEY }}"
+    echo -e "\t[+] BUILDINGID: ${{ parameters.BUILDINGID }}"
+
+    echo -n "const situmUser = \"${{ parameters.XAPIEMAIL }}\";" > lib/config.dart
+    echo -n "const situmApiKey = \"${{ parameters.XAPIKEY }}\";" >> lib/config.dart
+    echo -n "const buildingIdentifier = \"${{ parameters.BUILDINGID }}\";" >> lib/config.dart
+    echo -n "const googleMapsApiKey = \"$(MAPS_APIKEY_EXAMPLE)\";" >> lib/config.dart
+
+   displayName: Configure credentials
