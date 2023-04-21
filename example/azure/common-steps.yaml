@@ -60,7 +60,7 @@ steps:
       cd example
 
       echo -e "\n[+] Install flutter dependencies\n"
-      flutter get pub
+      flutter pub get
 
     displayName: Install Dependencies
 
