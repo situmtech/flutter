@@ -9,25 +9,44 @@ parameters:
     type: string
 
 steps:
- - checkout: self
-   fetchDepth: 1
-   fetchTags: false
-   displayName: Clone repository
+  - checkout: self
+    fetchDepth: 1
+    fetchTags: false
+    displayName: Clone repository
+ 
+ 
+  - bash: |
+ 
+     cd example
+ 
+     echo -e "\n[+] Credentials:"
+     echo -e "\t[+] XAPIEMAIL: ${{ parameters.XAPIEMAIL }}"
+     echo -e "\t[+] XAPIKEY: ${{ parameters.XAPIKEY }}"
+     echo -e "\t[+] BUILDINGID: ${{ parameters.BUILDINGID }}"
+     echo -e "\t[+] WORKING DIR: $(pwd)"
+ 
+     echo -n "const situmUser = \"${{ parameters.XAPIEMAIL }}\";" > lib/config.dart
+     echo -n "const situmApiKey = \"${{ parameters.XAPIKEY }}\";" >> lib/config.dart
+     echo -n "const buildingIdentifier = \"${{ parameters.BUILDINGID }}\";" >> lib/config.dart
+     echo -n "const googleMapsApiKey = \"$(MAPS_APIKEY_EXAMPLE)\";" >> lib/config.dart
+ 
+    displayName: Configure credentials
+  - ${{ if eq(parameters.system),'android' }}: 
+    - bash: |
+         mkdir $(Agent.BuildDirectory)/binaries
+         cd $(Agent.BuildDirectory)/binaries
+         echo -e "\n[+] Download Flutter version $(flutterLinuxVersion)\n"
+         wget -q $(flutterLinuxVersion)
+         echo -e "\n[+] Untar Flutter version\n"
+         find . -iname "*.tar.xz" -exec tar xf {} \;
+      displayName: Install Binaries
 
-
- - bash: |
-
-    cd example
-
-    echo -e "\n[+] Credentials:"
-    echo -e "\t[+] XAPIEMAIL: ${{ parameters.XAPIEMAIL }}"
-    echo -e "\t[+] XAPIKEY: ${{ parameters.XAPIKEY }}"
-    echo -e "\t[+] BUILDINGID: ${{ parameters.BUILDINGID }}"
-    echo -e "\t[+] WORKING DIR: $(pwd)"
-
-    echo -n "const situmUser = \"${{ parameters.XAPIEMAIL }}\";" > lib/config.dart
-    echo -n "const situmApiKey = \"${{ parameters.XAPIKEY }}\";" >> lib/config.dart
-    echo -n "const buildingIdentifier = \"${{ parameters.BUILDINGID }}\";" >> lib/config.dart
-    echo -n "const googleMapsApiKey = \"$(MAPS_APIKEY_EXAMPLE)\";" >> lib/config.dart
-
-   displayName: Configure credentials
+  - ${{ if eq(parameters.system),'iOS' }}: 
+    - bash: |
+         mkdir $(Agent.BuildDirectory)/binaries
+         cd $(Agent.BuildDirectory)/binaries
+         echo -e "\n[+] Download Flutter version $(flutterMacOSVersion)\n"
+         wget -q $(flutterMacOSVersion)
+         echo -e "\n[+] Untar Flutter version\n"
+         find . -iname "*.zip" -exec unzip {} \;
+      displayName: Install Binaries
