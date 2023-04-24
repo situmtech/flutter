@@ -31,7 +31,7 @@ steps:
      echo -n "const buildingIdentifier = \"${{ parameters.BUILDINGID }}\";" >> lib/config.dart
      echo -n "const googleMapsApiKey = \"$(MAPS_APIKEY_EXAMPLE)\";" >> lib/config.dart
 
-     sed "s/PUT_GOOGLE_API_KEY/$(MAPS_APIKEY_EXAMPLE)/g" -i android/app/src/main/res/value/maps_key.xml
+     sed "s/PUT_GOOGLE_API_KEY/$(MAPS_APIKEY_EXAMPLE)/g" -i android/app/src/main/res/values/maps_key.xml
 
      cat android/app/src/main/res/values/maps_key.xml
  
