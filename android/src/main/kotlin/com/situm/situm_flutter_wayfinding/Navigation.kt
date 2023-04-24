@@ -104,7 +104,7 @@ class Navigation private constructor(
 
     override fun onDestinationReached() {
         handler.post {
-            channel.invokeMethod("navigation.finished", {})
+            channel.invokeMethod("navigation.finished", null)
         }
     }
 
@@ -116,7 +116,7 @@ class Navigation private constructor(
 
     override fun onUserOutsideRoute() {
         handler.post {
-            channel.invokeMethod("navigation.oor", {})
+            channel.invokeMethod("navigation.oor", null)
         }
     }
 }

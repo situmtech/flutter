@@ -22,13 +22,13 @@ part 'src/situm_map_view.dart';
 const WV_CHANNEL = "ReactNativeWebView";
 
 // Events from map-viewer:
-const WV_MESSAGE_DIRECTIONS_REQUESTED = "directions.request";
-const WV_MESSAGE_NAVIGATION_REQUESTED = "navigation.request";
-const WV_MESSAGE_NAVIGATION_STOP = "navigation.stop";
-const WV_MESSAGE_CARTOGRAPHY_POI_SELECTED = "cartography.select_poi";
+const WV_MESSAGE_DIRECTIONS_REQUESTED = "directions.requested";
+const WV_MESSAGE_NAVIGATION_REQUESTED = "navigation.requested";
+const WV_MESSAGE_NAVIGATION_STOP = "navigation.stopped";
+const WV_MESSAGE_CARTOGRAPHY_POI_SELECTED = "cartography.poi_selected";
 
 // Actions sent to map-viewer:
-const WV_MESSAGE_LOCATION = "location.updated";
-const WV_MESSAGE_DIRECTIONS_UPDATED = "directions.updated";
-const WV_MESSAGE_NAVIGATION_STARTED = "navigation.started";
-const WV_MESSAGE_NAVIGATION_UPDATED = "navigation.updated";
+const WV_MESSAGE_LOCATION = "location.update";
+const WV_MESSAGE_DIRECTIONS_UPDATED = "directions.update";
+const WV_MESSAGE_NAVIGATION_STARTED = "navigation.start";
+const WV_MESSAGE_NAVIGATION_UPDATED = "navigation.update";
