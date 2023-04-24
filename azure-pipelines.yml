@@ -127,13 +127,17 @@ steps:
       secureFile: key-file.json
 
   - bash: |
-      
+      # Describe the login process
+      # 1. Download the key-file.json: File with Google credentials to connect via gcloud cli
+      # 2. Autenticate gcloud: Autenticate with gcloud cli using the credentials file.
+      # 3. Autenticate pub.dev: Generar a temporary token against pub.dev that will be used to publish the packages
+      # More info: https://dart.dev/tools/pub/automated-publishing#publish-from-anywhere-using-a-service-account
       cp $(key_file.secureFilePath) .
       
       export PATH="$PATH:$(Agent.BuildDirectory)/binaries/flutter/bin"
       export PATH="$PATH:$(Agent.BuildDirectory)/binaries/google-cloud-sdk/bin"
 
-      echo -e "\n[+] Login with using key-file.json\n"
+      echo -e "\n[+] Login with key-file.json\n"
       gcloud auth activate-service-account --key-file=key-file.json
 
       rm -rf key-file.json
@@ -142,6 +146,6 @@ steps:
       gcloud auth print-identity-token --audiences=https://pub.dev | dart pub token add https://pub.dev
 
       echo -e "\n[+] Publish flutter package\n"
-      dart pub publish
+      dart pub publish --force
 
     displayName: Publish packages
