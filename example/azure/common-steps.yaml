@@ -16,13 +16,14 @@ steps:
  
  
   - bash: |
-     pluginVersion=$(grep -Rwi "^version: [0-9\.].*$" pubspec.yaml | awk -F":" '{print $2}')
+     pluginVersion=$(grep "^version: [0-9\.].*$" pubspec.yaml | awk -F":" '{print $2}')
      echo "##vso[task.setvariable variable=pluginVersion]$(echo $pluginVersion)"
      cd example
  
      echo -e "\n[+] Credentials:"
      echo -e "\t[+] XAPIEMAIL: ${{ parameters.XAPIEMAIL }}"
      echo -e "\t[+] BUILDINGID: ${{ parameters.BUILDINGID }}"
+     echo -e "\t[+] Plugin Version: $pluginVersion"
      echo -e "\t[+] WORKING DIR: $(pwd)"
 
  
@@ -33,7 +34,6 @@ steps:
 
      echo -e "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<resources>\n\t<string name=\"google_api_key\">$(MAPS_APIKEY_EXAMPLE)</string>\n</resources>" > android/app/src/main/res/values/google_api_key.xml
 
-     cat android/app/src/main/res/values/google_api_key.xml
  
     displayName: Configure credentials
 
