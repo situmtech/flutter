@@ -9,9 +9,11 @@ class SitumFlutterWYF {
   OnDirectionsOptionsInterceptor? _onDirectionsOptionsInterceptor;
   OnNavigationOptionsInterceptor? _onNavigationOptionsInterceptor;
 
+  final SitumMapView widget;
   final WebViewController webViewController;
 
   SitumFlutterWYF({
+    required this.widget,
     required this.webViewController,
   });
 
@@ -93,9 +95,16 @@ class SitumFlutterWYF {
         WV_MESSAGE_NAVIGATION_UPDATED, jsonEncode(progress.rawContent));
   }
 
+  // TODO: This method is a workaround to obtain a POI without knowing the
+  //  buildingId. Otherwise we would search among all the POIs of all the
+  //  buildings, which would significantly impact performance.
+  Future<Poi?> _fetchPoiFromCurrentBuilding(String poiId) async {
+    var sdk = SitumFlutterSDK();
+    return await sdk.fetchPoiFromBuilding(widget.buildingIdentifier, poiId);
+  }
+
   // Callbacks:
   void onPoiSelected(OnPoiSelectedCallback callback) {
-    // TODO: waiting for missing data from map-viewer.
     _onPoiSelectedCallback = callback;
   }
 

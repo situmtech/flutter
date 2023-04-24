@@ -25,32 +25,18 @@ class DirectionsMessage {
 }
 
 class OnPoiSelectedResult {
-  final String buildingId;
-  final String buildingName;
-  final String floorId;
-  final String floorName;
-  final String poiId;
-  final String poiName;
-  final String poiInfoHtml;
+  final Poi poi;
 
   const OnPoiSelectedResult({
-    required this.buildingId,
-    required this.buildingName,
-    required this.floorId,
-    required this.floorName,
-    required this.poiId,
-    required this.poiName,
-    required this.poiInfoHtml,
+    required this.poi,
   });
 }
 
 class OnPoiDeselectedResult {
   final String buildingId;
-  final String buildingName;
 
   const OnPoiDeselectedResult({
     required this.buildingId,
-    required this.buildingName,
   });
 }
 

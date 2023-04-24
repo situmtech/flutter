@@ -99,7 +99,8 @@ class NavigationMessageHandler implements MessageHandler {
 
 class NavigationStopMessageHandler implements MessageHandler {
   @override
-  void handleMessage(SitumFlutterWYF situmFlutterWYF, Map<String, dynamic> payload) {
+  void handleMessage(
+      SitumFlutterWYF situmFlutterWYF, Map<String, dynamic> payload) {
     var sdk = SitumFlutterSDK();
     sdk.stopNavigation();
   }
@@ -109,16 +110,13 @@ class PoiSelectedMessageHandler implements MessageHandler {
   @override
   void handleMessage(
       SitumFlutterWYF situmFlutterWYF, Map<String, dynamic> payload) async {
-    var poiId = "${payload["poiId"]}";
-    // TODO: missing data!
-    situmFlutterWYF._onPoiSelectedCallback?.call(OnPoiSelectedResult(
-      buildingId: "",
-      buildingName: "",
-      floorId: "",
-      floorName: "",
-      poiId: poiId,
-      poiName: "",
-      poiInfoHtml: "",
-    ));
+    var poiId = "${payload["id"]}";
+    if (situmFlutterWYF._onPoiSelectedCallback != null) {
+      var poi = await situmFlutterWYF._fetchPoiFromCurrentBuilding(poiId);
+      if (poi != null) {
+        situmFlutterWYF._onPoiSelectedCallback
+            ?.call(OnPoiSelectedResult(poi: poi));
+      }
+    }
   }
 }

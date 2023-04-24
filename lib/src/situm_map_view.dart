@@ -88,6 +88,7 @@ class _SitumMapViewState extends State<SitumMapView> {
             if (wyfController == null) {
               debugPrint('Page finished loading, created wyfController: $url');
               wyfController = SitumFlutterWYF(
+                widget: widget,
                 webViewController: webViewController,
               );
               wyfController!.situmMapLoaded = true;
