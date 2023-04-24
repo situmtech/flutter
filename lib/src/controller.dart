@@ -88,6 +88,7 @@ class SitumFlutterWYF {
   }
 
   void _setNavigationProgress(RouteProgress progress) {
+    progress.rawContent["type"] = "progress";
     _sendMessage(
         WV_MESSAGE_NAVIGATION_UPDATED, jsonEncode(progress.rawContent));
   }
