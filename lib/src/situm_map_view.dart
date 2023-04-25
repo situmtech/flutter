@@ -108,7 +108,10 @@ class _SitumMapViewState extends State<SitumMapView> {
           ''');
           },
           onNavigationRequest: (NavigationRequest request) {
-            return NavigationDecision.navigate;
+            if (request.url.startsWith(widget.situmMapUrl)) {
+              return NavigationDecision.navigate;
+            }
+            return NavigationDecision.prevent;
           },
         ),
       )
