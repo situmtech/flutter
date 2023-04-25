@@ -106,7 +106,7 @@ class _MyTabsState extends State<MyTabs> {
   void _onWYFLoaded(SitumFlutterWYF controller) {
     situmFlutterWYF = controller;
     controller.onPoiSelected((poiSelectedResult) {
-      debugPrint("WYF> onPoiSelected: ${poiSelectedResult.poiId}");
+      debugPrint("WYF> onPoiSelected: ${poiSelectedResult.poi.name}");
     });
   }
 
