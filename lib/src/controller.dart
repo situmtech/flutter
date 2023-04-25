@@ -62,6 +62,14 @@ class SitumFlutterWYF {
         WV_MESSAGE_DIRECTIONS_UPDATED, jsonEncode(situmRoute.rawContent));
   }
 
+  void _setRouteError(dynamic code) {
+    _sendMessage(
+        WV_MESSAGE_DIRECTIONS_UPDATED,
+        jsonEncode({
+          "error": code,
+        }));
+  }
+
   void _setNavigationRoute(
     String originId,
     String destinationId,

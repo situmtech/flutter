@@ -95,7 +95,7 @@ class SitumFlutterSDK {
       "buildingId": directionsOptions.buildingId,
       // Set directions/navigation options:
       "directionsOptions": directionsOptions.toMap(),
-      "navigationOptions": navigationOptions.toMap()
+      "navigationOptions": navigationOptions.toMap(),
     });
     return createRoute(response);
   }

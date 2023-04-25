@@ -47,12 +47,18 @@ class DirectionsMessageHandler implements MessageHandler {
     // Send DirectionsOptions so it can be intercepted.
     situmFlutterWYF._onDirectionsRequested(directionsOptions);
     // Calculate route and send it to the web-view.
-    SitumRoute situmRoute = await sdk.requestDirections(directionsOptions);
-    situmFlutterWYF._setRoute(
-      directionsMessage.originId,
-      directionsMessage.destinationId,
-      situmRoute,
-    );
+    try {
+      SitumRoute situmRoute = await sdk.requestDirections(directionsOptions);
+      situmFlutterWYF._setRoute(
+        directionsMessage.originId,
+        directionsMessage.destinationId,
+        situmRoute,
+      );
+    } on PlatformException catch (e) {
+      situmFlutterWYF._setRouteError(e.code);
+    } catch (e) {
+      situmFlutterWYF._setRouteError(-1);
+    }
   }
 }
 
@@ -89,11 +95,17 @@ class NavigationMessageHandler implements MessageHandler {
       directionsOptions,
       navigationOptions,
     );
-    situmFlutterWYF._setNavigationRoute(
-      directionsMessage.originId,
-      directionsMessage.destinationId,
-      situmRoute,
-    );
+    try {
+      situmFlutterWYF._setNavigationRoute(
+        directionsMessage.originId,
+        directionsMessage.destinationId,
+        situmRoute,
+      );
+    } on PlatformException catch (e) {
+      situmFlutterWYF._setRouteError(e.code);
+    } catch (e) {
+      situmFlutterWYF._setRouteError(-1);
+    }
   }
 }
 
