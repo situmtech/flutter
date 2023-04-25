@@ -33,7 +33,7 @@ class SitumMapView extends StatefulWidget {
     this.showPoiNames = true,
     this.enablePoiClustering = true,
     this.enableDebugging = false,
-    this.showNavigationIndications = true,
+    this.showNavigationIndications = false,
   }) : super(key: key);
 
   @override
@@ -56,6 +56,9 @@ class _SitumMapViewState extends State<SitumMapView> {
     }
     if (!widget.enablePoiClustering) {
       elementsToHide.add("pcl");
+    }
+    if (widget.showNavigationIndications) {
+      elementsToHide.add("ni");
     }
     if (elementsToHide.isNotEmpty) {
       uri = "$uri&hide=${elementsToHide.join(',')}";
