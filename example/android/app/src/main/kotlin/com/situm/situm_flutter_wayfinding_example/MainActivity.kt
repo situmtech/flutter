@@ -1,4 +1,4 @@
-package com.situm.flutterWyfindingPlugin
+package com.situm.flutterWayfindingPlugin
 
 import com.situm.situm_flutter_wayfinding.SitumMapFactory
 import io.flutter.embedding.android.FlutterAppCompatActivity

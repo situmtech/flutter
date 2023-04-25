@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:situm_flutter_wayfinding/situm_flutter_sdk.dart';
 import 'package:situm_flutter_wayfinding/situm_flutter_wayfinding.dart';
-import 'package:flutterWyfindingPlugin/config.dart';
-import 'package:flutterWyfindingPlugin/find_my_car/find_my_car.dart';
+import 'package:flutterWayfindingPlugin/config.dart';
+import 'package:flutterWayfindingPlugin/find_my_car/find_my_car.dart';
 
 void main() => runApp(const MyApp());
 
