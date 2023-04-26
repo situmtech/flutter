@@ -101,8 +101,7 @@ class Location {
         "latitude": coordinate.latitude,
         "longitude": coordinate.longitude,
         "accuracy": accuracy,
-        // TODO: check WYF web: degrees vs radians.
-        "bearing": bearing?.degrees,
+        "bearing": bearing?.degreesClockwise,
         "buildingId": buildingId,
         "floorId": floorId,
         "isIndoor": isIndoor,
