@@ -59,12 +59,12 @@ class SitumFlutterWYF {
     situmRoute.rawContent["originId"] = originId;
     situmRoute.rawContent["destinationId"] = destinationId;
     _sendMessage(
-        WV_MESSAGE_DIRECTIONS_UPDATED, jsonEncode(situmRoute.rawContent));
+        WV_MESSAGE_DIRECTIONS_UPDATE, jsonEncode(situmRoute.rawContent));
   }
 
   void _setRouteError(dynamic code) {
     _sendMessage(
-        WV_MESSAGE_DIRECTIONS_UPDATED,
+        WV_MESSAGE_DIRECTIONS_UPDATE,
         jsonEncode({
           "error": code,
         }));
@@ -78,12 +78,12 @@ class SitumFlutterWYF {
     situmRoute.rawContent["originId"] = originId;
     situmRoute.rawContent["destinationId"] = destinationId;
     _sendMessage(
-        WV_MESSAGE_NAVIGATION_STARTED, jsonEncode(situmRoute.rawContent));
+        WV_MESSAGE_NAVIGATION_START, jsonEncode(situmRoute.rawContent));
   }
 
   void _setNavigationOutOfRoute() {
     _sendMessage(
-        WV_MESSAGE_NAVIGATION_UPDATED,
+        WV_MESSAGE_NAVIGATION_UPDATE,
         jsonEncode({
           "type": "out_of_route",
         }));
@@ -91,7 +91,7 @@ class SitumFlutterWYF {
 
   void _setNavigationFinished() {
     _sendMessage(
-        WV_MESSAGE_NAVIGATION_UPDATED,
+        WV_MESSAGE_NAVIGATION_UPDATE,
         jsonEncode({
           "type": "destination_reached",
         }));
@@ -100,7 +100,7 @@ class SitumFlutterWYF {
   void _setNavigationProgress(RouteProgress progress) {
     progress.rawContent["type"] = "progress";
     _sendMessage(
-        WV_MESSAGE_NAVIGATION_UPDATED, jsonEncode(progress.rawContent));
+        WV_MESSAGE_NAVIGATION_UPDATE, jsonEncode(progress.rawContent));
   }
 
   // TODO: This method is a workaround to obtain a POI without knowing the

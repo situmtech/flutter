@@ -191,6 +191,11 @@ class SitumFlutterSDK {
     return createList<PoiCategory>(response, createCategory);
   }
 
+  Future<String> getDeviceId() async {
+    String response = await methodChannel.invokeMethod("getDeviceId");
+    return response;
+  }
+
   /// Get notified when the user enters a [Geofence]. Call this method before
   /// the positioning is started.
   Future<void> onEnterGeofences(OnEnteredGeofencesCallback callback) async {

@@ -30,6 +30,6 @@ const WV_MESSAGE_CARTOGRAPHY_POI_SELECTED = "cartography.poi_selected";
 
 // Actions sent to map-viewer:
 const WV_MESSAGE_LOCATION = "location.update";
-const WV_MESSAGE_DIRECTIONS_UPDATED = "directions.update";
-const WV_MESSAGE_NAVIGATION_STARTED = "navigation.start";
-const WV_MESSAGE_NAVIGATION_UPDATED = "navigation.update";
+const WV_MESSAGE_DIRECTIONS_UPDATE = "directions.update";
+const WV_MESSAGE_NAVIGATION_START = "navigation.start";
+const WV_MESSAGE_NAVIGATION_UPDATE = "navigation.update";

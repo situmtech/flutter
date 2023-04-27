@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutterWayfindingPlugin/config.dart';
 import 'package:situm_flutter_wayfinding/situm_flutter_sdk.dart';
 import 'package:situm_flutter_wayfinding/situm_flutter_wayfinding.dart';
-import 'package:situm_flutter_wayfinding_example/config.dart';
 
 void main() => runApp(const MyApp());
 
@@ -47,7 +47,7 @@ class _MyTabsState extends State<MyTabs> {
             style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
           ),
           SizedBox(
-              height: 150,
+              height: 225,
               child: GridView.count(
                   crossAxisCount: 4,
                   padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
@@ -57,12 +57,15 @@ class _MyTabsState extends State<MyTabs> {
                     _sdkButton('Start', _requestUpdates),
                     _sdkButton('Global', _requestUpdatesGlobal),
                     _sdkButton('Stop', _removeUpdates),
-                    /*_sdkButton('Prefetch', _prefetch),
+                    /*
+                    _sdkButton('Device Id', _getDeviceId),
+                    _sdkButton('Prefetch', _prefetch),
                     _sdkButton('Clear cache', _clearCache),
                     _sdkButton('Pois', _fetchPois),
                     _sdkButton('Categories', _fetchCategories),
                     _sdkButton('Buildings', _fetchBuildings),
-                    _sdkButton('Building Info', _fetchBuildingInfo),*/
+                    _sdkButton('Building Info', _fetchBuildingInfo),
+                    */
                   ])),
           Expanded(
               child: SingleChildScrollView(
@@ -215,6 +218,12 @@ class _MyTabsState extends State<MyTabs> {
     _echo("SDK> BUILDINGS...");
     var buildings = await situmSdk.fetchBuildings();
     _echo("SDK> RESPONSE: BUILDINGS = \n\n$buildings");
+  }
+
+    void _getDeviceId() async {
+    _echo("SDK> Device Id...");
+    var deviceId = await situmSdk.getDeviceId();
+    _echo("SDK> RESPONSE: DEVICEID = \n\n$deviceId");
   }
 
   /* --- */

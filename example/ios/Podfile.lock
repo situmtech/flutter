@@ -1,7 +1,7 @@
 PODS:
   - Flutter (1.0.0)
   - Protobuf (3.22.1)
-  - situm_flutter_wayfinding (0.0.12):
+  - situm_flutter_wayfinding (0.0.13):
     - Flutter
     - SitumSDK (~> 2.59.0)
   - SitumSDK (2.59.0):

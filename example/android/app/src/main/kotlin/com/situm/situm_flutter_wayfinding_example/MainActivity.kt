@@ -1,4 +1,4 @@
-package com.situm.situm_flutter_wayfinding_example
+package com.situm.flutterWayfindingPlugin
 
 import io.flutter.embedding.android.FlutterFragmentActivity
 
