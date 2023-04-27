@@ -11,8 +11,8 @@ dependencies:
   flutter:
     sdk: flutter
   plugin_platform_interface: ^2.0.2
-  webview_flutter: ^4.0.7
-  webview_flutter_android: ^3.4.5
+  webview_flutter: ^4.2.0
+  webview_flutter_android: ^3.6.1
 
 dev_dependencies:
   flutter_test:
