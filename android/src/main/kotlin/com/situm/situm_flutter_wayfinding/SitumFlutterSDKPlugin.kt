@@ -42,6 +42,10 @@ class SitumFlutterSDKPlugin : FlutterPlugin, ActivityAware, MethodChannel.Method
 
     override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
         channel.setMethodCallHandler(null)
+        // Avoid leaking this listener:
+        locationListener?.let {
+            SitumSdk.locationManager().removeLocationListener(it)
+        }
     }
 
     override fun onMethodCall(methodCall: MethodCall, result: MethodChannel.Result) {
@@ -163,14 +167,14 @@ class SitumFlutterSDKPlugin : FlutterPlugin, ActivityAware, MethodChannel.Method
         result.success("DONE")
     }
 
-    private fun removeUpdates(result: MethodChannel.Result) {
+    private fun removeUpdates(result: MethodChannel.Result?) {
         SitumSdk.locationManager().let { manager ->
             manager.removeUpdates()
             locationListener?.let {
                 manager.removeLocationListener(it)
             }
         }
-        result.success("DONE")
+        result?.success("DONE")
     }
 
     private fun requestDirections(arguments: Map<String, Any>, result: MethodChannel.Result) {
