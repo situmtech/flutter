@@ -104,19 +104,19 @@ class Navigation private constructor(
 
     override fun onDestinationReached() {
         handler.post {
-            channel.invokeMethod("navigation.finished", null)
+            channel.invokeMethod("onNavigationFinished", null)
         }
     }
 
     override fun onProgress(progress: NavigationProgress) {
         handler.post {
-            channel.invokeMethod("navigation.progress", progress.toMap())
+            channel.invokeMethod("onNavigationProgress", progress.toMap())
         }
     }
 
     override fun onUserOutsideRoute() {
         handler.post {
-            channel.invokeMethod("navigation.oor", null)
+            channel.invokeMethod("onUserOutsideRoute", null)
         }
     }
 }

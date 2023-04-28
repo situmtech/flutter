@@ -233,13 +233,13 @@ class SitumFlutterSDK {
       case 'onExitedGeofences':
         _onExitGeofences(call.arguments);
         break;
-      case 'navigation.finished':
+      case 'onNavigationFinished':
         _onNavigationFinished();
         break;
-      case 'navigation.progress':
+      case 'onNavigationProgress':
         _onNavigationProgress(call.arguments);
         break;
-      case 'navigation.oor':
+      case 'onUserOutsideRoute':
         _onNavigationOutOfRoute();
         break;
       default:
