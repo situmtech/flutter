@@ -87,7 +87,7 @@ class SitumFlutterSDK {
   }
 
   /// Request navigation between two [Point]s, using the given
-  /// [DirectionsOptions] and [NavigationRequest].
+  /// [DirectionsOptions] and [NavigationOptions].
   Future<SitumRoute> requestNavigation(DirectionsOptions directionsOptions,
       NavigationOptions navigationOptions) async {
     Map response = await methodChannel.invokeMethod('requestNavigation', {
