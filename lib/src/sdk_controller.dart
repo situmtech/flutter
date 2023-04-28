@@ -121,7 +121,7 @@ class SitumFlutterSDK {
     _onNavigationProgressCallback = callback;
   }
 
-  /// Set a callback that will be notified when the current the user gets out
+  /// Set a callback that will be notified when the current user gets out
   /// of the current route.
   /// See [requestNavigation].
   Future<void> onNavigationOutOfRoute(
