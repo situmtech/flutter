@@ -16,16 +16,14 @@ A sample Flutter application to start learning the power of [Situm's Flutter Way
 
 </div>
 
-## Getting Started
+## What's in here
+
+This folder contains the necessary source code for an example application using the **SitumWayfinding plugin**.
 
 <div align="center" style="display: flex;">
     <img src="./docs/assets/home_preview.png" alt="home_preview">
     <img src="./docs/assets/wyf_preview.png" alt="wyf_preview">
 </div>
-
-## What's in here
-
-This folder contains the necessary source code for an example application using the **SitumWayfinding plugin**.
 
 ## How to run the app
 
@@ -37,7 +35,7 @@ The first step is to download this repo:
 git clone https://github.com/situmtech/flutter-wayfinding.git
 ```
 
-And then install the plugin dependencies alongside the `example` app dependecies as follows:
+And then install the plugin dependencies alongside the `example` app as follows:
 
 ```bash
 cd flutter-wayfinding/example
@@ -62,13 +60,13 @@ const buildingIdentifier = "YOUR-SITUM-BUILDING-IDENTIFIER";
 
 ### Step 3: Run the app <a name="runapplication"></a>
 
-From the `example` folder execute the following command which works on both Android and iOS devices:
+From the `example` folder, execute the following command which works on both Android and iOS devices:
 
 ```bash
 flutter run
 ```
 
-You can also execute it from your IDE:
+You can also run the app from your IDE:
 
 - On Android: open `example/android/` with Android Studio.
 - On iOS: open `example/ios/Runner.xcworkspace` with XCode.

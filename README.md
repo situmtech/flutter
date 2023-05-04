@@ -21,6 +21,21 @@
 There is a comprehensive tutorial on how to set-up a new application using this plugin on the Situm [documentation page](https://situm.com/docs/a-basic-flutter-app/).
 
 Below you will find the basic steps to install and configure the plugin on your Flutter project.
+These steps have already been done for you in the example application of this repository, but they are required for other projects.
+
+## Running the example
+
+Check the [example/README](./example/README.md) file of this repository to create your first Flutter application using Situm Wayfinding.
+
+## Configure the plugin on your Flutter project
+
+### Install the plugin
+
+To add the Situm dependency to your Flutter project, you can use the `flutter pub add` command. To add this dependency to your project, you can use the following command in your terminal:
+
+```
+flutter pub add situm_flutter_wayfinding
+```
 
 ### Set up your Situm credentials
 
@@ -29,15 +44,9 @@ Create a new `config.dart` file with your Situm credentials. You can use the con
 Follow the [Wayfinding guide](https://situm.com/docs/first-steps-for-wayfinding/) if you haven't set
 up a Situm account.
 
-#### Running the example:
-
-Check the [example/README](./example/README.md) file of this repository to create your first Flutter application using Situm Wayfinding.
-
 ### Android
 
-The following steps have already been done for you in the example application of this repository, but they are required for a new project:
-
-1. Include the Situm repository in your project level `build.gradle`:
+Include the Situm repository in your project level `build.gradle`:
 
 ```groovy
 allprojects {
@@ -49,8 +58,6 @@ allprojects {
 ```
 
 ### iOS
-
-The following steps have already been done for you in the example application of this project, but we list them as required documentation for a new project:
 
 1. Run `pod install` or `pod update` to bring the dependencies to your project.
 
