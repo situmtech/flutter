@@ -46,7 +46,7 @@ flutter pub get
 
 #### iOS only
 
-Run `pod install` or `pod update` (at your ios folder) to bring the dependencies to your project.
+Run `pod install` or `pod update` from the `example/ios` folder to bring the dependencies to your project.
 
 Also check out the project [code signing](https://developer.apple.com/support/code-signing/) before you run the example.
 
