@@ -23,13 +23,13 @@ A sample Flutter application to start learning the power of [Situm's Flutter Way
     <img src="./docs/assets/wyf_preview.png" alt="wyf_preview">
 </div>
 
-## What's in here <a name="whatsinhere"/>
+## What's in here
 
 This folder contains the necessary source code for an example application using the **SitumWayfinding plugin**.
 
-## How to run the app <a name="howtorun"/>
+## How to run the app
 
-### Step 1: Install the dependencies <a name="dependencies"/>
+### Step 1: Install the dependencies
 
 The first step is to download this repo:
 
@@ -44,7 +44,17 @@ cd flutter-wayfinding/example
 flutter pub get
 ```
 
-### Step 2: Sign your app <a name="signapplication"></a> (iOS only)
+### Step 2: Set up your Situm credentials
+
+Your credentials must be stored inside a file named `config.dart`. This example provides you with a template on `lib/config.dart.example`:
+
+```dart
+const situmUser = "YOUR-SITUM-USER";
+const situmApiKey = "YOUR-SITUM-API-KEY";
+const buildingIdentifier = "YOUR-SITUM-BUILDING-IDENTIFIER";
+```
+
+### Step 3: Sign your app <a name="signapplication"></a> (iOS only)
 
 Check out the project [code signing](https://developer.apple.com/support/code-signing/) before you run the example.
 
@@ -61,7 +71,7 @@ You can also execute it from your IDE:
 - On Android: open `example/android/` with Android Studio.
 - On iOS: open `example/ios/Runner.xcworkspace` with XCode.
 
-## Documentation <a name="documentation"/>
+## Documentation
 
 More information on how to use the official Flutter plugin and the set of APIs, the functions, parameters and results each function accepts and provides can be found in our [SDK API Reference](https://pub.dev/documentation/situm_flutter_wayfinding/latest/situm_flutter_sdk/situm_flutter_sdk-library.html) and [Wayfinding API Reference](https://pub.dev/documentation/situm_flutter_wayfinding/latest/situm_flutter_wayfinding/situm_flutter_wayfinding-library.html).
 
@@ -79,7 +89,7 @@ Please refer to [CHANGELOG.md](../CHANGELOG.md) for a list of notables changes f
 
 You can also see the [tags on this repository](https://github.com/situmtech/flutter-wayfinding/tags).
 
-## Submitting Contributions <a name="contributions"/>
+## Submitting Contributions
 
 You will need to sign a Contributor License Agreement (CLA) before making a submission. [Learn more here.](https://situm.com/contributions/)
 
@@ -87,10 +97,10 @@ You will need to sign a Contributor License Agreement (CLA) before making a subm
 
 This project is licensed under the MIT - see the [LICENSE](../LICENSE) file for details.
 
-## More information <a name="more-info"/>
+## More information
 
 More info is available at our [Developers Page](https://situm.com/docs/01-introduction/).
 
-## Support information <a name="support"/>
+## Support information
 
 For any question or bug report, please send an email to [support@situm.es](mailto:support@situm.es)
