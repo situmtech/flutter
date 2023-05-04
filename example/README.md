@@ -44,6 +44,12 @@ cd flutter-wayfinding/example
 flutter pub get
 ```
 
+#### iOS only
+
+Run `pod install` or `pod update` (at your ios folder) to bring the dependencies to your project.
+
+Also check out the project [code signing](https://developer.apple.com/support/code-signing/) before you run the example.
+
 ### Step 2: Set up your Situm credentials
 
 Your credentials must be stored inside a file named `config.dart`. This example provides you with a template on `lib/config.dart.example`:
@@ -53,10 +59,6 @@ const situmUser = "YOUR-SITUM-USER";
 const situmApiKey = "YOUR-SITUM-API-KEY";
 const buildingIdentifier = "YOUR-SITUM-BUILDING-IDENTIFIER";
 ```
-
-### Step 3: Sign your app <a name="signapplication"></a> (iOS only)
-
-Check out the project [code signing](https://developer.apple.com/support/code-signing/) before you run the example.
 
 ### Step 3: Run the app <a name="runapplication"></a>
 
