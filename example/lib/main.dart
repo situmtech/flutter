@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import './config.dart';
 import 'package:situm_flutter_wayfinding/situm_flutter_sdk.dart';
 import 'package:situm_flutter_wayfinding/situm_flutter_wayfinding.dart';
+
+import './config.dart';
 
 void main() => runApp(const MyApp());
 
@@ -220,7 +221,7 @@ class _MyTabsState extends State<MyTabs> {
     _echo("SDK> RESPONSE: BUILDINGS = \n\n$buildings");
   }
 
-    void _getDeviceId() async {
+  void _getDeviceId() async {
     _echo("SDK> Device Id...");
     var deviceId = await situmSdk.getDeviceId();
     _echo("SDK> RESPONSE: DEVICEID = \n\n$deviceId");
