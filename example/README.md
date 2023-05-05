@@ -50,7 +50,12 @@ Also check out the project [code signing](https://developer.apple.com/support/co
 
 ### Step 2: Set up your Situm credentials
 
-Your credentials must be stored inside a file named `config.dart`. This example provides you with a template on `lib/config.dart.example`:
+This example provides you with a template on `lib/config.dart.example`:
+
+> **Warning**
+> Rename `config.dart.example` to `config.dart`.
+
+Now populate it with your credentials:
 
 ```dart
 const situmUser = "YOUR-SITUM-USER";
