@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutterWayfindingPlugin/config.dart';
+import './config.dart';
 import 'package:situm_flutter_wayfinding/situm_flutter_sdk.dart';
 import 'package:situm_flutter_wayfinding/situm_flutter_wayfinding.dart';
 
