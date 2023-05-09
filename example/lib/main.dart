@@ -58,8 +58,7 @@ class _MyTabsState extends State<MyTabs> {
                     _sdkButton('Start', _requestUpdates),
                     _sdkButton('Global', _requestUpdatesGlobal),
                     _sdkButton('Stop', _removeUpdates),
-                    /*
-                    _sdkButton('Device Id', _getDeviceId),
+                    /*_sdkButton('Device Id', _getDeviceId),
                     _sdkButton('Prefetch', _prefetch),
                     _sdkButton('Clear cache', _clearCache),
                     _sdkButton('Pois', _fetchPois),
@@ -98,7 +97,8 @@ class _MyTabsState extends State<MyTabs> {
         situmApiKey: situmApiKey,
         buildingIdentifier: buildingIdentifier,
         // Config:
-        situmMapUrl: "https://map-viewer-native.situm.com",
+        situmMapUrl: "https://map-viewer-des.situm.com",
+        //situmMapUrl: "http://192.168.1.139:5173",
         showPoiNames: true,
         hasSearchView: true,
         showNavigationIndications: true,
