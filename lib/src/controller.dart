@@ -10,7 +10,7 @@ class SitumFlutterWYF {
   OnNavigationOptionsInterceptor? _onNavigationOptionsInterceptor;
 
   final SitumMapView widget;
-  final WebViewController webViewController;
+  final PlatformWebViewController webViewController;
 
   SitumFlutterWYF({
     required this.widget,
@@ -52,10 +52,10 @@ class SitumFlutterWYF {
   // WYF internal utils:
 
   void _setRoute(
-    String originId,
-    String destinationId,
-    SitumRoute situmRoute,
-  ) async {
+      String originId,
+      String destinationId,
+      SitumRoute situmRoute,
+      ) async {
     situmRoute.rawContent["originId"] = originId;
     situmRoute.rawContent["destinationId"] = destinationId;
     _sendMessage(
@@ -71,10 +71,10 @@ class SitumFlutterWYF {
   }
 
   void _setNavigationRoute(
-    String originId,
-    String destinationId,
-    SitumRoute situmRoute,
-  ) async {
+      String originId,
+      String destinationId,
+      SitumRoute situmRoute,
+      ) async {
     situmRoute.rawContent["originId"] = originId;
     situmRoute.rawContent["destinationId"] = destinationId;
     _sendMessage(

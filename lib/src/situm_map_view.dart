@@ -42,7 +42,7 @@ class SitumMapView extends StatefulWidget {
 
 class _SitumMapViewState extends State<SitumMapView> {
   SitumFlutterWYF? wyfController;
-  late final WebViewController webViewController;
+  late final PlatformWebViewController webViewController;
 
   String _createUri() {
     String uri =
@@ -70,24 +70,29 @@ class _SitumMapViewState extends State<SitumMapView> {
   void initState() {
     super.initState();
 
-    final WebViewController controller =
-        WebViewController.fromPlatformCreationParams(
-            const PlatformWebViewControllerCreationParams());
+    PlatformWebViewControllerCreationParams params =
+        defaultTargetPlatform == TargetPlatform.android
+            ? AndroidWebViewControllerCreationParams()
+            : WebKitWebViewControllerCreationParams();
+
+    PlatformWebViewController controller = PlatformWebViewController(params);
 
     final String uri = _createUri();
 
     controller
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setBackgroundColor(const Color(0x00000000))
-      ..setNavigationDelegate(
-        NavigationDelegate(
-          onProgress: (int progress) {
+      ..setBackgroundColor(const Color(0x80000000))
+      ..setPlatformNavigationDelegate(
+        PlatformNavigationDelegate(
+          const PlatformNavigationDelegateCreationParams(),
+        )
+          ..setOnProgress((int progress) {
             // Do nothing.
-          },
-          onPageStarted: (String url) {
+          })
+          ..setOnPageStarted((String url) {
             // Do nothing.
-          },
-          onPageFinished: (String url) {
+          })
+          ..setOnPageFinished((String url) {
             if (wyfController == null) {
               debugPrint('Page finished loading, created wyfController: $url');
               wyfController = SitumFlutterWYF(
@@ -97,8 +102,8 @@ class _SitumMapViewState extends State<SitumMapView> {
               wyfController!.situmMapLoaded = true;
               widget.loadCallback(wyfController!);
             }
-          },
-          onWebResourceError: (WebResourceError error) {
+          })
+          ..setOnWebResourceError((WebResourceError error) {
             debugPrint('''
               Page resource error:
                 code: ${error.errorCode}
@@ -106,25 +111,37 @@ class _SitumMapViewState extends State<SitumMapView> {
                 errorType: ${error.errorType}
                 isForMainFrame: ${error.isForMainFrame}
           ''');
-          },
-          onNavigationRequest: (NavigationRequest request) {
+          })
+          ..setOnNavigationRequest((NavigationRequest request) {
             if (request.url.startsWith(widget.situmMapUrl)) {
               return NavigationDecision.navigate;
             }
             return NavigationDecision.prevent;
-          },
-        ),
+          })
+          ..setOnUrlChange((UrlChange change) {
+            debugPrint('url change to ${change.url}');
+          }),
       )
-      ..addJavaScriptChannel(
-        WV_CHANNEL,
+      ..addJavaScriptChannel(JavaScriptChannelParams(
+        name: WV_CHANNEL,
         onMessageReceived: (JavaScriptMessage message) {
           Map<String, dynamic> map = jsonDecode(message.message);
           wyfController?.onMapViewerMessage(map["type"], map["payload"] ?? {});
         },
+      ))
+      ..setOnPlatformPermissionRequest(
+        (PlatformWebViewPermissionRequest request) {
+          debugPrint(
+            'requesting permissions for ${request.types.map((WebViewPermissionResourceType type) => type.name)}',
+          );
+          request.grant();
+        },
       )
-      ..loadRequest(Uri.parse(uri));
+      ..loadRequest(LoadRequestParams(
+        uri: Uri.parse(uri),
+      ));
 
-    if (controller.platform is AndroidWebViewController) {
+    if (controller is AndroidWebViewController) {
       AndroidWebViewController.enableDebugging(widget.enableDebugging);
     }
     webViewController = controller;
@@ -132,18 +149,12 @@ class _SitumMapViewState extends State<SitumMapView> {
 
   @override
   Widget build(BuildContext context) {
-    if (defaultTargetPlatform == TargetPlatform.android) {
-      return WebViewWidget.fromPlatformCreationParams(
-        params: AndroidWebViewWidgetCreationParams(
-          controller: webViewController.platform,
-          displayWithHybridComposition: true,
-        ),
-      );
-    }
-    return WebViewWidget(
-      controller: webViewController,
-      layoutDirection: widget.directionality,
-    );
+    return PlatformWebViewWidget(
+      PlatformWebViewWidgetCreationParams(
+        controller: webViewController,
+        layoutDirection: widget.directionality,
+      ),
+    ).build(context);
   }
 
   @override
