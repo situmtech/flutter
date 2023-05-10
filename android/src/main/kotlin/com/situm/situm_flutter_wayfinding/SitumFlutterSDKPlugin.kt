@@ -116,7 +116,6 @@ class SitumFlutterSDKPlugin : FlutterPlugin, ActivityAware, MethodChannel.Method
                 override fun onFailure(error: Error) {
                     result.notifySitumSdkError(error)
                 }
-
             })
     }
 
@@ -169,12 +168,7 @@ class SitumFlutterSDKPlugin : FlutterPlugin, ActivityAware, MethodChannel.Method
     }
 
     private fun removeUpdates(result: MethodChannel.Result?) {
-        SitumSdk.locationManager().let { manager ->
-            manager.removeUpdates()
-            locationListener?.let {
-                manager.removeLocationListener(it)
-            }
-        }
+        SitumSdk.locationManager().removeUpdates()
         result?.success("DONE")
     }
 
