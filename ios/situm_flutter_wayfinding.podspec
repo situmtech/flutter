@@ -15,7 +15,7 @@ Pod::Spec.new do |s|
   s.source           = { :path => '.' }
   s.source_files = 'Classes/**/*'
   s.dependency 'Flutter'
-  s.dependency 'SitumWayfinding', '~> 0.19.2'
+  s.dependency 'SitumWayfinding', '~> 0.19.3'
   s.platform = :ios, '9.0'
 
   # Flutter.framework does not contain a i386 slice.
