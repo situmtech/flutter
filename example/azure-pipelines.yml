@@ -1,0 +1,103 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger: 
+  - master
+pr: none
+
+
+variables:
+  - group: Passwords
+  - group: SoftwareVersions
+  - group: SharepointPaths
+
+parameters:
+  - name: XAPIEMAIL
+    type: string
+    displayName: X-API-EMAIL
+    default: user@email.com
+  - name: XAPIKEY
+    type: string
+    displayName: X-API-KEY
+    default: user-api-key
+  - name: BUILDINGID
+    type: string
+    default: "1"
+
+jobs:
+  - job: Android_app
+
+    pool:
+      vmImage: $(ubuntuVersion)
+
+    steps:
+    - ${{ if ne(variables['Build.Reason'],'manual') }}:
+      - bash: |
+           echo "##vso[task.setvariable variable=XAPIKEY]$(echo $(XAPIKEY_EXAMPLES))"
+           echo "##vso[task.setvariable variable=XAPIEMAIL]$(echo $(XAPIEMAIL_EXAMPLES))"
+           echo "##vso[task.setvariable variable=BUILDINGID]$(echo $(BUILDING_ID_EXAMPLES))"
+
+           echo -e "\n[!] I'm a shy step so I don't show any information. You'll see my work in the Configure Credentials step"
+        displayName: Configure Automatic run Vars
+
+    - ${{ if eq(variables['Build.Reason'],'manual') }}:
+      - bash: |
+           echo "##vso[task.setvariable variable=XAPIKEY]$(echo ${{parameters.XAPIKEY}})"
+           echo "##vso[task.setvariable variable=XAPIEMAIL]$(echo ${{ parameters.XAPIEMAIL}})"
+           echo "##vso[task.setvariable variable=BUILDINGID]$(echo ${{ parameters.BUILDINGID}})"
+
+           echo -e "\n[!] I'm a shy step so I don't show any information. You'll see my work in the Configure Credentials step"
+        displayName: Configure Manual run Vars
+
+    - template: azure/common-steps.yaml
+      parameters:
+        XAPIKEY: $(XAPIKEY)
+        XAPIEMAIL: $(XAPIEMAIL)
+        BUILDINGID: $(BUILDINGID)
+        system: "Android"
+
+    - template: azure/build-examples.yaml
+      parameters:
+        system: $(ubuntuVersion)
+        XAPIEMAIL: $(XAPIEMAIL)
+        BUILDINGID: $(BUILDINGID)
+
+
+  - job: iOS_app
+
+    pool:
+      vmImage: $(macOSVersion)
+
+    steps:
+    - ${{ if ne(variables['Build.Reason'],'manual') }}:
+      - bash: |
+           echo "##vso[task.setvariable variable=XAPIKEY]$(echo $(XAPIKEY_EXAMPLES))"
+           echo "##vso[task.setvariable variable=XAPIEMAIL]$(echo $(XAPIEMAIL_EXAMPLES))"
+           echo "##vso[task.setvariable variable=BUILDINGID]$(echo $(BUILDING_ID_EXAMPLES))"
+
+           echo -e "\n[!] I'm a shy step so I don't show any information. You'll see my work in the Configure Credentials step"
+        displayName: Configure Automatic run Vars
+
+    - ${{ if eq(variables['Build.Reason'],'manual') }}:
+      - bash: |
+           echo "##vso[task.setvariable variable=XAPIKEY]$(echo ${{parameters.XAPIKEY}})"
+           echo "##vso[task.setvariable variable=XAPIEMAIL]$(echo ${{ parameters.XAPIEMAIL}})"
+           echo "##vso[task.setvariable variable=BUILDINGID]$(echo ${{ parameters.BUILDINGID}})"
+
+           echo -e "\n[!] I'm a shy step so I don't show any information. You'll see my work in the Configure Credentials step"
+        displayName: Configure Manual run Vars
+
+    - template: azure/common-steps.yaml
+      parameters:
+        XAPIKEY: $(XAPIKEY)
+        XAPIEMAIL: $(XAPIEMAIL)
+        BUILDINGID: $(BUILDINGID)
+        system: "iOS"
+
+    - template: azure/build-examples.yaml
+      parameters:
+        system: $(macOSVersion)
+        XAPIEMAIL: $(XAPIEMAIL)
+        BUILDINGID: $(BUILDINGID)
