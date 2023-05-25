@@ -119,9 +119,7 @@ List<T> createList<T>(List maps, Function mapper) {
 
 Location createLocation(dynamic args) {
   //Temporal fix to typo in ios sdk. Has to be removed when corrected in ios SDK
-  var bearingDegreesClockwise = args["bearing"].containsKey("degreesClockwise") ? args["bearing"]["degreesClockwise"] :  args["bearing"]["degressClockwise"];
-  var cartesianBearingDegreesClockwise = args["cartesianBearing"].containsKey("degreesClockwise") ? args["cartesianBearing"]["degreesClockwise"] :  args["cartesianBearing"]["degressClockwise"];
-  
+  var hasCartesianBearing = args["hasCartesianBearing"] ?? args["hasBearing"];
   return Location(
     coordinate: Coordinate(
     latitude: args["coordinate"]["latitude"],
@@ -133,13 +131,13 @@ Location createLocation(dynamic args) {
     ),
     bearing: Bearing(
       degrees: args["bearing"]["degrees"],
-      degreesClockwise: bearingDegreesClockwise,
+      degreesClockwise: args["bearing"]["degreesClockwise"] ,
       radians: args["bearing"]["radians"],
       radiansMinusPiPi: args["bearing"]["radiansMinusPiPi"],
     ),
     cartesianBearing: Bearing(
       degrees: args["cartesianBearing"]["degrees"],
-      degreesClockwise: cartesianBearingDegreesClockwise,
+      degreesClockwise: args["cartesianBearing"]["degreesClockwise"],
       radians: args["cartesianBearing"]["radians"],
       radiansMinusPiPi: args["cartesianBearing"]["radiansMinusPiPi"],
     ),
@@ -147,9 +145,9 @@ Location createLocation(dynamic args) {
     buildingId: args["buildingIdentifier"],
     floorId: args["floorIdentifier"],
     hasBearing: args["hasBearing"],
-    hasCartesianBearing: args["hasCartesianBearing"],
+    hasCartesianBearing: hasCartesianBearing,
     isIndoor: args["isIndoor"],
-    timestamp: args["timestamp"],
+    timestamp: args["timestamp"].toInt(),
   );
 }
 

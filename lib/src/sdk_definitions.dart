@@ -23,7 +23,7 @@ class DirectionsOptions {
   final Point from;
   final Point to;
   final double? fromBearing;
-  final bool? minimizeFloorChanges;
+  bool? minimizeFloorChanges;
 
   DirectionsOptions({
     required this.from,
@@ -52,10 +52,10 @@ class DirectionsOptions {
 }
 
 class NavigationOptions {
-  final double outsideRouteThreshold;
-  final double distanceToGoalThreshold;
+  double outsideRouteThreshold;
+  double distanceToGoalThreshold;
 
-  const NavigationOptions({
+  NavigationOptions({
     this.outsideRouteThreshold = -1,
     this.distanceToGoalThreshold = -1,
   });
