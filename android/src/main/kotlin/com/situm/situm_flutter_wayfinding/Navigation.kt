@@ -34,7 +34,7 @@ class Navigation private constructor(
     }
 
     fun requestDirections(
-        buildingId: String,
+        buildingIdentifier: String,
         directionsOptionsArgs: Map<String, Any>,
         navigationOptionsArgs: Map<String, Any>?,
         result: MethodChannel.Result,
@@ -79,7 +79,7 @@ class Navigation private constructor(
                 result.notifySitumSdkError(error)
             }
         }
-        SitumSdk.communicationManager().fetchBuilding(buildingId, buildingHandler)
+        SitumSdk.communicationManager().fetchBuilding(buildingIdentifier, buildingHandler)
         // Add this class as location listener to keep navigationManager up to date:
         SitumSdk.locationManager().addLocationListener(this)
     }

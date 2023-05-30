@@ -52,12 +52,12 @@ class SitumFlutterWYF {
   // WYF internal utils:
 
   void _setRoute(
-    String originId,
-    String destinationId,
+    String originIdentifier,
+    String destinationIdentifier,
     SitumRoute situmRoute,
   ) async {
-    situmRoute.rawContent["originId"] = originId;
-    situmRoute.rawContent["destinationId"] = destinationId;
+    situmRoute.rawContent["originIdentifier"] = originIdentifier;
+    situmRoute.rawContent["destinationIdentifier"] = destinationIdentifier;
     _sendMessage(
         WV_MESSAGE_DIRECTIONS_UPDATE, jsonEncode(situmRoute.rawContent));
   }
@@ -71,12 +71,12 @@ class SitumFlutterWYF {
   }
 
   void _setNavigationRoute(
-    String originId,
-    String destinationId,
+    String originIdentifier,
+    String destinationIdentifier,
     SitumRoute situmRoute,
   ) async {
-    situmRoute.rawContent["originId"] = originId;
-    situmRoute.rawContent["destinationId"] = destinationId;
+    situmRoute.rawContent["originIdentifier"] = originIdentifier;
+    situmRoute.rawContent["destinationIdentifier"] = destinationIdentifier;
     _sendMessage(
         WV_MESSAGE_NAVIGATION_START, jsonEncode(situmRoute.rawContent));
   }

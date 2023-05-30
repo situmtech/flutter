@@ -19,7 +19,7 @@ class LocationRequest {
 /// Parameters to request a route.
 class DirectionsOptions {
   // buildingId populated in the constructor body.
-  late String buildingId;
+  late String buildingIdentifier;
   final Point from;
   final Point to;
   final double? fromBearing;
@@ -32,12 +32,12 @@ class DirectionsOptions {
     this.minimizeFloorChanges,
   }) {
     // This buildingId is useful on the native side.
-    buildingId = from.buildingId;
+    buildingIdentifier = from.buildingIdentifier;
   }
 
   Map<String, dynamic> toMap() {
     Map<String, dynamic> map = {
-      "buildingId": buildingId,
+      "buildingIdentifier": buildingIdentifier,
       "from": from.toMap(),
       "to": to.toMap(),
     };
@@ -73,8 +73,8 @@ class NavigationOptions {
 class Location {
   final Coordinate coordinate;
   final CartesianCoordinate cartesianCoordinate;
-  final String buildingId;
-  final String floorId;
+  final String buildingIdentifier;
+  final String floorIdentifier;
   final Bearing? bearing;
   final Bearing? cartesianBearing;
   final double accuracy;
@@ -86,8 +86,8 @@ class Location {
   Location({
     required this.coordinate,
     required this.cartesianCoordinate,
-    required this.buildingId,
-    required this.floorId,
+    required this.buildingIdentifier,
+    required this.floorIdentifier,
     required this.accuracy,
     required this.isIndoor,
     required this.hasBearing,
@@ -102,8 +102,8 @@ class Location {
         "longitude": coordinate.longitude,
         "accuracy": accuracy,
         "bearing": bearing?.degreesClockwise,
-        "buildingId": buildingId,
-        "floorId": floorId,
+        "buildingIdentifier": buildingIdentifier,
+        "floorIdentifier": floorIdentifier,
         "isIndoor": isIndoor,
         "isOutdoor": !isIndoor,
         "hasBearing": hasBearing,
@@ -127,16 +127,16 @@ class OnExitedGeofenceResult {
 }
 
 class NamedResource {
-  final String id;
+  final String identifier;
   final String name;
 
   const NamedResource({
-    required this.id,
+    required this.identifier,
     required this.name,
   });
 
   Map<String, dynamic> toMap() => {
-        "id": id,
+        "identifier": identifier,
         "name": name,
       };
 
@@ -233,7 +233,7 @@ class BuildingInfo extends NamedResource {
   final List<Event> events;
 
   BuildingInfo({
-    required super.id,
+    required super.identifier,
     required super.name,
     required this.building,
     required this.floors,
@@ -245,7 +245,7 @@ class BuildingInfo extends NamedResource {
 
   @override
   Map<String, dynamic> toMap() => {
-        "id": id,
+        "identifier": identifier,
         "name": name,
         "building": building.toMap(),
         "floors": floors.map((i) => i.toMap()).toList(),
@@ -258,7 +258,7 @@ class BuildingInfo extends NamedResource {
 
 /// Floor of a [Building].
 class Floor extends NamedResource {
-  final String buildingId;
+  final String buildingIdentifier;
   final int floorIndex;
   final String mapUrl;
   final double scale;
@@ -267,9 +267,9 @@ class Floor extends NamedResource {
   final Map<String, dynamic> customFields;
 
   Floor(
-      {required super.id,
+      {required super.identifier,
       required super.name,
-      required this.buildingId,
+      required this.buildingIdentifier,
       required this.floorIndex,
       required this.mapUrl,
       required this.scale,
@@ -279,7 +279,7 @@ class Floor extends NamedResource {
 
   @override
   Map<String, dynamic> toMap() => {
-        "buildingId": buildingId,
+        "buildingId": buildingIdentifier,
         "floorIndex": floorIndex,
         "mapUrl": mapUrl,
         "scale": scale,
@@ -306,7 +306,7 @@ class Building extends NamedResource {
   final String updatedAt;
 
   Building({
-    required super.id,
+    required super.identifier,
     required super.name,
     required this.address,
     required this.bounds,
@@ -325,7 +325,7 @@ class Building extends NamedResource {
 
   @override
   Map<String, dynamic> toMap() => {
-        "id": id,
+        "identifier": identifier,
         "name": name,
         "address": address,
         "bounds": bounds.toMap(),
@@ -363,7 +363,7 @@ class Event extends NamedResource {
   final CircleArea trigger;
 
   Event({
-    required super.id,
+    required super.identifier,
     required super.name,
     required this.customFields,
     required this.trigger,
@@ -371,7 +371,7 @@ class Event extends NamedResource {
 
   @override
   Map<String, dynamic> toMap() => {
-        "id": id,
+        "identifier": identifier,
         "name": name,
         "trigger": trigger.toMap(),
         "customFields": customFields,
@@ -389,7 +389,7 @@ class Geofence extends NamedResource {
   final String updatedAt;
 
   Geofence({
-    required super.id,
+    required super.identifier,
     required super.name,
     required this.buildingId,
     required this.floorId,
@@ -401,7 +401,7 @@ class Geofence extends NamedResource {
 
   @override
   Map<String, dynamic> toMap() => {
-        "id": id,
+        "identifier": identifier,
         "name": name,
         "buildingId": buildingId,
         "floorId": floorId,
@@ -415,15 +415,15 @@ class Geofence extends NamedResource {
 /// Point of Interest, associated to a [Building], regardless of whether it's
 /// place inside or outside the building.
 class Poi extends NamedResource {
-  final String buildingId;
+  final String buildingIdentifier;
   final PoiCategory poiCategory;
   final Point position;
   final Map<String, dynamic> customFields;
 
   Poi({
-    required super.id,
+    required super.identifier,
     required super.name,
-    required this.buildingId,
+    required this.buildingIdentifier,
     required this.poiCategory,
     required this.position,
     required this.customFields,
@@ -431,9 +431,9 @@ class Poi extends NamedResource {
 
   @override
   Map<String, dynamic> toMap() => {
-        "id": id,
+        "identifier": identifier,
         "name": name,
-        "buildingId": buildingId,
+        "buildingIdentifier": buildingIdentifier,
         "poiCategory": poiCategory.toMap(),
         "position": position.toMap(),
         "customFields": customFields,
@@ -443,16 +443,16 @@ class Poi extends NamedResource {
 /// Associate geographical coordinate ([Location]) with [Building] and [Floor]
 /// (Cartography) and cartesian coordinate relative to that building.
 class Point {
-  final String buildingId;
-  final String floorId;
+  final String buildingIdentifier;
+  final String floorIdentifier;
   final double latitude;
   final double longitude;
   final double x;
   final double y;
 
   Point({
-    required this.buildingId,
-    required this.floorId,
+    required this.buildingIdentifier,
+    required this.floorIdentifier,
     required this.latitude,
     required this.longitude,
     required this.x,
@@ -460,8 +460,8 @@ class Point {
   });
 
   Map<String, dynamic> toMap() => {
-        "buildingId": buildingId,
-        "floorId": floorId,
+        "buildingIdentifier": buildingIdentifier,
+        "floorIdentifier": floorIdentifier,
         "latitude": latitude,
         "longitude": longitude,
         "x": x,
@@ -472,7 +472,7 @@ class Point {
 /// Category of Point of Interest.
 class PoiCategory extends NamedResource {
   PoiCategory({
-    required super.id,
+    required super.identifier,
     required super.name,
   });
 }
