@@ -22,13 +22,13 @@ class DirectionsOptions {
   late String buildingIdentifier;
   final Point from;
   final Point to;
-  final double? fromBearing;
+  final double? bearingFrom;
   final bool? minimizeFloorChanges;
 
   DirectionsOptions({
     required this.from,
     required this.to,
-    this.fromBearing,
+    this.bearingFrom,
     this.minimizeFloorChanges,
   }) {
     // This buildingId is useful on the native side.
@@ -44,8 +44,8 @@ class DirectionsOptions {
     if (minimizeFloorChanges != null) {
       map['minimizeFloorChanges'] = minimizeFloorChanges;
     }
-    if (fromBearing != null) {
-      map['fromBearing'] = fromBearing;
+    if (bearingFrom != null) {
+      map['bearingFrom'] = bearingFrom;
     }
     return map;
   }

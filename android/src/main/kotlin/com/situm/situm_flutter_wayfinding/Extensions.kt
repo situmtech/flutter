@@ -53,7 +53,7 @@ fun DirectionsRequest.Builder.fromArguments(
     if (args.containsKey("from")) {
         @Suppress("UNCHECKED_CAST")
         val from = args["from"] as Map<String, Any>
-        val bearingFrom = "${args["fromBearing"] ?: 0}".toDouble()
+        val bearingFrom = "${args["bearingFrom"] ?: 0}".toDouble()
         from(pointFromArguments(building, from), Angle.fromDegrees(bearingFrom))
     }
     if (args.containsKey("to")) {

@@ -170,6 +170,6 @@ DirectionsOptions createDirectionsOptions(arguments) => DirectionsOptions(
         x: arguments["to"]["x"] ?? 0,
         y: arguments["to"]["y"] ?? 0,
       ),
-      fromBearing: arguments["fromBearing"],
+      bearingFrom: arguments["bearingFrom"],
       minimizeFloorChanges: arguments["minimizeFloorChanges"],
     );
