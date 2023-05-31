@@ -79,10 +79,14 @@ Point createPoint(Map map) {
   return Point(
     buildingIdentifier: map["buildingIdentifier"],
     floorIdentifier: map["floorIdentifier"],
-    latitude: map["coordinate"]["latitude"],
-    longitude: map["coordinate"]["longitude"],
-    x: map["cartesianCoordinate"]["x"],
-    y: map["cartesianCoordinate"]["y"],
+    coordinate: Coordinate(
+      latitude: map["coordinate"]["latitude"],
+      longitude: map["coordinate"]["longitude"],
+    ),
+    cartesianCoordinate: CartesianCoordinate(
+      x: map["cartesianCoordinate"]["x"],
+      y: map["cartesianCoordinate"]["y"],
+    ),
   );
 }
 
@@ -148,27 +152,33 @@ Location createLocation(dynamic args) => Location(
     );
 
 SitumRoute createRoute(arguments) {
-  return SitumRoute(
-      rawContent: arguments
-  );
+  return SitumRoute(rawContent: arguments);
 }
 
 DirectionsOptions createDirectionsOptions(arguments) => DirectionsOptions(
       from: Point(
         buildingIdentifier: arguments["from"]["buildingIdentifier"],
         floorIdentifier: arguments["from"]["floorIdentifier"], // Hmm
-        latitude: arguments["from"]["lat"],
-        longitude: arguments["from"]["lng"],
-        x: arguments["from"]["x"] ?? 0, // TODO: send x and y from WYF.
-        y: arguments["from"]["y"] ?? 0,
+        coordinate: Coordinate(
+          latitude: arguments["from"]["coordinate"]["latitude"],
+          longitude: arguments["from"]["coordinate"]["longitude"],
+        ),
+        cartesianCoordinate: CartesianCoordinate(
+          x: arguments["from"]["cartesianCoordinate"]["x"] ?? 0,
+          y: arguments["from"]["cartesianCoordinate"]["y"] ?? 0,
+        ),
       ),
       to: Point(
         buildingIdentifier: arguments["to"]["buildingIdentifier"],
         floorIdentifier: arguments["to"]["floorIdentifier"],
-        latitude: arguments["to"]["lat"],
-        longitude: arguments["to"]["lng"],
-        x: arguments["to"]["x"] ?? 0,
-        y: arguments["to"]["y"] ?? 0,
+        coordinate: Coordinate(
+          latitude: arguments["to"]["coordinate"]["latitude"],
+          longitude: arguments["to"]["coordinate"]["longitude"],
+        ),
+        cartesianCoordinate: CartesianCoordinate(
+          x: arguments["to"]["cartesianCoordinate"]["x"] ?? 0,
+          y: arguments["to"]["cartesianCoordinate"]["y"] ?? 0,
+        ),
       ),
       bearingFrom: arguments["bearingFrom"],
       minimizeFloorChanges: arguments["minimizeFloorChanges"],

@@ -405,7 +405,7 @@ class Geofence extends NamedResource {
         "name": name,
         "buildingId": buildingId,
         "floorId": floorId,
-        "polygonPoints": polygonPoints,
+        "polygonPoints": polygonPoints.map((i) => i.toMap()).toList(),
         "customFields": customFields,
         "createdAt": createdAt,
         "updatedAt": updatedAt,
@@ -445,27 +445,21 @@ class Poi extends NamedResource {
 class Point {
   final String buildingIdentifier;
   final String floorIdentifier;
-  final double latitude;
-  final double longitude;
-  final double x;
-  final double y;
+  final Coordinate coordinate;
+  final CartesianCoordinate cartesianCoordinate;
 
   Point({
     required this.buildingIdentifier,
     required this.floorIdentifier,
-    required this.latitude,
-    required this.longitude,
-    required this.x,
-    required this.y,
+    required this.coordinate,
+    required this.cartesianCoordinate,
   });
 
   Map<String, dynamic> toMap() => {
         "buildingIdentifier": buildingIdentifier,
         "floorIdentifier": floorIdentifier,
-        "latitude": latitude,
-        "longitude": longitude,
-        "x": x,
-        "y": y,
+        "coordinate": coordinate.toMap(),
+        "cartesianCoordinate": cartesianCoordinate.toMap(),
       };
 }
 

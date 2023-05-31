@@ -92,9 +92,8 @@ fun pointFromArguments(
     return Point(
         building,
         args["floorIdentifier"] as String,
-        // Dart Point class differs from native and does not have a Coordinate field; instead it
-        // has latitude and longitude objects directly so we pass the same args map.
-        coordinateFromArguments(args)
+        @Suppress("UNCHECKED_CAST")
+        coordinateFromArguments(args["coordinate"] as Map<String, Any>)
     )
 }
 
