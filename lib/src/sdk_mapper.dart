@@ -164,8 +164,8 @@ DirectionsOptions createDirectionsOptions(arguments) => DirectionsOptions(
           longitude: arguments["from"]["coordinate"]["longitude"],
         ),
         cartesianCoordinate: CartesianCoordinate(
-          x: arguments["from"]["cartesianCoordinate"]["x"] ?? 0,
-          y: arguments["from"]["cartesianCoordinate"]["y"] ?? 0,
+          x: (arguments["from"]["cartesianCoordinate"]["x"] ?? 0).toDouble(),
+          y: (arguments["from"]["cartesianCoordinate"]["y"] ?? 0).toDouble(),
         ),
       ),
       to: Point(
@@ -176,8 +176,8 @@ DirectionsOptions createDirectionsOptions(arguments) => DirectionsOptions(
           longitude: arguments["to"]["coordinate"]["longitude"],
         ),
         cartesianCoordinate: CartesianCoordinate(
-          x: arguments["to"]["cartesianCoordinate"]["x"] ?? 0,
-          y: arguments["to"]["cartesianCoordinate"]["y"] ?? 0,
+          x: (arguments["to"]["cartesianCoordinate"]["x"] ?? 0).toDouble(),
+          y: (arguments["to"]["cartesianCoordinate"]["y"] ?? 0).toDouble(),
         ),
       ),
       bearingFrom: arguments["bearingFrom"],
