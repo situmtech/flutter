@@ -259,7 +259,7 @@ const NSString* RESULTS_KEY = @"results";
     SITDirectionsRequest *directionsRequest = [SITDirectionsRequest fromDictionary:call.arguments[@"directionsOptions"]];
     SITNavigationRequest *navigationRequest = [SITNavigationRequest fromDictionary:call.arguments[@"navigationOptionsArgs"]];
     [SITNavigationManager.sharedManager requestNavigationUpdates:navigationRequest directionsRequest:directionsRequest completion:^(SITRoute * _Nullable route, NSError * _Nullable error) {
-        if (error){
+        if (error || route.routeSteps.count == 0){
             FlutterError *fError = [self creteFlutterErrorCalculatingRoute];
             result(fError);
             return;
@@ -272,7 +272,7 @@ const NSString* RESULTS_KEY = @"results";
                    result:(FlutterResult)result{
     SITDirectionsRequest *directionsRequest = [SITDirectionsRequest fromDictionary:call.arguments];
     [SITDirectionsManager.sharedInstance requestDirections:directionsRequest completion:^(SITRoute * _Nullable route, NSError * _Nullable error) {
-        if (error){
+        if (error || route.routeSteps.count == 0){
             FlutterError *fError = [self creteFlutterErrorCalculatingRoute];
             result(fError);
             return;
