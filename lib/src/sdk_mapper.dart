@@ -180,6 +180,8 @@ DirectionsOptions createDirectionsOptions(arguments) => DirectionsOptions(
           y: (arguments["to"]["cartesianCoordinate"]["y"] ?? 0).toDouble(),
         ),
       ),
-      bearingFrom: arguments["bearingFrom"],
+      bearingFrom: Angle(
+          radians: arguments["bearingFrom"]["radians"]
+      ),
       minimizeFloorChanges: arguments["minimizeFloorChanges"],
     );

@@ -45,13 +45,10 @@ class Navigation private constructor(
             override fun onSuccess(route: Route) {
                 if (navigationOptionsArgs != null) {
                     // If requested, start navigation:
-                    val navigationRequest = NavigationRequest.Builder().fromArguments(
-                        navigationOptionsArgs
-                    )
-                    // Set the calculated route and request navigation updates:
-                    navigationRequest.route(route)
+                    val navigationRequest = NavigationRequest.fromMap(navigationOptionsArgs)
+                    navigationRequest.route = route
                     SitumSdk.navigationManager().requestNavigationUpdates(
-                        navigationRequest.build(), this@Navigation
+                        navigationRequest, this@Navigation
                     )
                 }
                 // Both requestDirections and requestNavigation methods will return the calculated
@@ -67,11 +64,7 @@ class Navigation private constructor(
         // indoor points so we start calling fetchBuilding().
         val buildingHandler = object : Handler<Building> {
             override fun onSuccess(building: Building) {
-                val directionsRequest = DirectionsRequest.Builder().fromArguments(
-                    building,
-                    directionsOptionsArgs
-                ).build()
-                // Calculate directions:
+                val directionsRequest = DirectionsRequest.fromMap(directionsOptionsArgs)
                 SitumSdk.directionsManager().requestDirections(directionsRequest, directionsHandler)
             }
 

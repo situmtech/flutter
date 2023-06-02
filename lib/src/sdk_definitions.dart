@@ -22,7 +22,7 @@ class DirectionsOptions {
   late String buildingIdentifier;
   final Point from;
   final Point to;
-  final double? bearingFrom;
+  final Angle? bearingFrom;
   final bool? minimizeFloorChanges;
 
   DirectionsOptions({
@@ -45,7 +45,7 @@ class DirectionsOptions {
       map['minimizeFloorChanges'] = minimizeFloorChanges;
     }
     if (bearingFrom != null) {
-      map['bearingFrom'] = bearingFrom;
+      map['bearingFrom'] = bearingFrom?.toMap();
     }
     return map;
   }
@@ -56,8 +56,9 @@ class NavigationOptions {
   final double distanceToGoalThreshold;
 
   const NavigationOptions({
-    this.outsideRouteThreshold = -1,
-    this.distanceToGoalThreshold = -1,
+    // SDK#DEFAULT_DISTANCE_THRESHOLD = 15
+    this.outsideRouteThreshold = 15,
+    this.distanceToGoalThreshold = 15,
   });
 
   Map<String, dynamic> toMap() {
@@ -107,6 +108,8 @@ class Location {
         "isIndoor": isIndoor,
         "isOutdoor": !isIndoor,
         "hasBearing": hasBearing,
+        "x": cartesianCoordinate.x,
+        "y": cartesianCoordinate.y,
       };
 }
 
@@ -176,6 +179,19 @@ class CartesianCoordinate {
         "x": x,
         "y": y,
       };
+}
+
+/// An structure that contains an angle in radians.
+class Angle {
+  final double radians;
+
+  Angle({
+    required this.radians,
+  });
+
+  Map<String, dynamic> toMap() => {
+    "radians": radians,
+  };
 }
 
 /// Represents a rectangle bounds in a greographic 2D space.
