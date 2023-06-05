@@ -56,16 +56,19 @@ class NavigationOptions {
   final double distanceToGoalThreshold;
 
   const NavigationOptions({
-    // SDK#DEFAULT_DISTANCE_THRESHOLD = 15
-    this.outsideRouteThreshold = 15,
-    this.distanceToGoalThreshold = 15,
+    this.outsideRouteThreshold = -1,
+    this.distanceToGoalThreshold = -1,
   });
 
   Map<String, dynamic> toMap() {
-    return {
-      "outsideRouteThreshold": outsideRouteThreshold,
-      "distanceToGoalThreshold": distanceToGoalThreshold
-    };
+    Map<String, dynamic> map = {};
+    if (outsideRouteThreshold > 0) {
+      map['outsideRouteThreshold'] = outsideRouteThreshold;
+    }
+    if (distanceToGoalThreshold > 0) {
+      map['distanceToGoalThreshold'] = distanceToGoalThreshold;
+    }
+    return map;
   }
 }
 
