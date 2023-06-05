@@ -76,7 +76,7 @@ const NSString* RESULTS_KEY = @"results";
     } else if ([@"requestDirections" isEqualToString:call.method]) {
         [self requestDirections:call
                          result:result];
-    }else if ([@"stopNavigation" isEqualToString:call.method]){
+    } else if ([@"stopNavigation" isEqualToString:call.method]){
         [self stopNavigation:call
                       result:result];
     }
