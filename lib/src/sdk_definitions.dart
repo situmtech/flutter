@@ -105,7 +105,7 @@ class Location {
         "latitude": coordinate.latitude,
         "longitude": coordinate.longitude,
         "accuracy": accuracy,
-        "bearing": bearing?.degreesClockwise,
+        "bearing": bearing?.radians,
         "buildingIdentifier": buildingIdentifier,
         "floorIdentifier": floorIdentifier,
         "isIndoor": isIndoor,
