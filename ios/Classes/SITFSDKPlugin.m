@@ -75,10 +75,10 @@ const NSString* RESULTS_KEY = @"results";
                          result:result];
     } else if ([@"requestDirections" isEqualToString:call.method]) {
         [self requestDirections:call
-                                   result:result];
+                         result:result];
     }else if ([@"stopNavigation" isEqualToString:call.method]){
         [self stopNavigation:call
-                                   result:result];
+                      result:result];
     }
     else {
         result(FlutterMethodNotImplemented);

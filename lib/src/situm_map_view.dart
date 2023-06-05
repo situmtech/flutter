@@ -81,7 +81,7 @@ class _SitumMapViewState extends State<SitumMapView> {
 
     controller
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
-      ..setBackgroundColor(const Color(0x80000000))
+      ..setBackgroundColor(const Color(0x00000000))
       ..setPlatformNavigationDelegate(
         PlatformNavigationDelegate(
           const PlatformNavigationDelegateCreationParams(),
