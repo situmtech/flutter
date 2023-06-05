@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'situm_flutter_wayfinding'
-  s.version          = '0.0.15'
+  s.version          = '0.0.16'
   s.summary          = 'Situm Flutter plugin.'
   s.description      = <<-DESC
   Situm Flutter plugin.
@@ -15,7 +15,7 @@ Pod::Spec.new do |s|
   s.source           = { :path => '.' }
   s.source_files = 'Classes/**/*'
   s.dependency 'Flutter'
-  s.dependency 'SitumWayfinding', '~> 0.19.3'
+  s.dependency 'SitumWayfinding', '~> 0.19.4'
   s.platform = :ios, '9.0'
 
   # Flutter.framework does not contain a i386 slice.
