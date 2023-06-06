@@ -159,16 +159,16 @@ DirectionsOptions createDirectionsOptions(arguments) => DirectionsOptions(
         floorId: arguments["from"]["floorId"], // Hmm
         latitude: arguments["from"]["lat"],
         longitude: arguments["from"]["lng"],
-        x: arguments["from"]["x"] ?? 0, // TODO: send x and y from WYF.
-        y: arguments["from"]["y"] ?? 0,
+        x: (arguments["from"]["x"] ?? 0).toDouble(), // TODO: send x and y from WYF.
+        y: (arguments["from"]["y"] ?? 0).toDouble(),
       ),
       to: Point(
         buildingId: arguments["to"]["buildingId"],
         floorId: arguments["to"]["floorId"],
         latitude: arguments["to"]["lat"],
         longitude: arguments["to"]["lng"],
-        x: arguments["to"]["x"] ?? 0,
-        y: arguments["to"]["y"] ?? 0,
+        x: (arguments["to"]["x"] ?? 0).toDouble(),
+        y: (arguments["to"]["y"] ?? 0).toDouble(),
       ),
       fromBearing: arguments["fromBearing"],
       minimizeFloorChanges: arguments["minimizeFloorChanges"],
