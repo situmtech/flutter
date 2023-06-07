@@ -181,7 +181,7 @@ DirectionsOptions createDirectionsOptions(arguments) => DirectionsOptions(
         ),
       ),
       bearingFrom: Angle(
-          radians: arguments["bearingFrom"]["radians"]
+          radians: (arguments["bearingFrom"] != null ? arguments["bearingFrom"]["radians"] : 0).toDouble(),
       ),
       minimizeFloorChanges: arguments["minimizeFloorChanges"],
     );

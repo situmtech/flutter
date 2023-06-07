@@ -102,17 +102,23 @@ class Location {
   });
 
   Map<String, dynamic> toMap() => {
-        "latitude": coordinate.latitude,
-        "longitude": coordinate.longitude,
-        "accuracy": accuracy,
-        "bearing": bearing?.radians,
-        "buildingIdentifier": buildingIdentifier,
-        "floorIdentifier": floorIdentifier,
-        "isIndoor": isIndoor,
-        "isOutdoor": !isIndoor,
-        "hasBearing": hasBearing,
-        "x": cartesianCoordinate.x,
-        "y": cartesianCoordinate.y,
+        'coordinate': {
+          'latitude': coordinate.latitude,
+          'longitude': coordinate.longitude,
+        },
+        'cartesianCoordinate': {
+          'x': cartesianCoordinate.x,
+          'y': cartesianCoordinate.y,
+        },
+        'buildingIdentifier': buildingIdentifier,
+        'floorIdentifier': floorIdentifier,
+        'bearing': bearing?.toMap(),
+        'cartesianBearing': cartesianBearing?.toMap(),
+        'accuracy': accuracy,
+        'isIndoor': isIndoor,
+        'hasBearing': hasBearing,
+        'hasCartesianBearing': hasCartesianBearing,
+        'timestamp': timestamp,
       };
 }
 
