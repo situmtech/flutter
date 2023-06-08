@@ -122,7 +122,7 @@ class PoiSelectedMessageHandler implements MessageHandler {
   @override
   void handleMessage(
       SitumFlutterWYF situmFlutterWYF, Map<String, dynamic> payload) async {
-    var poiId = "${payload["id"]}";
+    var poiId = "${payload["identifier"]}";
     if (situmFlutterWYF._onPoiSelectedCallback != null) {
       var poi = await situmFlutterWYF._fetchPoiFromCurrentBuilding(poiId);
       if (poi != null) {
