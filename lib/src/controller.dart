@@ -85,7 +85,7 @@ class SitumFlutterWYF {
     _sendMessage(
         WV_MESSAGE_NAVIGATION_UPDATE,
         jsonEncode({
-          "type": "out_of_route",
+          "type": "OUT_OF_ROUTE",
         }));
   }
 
@@ -93,7 +93,7 @@ class SitumFlutterWYF {
     _sendMessage(
         WV_MESSAGE_NAVIGATION_UPDATE,
         jsonEncode({
-          "type": "destination_reached",
+          "type": "DESTINATION_REACHED",
         }));
   }
 
