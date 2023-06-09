@@ -22,8 +22,8 @@ class DirectionsOptions {
   late String buildingIdentifier;
   final Point from;
   final Point to;
-  final Angle? bearingFrom;
-  final bool? minimizeFloorChanges;
+  Angle? bearingFrom;
+  bool? minimizeFloorChanges;
 
   DirectionsOptions({
     required this.from,
@@ -52,10 +52,10 @@ class DirectionsOptions {
 }
 
 class NavigationOptions {
-  final double outsideRouteThreshold;
-  final double distanceToGoalThreshold;
+  double outsideRouteThreshold;
+  double distanceToGoalThreshold;
 
-  const NavigationOptions({
+  NavigationOptions({
     this.outsideRouteThreshold = -1,
     this.distanceToGoalThreshold = -1,
   });

@@ -72,7 +72,7 @@ class NavigationMessageHandler implements MessageHandler {
     var directionsMessage = createDirectionsMessage(payload);
     var directionsOptions = directionsMessage.directionsOptions;
     situmFlutterWYF._onDirectionsRequested(directionsOptions);
-    var navigationOptions = const NavigationOptions();
+    var navigationOptions = NavigationOptions();
     situmFlutterWYF._onNavigationRequested(navigationOptions);
     // TODO: this will overwrite any previously established callbacks!!!
     // Option 1: add private callbacks in SitumFlutterSDK. SDK and WYF libraries
