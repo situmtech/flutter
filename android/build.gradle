@@ -49,7 +49,7 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.4.1'
     // TODO change on release.
-    implementation ('es.situm:situm-sdk-feature-PRO-2795-from-map:2.86.3-DEV@aar') {
+    implementation ('es.situm:situm-sdk:2.87.0@aar') {
         transitive = true
     }
 }
