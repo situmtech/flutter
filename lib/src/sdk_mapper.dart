@@ -75,20 +75,18 @@ PoiCategory createCategory(Map map) {
   );
 }
 
-Point createPoint(Map map) {
-  return Point(
-    buildingIdentifier: map["buildingIdentifier"],
-    floorIdentifier: map["floorIdentifier"],
-    coordinate: Coordinate(
-      latitude: map["coordinate"]["latitude"],
-      longitude: map["coordinate"]["longitude"],
-    ),
-    cartesianCoordinate: CartesianCoordinate(
-      x: map["cartesianCoordinate"]["x"],
-      y: map["cartesianCoordinate"]["y"],
-    ),
-  );
-}
+Point createPoint(arguments) => Point(
+  buildingIdentifier: arguments["buildingIdentifier"],
+  floorIdentifier: arguments["floorIdentifier"], // Hmm
+  coordinate: Coordinate(
+    latitude: arguments["coordinate"]["latitude"],
+    longitude: arguments["coordinate"]["longitude"],
+  ),
+  cartesianCoordinate: CartesianCoordinate(
+    x: (arguments["cartesianCoordinate"]["x"] ?? 0).toDouble(),
+    y: (arguments["cartesianCoordinate"]["y"] ?? 0).toDouble(),
+  ),
+);
 
 Geofence createGeofence(Map map) {
   return Geofence(
@@ -156,30 +154,8 @@ SitumRoute createRoute(arguments) {
 }
 
 DirectionsOptions createDirectionsOptions(arguments) => DirectionsOptions(
-      from: Point(
-        buildingIdentifier: arguments["from"]["buildingIdentifier"],
-        floorIdentifier: arguments["from"]["floorIdentifier"], // Hmm
-        coordinate: Coordinate(
-          latitude: arguments["from"]["coordinate"]["latitude"],
-          longitude: arguments["from"]["coordinate"]["longitude"],
-        ),
-        cartesianCoordinate: CartesianCoordinate(
-          x: (arguments["from"]["cartesianCoordinate"]["x"] ?? 0).toDouble(),
-          y: (arguments["from"]["cartesianCoordinate"]["y"] ?? 0).toDouble(),
-        ),
-      ),
-      to: Point(
-        buildingIdentifier: arguments["to"]["buildingIdentifier"],
-        floorIdentifier: arguments["to"]["floorIdentifier"],
-        coordinate: Coordinate(
-          latitude: arguments["to"]["coordinate"]["latitude"],
-          longitude: arguments["to"]["coordinate"]["longitude"],
-        ),
-        cartesianCoordinate: CartesianCoordinate(
-          x: (arguments["to"]["cartesianCoordinate"]["x"] ?? 0).toDouble(),
-          y: (arguments["to"]["cartesianCoordinate"]["y"] ?? 0).toDouble(),
-        ),
-      ),
+      from: createPoint(arguments["from"]),
+      to: createPoint(arguments["to"]),
       bearingFrom: Angle(
           radians: (arguments["bearingFrom"] != null ? arguments["bearingFrom"]["radians"] : 0).toDouble(),
       ),

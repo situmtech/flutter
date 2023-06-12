@@ -16,20 +16,34 @@ class LocationRequest {
       };
 }
 
+/// Available accessibility modes used in the [DirectionsOptions].
+enum AccessibilityMode {
+  /// The route should choose the best route, without taking into account if it is accessible or not.
+  /// This option is the default so you don't have to do anything in order to use it.
+  CHOOSE_SHORTEST,
+  /// The route should always use accessible nodes.
+  ONLY_ACCESSIBLE,
+  /// The route should never use accessible floor changes (use this to force routes not to use lifts).
+  ONLY_NOT_ACCESSIBLE_FLOOR_CHANGES,
+}
+
 /// Parameters to request a route.
 class DirectionsOptions {
-  // buildingId populated in the constructor body.
-  late String buildingIdentifier;
   final Point from;
   final Point to;
   Angle? bearingFrom;
   bool? minimizeFloorChanges;
+  AccessibilityMode? accessibilityMode;
+
+  // buildingId populated in the constructor body.
+  late String buildingIdentifier;
 
   DirectionsOptions({
     required this.from,
     required this.to,
     this.bearingFrom,
     this.minimizeFloorChanges,
+    this.accessibilityMode,
   }) {
     // This buildingId is useful on the native side.
     buildingIdentifier = from.buildingIdentifier;
@@ -47,26 +61,69 @@ class DirectionsOptions {
     if (bearingFrom != null) {
       map['bearingFrom'] = bearingFrom?.toMap();
     }
+    if (accessibilityMode != null) {
+      map['accessibilityMode'] = accessibilityMode.toString();
+    }
     return map;
   }
 }
 
 class NavigationOptions {
-  double outsideRouteThreshold;
-  double distanceToGoalThreshold;
+  double? distanceToGoalThreshold;
+  double? outsideRouteThreshold;
+  double? distanceToIgnoreFirstIndication;
+  double? distanceToChangeFloorThreshold;
+  double? distanceToChangeIndicationThreshold;
+  int? indicationsInterval;
+  int? timeToFirstIndication;
+  int? roundIndicationsStep;
+  int? timeToIgnoreUnexpectedFloorChanges;
+  bool? ignoreLowQualityLocations;
 
   NavigationOptions({
-    this.outsideRouteThreshold = -1,
-    this.distanceToGoalThreshold = -1,
+    this.distanceToGoalThreshold,
+    this.outsideRouteThreshold,
+    this.distanceToIgnoreFirstIndication,
+    this.distanceToChangeFloorThreshold,
+    this.distanceToChangeIndicationThreshold,
+    this.indicationsInterval,
+    this.timeToFirstIndication,
+    this.roundIndicationsStep,
+    this.timeToIgnoreUnexpectedFloorChanges,
+    this.ignoreLowQualityLocations,
   });
 
   Map<String, dynamic> toMap() {
     Map<String, dynamic> map = {};
-    if (outsideRouteThreshold > 0) {
-      map['outsideRouteThreshold'] = outsideRouteThreshold;
+    if (distanceToGoalThreshold != null) {
+      map['distanceToGoalThreshold'] = distanceToGoalThreshold!;
     }
-    if (distanceToGoalThreshold > 0) {
-      map['distanceToGoalThreshold'] = distanceToGoalThreshold;
+    if (outsideRouteThreshold != null) {
+      map['outsideRouteThreshold'] = outsideRouteThreshold!;
+    }
+    if (distanceToIgnoreFirstIndication != null) {
+      map['distanceToIgnoreFirstIndication'] = distanceToIgnoreFirstIndication!;
+    }
+    if (distanceToChangeFloorThreshold != null) {
+      map['distanceToChangeFloorThreshold'] = distanceToChangeFloorThreshold!;
+    }
+    if (distanceToChangeIndicationThreshold != null) {
+      map['distanceToChangeIndicationThreshold'] = distanceToChangeIndicationThreshold!;
+    }
+    if (indicationsInterval != null) {
+      map['indicationsInterval'] = indicationsInterval!;
+    }
+    if (timeToFirstIndication != null) {
+      map['timeToFirstIndication'] = timeToFirstIndication!;
+    }
+    if (roundIndicationsStep != null) {
+      map['roundIndicationsStep'] = roundIndicationsStep!;
+    }
+    if (timeToIgnoreUnexpectedFloorChanges != null) {
+      map['timeToIgnoreUnexpectedFloorChanges'] = timeToIgnoreUnexpectedFloorChanges!;
+    }
+    if (ignoreLowQualityLocations != null) {
+      map['ignoreLowQualityLocations'] = ignoreLowQualityLocations!;
     }
     return map;
   }

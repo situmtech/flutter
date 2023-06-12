@@ -77,10 +77,9 @@ class SitumFlutterSDK {
     _onErrorCallback = callback;
   }
 
-  /// Request directions between two [Point]s, using the given
+  /// Request directions between two [Point]s using the given
   /// [DirectionsOptions].
-  Future<SitumRoute> requestDirections(
-      DirectionsOptions directionsOptions) async {
+  Future<SitumRoute> requestDirections(DirectionsOptions directionsOptions) async {
     Map response = await methodChannel.invokeMethod(
         'requestDirections', directionsOptions.toMap());
     return createRoute(response);
@@ -88,7 +87,8 @@ class SitumFlutterSDK {
 
   /// Request navigation between two [Point]s, using the given
   /// [DirectionsOptions] and [NavigationOptions].
-  Future<SitumRoute> requestNavigation(DirectionsOptions directionsOptions,
+  Future<SitumRoute> requestNavigation(
+      DirectionsOptions directionsOptions,
       NavigationOptions navigationOptions) async {
     Map response = await methodChannel.invokeMethod('requestNavigation', {
       // For convenience on the native side, set the buildingId here:
@@ -148,8 +148,8 @@ class SitumFlutterSDK {
   /// includes [Floor]s, indoor and outdoor [Poi]s, events and paths. It also
   /// download floor maps and [PoiCategory] icons to local storage.
   Future<BuildingInfo> fetchBuildingInfo(String buildingIdentifier) async {
-    Map response = await methodChannel
-        .invokeMethod("fetchBuildingInfo", {"buildingIdentifier": buildingIdentifier});
+    Map response = await methodChannel.invokeMethod(
+        "fetchBuildingInfo", {"buildingIdentifier": buildingIdentifier});
     return createBuildingInfo(response);
   }
 
@@ -179,11 +179,12 @@ class SitumFlutterSDK {
     return createList<Poi>(response, createPoi);
   }
 
-  Future<Poi?> fetchPoiFromBuilding(String buildingIdentifier, String poiIdentifier) async {
+  Future<Poi?> fetchPoiFromBuilding(
+      String buildingIdentifier, String poiIdentifier) async {
     List<Poi> buildingPois = await fetchPoisFromBuilding(buildingIdentifier);
-    return buildingPois
-        .cast<Poi?>()
-        .firstWhere((poi) => poi?.identifier == poiIdentifier, orElse: () => null);
+    return buildingPois.cast<Poi?>().firstWhere(
+        (poi) => poi?.identifier == poiIdentifier,
+        orElse: () => null);
   }
 
   Future<List<PoiCategory>> fetchPoiCategories() async {
