@@ -2,38 +2,28 @@ part of situm_flutter_wayfinding;
 
 // The Widget!
 class SitumMapView extends StatefulWidget {
-  final String situmUser;
-  final String situmApiKey;
-  final String buildingIdentifier;
+  final String? situmUser;
+  final String? situmApiKey;
+  final String? buildingIdentifier;
+  final String? configurationIdentifier;
   final String situmMapUrl;
   final TextDirection directionality;
-  final String searchViewPlaceholder;
-  final bool useDashboardTheme;
-  final bool showPoiNames;
-  final bool hasSearchView;
-  final bool enablePoiClustering;
   final bool enableDebugging;
-  final bool showNavigationIndications;
 
   final SitumMapViewCallback loadCallback;
   final SitumMapViewCallback? didUpdateCallback;
 
   const SitumMapView({
     required Key key,
-    required this.situmUser,
-    required this.situmApiKey,
-    required this.buildingIdentifier,
     required this.loadCallback,
+    this.situmUser,
+    this.situmApiKey,
+    this.buildingIdentifier,
     this.situmMapUrl = "https://map-viewer.situm.com",
+    this.configurationIdentifier,
     this.didUpdateCallback,
     this.directionality = TextDirection.ltr,
-    this.searchViewPlaceholder = "Situm Flutter Wayfinding",
-    this.useDashboardTheme = true,
-    this.hasSearchView = true,
-    this.showPoiNames = true,
-    this.enablePoiClustering = true,
     this.enableDebugging = false,
-    this.showNavigationIndications = false,
   }) : super(key: key);
 
   @override
@@ -45,25 +35,16 @@ class _SitumMapViewState extends State<SitumMapView> {
   late final WebViewController webViewController;
 
   String _createUri() {
-    String uri =
-        "${widget.situmMapUrl}/?email=${widget.situmUser}&apikey=${widget.situmApiKey}&buildingid=${widget.buildingIdentifier}&mode=embed";
-    List<String> elementsToHide = [];
-    if (!widget.hasSearchView) {
-      elementsToHide.add("ec");
+    if (widget.configurationIdentifier != null) {
+      return "${widget.situmMapUrl}/id/${widget.configurationIdentifier}?mode=embed";
     }
-    if (!widget.showPoiNames) {
-      elementsToHide.add("pn");
+    if (widget.buildingIdentifier == null ||
+        widget.situmUser == null ||
+        widget.situmApiKey == null) {
+      throw ArgumentError(
+          'Missing configuration: (situmMapId) or (buildingIdentifier, situmUser, situmApiKey) must be provided.');
     }
-    if (!widget.enablePoiClustering) {
-      elementsToHide.add("pcl");
-    }
-    if (widget.showNavigationIndications) {
-      elementsToHide.add("ni");
-    }
-    if (elementsToHide.isNotEmpty) {
-      uri = "$uri&hide=${elementsToHide.join(',')}";
-    }
-    return uri;
+    return "${widget.situmMapUrl}/?email=${widget.situmUser}&apikey=${widget.situmApiKey}&buildingid=${widget.buildingIdentifier}&mode=embed";
   }
 
   @override

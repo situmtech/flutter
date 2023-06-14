@@ -90,20 +90,18 @@ class _MyTabsState extends State<MyTabs> {
     return Stack(children: [
       SitumMapView(
         key: const Key("situm_map"),
+        // Your Situm config id. This will have priority over the credentials.
+        configurationIdentifier: "situm-dev-abm",
         // Your Situm credentials and building, see config.dart.
         // Copy config.dart.example if you haven't already.
-        searchViewPlaceholder: "Situm Flutter Wayfinding",
         situmUser: situmUser,
         situmApiKey: situmApiKey,
         buildingIdentifier: buildingIdentifier,
         // Config:
-        situmMapUrl: "https://map-viewer-des.situm.com",
-        //situmMapUrl: "http://192.168.1.139:5173",
-        showPoiNames: true,
-        hasSearchView: true,
-        showNavigationIndications: true,
-        enableDebugging: true,
+        // situmMapUrl: "https://map-viewer-des.situm.com",
+        situmMapUrl: "http://192.168.1.139:5173",
         loadCallback: _onWYFLoaded,
+        enableDebugging: true,
       ),
     ]);
   }
@@ -112,6 +110,19 @@ class _MyTabsState extends State<MyTabs> {
     situmFlutterWYF = controller;
     controller.onPoiSelected((poiSelectedResult) {
       debugPrint("WYF> onPoiSelected: ${poiSelectedResult.poi.name}");
+    });
+    controller.onNavigationOptionsInterceptor((navigationOptions) {
+      debugPrint("WYF> ${navigationOptions.toMap()}");
+    //   navigationOptions.ignoreLowQualityLocations = false;
+    //   navigationOptions.distanceToGoalThreshold = 10.0;
+    //   navigationOptions.outsideRouteThreshold = 20.0;
+    //   navigationOptions.distanceToIgnoreFirstIndication = 5.0;
+    //   navigationOptions.distanceToChangeFloorThreshold = 15.0;
+    //   navigationOptions.distanceToChangeIndicationThreshold = 12.0;
+    //   navigationOptions.indicationsInterval = 5000;
+    //   navigationOptions.timeToFirstIndication = 3000;
+    //   navigationOptions.roundIndicationsStep = 100;
+    //   navigationOptions.timeToIgnoreUnexpectedFloorChanges = 2000;
     });
   }
 
