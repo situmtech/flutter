@@ -13,7 +13,17 @@ BuildingInfo createBuildingInfo(Map map) {
 }
 
 Coordinate createCoordinate(Map map) {
-  return Coordinate(latitude: map["latitude"], longitude: map["longitude"]);
+  return Coordinate(
+    latitude: (map["latitude"] ?? 0).toDouble(),
+    longitude: (map["longitude"] ?? 0).toDouble(),
+  );
+}
+
+CartesianCoordinate createCartesianCoordinate(Map map) {
+  return CartesianCoordinate(
+    x: (map["x"] ?? 0).toDouble(),
+    y: (map["y"] ?? 0).toDouble(),
+  );
 }
 
 Bounds createBounds(Map map) {
@@ -76,17 +86,12 @@ PoiCategory createCategory(Map map) {
 }
 
 Point createPoint(arguments) => Point(
-  buildingIdentifier: arguments["buildingIdentifier"],
-  floorIdentifier: arguments["floorIdentifier"], // Hmm
-  coordinate: Coordinate(
-    latitude: arguments["coordinate"]["latitude"],
-    longitude: arguments["coordinate"]["longitude"],
-  ),
-  cartesianCoordinate: CartesianCoordinate(
-    x: (arguments["cartesianCoordinate"]["x"] ?? 0).toDouble(),
-    y: (arguments["cartesianCoordinate"]["y"] ?? 0).toDouble(),
-  ),
-);
+      buildingIdentifier: arguments["buildingIdentifier"],
+      floorIdentifier: arguments["floorIdentifier"], // Hmm
+      coordinate: createCoordinate(arguments["coordinate"]),
+      cartesianCoordinate:
+          createCartesianCoordinate(arguments["cartesianCoordinate"]),
+    );
 
 Geofence createGeofence(Map map) {
   return Geofence(
@@ -157,7 +162,27 @@ DirectionsOptions createDirectionsOptions(arguments) => DirectionsOptions(
       from: createPoint(arguments["from"]),
       to: createPoint(arguments["to"]),
       bearingFrom: Angle(
-          radians: (arguments["bearingFrom"] != null ? arguments["bearingFrom"]["radians"] : 0).toDouble(),
+        radians: (arguments["bearingFrom"] != null
+                ? arguments["bearingFrom"]["radians"]
+                : 0)
+            .toDouble(),
       ),
       minimizeFloorChanges: arguments["minimizeFloorChanges"],
+    );
+
+NavigationOptions createNavigationOptions(arguments) => NavigationOptions(
+      distanceToGoalThreshold: arguments['distanceToGoalThreshold'],
+      outsideRouteThreshold: arguments['outsideRouteThreshold'],
+      distanceToIgnoreFirstIndication:
+          arguments['distanceToIgnoreFirstIndication'],
+      distanceToFloorChangeThreshold:
+          arguments['distanceToFloorChangeThreshold'],
+      distanceToChangeIndicationThreshold:
+          arguments['distanceToChangeIndicationThreshold'],
+      indicationsInterval: arguments['indicationsInterval'],
+      timeToFirstIndication: arguments['timeToFirstIndication'],
+      roundIndicationsStep: arguments['roundIndicationsStep'],
+      timeToIgnoreUnexpectedFloorChanges:
+          arguments['timeToIgnoreUnexpectedFloorChanges'],
+      ignoreLowQualityLocations: arguments['ignoreLowQualityLocations'],
     );

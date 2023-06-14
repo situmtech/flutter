@@ -43,7 +43,7 @@ class DirectionsMessageHandler implements MessageHandler {
   ) async {
     var sdk = SitumFlutterSDK();
     var directionsMessage = createDirectionsMessage(payload);
-    var directionsOptions = directionsMessage.directionsOptions;
+    var directionsOptions = createDirectionsOptions(payload["directionsOptions"]);
     // Send DirectionsOptions so it can be intercepted.
     situmFlutterWYF._onDirectionsRequested(directionsOptions);
     // Calculate route and send it to the web-view.
@@ -70,9 +70,9 @@ class NavigationMessageHandler implements MessageHandler {
   ) async {
     var sdk = SitumFlutterSDK();
     var directionsMessage = createDirectionsMessage(payload);
-    var directionsOptions = directionsMessage.directionsOptions;
+    var directionsOptions = createDirectionsOptions(payload["directionsOptions"]);
     situmFlutterWYF._onDirectionsRequested(directionsOptions);
-    var navigationOptions = NavigationOptions();
+    var navigationOptions = createNavigationOptions(payload["navigationOptions"]);
     situmFlutterWYF._onNavigationRequested(navigationOptions);
     // TODO: this will overwrite any previously established callbacks!!!
     // Option 1: add private callbacks in SitumFlutterSDK. SDK and WYF libraries

@@ -69,11 +69,11 @@ class DirectionsOptions {
 }
 
 class NavigationOptions {
-  double? distanceToGoalThreshold;
-  double? outsideRouteThreshold;
-  double? distanceToIgnoreFirstIndication;
-  double? distanceToChangeFloorThreshold;
-  double? distanceToChangeIndicationThreshold;
+  int? distanceToGoalThreshold;
+  int? outsideRouteThreshold;
+  int? distanceToIgnoreFirstIndication;
+  int? distanceToFloorChangeThreshold;
+  int? distanceToChangeIndicationThreshold;
   int? indicationsInterval;
   int? timeToFirstIndication;
   int? roundIndicationsStep;
@@ -84,7 +84,7 @@ class NavigationOptions {
     this.distanceToGoalThreshold,
     this.outsideRouteThreshold,
     this.distanceToIgnoreFirstIndication,
-    this.distanceToChangeFloorThreshold,
+    this.distanceToFloorChangeThreshold,
     this.distanceToChangeIndicationThreshold,
     this.indicationsInterval,
     this.timeToFirstIndication,
@@ -95,31 +95,33 @@ class NavigationOptions {
 
   Map<String, dynamic> toMap() {
     Map<String, dynamic> map = {};
-    if (distanceToGoalThreshold != null) {
+    if (distanceToGoalThreshold != null && distanceToGoalThreshold! > 0) {
       map['distanceToGoalThreshold'] = distanceToGoalThreshold!;
     }
-    if (outsideRouteThreshold != null) {
+    if (outsideRouteThreshold != null && outsideRouteThreshold! > 0) {
       map['outsideRouteThreshold'] = outsideRouteThreshold!;
     }
-    if (distanceToIgnoreFirstIndication != null) {
+    if (distanceToIgnoreFirstIndication != null && distanceToIgnoreFirstIndication! > 0) {
       map['distanceToIgnoreFirstIndication'] = distanceToIgnoreFirstIndication!;
     }
-    if (distanceToChangeFloorThreshold != null) {
-      map['distanceToChangeFloorThreshold'] = distanceToChangeFloorThreshold!;
+    if (distanceToFloorChangeThreshold != null && distanceToFloorChangeThreshold! > 0) {
+      // Android vs iOS inconsistency.
+      map['distanceToChangeFloorThreshold'] = distanceToFloorChangeThreshold!;
+      map['distanceToFloorChangeThreshold'] = distanceToFloorChangeThreshold!;
     }
-    if (distanceToChangeIndicationThreshold != null) {
+    if (distanceToChangeIndicationThreshold != null && distanceToChangeIndicationThreshold! > 0) {
       map['distanceToChangeIndicationThreshold'] = distanceToChangeIndicationThreshold!;
     }
-    if (indicationsInterval != null) {
+    if (indicationsInterval != null && indicationsInterval! > 0) {
       map['indicationsInterval'] = indicationsInterval!;
     }
-    if (timeToFirstIndication != null) {
+    if (timeToFirstIndication != null && timeToFirstIndication! > 0) {
       map['timeToFirstIndication'] = timeToFirstIndication!;
     }
-    if (roundIndicationsStep != null) {
+    if (roundIndicationsStep != null && roundIndicationsStep! > 0) {
       map['roundIndicationsStep'] = roundIndicationsStep!;
     }
-    if (timeToIgnoreUnexpectedFloorChanges != null) {
+    if (timeToIgnoreUnexpectedFloorChanges != null && timeToIgnoreUnexpectedFloorChanges! > 0) {
       map['timeToIgnoreUnexpectedFloorChanges'] = timeToIgnoreUnexpectedFloorChanges!;
     }
     if (ignoreLowQualityLocations != null) {

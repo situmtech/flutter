@@ -12,7 +12,6 @@ class DirectionsMessage {
   final String originIdentifier;
   final String destinationCategory;
   final String destinationIdentifier;
-  final DirectionsOptions directionsOptions;
 
   DirectionsMessage({
     required this.buildingIdentifier,
@@ -20,7 +19,6 @@ class DirectionsMessage {
     this.originIdentifier = EMPTY_ID,
     required this.destinationCategory,
     this.destinationIdentifier = EMPTY_ID,
-    required this.directionsOptions,
   });
 }
 

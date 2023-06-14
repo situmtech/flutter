@@ -91,7 +91,7 @@ class _MyTabsState extends State<MyTabs> {
       SitumMapView(
         key: const Key("situm_map"),
         // Your Situm config id. This will have priority over the credentials.
-        configurationIdentifier: "situm-dev-abm",
+        configurationIdentifier: "situm_dev_abm",
         // Your Situm credentials and building, see config.dart.
         // Copy config.dart.example if you haven't already.
         situmUser: situmUser,
@@ -112,7 +112,7 @@ class _MyTabsState extends State<MyTabs> {
       debugPrint("WYF> onPoiSelected: ${poiSelectedResult.poi.name}");
     });
     controller.onNavigationOptionsInterceptor((navigationOptions) {
-      debugPrint("WYF> ${navigationOptions.toMap()}");
+      debugPrint("WYF> Navigation interceptor: ${navigationOptions.toMap()}");
     //   navigationOptions.ignoreLowQualityLocations = false;
     //   navigationOptions.distanceToGoalThreshold = 10.0;
     //   navigationOptions.outsideRouteThreshold = 20.0;
