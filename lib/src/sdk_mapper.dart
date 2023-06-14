@@ -122,7 +122,6 @@ List<T> createList<T>(List maps, Function mapper) {
 }
 
 Location createLocation(dynamic args) {
-  //Temporal fix to typo in ios sdk. Has to be removed when corrected in ios SDK
   var hasCartesianBearing = args["hasCartesianBearing"] ?? args["hasBearing"];
   return Location(
     coordinate: Coordinate(
