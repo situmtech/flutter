@@ -92,7 +92,7 @@ class SitumFlutterSDK {
       NavigationOptions navigationOptions) async {
     Map response = await methodChannel.invokeMethod('requestNavigation', {
       // For convenience on the native side, set the buildingId here:
-      "buildingId": directionsOptions.buildingId,
+      "buildingIdentifier": directionsOptions.buildingIdentifier,
       // Set directions/navigation options:
       "directionsOptions": directionsOptions.toMap(),
       "navigationOptions": navigationOptions.toMap(),
@@ -147,9 +147,9 @@ class SitumFlutterSDK {
   /// Download all the building data for the selected building. This info
   /// includes [Floor]s, indoor and outdoor [Poi]s, events and paths. It also
   /// download floor maps and [PoiCategory] icons to local storage.
-  Future<BuildingInfo> fetchBuildingInfo(String buildingId) async {
+  Future<BuildingInfo> fetchBuildingInfo(String buildingIdentifier) async {
     Map response = await methodChannel
-        .invokeMethod("fetchBuildingInfo", {"buildingId": buildingId});
+        .invokeMethod("fetchBuildingInfo", {"buildingIdentifier": buildingIdentifier});
     return createBuildingInfo(response);
   }
 
@@ -172,18 +172,18 @@ class SitumFlutterSDK {
     });
   }
 
-  Future<List<Poi>> fetchPoisFromBuilding(String buildingId) async {
+  Future<List<Poi>> fetchPoisFromBuilding(String buildingIdentifier) async {
     List response = await methodChannel.invokeMethod("fetchPoisFromBuilding", {
-      "buildingId": buildingId,
+      "buildingIdentifier": buildingIdentifier,
     });
     return createList<Poi>(response, createPoi);
   }
 
-  Future<Poi?> fetchPoiFromBuilding(String buildingId, String poiId) async {
-    List<Poi> buildingPois = await fetchPoisFromBuilding(buildingId);
+  Future<Poi?> fetchPoiFromBuilding(String buildingIdentifier, String poiIdentifier) async {
+    List<Poi> buildingPois = await fetchPoisFromBuilding(buildingIdentifier);
     return buildingPois
         .cast<Poi?>()
-        .firstWhere((poi) => poi?.id == poiId, orElse: () => null);
+        .firstWhere((poi) => poi?.identifier == poiIdentifier, orElse: () => null);
   }
 
   Future<List<PoiCategory>> fetchPoiCategories() async {

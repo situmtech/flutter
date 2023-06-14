@@ -2,7 +2,7 @@ part of situm_flutter_sdk;
 
 BuildingInfo createBuildingInfo(Map map) {
   return BuildingInfo(
-      id: map["building"]["buildingIdentifier"],
+      identifier: map["building"]["buildingIdentifier"],
       name: map["building"]["name"],
       building: createBuilding(map["building"]),
       floors: createList<Floor>(map["floors"], createFloor),
@@ -26,9 +26,9 @@ Bounds createBounds(Map map) {
 
 Floor createFloor(Map map) {
   return Floor(
-    id: map["floorIdentifier"],
+    identifier: map["floorIdentifier"],
     name: map["name"],
-    buildingId: map["buildingIdentifier"],
+    buildingIdentifier: map["buildingIdentifier"],
     floorIndex: map["floor"],
     mapUrl: map["mapUrl"],
     scale: map["scale"],
@@ -40,7 +40,7 @@ Floor createFloor(Map map) {
 
 Building createBuilding(Map map) {
   return Building(
-      id: map["buildingIdentifier"],
+      identifier: map["buildingIdentifier"],
       name: map["name"],
       address: map["address"],
       bounds: createBounds(map["bounds"]),
@@ -59,9 +59,9 @@ Building createBuilding(Map map) {
 
 Poi createPoi(Map map) {
   return Poi(
-    id: map["identifier"],
+    identifier: map["identifier"],
     name: map["poiName"],
-    buildingId: map["buildingIdentifier"],
+    buildingIdentifier: map["buildingIdentifier"],
     poiCategory: createCategory(map["category"]),
     position: createPoint(map["position"]),
     customFields: Map<String, dynamic>.from(map["customFields"]),
@@ -70,25 +70,29 @@ Poi createPoi(Map map) {
 
 PoiCategory createCategory(Map map) {
   return PoiCategory(
-    id: map["identifier"].toString(),
+    identifier: map["identifier"].toString(),
     name: map["poiCategoryName"],
   );
 }
 
 Point createPoint(Map map) {
   return Point(
-    buildingId: map["buildingIdentifier"],
-    floorId: map["floorIdentifier"],
-    latitude: map["coordinate"]["latitude"],
-    longitude: map["coordinate"]["longitude"],
-    x: map["cartesianCoordinate"]["x"],
-    y: map["cartesianCoordinate"]["y"],
+    buildingIdentifier: map["buildingIdentifier"],
+    floorIdentifier: map["floorIdentifier"],
+    coordinate: Coordinate(
+      latitude: map["coordinate"]["latitude"],
+      longitude: map["coordinate"]["longitude"],
+    ),
+    cartesianCoordinate: CartesianCoordinate(
+      x: map["cartesianCoordinate"]["x"],
+      y: map["cartesianCoordinate"]["y"],
+    ),
   );
 }
 
 Geofence createGeofence(Map map) {
   return Geofence(
-      id: map["identifier"],
+      identifier: map["identifier"],
       name: map["name"],
       buildingId: map["buildingIdentifier"],
       floorId: map["floorIdentifier"],
@@ -107,7 +111,7 @@ CircleArea createCircleArea(Map map) {
 
 Event createEvent(Map map) {
   return Event(
-      id: map["identifier"].toString(),
+      identifier: map["identifier"].toString(),
       name: map["name"],
       customFields: Map<String, dynamic>.from(map["customFields"]),
       trigger: createCircleArea(map["trigger"]));
@@ -142,8 +146,8 @@ Location createLocation(dynamic args) {
       radiansMinusPiPi: args["cartesianBearing"]["radiansMinusPiPi"],
     ),
     accuracy: args["accuracy"],
-    buildingId: args["buildingIdentifier"],
-    floorId: args["floorIdentifier"],
+    buildingIdentifier: args["buildingIdentifier"],
+    floorIdentifier: args["floorIdentifier"],
     hasBearing: args["hasBearing"],
     hasCartesianBearing: hasCartesianBearing,
     isIndoor: args["isIndoor"],
@@ -152,28 +156,36 @@ Location createLocation(dynamic args) {
 }
 
 SitumRoute createRoute(arguments) {
-  return SitumRoute(
-      rawContent: arguments
-  );
+  return SitumRoute(rawContent: arguments);
 }
 
 DirectionsOptions createDirectionsOptions(arguments) => DirectionsOptions(
       from: Point(
-        buildingId: arguments["from"]["buildingId"],
-        floorId: arguments["from"]["floorId"], // Hmm
-        latitude: arguments["from"]["lat"],
-        longitude: arguments["from"]["lng"],
-        x: arguments["from"]["x"] ?? 0, // TODO: send x and y from WYF.
-        y: arguments["from"]["y"] ?? 0,
+        buildingIdentifier: arguments["from"]["buildingIdentifier"],
+        floorIdentifier: arguments["from"]["floorIdentifier"], // Hmm
+        coordinate: Coordinate(
+          latitude: arguments["from"]["coordinate"]["latitude"],
+          longitude: arguments["from"]["coordinate"]["longitude"],
+        ),
+        cartesianCoordinate: CartesianCoordinate(
+          x: (arguments["from"]["cartesianCoordinate"]["x"] ?? 0).toDouble(),
+          y: (arguments["from"]["cartesianCoordinate"]["y"] ?? 0).toDouble(),
+        ),
       ),
       to: Point(
-        buildingId: arguments["to"]["buildingId"],
-        floorId: arguments["to"]["floorId"],
-        latitude: arguments["to"]["lat"],
-        longitude: arguments["to"]["lng"],
-        x: arguments["to"]["x"] ?? 0,
-        y: arguments["to"]["y"] ?? 0,
+        buildingIdentifier: arguments["to"]["buildingIdentifier"],
+        floorIdentifier: arguments["to"]["floorIdentifier"],
+        coordinate: Coordinate(
+          latitude: arguments["to"]["coordinate"]["latitude"],
+          longitude: arguments["to"]["coordinate"]["longitude"],
+        ),
+        cartesianCoordinate: CartesianCoordinate(
+          x: (arguments["to"]["cartesianCoordinate"]["x"] ?? 0).toDouble(),
+          y: (arguments["to"]["cartesianCoordinate"]["y"] ?? 0).toDouble(),
+        ),
       ),
-      fromBearing: arguments["fromBearing"],
+      bearingFrom: Angle(
+          radians: (arguments["bearingFrom"] != null ? arguments["bearingFrom"]["radians"] : 0).toDouble(),
+      ),
       minimizeFloorChanges: arguments["minimizeFloorChanges"],
     );

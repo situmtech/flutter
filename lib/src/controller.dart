@@ -52,12 +52,12 @@ class SitumFlutterWYF {
   // WYF internal utils:
 
   void _setRoute(
-      String originId,
-      String destinationId,
-      SitumRoute situmRoute,
-      ) async {
-    situmRoute.rawContent["originId"] = originId;
-    situmRoute.rawContent["destinationId"] = destinationId;
+    String originIdentifier,
+    String destinationIdentifier,
+    SitumRoute situmRoute,
+  ) async {
+    situmRoute.rawContent["originIdentifier"] = originIdentifier;
+    situmRoute.rawContent["destinationIdentifier"] = destinationIdentifier;
     _sendMessage(
         WV_MESSAGE_DIRECTIONS_UPDATE, jsonEncode(situmRoute.rawContent));
   }
@@ -71,12 +71,12 @@ class SitumFlutterWYF {
   }
 
   void _setNavigationRoute(
-      String originId,
-      String destinationId,
-      SitumRoute situmRoute,
-      ) async {
-    situmRoute.rawContent["originId"] = originId;
-    situmRoute.rawContent["destinationId"] = destinationId;
+    String originIdentifier,
+    String destinationIdentifier,
+    SitumRoute situmRoute,
+  ) async {
+    situmRoute.rawContent["originIdentifier"] = originIdentifier;
+    situmRoute.rawContent["destinationIdentifier"] = destinationIdentifier;
     _sendMessage(
         WV_MESSAGE_NAVIGATION_START, jsonEncode(situmRoute.rawContent));
   }
@@ -85,7 +85,7 @@ class SitumFlutterWYF {
     _sendMessage(
         WV_MESSAGE_NAVIGATION_UPDATE,
         jsonEncode({
-          "type": "out_of_route",
+          "type": "OUT_OF_ROUTE",
         }));
   }
 
@@ -93,12 +93,12 @@ class SitumFlutterWYF {
     _sendMessage(
         WV_MESSAGE_NAVIGATION_UPDATE,
         jsonEncode({
-          "type": "destination_reached",
+          "type": "DESTINATION_REACHED",
         }));
   }
 
   void _setNavigationProgress(RouteProgress progress) {
-    progress.rawContent["type"] = "progress";
+    progress.rawContent["type"] = "PROGRESS";
     _sendMessage(
         WV_MESSAGE_NAVIGATION_UPDATE, jsonEncode(progress.rawContent));
   }

@@ -93,9 +93,9 @@ class SitumFlutterSDKPlugin : FlutterPlugin, ActivityAware, MethodChannel.Method
     }
 
     private fun fetchBuildingInfo(arguments: Map<String, Any>, result: MethodChannel.Result) {
-        val buildingId = arguments["buildingId"] as String
+        val buildingIdentifier = arguments["buildingIdentifier"] as String
         SitumSdk.communicationManager()
-            .fetchBuildingInfo(buildingId, object : Handler<BuildingInfo> {
+            .fetchBuildingInfo(buildingIdentifier, object : Handler<BuildingInfo> {
                 override fun onSuccess(buildingInfo: BuildingInfo) {
                     result.success(buildingInfo.toMap())
                 }
@@ -120,9 +120,9 @@ class SitumFlutterSDKPlugin : FlutterPlugin, ActivityAware, MethodChannel.Method
     }
 
     private fun fetchPoisFromBuilding(arguments: Map<String, Any>, result: MethodChannel.Result) {
-        val buildingId = arguments["buildingId"] as String
+        val buildingIdentifier = arguments["buildingIdentifier"] as String
         SitumSdk.communicationManager()
-            .fetchIndoorPOIsFromBuilding(buildingId, object : Handler<Collection<Poi>> {
+            .fetchIndoorPOIsFromBuilding(buildingIdentifier, object : Handler<Collection<Poi>> {
                 override fun onSuccess(pois: Collection<Poi>) {
                     result.success(pois.toMap())
                 }
@@ -173,18 +173,18 @@ class SitumFlutterSDKPlugin : FlutterPlugin, ActivityAware, MethodChannel.Method
     }
 
     private fun requestDirections(arguments: Map<String, Any>, result: MethodChannel.Result) {
-        val buildingId = arguments["buildingId"] as String
+        val buildingIdentifier = arguments["buildingIdentifier"] as String
         navigation.requestDirections(
-            buildingId, arguments, null, result
+            buildingIdentifier, arguments, null, result
         )
     }
 
     private fun requestNavigation(arguments: Map<String, Any>, result: MethodChannel.Result) {
-        val buildingId = arguments["buildingId"] as String
+        val buildingIdentifier = arguments["buildingIdentifier"] as String
         val directionsOptionsArgs = arguments["directionsOptions"] as Map<String, Any>
         val navigationOptionsArgs = arguments["navigationOptions"] as Map<String, Any>
         navigation.requestDirections(
-            buildingId, directionsOptionsArgs, navigationOptionsArgs, result
+            buildingIdentifier, directionsOptionsArgs, navigationOptionsArgs, result
         )
     }
 

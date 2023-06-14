@@ -7,19 +7,19 @@ class DirectionsMessage {
   static const CATEGORY_LOCATION = "LOCATION";
   static const EMPTY_ID = "-1";
 
-  final String buildingId;
+  final String buildingIdentifier;
   final String originCategory;
-  final String originId;
+  final String originIdentifier;
   final String destinationCategory;
-  final String destinationId;
+  final String destinationIdentifier;
   final DirectionsOptions directionsOptions;
 
   DirectionsMessage({
-    required this.buildingId,
+    required this.buildingIdentifier,
     required this.originCategory,
-    this.originId = EMPTY_ID,
+    this.originIdentifier = EMPTY_ID,
     required this.destinationCategory,
-    this.destinationId = EMPTY_ID,
+    this.destinationIdentifier = EMPTY_ID,
     required this.directionsOptions,
   });
 }

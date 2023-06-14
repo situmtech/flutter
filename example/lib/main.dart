@@ -58,14 +58,14 @@ class _MyTabsState extends State<MyTabs> {
                     _sdkButton('Start', _requestUpdates),
                     _sdkButton('Global', _requestUpdatesGlobal),
                     _sdkButton('Stop', _removeUpdates),
-                    /*_sdkButton('Device Id', _getDeviceId),
+                    _sdkButton('Device Id', _getDeviceId),
                     _sdkButton('Prefetch', _prefetch),
                     _sdkButton('Clear cache', _clearCache),
                     _sdkButton('Pois', _fetchPois),
                     _sdkButton('Categories', _fetchCategories),
                     _sdkButton('Buildings', _fetchBuildings),
                     _sdkButton('Building Info', _fetchBuildingInfo),
-                    */
+
                   ])),
           Expanded(
               child: SingleChildScrollView(
@@ -130,8 +130,8 @@ class _MyTabsState extends State<MyTabs> {
     // Set up location listeners:
     situmSdk.onLocationChange((location) {
       _echo("""SDK> Location changed:
-        B=${location.buildingId},
-        F=${location.floorId},
+        B=${location.buildingIdentifier},
+        F=${location.floorIdentifier},
         C=${location.coordinate.latitude}, ${location.coordinate.longitude}
       """);
       situmFlutterWYF?.setCurrentLocation(location);
