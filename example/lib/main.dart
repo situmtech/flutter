@@ -6,7 +6,7 @@ import './config.dart';
 
 void main() => runApp(const MyApp());
 
-const _title = "Situm Flutter Wayfinding";
+const _title = "Situm Flutter";
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -28,11 +28,11 @@ class MyTabs extends StatefulWidget {
 }
 
 class _MyTabsState extends State<MyTabs> {
-  late SitumFlutterSDK situmSdk;
+  late SitumSdk situmSdk;
   int _selectedIndex = 0;
   String currentOutput = "---";
 
-  SitumFlutterWYF? situmFlutterWYF;
+  MapViewController? mapViewController;
 
   // Widget to showcase some SDK API functions
   Widget _createHomeTab() {
@@ -65,7 +65,7 @@ class _MyTabsState extends State<MyTabs> {
                     _sdkButton('Categories', _fetchCategories),
                     _sdkButton('Buildings', _fetchBuildings),
                     _sdkButton('Building Info', _fetchBuildingInfo),
-
+                    _sdkButton('Switch Building', _switchBuilding)
                   ])),
           Expanded(
               child: SingleChildScrollView(
@@ -88,41 +88,41 @@ class _MyTabsState extends State<MyTabs> {
   Widget _createSitumMapTab() {
     // The Situm map:
     return Stack(children: [
-      SitumMapView(
+      MapView(
         key: const Key("situm_map"),
-        // Your Situm config id. This will have priority over the credentials.
-        configurationIdentifier: "situm_dev_abm",
-        // Your Situm credentials and building, see config.dart.
-        // Copy config.dart.example if you haven't already.
-        situmUser: situmUser,
-        situmApiKey: situmApiKey,
-        buildingIdentifier: buildingIdentifier,
-        // Config:
-        // situmMapUrl: "https://map-viewer-des.situm.com",
-        situmMapUrl: "http://192.168.1.139:5173",
-        loadCallback: _onWYFLoaded,
-        enableDebugging: true,
+        mapViewConfiguration: MapViewConfiguration(
+          // Your Situm config id. This will have priority over the credentials.
+          configurationIdentifier: "situm_dev_abm",
+          // Your Situm credentials and building, see config.dart.
+          // Copy config.dart.example if you haven't already.
+          situmUser: situmUser,
+          situmApiKey: situmApiKey,
+          buildingIdentifier: buildingIdentifier,
+          situmMapUrl: situmMapUrl,
+          enableDebugging: true,
+        ),
+        loadCallback: _onLoad,
       ),
     ]);
   }
 
-  void _onWYFLoaded(SitumFlutterWYF controller) {
-    situmFlutterWYF = controller;
+  void _onLoad(MapViewController controller) {
+    mapViewController = controller;
     controller.onPoiSelected((poiSelectedResult) {
       debugPrint("WYF> onPoiSelected: ${poiSelectedResult.poi.name}");
     });
     controller.onNavigationOptionsInterceptor((navigationOptions) {
       debugPrint("WYF> Navigation interceptor: ${navigationOptions.toMap()}");
-    //   navigationOptions.ignoreLowQualityLocations = false;
-    //   navigationOptions.distanceToGoalThreshold = 10.0;
-    //   navigationOptions.outsideRouteThreshold = 20.0;
-    //   navigationOptions.distanceToIgnoreFirstIndication = 5.0;
-    //   navigationOptions.distanceToChangeFloorThreshold = 15.0;
-    //   navigationOptions.distanceToChangeIndicationThreshold = 12.0;
-    //   navigationOptions.indicationsInterval = 5000;
-    //   navigationOptions.timeToFirstIndication = 3000;
-    //   navigationOptions.roundIndicationsStep = 100;
-    //   navigationOptions.timeToIgnoreUnexpectedFloorChanges = 2000;
+      //   navigationOptions.ignoreLowQualityLocations = false;
+      //   navigationOptions.distanceToGoalThreshold = 10.0;
+      //   navigationOptions.outsideRouteThreshold = 20.0;
+      //   navigationOptions.distanceToIgnoreFirstIndication = 5.0;
+      //   navigationOptions.distanceToChangeFloorThreshold = 15.0;
+      //   navigationOptions.distanceToChangeIndicationThreshold = 12.0;
+      //   navigationOptions.indicationsInterval = 5000;
+      //   navigationOptions.timeToFirstIndication = 3000;
+      //   navigationOptions.roundIndicationsStep = 100;
+      //   navigationOptions.timeToIgnoreUnexpectedFloorChanges = 2000;
     });
   }
 
@@ -131,7 +131,7 @@ class _MyTabsState extends State<MyTabs> {
   */
   @override
   void initState() {
-    situmSdk = SitumFlutterSDK();
+    situmSdk = SitumSdk();
     // Set up your credentials
     situmSdk.init(situmUser, situmApiKey);
     // Configure SDK
@@ -145,7 +145,7 @@ class _MyTabsState extends State<MyTabs> {
         F=${location.floorIdentifier},
         C=${location.coordinate.latitude}, ${location.coordinate.longitude}
       """);
-      situmFlutterWYF?.setCurrentLocation(location);
+      mapViewController?.setCurrentLocation(location);
     });
     situmSdk.onStatusChange((status) {
       _echo("SDK> STATUS: $status");
@@ -235,7 +235,13 @@ class _MyTabsState extends State<MyTabs> {
   void _getDeviceId() async {
     _echo("SDK> Device Id...");
     var deviceId = await situmSdk.getDeviceId();
-    _echo("SDK> RESPONSE: DEVICEID = \n\n$deviceId");
+    _echo("SDK> RESPONSE: DEVICE ID = \n\n$deviceId");
+  }
+
+  void _switchBuilding() async {
+    mapViewController?.reloadWithConfiguration(MapViewConfiguration(
+        configurationIdentifier: "situm_dev_awesome",
+        situmMapUrl: situmMapUrl));
   }
 
   /* --- */

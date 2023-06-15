@@ -2,6 +2,26 @@ part of situm_flutter_wayfinding;
 
 // Public definitions:
 
+class MapViewConfiguration {
+  final String? situmUser;
+  final String? situmApiKey;
+  final String? buildingIdentifier;
+  final String? configurationIdentifier;
+  final String situmMapUrl;
+  final TextDirection directionality;
+  final bool enableDebugging;
+
+  MapViewConfiguration({
+    this.situmUser,
+    this.situmApiKey,
+    this.buildingIdentifier,
+    this.configurationIdentifier,
+    this.situmMapUrl = "https://map-viewer.situm.com",
+    this.directionality = TextDirection.ltr,
+    this.enableDebugging = false,
+  });
+}
+
 class DirectionsMessage {
   static const CATEGORY_POI = "POI";
   static const CATEGORY_LOCATION = "LOCATION";
@@ -41,7 +61,7 @@ class OnPoiDeselectedResult {
 // Result callbacks.
 
 // WYF load callback.
-typedef SitumMapViewCallback = void Function(SitumFlutterWYF controller);
+typedef MapViewCallback = void Function(MapViewController controller);
 // POI selection callback.
 typedef OnPoiSelectedCallback = void Function(
     OnPoiSelectedResult poiSelectedResult);

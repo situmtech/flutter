@@ -19,7 +19,7 @@ abstract class MessageHandler {
   }
 
   void handleMessage(
-    SitumFlutterWYF situmFlutterWYF,
+    MapViewController situmFlutterWYF,
     Map<String, dynamic> payload,
   );
 }
@@ -27,7 +27,7 @@ abstract class MessageHandler {
 class EmptyMessageHandler implements MessageHandler {
   @override
   void handleMessage(
-    SitumFlutterWYF situmFlutterWYF,
+    MapViewController situmFlutterWYF,
     Map<String, dynamic> payload,
   ) {
     // Do nothing.
@@ -38,10 +38,10 @@ class EmptyMessageHandler implements MessageHandler {
 class DirectionsMessageHandler implements MessageHandler {
   @override
   void handleMessage(
-    SitumFlutterWYF situmFlutterWYF,
+    MapViewController situmFlutterWYF,
     Map<String, dynamic> payload,
   ) async {
-    var sdk = SitumFlutterSDK();
+    var sdk = SitumSdk();
     var directionsMessage = createDirectionsMessage(payload);
     var directionsOptions = createDirectionsOptions(payload["directionsOptions"]);
     // Send DirectionsOptions so it can be intercepted.
@@ -65,10 +65,10 @@ class DirectionsMessageHandler implements MessageHandler {
 class NavigationMessageHandler implements MessageHandler {
   @override
   void handleMessage(
-    SitumFlutterWYF situmFlutterWYF,
+    MapViewController situmFlutterWYF,
     Map<String, dynamic> payload,
   ) async {
-    var sdk = SitumFlutterSDK();
+    var sdk = SitumSdk();
     var directionsMessage = createDirectionsMessage(payload);
     var directionsOptions = createDirectionsOptions(payload["directionsOptions"]);
     situmFlutterWYF._onDirectionsRequested(directionsOptions);
@@ -112,8 +112,8 @@ class NavigationMessageHandler implements MessageHandler {
 class NavigationStopMessageHandler implements MessageHandler {
   @override
   void handleMessage(
-      SitumFlutterWYF situmFlutterWYF, Map<String, dynamic> payload) {
-    var sdk = SitumFlutterSDK();
+      MapViewController situmFlutterWYF, Map<String, dynamic> payload) {
+    var sdk = SitumSdk();
     sdk.stopNavigation();
   }
 }
@@ -121,11 +121,11 @@ class NavigationStopMessageHandler implements MessageHandler {
 class PoiSelectedMessageHandler implements MessageHandler {
   @override
   void handleMessage(
-      SitumFlutterWYF situmFlutterWYF, Map<String, dynamic> payload) async {
+      MapViewController situmFlutterWYF, Map<String, dynamic> payload) async {
     if (situmFlutterWYF._onPoiSelectedCallback != null) {
       var poiId = "${payload["identifier"]}";
       var buildingId = "${payload["buildingIdentifier"]}";
-      var sdk = SitumFlutterSDK();
+      var sdk = SitumSdk();
       var poi = await sdk.fetchPoiFromBuilding(buildingId, poiId);
       if (poi != null) {
         situmFlutterWYF._onPoiSelectedCallback

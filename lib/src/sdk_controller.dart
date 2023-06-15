@@ -1,6 +1,6 @@
 part of situm_flutter_sdk;
 
-class SitumFlutterSDK {
+class SitumSdk {
   late final MethodChannel methodChannel;
 
   OnLocationChangeCallback? _onLocationChangeCallback;
@@ -14,14 +14,14 @@ class SitumFlutterSDK {
   OnNavigationProgressCallback? _onNavigationProgressCallback;
   OnNavigationOutOfRouteCallback? _onNavigationOORCallback;
 
-  static final SitumFlutterSDK _controller = SitumFlutterSDK._internal();
+  static final SitumSdk _controller = SitumSdk._internal();
 
-  factory SitumFlutterSDK() {
+  factory SitumSdk() {
     // Factory: ensure only one controller exists.
     return _controller;
   }
 
-  SitumFlutterSDK._internal() {
+  SitumSdk._internal() {
     _initializeMethodChannel();
   }
 

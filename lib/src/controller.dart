@@ -1,6 +1,6 @@
 part of situm_flutter_wayfinding;
 
-class SitumFlutterWYF {
+class MapViewController {
   // TODO: handle states.
   bool situmMapLoaded = false;
   bool onDisposeCalled = false;
@@ -9,11 +9,11 @@ class SitumFlutterWYF {
   OnDirectionsOptionsInterceptor? _onDirectionsOptionsInterceptor;
   OnNavigationOptionsInterceptor? _onNavigationOptionsInterceptor;
 
-  final SitumMapView widget;
+  final Function(MapViewConfiguration) widgetUpdater;
   final WebViewController webViewController;
 
-  SitumFlutterWYF({
-    required this.widget,
+  MapViewController({
+    required this.widgetUpdater,
     required this.webViewController,
   });
 
@@ -41,6 +41,11 @@ class SitumFlutterWYF {
   }
 
   // Actions:
+
+  void reloadWithConfiguration(MapViewConfiguration configuration) async {
+    widgetUpdater(configuration);
+  }
+
   void selectPoi(String id, String buildingId) async {
     // TODO.
   }
@@ -99,8 +104,7 @@ class SitumFlutterWYF {
 
   void _setNavigationProgress(RouteProgress progress) {
     progress.rawContent["type"] = "PROGRESS";
-    _sendMessage(
-        WV_MESSAGE_NAVIGATION_UPDATE, jsonEncode(progress.rawContent));
+    _sendMessage(WV_MESSAGE_NAVIGATION_UPDATE, jsonEncode(progress.rawContent));
   }
 
   // Callbacks:
