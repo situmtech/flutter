@@ -1,4 +1,4 @@
-group 'com.situm.situm_flutter_wayfinding'
+group 'com.situm.situm_flutter'
 version '1.0-SNAPSHOT'
 
 buildscript {

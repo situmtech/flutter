@@ -1,5 +1,7 @@
 part of sdk;
 
+/// Main entry point for the Situm Flutter SDK. With this class you can start
+/// positioning, calculate routes and fetch resources.
 class SitumSdk {
   late final MethodChannel methodChannel;
 

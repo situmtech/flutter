@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:situm_flutter_wayfinding/sdk.dart';
-import 'package:situm_flutter_wayfinding/wayfinding.dart';
+import 'package:situm_flutter/sdk.dart';
+import 'package:situm_flutter/wayfinding.dart';
 
 import './config.dart';
 
@@ -98,7 +98,7 @@ class _MyTabsState extends State<MyTabs> {
           situmUser: situmUser,
           situmApiKey: situmApiKey,
           buildingIdentifier: buildingIdentifier,
-          situmMapUrl: situmMapUrl,
+          mapViewUrl: situmMapUrl,
           enableDebugging: true,
         ),
         loadCallback: _onLoad,
@@ -241,7 +241,7 @@ class _MyTabsState extends State<MyTabs> {
   void _switchBuilding() async {
     mapViewController?.reloadWithConfiguration(MapViewConfiguration(
         configurationIdentifier: "situm_dev_awesome",
-        situmMapUrl: situmMapUrl));
+        mapViewUrl: situmMapUrl));
   }
 
   /* --- */

@@ -7,7 +7,7 @@ class MapViewConfiguration {
   final String? situmApiKey;
   final String? buildingIdentifier;
   final String? configurationIdentifier;
-  final String situmMapUrl;
+  final String mapViewUrl;
   final TextDirection directionality;
   final bool enableDebugging;
 
@@ -16,7 +16,7 @@ class MapViewConfiguration {
     this.situmApiKey,
     this.buildingIdentifier,
     this.configurationIdentifier,
-    this.situmMapUrl = "https://map-viewer.situm.com",
+    this.mapViewUrl = "https://map-viewer.situm.com",
     this.directionality = TextDirection.ltr,
     this.enableDebugging = false,
   });

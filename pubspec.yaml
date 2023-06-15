@@ -1,5 +1,5 @@
-name: situm_flutter_wayfinding
-description: Situm Wayfinding for Flutter.
+name: situm_flutter
+description: Situm for Flutter.
 version: 0.0.14
 homepage: https://github.com/situmtech/flutter-wayfinding
 
@@ -37,8 +37,8 @@ flutter:
   plugin:
     platforms:
       android:
-        package: com.situm.situm_flutter_wayfinding
-        pluginClass: SitumFlutterSDKPlugin
+        package: com.situm.situm_flutter
+        pluginClass: SitumFlutterPlugin
       ios:
         pluginClass: SitumFlutterWayfindingPlugin
 

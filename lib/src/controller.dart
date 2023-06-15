@@ -1,8 +1,9 @@
 part of wayfinding;
 
+/// Controller for [MapView]. This class exposes methods and callbacks.
 class MapViewController {
   // TODO: handle states.
-  bool situmMapLoaded = false;
+  bool mapViewLoaded = false;
   bool onDisposeCalled = false;
 
   OnPoiSelectedCallback? _onPoiSelectedCallback;

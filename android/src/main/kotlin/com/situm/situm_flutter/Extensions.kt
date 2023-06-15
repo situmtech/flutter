@@ -1,4 +1,4 @@
-package com.situm.situm_flutter_wayfinding
+package com.situm.situm_flutter
 
 import android.util.Log
 import es.situm.sdk.communication.CommunicationManager

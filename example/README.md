@@ -1,17 +1,17 @@
 <p align="center"> <img width="233" src="https://situm.com/wp-content/themes/situm/img/logo-situm.svg" style="margin-bottom:1rem" />
-<h1 align="center">Situm Flutter Wayfinding Example</h1>
+<h1 align="center">Situm Flutter Example</h1>
 </p>
 
 <div align="center" style="text-align:center">
 
-A sample Flutter application to start learning the power of [Situm's Flutter Wayfinding Plugin](../README.md).
+A sample Flutter application to start learning the power of [Situm's Flutter Plugin](../README.md).
 
 </div>
 
 <div align="center" style="text-align:center">
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Pub Version](https://img.shields.io/pub/v/situm_flutter_wayfinding?color=blueviolet)](https://pub.dev/packages/situm_flutter_wayfinding)
+[![Pub Version](https://img.shields.io/pub/v/situm_flutter?color=blueviolet)](https://pub.dev/packages/situm_flutter)
 [![Flutter](https://img.shields.io/badge/{/}-flutter-blueviolet)](https://flutter.dev/)
 
 </div>
@@ -78,7 +78,7 @@ You can also run the app from your IDE:
 
 ## Documentation
 
-More information on how to use the official Flutter plugin and the set of APIs, the functions, parameters and results each function accepts and provides can be found in our [SDK API Reference](https://pub.dev/documentation/situm_flutter_wayfinding/latest/situm_flutter_sdk/situm_flutter_sdk-library.html) and [Wayfinding API Reference](https://pub.dev/documentation/situm_flutter_wayfinding/latest/situm_flutter_wayfinding/situm_flutter_wayfinding-library.html).
+More information on how to use the official Flutter plugin and the set of APIs, the functions, parameters and results each function accepts and provides can be found in our [SDK API Reference](https://pub.dev/documentation/situm_flutter/latest/situm_flutter_sdk/situm_flutter_sdk-library.html) and [Wayfinding API Reference](https://pub.dev/documentation/situm_flutter/latest/situm_flutter/situm_flutter-library.html).
 
 ### Examples
 

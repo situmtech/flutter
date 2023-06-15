@@ -6,7 +6,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:situm_flutter_wayfinding/sdk.dart';
+import 'package:situm_flutter/sdk.dart';
 // WebView:
 import 'package:webview_flutter/webview_flutter.dart';
 // Import for Android features.

@@ -1,4 +1,4 @@
-package com.situm.situm_flutter_wayfinding
+package com.situm.situm_flutter
 
 import android.os.Looper
 import es.situm.sdk.SitumSdk

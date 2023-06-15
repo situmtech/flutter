@@ -1,6 +1,6 @@
 part of wayfinding;
 
-// The Widget!
+/// MapView is the main component and entry point for Situm Flutter Wayfinding.
 class MapView extends StatefulWidget {
   final MapViewConfiguration mapViewConfiguration;
   final MapViewCallback loadCallback;
@@ -50,7 +50,7 @@ class _MapViewState extends State<MapView> {
                 widgetUpdater: _loadWithConfig,
                 webViewController: webViewController,
               );
-              wyfController!.situmMapLoaded = true;
+              wyfController!.mapViewLoaded = true;
               widget.loadCallback(wyfController!);
             }
           },
@@ -64,7 +64,7 @@ class _MapViewState extends State<MapView> {
           ''');
           },
           onNavigationRequest: (NavigationRequest request) {
-            if (request.url.startsWith(mapViewConfiguration.situmMapUrl)) {
+            if (request.url.startsWith(mapViewConfiguration.mapViewUrl)) {
               return NavigationDecision.navigate;
             }
             return NavigationDecision.prevent;
@@ -89,7 +89,7 @@ class _MapViewState extends State<MapView> {
 
   String _createUri() {
     if (mapViewConfiguration.configurationIdentifier != null) {
-      return "${mapViewConfiguration.situmMapUrl}/id/${mapViewConfiguration.configurationIdentifier}?mode=embed";
+      return "${mapViewConfiguration.mapViewUrl}/id/${mapViewConfiguration.configurationIdentifier}?mode=embed";
     }
     if (mapViewConfiguration.buildingIdentifier == null ||
         mapViewConfiguration.situmUser == null ||
@@ -97,7 +97,7 @@ class _MapViewState extends State<MapView> {
       throw ArgumentError(
           'Missing configuration: (configurationIdentifier) or (buildingIdentifier, situmUser, situmApiKey) must be provided.');
     }
-    return "${mapViewConfiguration.situmMapUrl}/?email=${mapViewConfiguration.situmUser}&apikey=${mapViewConfiguration.situmApiKey}&buildingid=${mapViewConfiguration.buildingIdentifier}&mode=embed";
+    return "${mapViewConfiguration.mapViewUrl}/?email=${mapViewConfiguration.situmUser}&apikey=${mapViewConfiguration.situmApiKey}&buildingid=${mapViewConfiguration.buildingIdentifier}&mode=embed";
   }
 
   void _loadWithConfig(MapViewConfiguration configuration) {
@@ -125,7 +125,7 @@ class _MapViewState extends State<MapView> {
   @override
   void didUpdateWidget(covariant MapView oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (wyfController?.situmMapLoaded == true) {
+    if (wyfController?.mapViewLoaded == true) {
       widget.didUpdateCallback?.call(wyfController!);
     }
   }

@@ -131,7 +131,7 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.4"
-  situm_flutter_wayfinding:
+  situm_flutter:
     dependency: "direct main"
     description:
       path: ".."
