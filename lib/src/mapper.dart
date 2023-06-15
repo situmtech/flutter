@@ -1,4 +1,4 @@
-part of situm_flutter_wayfinding;
+part of wayfinding;
 
 DirectionsMessage createDirectionsMessage(arguments) => DirectionsMessage(
       buildingIdentifier: arguments["buildingIdentifier"],

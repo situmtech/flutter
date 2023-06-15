@@ -1,4 +1,4 @@
-part of situm_flutter_sdk;
+part of sdk;
 
 /// A data object that allows you to configure the positioning parameters.
 class LocationRequest {

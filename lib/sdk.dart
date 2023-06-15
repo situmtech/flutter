@@ -1,4 +1,4 @@
-library situm_flutter_sdk;
+library sdk;
 
 import 'dart:async';
 import 'dart:convert';

@@ -1,4 +1,4 @@
-library situm_flutter_wayfinding;
+library wayfinding;
 // ignore_for_file: constant_identifier_names
 
 import 'dart:convert';
@@ -6,7 +6,7 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:situm_flutter_wayfinding/situm_flutter_sdk.dart';
+import 'package:situm_flutter_wayfinding/sdk.dart';
 // WebView:
 import 'package:webview_flutter/webview_flutter.dart';
 // Import for Android features.

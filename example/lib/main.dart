@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:situm_flutter_wayfinding/situm_flutter_sdk.dart';
-import 'package:situm_flutter_wayfinding/situm_flutter_wayfinding.dart';
+import 'package:situm_flutter_wayfinding/sdk.dart';
+import 'package:situm_flutter_wayfinding/wayfinding.dart';
 
 import './config.dart';
 

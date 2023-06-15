@@ -1,4 +1,4 @@
-part of situm_flutter_wayfinding;
+part of wayfinding;
 
 // The Widget!
 class MapView extends StatefulWidget {

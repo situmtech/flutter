@@ -1,4 +1,4 @@
-part of situm_flutter_sdk;
+part of sdk;
 
 BuildingInfo createBuildingInfo(Map map) {
   return BuildingInfo(
