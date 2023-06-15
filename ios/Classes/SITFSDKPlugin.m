@@ -1,6 +1,6 @@
 //
 //  SITFSDKPlugin.m
-//  situm_flutter_wayfinding
+//  situm_flutter
 //
 //  Created by Abraham Barros Barros on 30/9/22.
 //

@@ -1,9 +1,9 @@
 #
 # To learn more about a Podspec see http://guides.cocoapods.org/syntax/podspec.html.
-# Run `pod lib lint situm_flutter_wayfinding.podspec` to validate before publishing.
+# Run `pod lib lint situm_flutter.podspec` to validate before publishing.
 #
 Pod::Spec.new do |s|
-  s.name             = 'situm_flutter_wayfinding'
+  s.name             = 'situm_flutter'
   s.version          = '0.0.14'
   s.summary          = 'Situm Flutter plugin.'
   s.description      = <<-DESC
