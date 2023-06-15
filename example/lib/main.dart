@@ -91,12 +91,12 @@ class _MyTabsState extends State<MyTabs> {
       MapView(
         key: const Key("situm_map"),
         mapViewConfiguration: MapViewConfiguration(
-          // Your Situm config id. This will have priority over the credentials.
-          configurationIdentifier: "situm_dev_abm",
           // Your Situm credentials and building, see config.dart.
           // Copy config.dart.example if you haven't already.
           situmUser: situmUser,
           situmApiKey: situmApiKey,
+          // configurationIdentifier or buildingIdentifier:
+          configurationIdentifier: "situm_dev_abm",
           buildingIdentifier: buildingIdentifier,
           mapViewUrl: situmMapUrl,
           enableDebugging: true,
@@ -240,6 +240,8 @@ class _MyTabsState extends State<MyTabs> {
 
   void _switchBuilding() async {
     mapViewController?.reloadWithConfiguration(MapViewConfiguration(
+        situmUser: situmUser,
+        situmApiKey: situmApiKey,
         configurationIdentifier: "situm_dev_awesome",
         mapViewUrl: situmMapUrl));
   }

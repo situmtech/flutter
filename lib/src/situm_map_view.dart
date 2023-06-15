@@ -23,10 +23,23 @@ class _MapViewState extends State<MapView> {
 
   late MapViewConfiguration mapViewConfiguration;
 
+  String _createUri() {
+    var base = mapViewConfiguration.mapViewUrl;
+    var query =
+        "email=${mapViewConfiguration.situmUser}&apikey=${mapViewConfiguration.situmApiKey}&mode=embed";
+    if (mapViewConfiguration.configurationIdentifier != null) {
+      return "$base/id/${mapViewConfiguration.configurationIdentifier}?$query";
+    } else if (mapViewConfiguration.buildingIdentifier != null) {
+      query = "$query&buildingid=${mapViewConfiguration.buildingIdentifier}";
+      return "$base/?$query";
+    }
+    throw ArgumentError(
+        'Missing configuration: configurationIdentifier or buildingIdentifier must be provided.');
+  }
+
   @override
   void initState() {
     super.initState();
-    mapViewConfiguration = widget.mapViewConfiguration;
 
     final WebViewController controller =
         WebViewController.fromPlatformCreationParams(
@@ -44,15 +57,7 @@ class _MapViewState extends State<MapView> {
             // Do nothing.
           },
           onPageFinished: (String url) {
-            if (wyfController == null) {
-              debugPrint('Page finished loading, created wyfController: $url');
-              wyfController = MapViewController(
-                widgetUpdater: _loadWithConfig,
-                webViewController: webViewController,
-              );
-              wyfController!.mapViewLoaded = true;
-              widget.loadCallback(wyfController!);
-            }
+            _onMapReady(url);
           },
           onWebResourceError: (WebResourceError error) {
             debugPrint('''
@@ -79,31 +84,34 @@ class _MapViewState extends State<MapView> {
         },
       );
 
-    if (controller.platform is AndroidWebViewController) {
-      AndroidWebViewController.enableDebugging(
-          mapViewConfiguration.enableDebugging);
-    }
     webViewController = controller;
-    _loadWithConfig(mapViewConfiguration);
-  }
-
-  String _createUri() {
-    if (mapViewConfiguration.configurationIdentifier != null) {
-      return "${mapViewConfiguration.mapViewUrl}/id/${mapViewConfiguration.configurationIdentifier}?mode=embed";
-    }
-    if (mapViewConfiguration.buildingIdentifier == null ||
-        mapViewConfiguration.situmUser == null ||
-        mapViewConfiguration.situmApiKey == null) {
-      throw ArgumentError(
-          'Missing configuration: (configurationIdentifier) or (buildingIdentifier, situmUser, situmApiKey) must be provided.');
-    }
-    return "${mapViewConfiguration.mapViewUrl}/?email=${mapViewConfiguration.situmUser}&apikey=${mapViewConfiguration.situmApiKey}&buildingid=${mapViewConfiguration.buildingIdentifier}&mode=embed";
+    _loadWithConfig(widget.mapViewConfiguration);
   }
 
   void _loadWithConfig(MapViewConfiguration configuration) {
+    // Keep configuration.
     mapViewConfiguration = configuration;
+    if (webViewController.platform is AndroidWebViewController) {
+      AndroidWebViewController.enableDebugging(configuration.enableDebugging);
+    }
+    // Create the final MapView URI.
     final String uri = _createUri();
+    // Load the composed URI in the WebView.
     webViewController.loadRequest(Uri.parse(uri));
+  }
+
+  void _onMapReady(String url) {
+    if (wyfController == null) {
+      debugPrint('Page finished loading, created wyfController: $url');
+      wyfController = MapViewController(
+        situmUser: mapViewConfiguration.situmUser,
+        situmApiKey: mapViewConfiguration.situmApiKey,
+        widgetUpdater: _loadWithConfig,
+        webViewController: webViewController,
+      );
+      wyfController!.mapViewLoaded = true;
+      widget.loadCallback(wyfController!);
+    }
   }
 
   @override

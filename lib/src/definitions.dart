@@ -3,8 +3,8 @@ part of wayfinding;
 // Public definitions:
 
 class MapViewConfiguration {
-  final String? situmUser;
-  final String? situmApiKey;
+  final String situmUser;
+  final String situmApiKey;
   final String? buildingIdentifier;
   final String? configurationIdentifier;
   final String mapViewUrl;
@@ -12,8 +12,8 @@ class MapViewConfiguration {
   final bool enableDebugging;
 
   MapViewConfiguration({
-    this.situmUser,
-    this.situmApiKey,
+    required this.situmUser,
+    required this.situmApiKey,
     this.buildingIdentifier,
     this.configurationIdentifier,
     this.mapViewUrl = "https://map-viewer.situm.com",

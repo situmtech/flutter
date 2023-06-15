@@ -14,9 +14,14 @@ class MapViewController {
   final WebViewController webViewController;
 
   MapViewController({
+    required String situmUser,
+    required String situmApiKey,
     required this.widgetUpdater,
     required this.webViewController,
-  });
+  }) {
+    // Be sure to initialize the SitumSdk so it can be used in callbacks, etc.
+    SitumSdk().init(situmUser, situmApiKey);
+  }
 
   /// Tell the SitumMap where the user is located at.
   void setCurrentLocation(Location location) {

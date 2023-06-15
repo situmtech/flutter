@@ -16,6 +16,9 @@ class SitumSdk {
   OnNavigationProgressCallback? _onNavigationProgressCallback;
   OnNavigationOutOfRouteCallback? _onNavigationOORCallback;
 
+  String? _situmUser;
+  String? _situmApiKey;
+
   static final SitumSdk _controller = SitumSdk._internal();
 
   factory SitumSdk() {
@@ -37,6 +40,8 @@ class SitumSdk {
   /// Initialize SDK. You have to call this function prior any call to other
   /// method.
   Future<void> init(String situmUser, String situmApiKey) async {
+    _situmUser = situmUser;
+    _situmApiKey = situmApiKey;
     await methodChannel.invokeMethod<String>(
       'init',
       <String, dynamic>{
