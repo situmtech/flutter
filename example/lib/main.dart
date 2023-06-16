@@ -250,12 +250,6 @@ class _MyTabsState extends State<MyTabs> {
     _echo("SDK> RESPONSE: BUILDINGS = \n\n$buildings");
   }
 
-  void _getDeviceId() async {
-    _echo("SDK> Device Id...");
-    var deviceId = await situmSdk.getDeviceId();
-    _echo("SDK> RESPONSE: DEVICE ID = \n\n$deviceId");
-  }
-
   void _switchBuilding() async {
     mapViewController?.reloadWithConfiguration(MapViewConfiguration(
         situmUser: situmUser,

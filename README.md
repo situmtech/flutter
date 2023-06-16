@@ -78,6 +78,50 @@ allprojects {
 
 Once included the app will ask the user for the appropriate permissions.
 
+## Migrate from the old [Situm Flutter Wayfinding plugin](https://pub.dev/packages/situm_flutter_wayfinding)
+
+The new Situm Flutter package breaks compatibility with the previous [Situm Flutter Wayfinding plugin](https://pub.dev/packages/situm_flutter_wayfinding). Integrating the new version is simpler and more straightforward. If you want to migrate your application, follow the steps bellow:
+
+1. Android:
+   - `FlutterAppCompatActivity` has been removed from the repository. Therefore, your `MainActivity` no longer needs to extend this class and in turn it can use the Flutter's own classes.
+   - The `androidx AppCompat` dependency is not longer required. You can remove if appropriate.
+   - Extending `Theme.AppCompat.Light` is also not necessary now. You can use the default values provided by Flutter or customize them as supported by the platform.
+   - Google Maps has been replaced by Mapbox. You no longer need to provide a Google Maps Api Key: remove it from your `AndroidManifest`.
+2. Flutter:
+   - Both package and libraries has been renamed. Update your imports:
+   ```dart
+   // From:
+   import 'package:situm_flutter_wayfinding/situm_flutter_sdk.dart';
+   import 'package:situm_flutter_wayfinding/situm_flutter_wayfinding.dart';
+   // To:
+   import 'package:situm_flutter/sdk.dart';
+   import 'package:situm_flutter/wayfinding.dart';
+   ```
+   - `SitumFlutterSDK` has been renamed to `SitumSdk`.
+   - The positioning callbacks has been refactored to be more idiomatic, so you no longer need to create a custom class implementing `LocationListener` (it has been removed):
+   ```dart
+   	// Set up location callbacks:
+   	situmSdk.onLocationChange((location) {
+   		// ...
+   	});
+   	situmSdk.onStatusChange((status) {
+   		// ...
+   	});
+   	situmSdk.onError((error) {
+   		// ...
+   	});
+   ```
+   - `SitumMapView` has been renamed to `MapView`. The controller received in the `loadCallback` was also removed to `MapViewController`.
+   - All the parameters of the `MapView` widget has been encapsulated into a single `MapViewConfiguration` object. Also you will notice that the number of parameters has decreased dramatically since the new `MapView` can be configured remotely.
+   - The new `MapView` is totally independent from the positioning system. Now your are responsible of telling the widget where the user is, which is pretty straightforward using the location callback:
+   ```dart
+   situmSdk.onLocationChange((location) {
+   	mapViewController?.setCurrentLocation(location);
+   	// ...
+   });
+   ```
+   - Permissions: now you are responsible of requesting all the app permissions. Check the [Situm documentation](https://situm.com/docs/sdk-permissions/) for more info.
+
 ## Versioning
 
 Please refer to [CHANGELOG.md](./CHANGELOG.md) for a list of notable changes for each version of the plugin.
