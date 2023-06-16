@@ -158,7 +158,7 @@ SitumRoute createRoute(arguments) {
   return SitumRoute(rawContent: arguments);
 }
 
-DirectionsOptions createDirectionsOptions(arguments) => DirectionsOptions(
+DirectionsRequest createDirectionsOptions(arguments) => DirectionsRequest(
       from: createPoint(arguments["from"]),
       to: createPoint(arguments["to"]),
       bearingFrom: Angle(
@@ -170,7 +170,7 @@ DirectionsOptions createDirectionsOptions(arguments) => DirectionsOptions(
       minimizeFloorChanges: arguments["minimizeFloorChanges"],
     );
 
-NavigationOptions createNavigationOptions(arguments) => NavigationOptions(
+NavigationRequest createNavigationOptions(arguments) => NavigationRequest(
       distanceToGoalThreshold: arguments['distanceToGoalThreshold'],
       outsideRouteThreshold: arguments['outsideRouteThreshold'],
       distanceToIgnoreFirstIndication:

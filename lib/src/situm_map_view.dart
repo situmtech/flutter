@@ -68,7 +68,7 @@ class _MapViewState extends State<MapView> {
                 isForMainFrame: ${error.isForMainFrame}
           ''');
           },
-          onNavigationRequest: (NavigationRequest request) {
+          onNavigationRequest: (dynamic request) {
             if (request.url.startsWith(mapViewConfiguration.mapViewUrl)) {
               return NavigationDecision.navigate;
             }

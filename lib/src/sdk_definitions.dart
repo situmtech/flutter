@@ -16,7 +16,7 @@ class LocationRequest {
       };
 }
 
-/// Available accessibility modes used in the [DirectionsOptions].
+/// Available accessibility modes used in the [DirectionsRequest].
 enum AccessibilityMode {
   /// The route should choose the best route, without taking into account if it is accessible or not.
   /// This option is the default so you don't have to do anything in order to use it.
@@ -28,7 +28,7 @@ enum AccessibilityMode {
 }
 
 /// Parameters to request a route.
-class DirectionsOptions {
+class DirectionsRequest {
   final Point from;
   final Point to;
   Angle? bearingFrom;
@@ -38,7 +38,7 @@ class DirectionsOptions {
   // buildingId populated in the constructor body.
   late String buildingIdentifier;
 
-  DirectionsOptions({
+  DirectionsRequest({
     required this.from,
     required this.to,
     this.bearingFrom,
@@ -68,7 +68,8 @@ class DirectionsOptions {
   }
 }
 
-class NavigationOptions {
+/// A data object that allows you to configure the navigation parameters.
+class NavigationRequest {
   int? distanceToGoalThreshold;
   int? outsideRouteThreshold;
   int? distanceToIgnoreFirstIndication;
@@ -80,7 +81,7 @@ class NavigationOptions {
   int? timeToIgnoreUnexpectedFloorChanges;
   bool? ignoreLowQualityLocations;
 
-  NavigationOptions({
+  NavigationRequest({
     this.distanceToGoalThreshold,
     this.outsideRouteThreshold,
     this.distanceToIgnoreFirstIndication,

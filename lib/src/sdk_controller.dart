@@ -85,18 +85,18 @@ class SitumSdk {
   }
 
   /// Request directions between two [Point]s using the given
-  /// [DirectionsOptions].
-  Future<SitumRoute> requestDirections(DirectionsOptions directionsOptions) async {
+  /// [DirectionsRequest].
+  Future<SitumRoute> requestDirections(DirectionsRequest directionsOptions) async {
     Map response = await methodChannel.invokeMethod(
         'requestDirections', directionsOptions.toMap());
     return createRoute(response);
   }
 
   /// Request navigation between two [Point]s, using the given
-  /// [DirectionsOptions] and [NavigationOptions].
+  /// [DirectionsRequest] and [NavigationRequest].
   Future<SitumRoute> requestNavigation(
-      DirectionsOptions directionsOptions,
-      NavigationOptions navigationOptions) async {
+      DirectionsRequest directionsOptions,
+      NavigationRequest navigationOptions) async {
     Map response = await methodChannel.invokeMethod('requestNavigation', {
       // For convenience on the native side, set the buildingId here:
       "buildingIdentifier": directionsOptions.buildingIdentifier,
@@ -114,7 +114,7 @@ class SitumSdk {
 
   /// Set a callback that will be notified when the navigation finishes.
   /// This will happen when the user is close to the destination of the current
-  /// route by less than the distanceToGoalThreshold of [NavigationOptions].
+  /// route by less than the distanceToGoalThreshold of [NavigationRequest].
   /// See [requestNavigation].
   Future<void> onNavigationFinished(
       OnNavigationFinishedCallback callback) async {

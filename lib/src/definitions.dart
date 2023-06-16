@@ -70,6 +70,6 @@ typedef OnPoiDeselectedCallback = void Function(
     OnPoiDeselectedResult poiDeselectedResult);
 // DirectionsOptions interceptor.
 typedef OnDirectionsOptionsInterceptor = void Function(
-    DirectionsOptions directionsOptions);
+    DirectionsRequest directionsOptions);
 typedef OnNavigationOptionsInterceptor = void Function(
-    NavigationOptions navigationOptions);
+    NavigationRequest navigationOptions);

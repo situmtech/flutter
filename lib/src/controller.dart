@@ -120,11 +120,11 @@ class MapViewController {
 
   // Directions & Navigation Interceptors:
 
-  void _onDirectionsRequested(DirectionsOptions directionsOptions) {
+  void _onDirectionsRequested(DirectionsRequest directionsOptions) {
     _onDirectionsOptionsInterceptor?.call(directionsOptions);
   }
 
-  void _onNavigationRequested(NavigationOptions navigationOptions) {
+  void _onNavigationRequested(NavigationRequest navigationOptions) {
     _onNavigationOptionsInterceptor?.call(navigationOptions);
   }
 
