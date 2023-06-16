@@ -1,3 +1,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  package="com.situm.situm_flutter_wayfinding">
+    package="com.situm.situm_flutter_wayfinding">
+
+    <application>
+        <receiver
+            android:name=".SitumNotificationReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="STOP_ACTION" />
+            </intent-filter>
+        </receiver>
+    </application>
 </manifest>

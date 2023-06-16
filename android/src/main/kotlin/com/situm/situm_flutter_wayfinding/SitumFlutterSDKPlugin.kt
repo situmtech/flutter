@@ -1,8 +1,10 @@
 package com.situm.situm_flutter_wayfinding
 
+import android.app.Notification
 import android.content.Context
 import android.os.Looper
 import androidx.annotation.NonNull
+import androidx.core.app.NotificationCompat
 import es.situm.sdk.SitumSdk
 import es.situm.sdk.communication.CommunicationConfigImpl
 import es.situm.sdk.configuration.network.NetworkOptionsImpl
@@ -143,7 +145,11 @@ class SitumFlutterSDKPlugin : FlutterPlugin, ActivityAware, MethodChannel.Method
         locationListener?.let {
             SitumSdk.locationManager().removeLocationListener(it)
         }
-        val locationRequest = LocationRequest.Builder().fromArguments(arguments).build()
+        val locationRequest = LocationRequest.Builder()
+            .fromArguments(arguments)
+            .useForegroundService(true)
+            .foregroundServiceNotification(Utils.createNotification("Stop", context!!))
+            .build()
         locationListener = object : LocationListener {
             override fun onLocationChanged(location: Location) {
                 val callbackArgs = mutableMapOf<String, String>(
