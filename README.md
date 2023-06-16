@@ -98,7 +98,7 @@ The new Situm Flutter package breaks compatibility with the previous [Situm Flut
    import 'package:situm_flutter/wayfinding.dart';
    ```
    - `SitumFlutterSDK` has been renamed to `SitumSdk`.
-   - The positioning callbacks has been refactored to be more idiomatic, so you no longer need to create a custom class implementing `LocationListener` (it has been removed):
+   - The positioning callbacks have been refactored to be more idiomatic, so you no longer need to create a custom class implementing `LocationListener` (it has been removed):
    ```dart
    	// Set up location callbacks:
    	situmSdk.onLocationChange((location) {
@@ -111,8 +111,8 @@ The new Situm Flutter package breaks compatibility with the previous [Situm Flut
    		// ...
    	});
    ```
-   - `SitumMapView` has been renamed to `MapView`. The controller received in the `loadCallback` was also removed to `MapViewController`.
-   - All the parameters of the `MapView` widget has been encapsulated into a single `MapViewConfiguration` object. Also you will notice that the number of parameters has decreased dramatically since the new `MapView` can be configured remotely.
+   - `SitumMapView` has been renamed to `MapView`. The controller received in the `loadCallback` was also renamed to `MapViewController`.
+   - All the parameters of the `MapView` widget has been encapsulated into a single `MapViewConfiguration` object. Also you will notice that the number of parameters has decreased dramatically (since the new `MapView` can be configured remotely).
    - The new `MapView` is totally independent from the positioning system. Now your are responsible of telling the widget where the user is, which is pretty straightforward using the location callback:
    ```dart
    situmSdk.onLocationChange((location) {
