@@ -181,10 +181,10 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
 
     private fun requestNavigation(arguments: Map<String, Any>, result: MethodChannel.Result) {
         val buildingIdentifier = arguments["buildingIdentifier"] as String
-        val directionsOptionsArgs = arguments["directionsOptions"] as Map<String, Any>
-        val navigationOptionsArgs = arguments["navigationOptions"] as Map<String, Any>
+        val directionsRequestArgs = arguments["directionsRequest"] as Map<String, Any>
+        val navigationRequestArgs = arguments["navigationRequest"] as Map<String, Any>
         navigation.requestDirections(
-            buildingIdentifier, directionsOptionsArgs, navigationOptionsArgs, result
+            buildingIdentifier, directionsRequestArgs, navigationRequestArgs, result
         )
     }
 

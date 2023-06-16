@@ -7,8 +7,8 @@ class MapViewController {
   bool onDisposeCalled = false;
 
   OnPoiSelectedCallback? _onPoiSelectedCallback;
-  OnDirectionsOptionsInterceptor? _onDirectionsOptionsInterceptor;
-  OnNavigationOptionsInterceptor? _onNavigationOptionsInterceptor;
+  OnDirectionsRequestInterceptor? _onDirectionsRequestInterceptor;
+  OnNavigationRequestInterceptor? _onNavigationRequestInterceptor;
 
   final Function(MapViewConfiguration) widgetUpdater;
   final WebViewController webViewController;
@@ -120,19 +120,19 @@ class MapViewController {
 
   // Directions & Navigation Interceptors:
 
-  void _onDirectionsRequested(DirectionsRequest directionsOptions) {
-    _onDirectionsOptionsInterceptor?.call(directionsOptions);
+  void _onDirectionsRequested(DirectionsRequest directionsRequest) {
+    _onDirectionsRequestInterceptor?.call(directionsRequest);
   }
 
-  void _onNavigationRequested(NavigationRequest navigationOptions) {
-    _onNavigationOptionsInterceptor?.call(navigationOptions);
+  void _onNavigationRequested(NavigationRequest navigationRequest) {
+    _onNavigationRequestInterceptor?.call(navigationRequest);
   }
 
-  void onDirectionsOptionsInterceptor(OnDirectionsOptionsInterceptor callback) {
-    _onDirectionsOptionsInterceptor = callback;
+  void onDirectionsRequestInterceptor(OnDirectionsRequestInterceptor callback) {
+    _onDirectionsRequestInterceptor = callback;
   }
 
-  void onNavigationOptionsInterceptor(OnNavigationOptionsInterceptor callback) {
-    _onNavigationOptionsInterceptor = callback;
+  void onNavigationRequestInterceptor(OnNavigationRequestInterceptor callback) {
+    _onNavigationRequestInterceptor = callback;
   }
 }

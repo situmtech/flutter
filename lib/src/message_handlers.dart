@@ -43,12 +43,12 @@ class DirectionsMessageHandler implements MessageHandler {
   ) async {
     var sdk = SitumSdk();
     var directionsMessage = createDirectionsMessage(payload);
-    var directionsOptions = createDirectionsOptions(payload["directionsOptions"]);
+    var directionsRequest = createDirectionsRequest(payload["directionsOptions"]);
     // Send DirectionsOptions so it can be intercepted.
-    situmFlutterWYF._onDirectionsRequested(directionsOptions);
+    situmFlutterWYF._onDirectionsRequested(directionsRequest);
     // Calculate route and send it to the web-view.
     try {
-      SitumRoute situmRoute = await sdk.requestDirections(directionsOptions);
+      SitumRoute situmRoute = await sdk.requestDirections(directionsRequest);
       situmFlutterWYF._setRoute(
         directionsMessage.originIdentifier,
         directionsMessage.destinationIdentifier,
@@ -70,10 +70,11 @@ class NavigationMessageHandler implements MessageHandler {
   ) async {
     var sdk = SitumSdk();
     var directionsMessage = createDirectionsMessage(payload);
-    var directionsOptions = createDirectionsOptions(payload["directionsOptions"]);
-    situmFlutterWYF._onDirectionsRequested(directionsOptions);
-    var navigationOptions = createNavigationOptions(payload["navigationOptions"]);
-    situmFlutterWYF._onNavigationRequested(navigationOptions);
+    // TODO: map-viewer directionsOptions and navigationOptions should be renamed?
+    var directionsRequest = createDirectionsRequest(payload["directionsOptions"]);
+    situmFlutterWYF._onDirectionsRequested(directionsRequest);
+    var navigationRequest = createNavigationRequest(payload["navigationOptions"]);
+    situmFlutterWYF._onNavigationRequested(navigationRequest);
     // TODO: this will overwrite any previously established callbacks!!!
     // Option 1: add private callbacks in SitumFlutterSDK. SDK and WYF libraries
     // must be merged into one library...
@@ -92,8 +93,8 @@ class NavigationMessageHandler implements MessageHandler {
       situmFlutterWYF._setNavigationProgress(progress);
     });
     SitumRoute situmRoute = await sdk.requestNavigation(
-      directionsOptions,
-      navigationOptions,
+      directionsRequest,
+      navigationRequest,
     );
     try {
       situmFlutterWYF._setNavigationRoute(

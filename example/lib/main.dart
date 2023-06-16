@@ -111,18 +111,18 @@ class _MyTabsState extends State<MyTabs> {
     controller.onPoiSelected((poiSelectedResult) {
       debugPrint("WYF> onPoiSelected: ${poiSelectedResult.poi.name}");
     });
-    controller.onNavigationOptionsInterceptor((navigationOptions) {
-      debugPrint("WYF> Navigation interceptor: ${navigationOptions.toMap()}");
-      //   navigationOptions.ignoreLowQualityLocations = false;
-      //   navigationOptions.distanceToGoalThreshold = 10.0;
-      //   navigationOptions.outsideRouteThreshold = 20.0;
-      //   navigationOptions.distanceToIgnoreFirstIndication = 5.0;
-      //   navigationOptions.distanceToChangeFloorThreshold = 15.0;
-      //   navigationOptions.distanceToChangeIndicationThreshold = 12.0;
-      //   navigationOptions.indicationsInterval = 5000;
-      //   navigationOptions.timeToFirstIndication = 3000;
-      //   navigationOptions.roundIndicationsStep = 100;
-      //   navigationOptions.timeToIgnoreUnexpectedFloorChanges = 2000;
+    controller.onNavigationRequestInterceptor((navigationRequest) {
+      debugPrint("WYF> Navigation interceptor: ${navigationRequest.toMap()}");
+      //   navigationRequest.ignoreLowQualityLocations = false;
+      //   navigationRequest.distanceToGoalThreshold = 10.0;
+      //   navigationRequest.outsideRouteThreshold = 20.0;
+      //   navigationRequest.distanceToIgnoreFirstIndication = 5.0;
+      //   navigationRequest.distanceToChangeFloorThreshold = 15.0;
+      //   navigationRequest.distanceToChangeIndicationThreshold = 12.0;
+      //   navigationRequest.indicationsInterval = 5000;
+      //   navigationRequest.timeToFirstIndication = 3000;
+      //   navigationRequest.roundIndicationsStep = 100;
+      //   navigationRequest.timeToIgnoreUnexpectedFloorChanges = 2000;
     });
   }
 

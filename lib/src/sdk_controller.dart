@@ -86,23 +86,23 @@ class SitumSdk {
 
   /// Request directions between two [Point]s using the given
   /// [DirectionsRequest].
-  Future<SitumRoute> requestDirections(DirectionsRequest directionsOptions) async {
+  Future<SitumRoute> requestDirections(DirectionsRequest directionsRequest) async {
     Map response = await methodChannel.invokeMethod(
-        'requestDirections', directionsOptions.toMap());
+        'requestDirections', directionsRequest.toMap());
     return createRoute(response);
   }
 
   /// Request navigation between two [Point]s, using the given
   /// [DirectionsRequest] and [NavigationRequest].
   Future<SitumRoute> requestNavigation(
-      DirectionsRequest directionsOptions,
-      NavigationRequest navigationOptions) async {
+      DirectionsRequest directionsRequest,
+      NavigationRequest navigationRequest) async {
     Map response = await methodChannel.invokeMethod('requestNavigation', {
       // For convenience on the native side, set the buildingId here:
-      "buildingIdentifier": directionsOptions.buildingIdentifier,
+      "buildingIdentifier": directionsRequest.buildingIdentifier,
       // Set directions/navigation options:
-      "directionsOptions": directionsOptions.toMap(),
-      "navigationOptions": navigationOptions.toMap(),
+      "directionsRequest": directionsRequest.toMap(),
+      "navigationRequest": navigationRequest.toMap(),
     });
     return createRoute(response);
   }
