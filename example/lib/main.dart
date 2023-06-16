@@ -37,40 +37,58 @@ class _MyTabsState extends State<MyTabs> {
   // Widget to showcase some SDK API functions
   Widget _createHomeTab() {
     // Home:
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _buttonsGroup(Icons.my_location, "Positioning", [
+          _sdkButton('Start', _requestUpdates),
+          _sdkButton('Global', _requestUpdatesGlobal),
+          _sdkButton('Stop', _removeUpdates),
+        ]),
+        _buttonsGroup(Icons.cloud_download, "Fetch resources", [
+          _sdkButton('Prefetch', _prefetch),
+          _sdkButton('Clear cache', _clearCache),
+          _sdkButton('Pois', _fetchPois),
+          _sdkButton('Categories', _fetchCategories),
+          _sdkButton('Buildings', _fetchBuildings),
+          _sdkButton('Building Info', _fetchBuildingInfo),
+        ]),
+        _sdkButton('Switch Building', _switchBuilding),
+        Expanded(
+            child: SingleChildScrollView(
+                padding: const EdgeInsets.all(30), child: Text(currentOutput)))
+      ],
+    );
+  }
+
+  Card _buttonsGroup(IconData iconData, String title, List<Widget> children) {
     return Card(
-      margin: const EdgeInsets.symmetric(vertical: 30, horizontal: 0),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const Text(
-            'SitumSdk',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+            child: Row(
+              children: [
+                Icon(iconData, color: Colors.black45),
+                const SizedBox(width: 16.0),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
           ),
-          SizedBox(
-              height: 225,
-              child: GridView.count(
-                  crossAxisCount: 4,
-                  padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-                  shrinkWrap: true,
-                  childAspectRatio: 1.5,
-                  children: [
-                    _sdkButton('Start', _requestUpdates),
-                    _sdkButton('Global', _requestUpdatesGlobal),
-                    _sdkButton('Stop', _removeUpdates),
-                    _sdkButton('Device Id', _getDeviceId),
-                    _sdkButton('Prefetch', _prefetch),
-                    _sdkButton('Clear cache', _clearCache),
-                    _sdkButton('Pois', _fetchPois),
-                    _sdkButton('Categories', _fetchCategories),
-                    _sdkButton('Buildings', _fetchBuildings),
-                    _sdkButton('Building Info', _fetchBuildingInfo),
-                    _sdkButton('Switch Building', _switchBuilding)
-                  ])),
-          Expanded(
-              child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(30),
-                  child: Text(currentOutput)))
+          GridView.count(
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisCount: 3,
+            padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+            shrinkWrap: true,
+            childAspectRatio: 2.5,
+            children: children,
+          ),
         ],
       ),
     );

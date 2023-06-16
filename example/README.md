@@ -4,7 +4,7 @@
 
 <div align="center" style="text-align:center">
 
-A sample Flutter application to start learning the power of [Situm's Flutter Plugin](../README.md).
+A sample Flutter application to start learning the power of [Situm Flutter Plugin](../README.md).
 
 </div>
 
@@ -18,7 +18,7 @@ A sample Flutter application to start learning the power of [Situm's Flutter Plu
 
 ## What's in here
 
-This folder contains the necessary source code for an example application using the **SitumWayfinding plugin**.
+This folder contains the necessary source code for an example application using the **Situm Flutter plugin**.
 
 <div align="center" style="display: flex;">
     <img src="./docs/assets/home_preview.png" alt="home_preview">
@@ -84,7 +84,7 @@ More information on how to use the official Flutter plugin and the set of APIs, 
 
 In case you want to learn how to use our plugin, you may want to take a look at our code samples of the basics functionalities:
 
-1. [**Basic SDK and WYF functionality**](./lib/main.dart): showcases how to initialize the Situm SDK (refer to the [flutter sdk quickstart guide](https://situm.com/docs/a-basic-flutter-app/) for more information) and how to use some basic features like positioning and obtaining the information of a given building. It also shows how to use the Situm Wayfinding module (refer to the [flutter wayfinding quickstart guide](https://situm.com/docs/flutter-quickstart-guide/) for more information).
+1. [**Basic SDK and Wayfinding functionality**](./lib/main.dart): showcases how to initialize the Situm SDK (refer to the [flutter sdk quickstart guide](https://situm.com/docs/a-basic-flutter-app/) for more information) and how to use some basic features like positioning and obtaining the information of a given building. It also shows how to use the Situm Wayfinding module (refer to the [flutter wayfinding quickstart guide](https://situm.com/docs/flutter-quickstart-guide/) for more information).
 
 ## Versioning
 

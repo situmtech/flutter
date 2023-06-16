@@ -25,7 +25,7 @@ These steps have already been done for you in the example application of this re
 
 ## Running the example
 
-Check the [example/README](./example/README.md) file of this repository to create your first Flutter application using Situm Wayfinding.
+Check the [example/README](./example/README.md) file of this repository to create your first Flutter application using Situm Flutter.
 
 ## Configure the plugin on your Flutter project
 
@@ -61,7 +61,7 @@ allprojects {
 
 1. Run `pod install` or `pod update` to bring the dependencies to your project.
 
-2. In order for the wayfinding module to successfully activate positioning you will need to declare the following permissions in your app's `Info.plist` file:
+2. To successfully start positioning you will need to declare the following permissions in your app's `Info.plist` file:
 
 ```
 <key>NSLocationWhenInUseUsageDescription</key>
