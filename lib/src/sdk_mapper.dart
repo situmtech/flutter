@@ -122,7 +122,6 @@ List<T> createList<T>(List maps, Function mapper) {
 }
 
 Location createLocation(dynamic args) {
-  var hasCartesianBearing = args["hasCartesianBearing"] ?? args["hasBearing"];
   return Location(
     coordinate: Coordinate(
     latitude: args["coordinate"]["latitude"],
@@ -138,17 +137,10 @@ Location createLocation(dynamic args) {
       radians: args["bearing"]["radians"],
       radiansMinusPiPi: args["bearing"]["radiansMinusPiPi"],
     ),
-    cartesianBearing: Bearing(
-      degrees: args["cartesianBearing"]["degrees"],
-      degreesClockwise: args["cartesianBearing"]["degreesClockwise"],
-      radians: args["cartesianBearing"]["radians"],
-      radiansMinusPiPi: args["cartesianBearing"]["radiansMinusPiPi"],
-    ),
     accuracy: args["accuracy"],
     buildingIdentifier: args["buildingIdentifier"],
     floorIdentifier: args["floorIdentifier"],
     hasBearing: args["hasBearing"],
-    hasCartesianBearing: hasCartesianBearing,
     isIndoor: args["isIndoor"],
     timestamp: args["timestamp"].toInt(),
   );
