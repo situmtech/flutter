@@ -12,7 +12,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SITNavigationHandler : NSObject
+@interface SITNavigationHandler : NSObject<SITNavigationDelegate, SITLocationDelegate>
 
 @property (nonatomic,strong) FlutterMethodChannel *channel;
 + (instancetype)sharedInstance;

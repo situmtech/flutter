@@ -32,6 +32,7 @@ const NSString* RESULTS_KEY = @"results";
     instance.locManager = [SITLocationManager sharedInstance];
     instance.navigationHandler = [SITNavigationHandler sharedInstance];
     instance.navigationHandler.channel = channel;
+    SITNavigationManager.sharedManager.delegate = instance.navigationHandler;
     instance.channel = channel;
     [registrar addMethodCallDelegate:instance channel:channel];
 }
@@ -318,10 +319,10 @@ const NSString* RESULTS_KEY = @"results";
 
 - (void)locationManager:(id<SITLocationInterface> _Nonnull)locationManager
          didUpdateState:(SITLocationState)state {
-
     NSLog(@"location Manager on state: %ld", state);
     NSMutableDictionary *args = [NSMutableDictionary new];
-    args[@"statusName"] = [NSString stringWithFormat:@"%d", state];
+    SITEnumMapper *enumMapper = [SITEnumMapper new];
+    args[@"statusName"] = [enumMapper mapLocationStateToString:state];
     [self.channel invokeMethod:@"onStatusChanged" arguments:args];
 }
 

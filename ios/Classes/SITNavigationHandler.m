@@ -8,7 +8,7 @@
 #import "SITNavigationHandler.h"
 #import <SitumSDK/SitumSDK.h>
 
-@interface SITNavigationHandler()<SITNavigationDelegate, SITLocationDelegate>
+@interface SITNavigationHandler()
 @end
 
 @implementation SITNavigationHandler
