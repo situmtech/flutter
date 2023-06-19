@@ -1,11 +1,16 @@
 part of wayfinding;
 
 /// MapView is the main component and entry point for Situm Flutter Wayfinding.
+/// This widget will load your Situm building on a map, based on the given
+/// [MapViewConfiguration].
 class MapView extends StatefulWidget {
   final MapViewConfiguration mapViewConfiguration;
   final MapViewCallback loadCallback;
   final MapViewCallback? didUpdateCallback;
 
+  /// MapView is the main component and entry point for Situm Flutter Wayfinding.
+  /// This widget will load your Situm building on a map, based on the given
+  /// [MapViewConfiguration].
   const MapView({
     required Key key,
     required this.mapViewConfiguration,

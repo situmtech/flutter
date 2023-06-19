@@ -102,18 +102,17 @@ class _MyTabsState extends State<MyTabs> {
         child: Text(buttonText));
   }
 
-  // Widget that for the Wayfinding module
+  // Widget that shows the Situm MapView.
   Widget _createSitumMapTab() {
-    // The Situm map:
     return Stack(children: [
       MapView(
         key: const Key("situm_map"),
         mapViewConfiguration: MapViewConfiguration(
-          // Your Situm credentials and building, see config.dart.
+          // Your Situm credentials.
           // Copy config.dart.example if you haven't already.
           situmUser: situmUser,
           situmApiKey: situmApiKey,
-          // configurationIdentifier or buildingIdentifier:
+          // Set configurationIdentifier or buildingIdentifier:
           configurationIdentifier: "situm_dev_abm",
           buildingIdentifier: buildingIdentifier,
           mapViewUrl: situmMapUrl,
@@ -131,22 +130,11 @@ class _MyTabsState extends State<MyTabs> {
     });
     controller.onNavigationRequestInterceptor((navigationRequest) {
       debugPrint("WYF> Navigation interceptor: ${navigationRequest.toMap()}");
-      //   navigationRequest.ignoreLowQualityLocations = false;
       //   navigationRequest.distanceToGoalThreshold = 10.0;
-      //   navigationRequest.outsideRouteThreshold = 20.0;
-      //   navigationRequest.distanceToIgnoreFirstIndication = 5.0;
-      //   navigationRequest.distanceToChangeFloorThreshold = 15.0;
-      //   navigationRequest.distanceToChangeIndicationThreshold = 12.0;
-      //   navigationRequest.indicationsInterval = 5000;
-      //   navigationRequest.timeToFirstIndication = 3000;
-      //   navigationRequest.roundIndicationsStep = 100;
-      //   navigationRequest.timeToIgnoreUnexpectedFloorChanges = 2000;
+      //   ...
     });
   }
 
-  /*
-  * On the state initialization of this widget, we initialize Situm SDK
-  */
   @override
   void initState() {
     situmSdk = SitumSdk();
@@ -188,9 +176,8 @@ class _MyTabsState extends State<MyTabs> {
     });
   }
 
-  /*
-  * SDK auxiliary functions
-  */
+  // SDK auxiliary functions
+
   void _requestUpdates() async {
     situmSdk.requestLocationUpdates(LocationRequest(
       buildingIdentifier: buildingIdentifier, //"-1"
@@ -258,7 +245,7 @@ class _MyTabsState extends State<MyTabs> {
         mapViewUrl: situmMapUrl));
   }
 
-  /* --- */
+  // ---
 
   @override
   Widget build(BuildContext context) {

@@ -21,8 +21,10 @@ enum AccessibilityMode {
   /// The route should choose the best route, without taking into account if it is accessible or not.
   /// This option is the default so you don't have to do anything in order to use it.
   CHOOSE_SHORTEST,
+
   /// The route should always use accessible nodes.
   ONLY_ACCESSIBLE,
+
   /// The route should never use accessible floor changes (use this to force routes not to use lifts).
   ONLY_NOT_ACCESSIBLE_FLOOR_CHANGES,
 }
@@ -70,17 +72,38 @@ class DirectionsRequest {
 
 /// A data object that allows you to configure the navigation parameters.
 class NavigationRequest {
+  /// Distance threshold to consider reaching the goal (meters).
   int? distanceToGoalThreshold;
+
+  /// Distance threshold to consider being outside the route (meters).
   int? outsideRouteThreshold;
+
+  /// Maximum distance to ignore the first indication when navigating (meters).
   int? distanceToIgnoreFirstIndication;
+
+  /// Distance threshold from when a floor change is considered reached (meters).
   int? distanceToFloorChangeThreshold;
+
+  /// Distance threshold to change the indication (meters).
   int? distanceToChangeIndicationThreshold;
+
+  /// Interval between indications (milliseconds).
   int? indicationsInterval;
+
+  /// Time to wait until the first indication is returned (milliseconds).
   int? timeToFirstIndication;
+
+  /// Step to round indications (meters).
   int? roundIndicationsStep;
+
+  /// Time to ignore the locations received during navigation, when the next indication is a floor change,
+  /// if the locations are on a wrong floor (not in origin or destination floors) (milliseconds).
   int? timeToIgnoreUnexpectedFloorChanges;
+
+  /// Ignore low-quality locations.
   bool? ignoreLowQualityLocations;
 
+  /// Configure the navigation parameters.
   NavigationRequest({
     this.distanceToGoalThreshold,
     this.outsideRouteThreshold,
@@ -102,16 +125,20 @@ class NavigationRequest {
     if (outsideRouteThreshold != null && outsideRouteThreshold! > 0) {
       map['outsideRouteThreshold'] = outsideRouteThreshold!;
     }
-    if (distanceToIgnoreFirstIndication != null && distanceToIgnoreFirstIndication! > 0) {
+    if (distanceToIgnoreFirstIndication != null &&
+        distanceToIgnoreFirstIndication! > 0) {
       map['distanceToIgnoreFirstIndication'] = distanceToIgnoreFirstIndication!;
     }
-    if (distanceToFloorChangeThreshold != null && distanceToFloorChangeThreshold! > 0) {
+    if (distanceToFloorChangeThreshold != null &&
+        distanceToFloorChangeThreshold! > 0) {
       // Android vs iOS inconsistency.
       map['distanceToChangeFloorThreshold'] = distanceToFloorChangeThreshold!;
       map['distanceToFloorChangeThreshold'] = distanceToFloorChangeThreshold!;
     }
-    if (distanceToChangeIndicationThreshold != null && distanceToChangeIndicationThreshold! > 0) {
-      map['distanceToChangeIndicationThreshold'] = distanceToChangeIndicationThreshold!;
+    if (distanceToChangeIndicationThreshold != null &&
+        distanceToChangeIndicationThreshold! > 0) {
+      map['distanceToChangeIndicationThreshold'] =
+          distanceToChangeIndicationThreshold!;
     }
     if (indicationsInterval != null && indicationsInterval! > 0) {
       map['indicationsInterval'] = indicationsInterval!;
@@ -122,8 +149,10 @@ class NavigationRequest {
     if (roundIndicationsStep != null && roundIndicationsStep! > 0) {
       map['roundIndicationsStep'] = roundIndicationsStep!;
     }
-    if (timeToIgnoreUnexpectedFloorChanges != null && timeToIgnoreUnexpectedFloorChanges! > 0) {
-      map['timeToIgnoreUnexpectedFloorChanges'] = timeToIgnoreUnexpectedFloorChanges!;
+    if (timeToIgnoreUnexpectedFloorChanges != null &&
+        timeToIgnoreUnexpectedFloorChanges! > 0) {
+      map['timeToIgnoreUnexpectedFloorChanges'] =
+          timeToIgnoreUnexpectedFloorChanges!;
     }
     if (ignoreLowQualityLocations != null) {
       map['ignoreLowQualityLocations'] = ignoreLowQualityLocations!;
@@ -259,8 +288,8 @@ class Angle {
   });
 
   Map<String, dynamic> toMap() => {
-    "radians": radians,
-  };
+        "radians": radians,
+      };
 }
 
 /// Represents a rectangle bounds in a greographic 2D space.

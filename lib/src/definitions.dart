@@ -2,15 +2,27 @@ part of wayfinding;
 
 // Public definitions:
 
+/// The [MapView] settings.
 class MapViewConfiguration {
+  /// Your Situm user.
   final String situmUser;
+
+  /// Your Situm API key.
   final String situmApiKey;
+
+  /// The building that will be loaded on the map. Alternatively you can pass a
+  /// configurationIdentifier (that will be prioritized).
   final String? buildingIdentifier;
+
+  /// Your configuration identifier. Alternatively you can pass a
+  /// buildingIdentifier, but configurationIdentifier will be prioritized.
   final String? configurationIdentifier;
   final String mapViewUrl;
   final TextDirection directionality;
   final bool enableDebugging;
 
+  /// The [MapView] settings. Required fields are your Situm user and API key,
+  /// but also a buildingIdentifier or configurationIdentifier.
   MapViewConfiguration({
     required this.situmUser,
     required this.situmApiKey,

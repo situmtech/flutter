@@ -1,7 +1,23 @@
 part of sdk;
 
-/// Main entry point for the Situm Flutter SDK. With this class you can start
+/// Main entry point for the Situm Flutter SDK. Use [SitumSdk] to start
 /// positioning, calculate routes and fetch resources.
+///
+/// ```dart
+/// var situmSdk = SitumSdk();
+/// // Set up your credentials:
+/// situmSdk.init(situmUser, situmApiKey);
+/// // Set up location listeners:
+/// situmSdk.onLocationChange((location) {
+///   ...
+/// });
+/// situmSdk.onStatusChange((status) {
+///   ...
+/// });
+/// situmSdk.onError((error) {
+///   ...
+/// });
+/// ```
 class SitumSdk {
   late final MethodChannel methodChannel;
 
@@ -18,6 +34,8 @@ class SitumSdk {
 
   static final SitumSdk _controller = SitumSdk._internal();
 
+  /// Main entry point for the Situm Flutter SDK. Use [SitumSdk] to start
+  /// positioning, calculate routes and fetch resources.
   factory SitumSdk() {
     // Factory: ensure only one controller exists.
     return _controller;
@@ -34,8 +52,8 @@ class SitumSdk {
 
   // Calls
 
-  /// Initialize SDK. You have to call this function prior any call to other
-  /// method.
+  /// Initializes [SitumSdk]. You have to call this function prior any call to
+  /// other method.
   Future<void> init(String situmUser, String situmApiKey) async {
     await methodChannel.invokeMethod<String>(
       'init',
@@ -55,7 +73,7 @@ class SitumSdk {
     );
   }
 
-  /// Start positioning. Use [onLocationChange], [onStatusChange] and
+  /// Starts positioning. Use [onLocationChange], [onStatusChange] and
   /// [onError] callbacks to receive location updates, status changes and
   /// positioning errors.
   Future<void> requestLocationUpdates(LocationRequest locationRequest) async {
@@ -79,18 +97,18 @@ class SitumSdk {
     _onErrorCallback = callback;
   }
 
-  /// Request directions between two [Point]s using the given
+  /// Requests directions between two [Point]s using the given
   /// [DirectionsRequest].
-  Future<SitumRoute> requestDirections(DirectionsRequest directionsRequest) async {
+  Future<SitumRoute> requestDirections(
+      DirectionsRequest directionsRequest) async {
     Map response = await methodChannel.invokeMethod(
         'requestDirections', directionsRequest.toMap());
     return createRoute(response);
   }
 
-  /// Request navigation between two [Point]s, using the given
+  /// Requests navigation between two [Point]s, using the given
   /// [DirectionsRequest] and [NavigationRequest].
-  Future<SitumRoute> requestNavigation(
-      DirectionsRequest directionsRequest,
+  Future<SitumRoute> requestNavigation(DirectionsRequest directionsRequest,
       NavigationRequest navigationRequest) async {
     Map response = await methodChannel.invokeMethod('requestNavigation', {
       // For convenience on the native side, set the buildingId here:
@@ -102,29 +120,32 @@ class SitumSdk {
     return createRoute(response);
   }
 
-  /// Stop navigation if running.
+  /// Stops navigation if running.
   Future<void> stopNavigation() async {
     await methodChannel.invokeMethod("stopNavigation", {});
   }
 
-  /// Set a callback that will be notified when the navigation finishes.
+  /// Sets a callback that will be notified when the navigation finishes.
   /// This will happen when the user is close to the destination of the current
   /// route by less than the distanceToGoalThreshold of [NavigationRequest].
+  ///
   /// See [requestNavigation].
   Future<void> onNavigationFinished(
       OnNavigationFinishedCallback callback) async {
     _onNavigationFinishedCallback = callback;
   }
 
-  /// Set a callback that will be notified on every navigation progress.
+  /// Sets a callback that will be notified on every navigation progress.
+  ///
   /// See [requestNavigation].
   Future<void> onNavigationProgress(
       OnNavigationProgressCallback callback) async {
     _onNavigationProgressCallback = callback;
   }
 
-  /// Set a callback that will be notified when the current user gets out
+  /// Sets a callback that will be notified when the current user gets out
   /// of the current route.
+  ///
   /// See [requestNavigation].
   Future<void> onNavigationOutOfRoute(
       OnNavigationOutOfRouteCallback callback) async {
@@ -135,18 +156,18 @@ class SitumSdk {
     await methodChannel.invokeMethod('clearCache');
   }
 
-  /// Stop positioning.
+  /// Stops positioning.
   Future<void> removeUpdates() async {
     await methodChannel.invokeMethod('removeUpdates');
   }
 
-  /// Download all the buildings for the current user.
+  /// Downloads all the buildings for the current user.
   Future<List<Building>> fetchBuildings() async {
     List response = await methodChannel.invokeMethod("fetchBuildings");
     return createList<Building>(response, createBuilding);
   }
 
-  /// Download all the building data for the selected building. This info
+  /// Downloads all the building data for the selected building. This info
   /// includes [Floor]s, indoor and outdoor [Poi]s, events and paths. It also
   /// download floor maps and [PoiCategory] icons to local storage.
   Future<BuildingInfo> fetchBuildingInfo(String buildingIdentifier) async {
@@ -155,7 +176,7 @@ class SitumSdk {
     return createBuildingInfo(response);
   }
 
-  /// Download all the necessary information to start positioning. This includes
+  /// Downloads all the necessary information to start positioning. This includes
   /// [Building], [BuildingInfo] and the building's model. Downloaded
   /// information will be saved in cache.
   Future<String> prefetchPositioningInfo(
