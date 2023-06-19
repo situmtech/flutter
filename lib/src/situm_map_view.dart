@@ -29,7 +29,7 @@ class _MapViewState extends State<MapView> {
   late MapViewConfiguration mapViewConfiguration;
 
   String _createUri() {
-    var base = mapViewConfiguration.mapViewUrl;
+    var base = mapViewConfiguration._internalMapViewUrl;
     var query =
         "email=${mapViewConfiguration.situmUser}&apikey=${mapViewConfiguration.situmApiKey}&mode=embed";
     if (mapViewConfiguration.configurationIdentifier != null) {

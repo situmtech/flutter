@@ -18,6 +18,14 @@ class MapViewConfiguration {
   /// buildingIdentifier, but configurationIdentifier will be prioritized.
   final String? configurationIdentifier;
   final String mapViewUrl;
+
+  String get _internalMapViewUrl {
+    if (mapViewUrl.endsWith("/")) {
+      return mapViewUrl.substring(0, mapViewUrl.length - 1);
+    }
+    return mapViewUrl;
+  }
+
   final TextDirection directionality;
   final bool enableDebugging;
 
