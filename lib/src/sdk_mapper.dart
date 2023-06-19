@@ -158,17 +158,24 @@ SitumRoute createRoute(arguments) {
   return SitumRoute(rawContent: arguments);
 }
 
-DirectionsRequest createDirectionsRequest(arguments) => DirectionsRequest(
-      from: createPoint(arguments["from"]),
-      to: createPoint(arguments["to"]),
-      bearingFrom: Angle(
-        radians: (arguments["bearingFrom"] != null
-                ? arguments["bearingFrom"]["radians"]
-                : 0)
-            .toDouble(),
-      ),
-      minimizeFloorChanges: arguments["minimizeFloorChanges"],
-    );
+DirectionsRequest createDirectionsRequest(arguments) {
+  var directionsRequest = DirectionsRequest(
+    from: createPoint(arguments["from"]),
+    to: createPoint(arguments["to"]),
+    bearingFrom: Angle(
+      radians: (arguments["bearingFrom"] != null
+              ? arguments["bearingFrom"]["radians"]
+              : 0)
+          .toDouble(),
+    ),
+    minimizeFloorChanges: arguments["minimizeFloorChanges"],
+  );
+  if (arguments["accessibilityMode"] != null) {
+    directionsRequest.accessibilityMode = AccessibilityMode.values.firstWhere(
+        (element) => element.name == arguments["accessibilityMode"]);
+  }
+  return directionsRequest;
+}
 
 NavigationRequest createNavigationRequest(arguments) => NavigationRequest(
       distanceToGoalThreshold: arguments['distanceToGoalThreshold'],

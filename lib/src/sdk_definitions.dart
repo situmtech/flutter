@@ -62,7 +62,7 @@ class DirectionsRequest {
       map['bearingFrom'] = bearingFrom?.toMap();
     }
     if (accessibilityMode != null) {
-      map['accessibilityMode'] = accessibilityMode.toString();
+      map['accessibilityMode'] = accessibilityMode!.name;
     }
     return map;
   }
