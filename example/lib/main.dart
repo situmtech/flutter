@@ -97,7 +97,8 @@ class _MyTabsState extends State<MyTabs> {
         situmApiKey: situmApiKey,
         buildingIdentifier: buildingIdentifier,
         // Config:
-        situmMapUrl: "https://map-viewer-des.situm.com",
+        situmMapUrl: "https://snazzy-arithmetic-cba56a.netlify.app",
+        // situmMapUrl: "http://172.17.100.131:4173",
         //situmMapUrl: "http://192.168.1.139:5173",
         showPoiNames: true,
         hasSearchView: true,

@@ -57,5 +57,15 @@
 	<string>Bluetooth is required to find out where you are</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Location is required to find out where you are</string>
+	<key>WKAppBoundDomains</key>
+	<array>
+		<string>snazzy-arithmetic-cba56a.netlify.app</string>
+		<string>172.17.100.131:5173</string>
+		<string>172.17.100.131:4173</string>
+		<string>dashboard.situm.com</string>
+		<string>situm.com</string>
+		<string>map-viewer.situm.com</string>
+		<string>api.mapbox.com</string>
+	</array>
 </dict>
 </plist>
