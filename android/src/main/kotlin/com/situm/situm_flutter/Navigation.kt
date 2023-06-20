@@ -1,6 +1,7 @@
 package com.situm.situm_flutter
 
 import android.os.Looper
+import android.util.Log
 import es.situm.sdk.SitumSdk
 import es.situm.sdk.directions.DirectionsRequest
 import es.situm.sdk.error.Error
@@ -46,6 +47,8 @@ class Navigation private constructor(
                 if (navigationRequestArgs != null) {
                     // If requested, start navigation:
                     val navigationRequest = NavigationRequest.fromMap(navigationRequestArgs)
+                    // TODO: delete this log:
+                    Log.d("VALIDACIÓN", "navigationRequest: ${navigationRequest.toMap()}")
                     navigationRequest.route = route
                     SitumSdk.navigationManager().requestNavigationUpdates(
                         navigationRequest, this@Navigation
