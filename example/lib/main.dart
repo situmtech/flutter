@@ -53,7 +53,6 @@ class _MyTabsState extends State<MyTabs> {
           _sdkButton('Buildings', _fetchBuildings),
           _sdkButton('Building Info', _fetchBuildingInfo),
         ]),
-        _sdkButton('Switch Building', _switchBuilding),
         Expanded(
             child: SingleChildScrollView(
                 padding: const EdgeInsets.all(30), child: Text(currentOutput)))
@@ -235,14 +234,6 @@ class _MyTabsState extends State<MyTabs> {
     _echo("SDK> BUILDINGS...");
     var buildings = await situmSdk.fetchBuildings();
     _echo("SDK> RESPONSE: BUILDINGS = \n\n$buildings");
-  }
-
-  void _switchBuilding() async {
-    mapViewController?.reloadWithConfiguration(MapViewConfiguration(
-        situmUser: situmUser,
-        situmApiKey: situmApiKey,
-        configurationIdentifier: "situm_dev_awesome",
-        mapViewUrl: situmMapUrl));
   }
 
   // ---
