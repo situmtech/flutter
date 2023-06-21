@@ -65,10 +65,14 @@ class MapViewController {
   void _setRoute(
     String originIdentifier,
     String destinationIdentifier,
+    String? routeType,
     SitumRoute situmRoute,
   ) async {
     situmRoute.rawContent["originIdentifier"] = originIdentifier;
     situmRoute.rawContent["destinationIdentifier"] = destinationIdentifier;
+    // The map-viewer waits for an accessibility mode in the "type" attribute
+    // of the payload. This is due to internal state management.
+    situmRoute.rawContent["type"] = routeType ?? AccessibilityMode.CHOOSE_SHORTEST;
     _sendMessage(
         WV_MESSAGE_DIRECTIONS_UPDATE, jsonEncode(situmRoute.rawContent));
   }

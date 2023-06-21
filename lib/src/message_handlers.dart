@@ -52,6 +52,7 @@ class DirectionsMessageHandler implements MessageHandler {
       situmFlutterWYF._setRoute(
         directionsMessage.originIdentifier,
         directionsMessage.destinationIdentifier,
+        directionsRequest.accessibilityMode?.name,
         situmRoute,
       );
     } on PlatformException catch (e) {
