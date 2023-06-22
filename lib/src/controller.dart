@@ -10,15 +10,15 @@ class MapViewController {
   OnDirectionsRequestInterceptor? _onDirectionsRequestInterceptor;
   OnNavigationRequestInterceptor? _onNavigationRequestInterceptor;
 
-  final Function(MapViewConfiguration) widgetUpdater;
-  final WebViewController webViewController;
+  final Function(MapViewConfiguration) _widgetUpdater;
+  final WebViewController _webViewController;
 
   MapViewController({
     required String situmUser,
     required String situmApiKey,
-    required this.widgetUpdater,
-    required this.webViewController,
-  }) {
+    required dynamic Function(MapViewConfiguration) widgetUpdater,
+    required WebViewController webViewController,
+  }) : _webViewController = webViewController, _widgetUpdater = widgetUpdater {
     // Be sure to initialize the SitumSdk so it can be used in callbacks, etc.
     SitumSdk().init(situmUser, situmApiKey);
   }
@@ -41,15 +41,16 @@ class MapViewController {
   void _sendMessage(String type, dynamic payload) {
     // Do not quote payload keys!
     var message = "{type: '$type', payload: $payload}";
-    webViewController.runJavaScript("""
+    _webViewController.runJavaScript("""
       window.postMessage($message)
     """);
   }
 
   // Actions:
 
-  void reloadWithConfiguration(MapViewConfiguration configuration) async {
-    widgetUpdater(configuration);
+  void _reloadWithConfiguration(MapViewConfiguration configuration) async {
+    // TODO - feature: reload with a new configuration.
+    _widgetUpdater(configuration);
   }
 
   void _selectPoi(String id, String buildingId) async {
