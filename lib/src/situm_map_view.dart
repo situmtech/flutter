@@ -74,7 +74,7 @@ class _SitumMapViewState extends State<SitumMapView> {
         defaultTargetPlatform == TargetPlatform.android
             ? AndroidWebViewControllerCreationParams()
             : WebKitWebViewControllerCreationParams(
-                limitsNavigationsToAppBoundDomains: !widget.enableDebugging);
+                limitsNavigationsToAppBoundDomains: true);
 
     PlatformWebViewController controller = PlatformWebViewController(params);
 
