@@ -70,7 +70,7 @@ class _SitumMapViewState extends State<SitumMapView> {
   void initState() {
     super.initState();
 
-    final WebViewController controller;
+    late final WebViewController controller;
 
     if (defaultTargetPlatform == TargetPlatform.iOS) {
       controller = WebViewController.fromPlatformCreationParams(
