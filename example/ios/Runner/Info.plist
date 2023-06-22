@@ -57,5 +57,11 @@
 	<string>Bluetooth is required to find out where you are</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Location is required to find out where you are</string>
+	<key>WKAppBoundDomains</key>
+	<array>
+		<string>map-viewer.situm.com</string>
+		<string>map-viewer-des.situm.com</string>
+		<string>map-viewer-pre.situm.com</string>
+	</array>
 </dict>
 </plist>
