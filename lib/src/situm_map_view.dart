@@ -73,9 +73,14 @@ class _SitumMapViewState extends State<SitumMapView> {
     late final WebViewController controller;
 
     if (defaultTargetPlatform == TargetPlatform.iOS) {
+      /**
+       * Set limitsNavigationsToAppBoundDomains to true to allow the usage of service workers on map-viewer
+       * Service workers are used to cache all data, which enables the usage of the application while offline.
+       * This parameter will be set to false if debug is set to true.
+       */
       controller = WebViewController.fromPlatformCreationParams(
           WebKitWebViewControllerCreationParams(
-              limitsNavigationsToAppBoundDomains: true));
+              limitsNavigationsToAppBoundDomains: !widget.enableDebugging));
     } else {
       controller = WebViewController.fromPlatformCreationParams(
           const PlatformWebViewControllerCreationParams());
