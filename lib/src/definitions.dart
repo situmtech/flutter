@@ -14,8 +14,9 @@ class MapViewConfiguration {
   /// configurationIdentifier (that will be prioritized).
   final String? buildingIdentifier;
 
-  /// Your configuration identifier. Alternatively you can pass a
-  /// buildingIdentifier, but configurationIdentifier will be prioritized.
+  /// A String identifier that allows you to remotely configure all map settings.
+  /// Alternatively you can pass a buildingIdentifier, but configurationIdentifier
+  /// will be prioritized.
   final String? configurationIdentifier;
   final String mapViewUrl;
 

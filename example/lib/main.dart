@@ -112,9 +112,9 @@ class _MyTabsState extends State<MyTabs> {
           situmUser: situmUser,
           situmApiKey: situmApiKey,
           // Set configurationIdentifier or buildingIdentifier:
-          configurationIdentifier: "situm_dev_abm",
+          configurationIdentifier: configurationIdentifier,
           buildingIdentifier: buildingIdentifier,
-          mapViewUrl: situmMapUrl,
+          mapViewUrl: mapViewUrl,
           enableDebugging: true,
         ),
         loadCallback: _onLoad,
