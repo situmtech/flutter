@@ -21,9 +21,9 @@ part of sdk;
 class SitumSdk {
   late final MethodChannel methodChannel;
 
-  OnLocationChangeCallback? _onLocationChangeCallback;
-  OnStatusChangeCallback? _onStatusChangeCallback;
-  OnErrorCallback? _onErrorCallback;
+  OnLocationUpdateCallback? _onLocationUpdateCallback;
+  OnLocationStatusCallback? _onLocationStatusCallback;
+  OnLocationErrorCallback? _onLocationErrorCallback;
 
   OnEnteredGeofencesCallback? _onEnteredGeofencesCallback;
   OnExitedGeofencesCallback? _onExitedGeofencesCallback;
@@ -73,8 +73,8 @@ class SitumSdk {
     );
   }
 
-  /// Starts positioning. Use [onLocationChange], [onStatusChange] and
-  /// [onError] callbacks to receive location updates, status changes and
+  /// Starts positioning. Use [onLocationUpdate], [onLocationStatus] and
+  /// [onLocationError] callbacks to receive location updates, status changes and
   /// positioning errors.
   Future<void> requestLocationUpdates(LocationRequest locationRequest) async {
     await methodChannel.invokeMethod(
@@ -82,19 +82,19 @@ class SitumSdk {
   }
 
   /// Get notified about location updates. See [requestLocationUpdates].
-  Future<void> onLocationChange(OnLocationChangeCallback callback) async {
-    _onLocationChangeCallback = callback;
+  Future<void> onLocationUpdate(OnLocationUpdateCallback callback) async {
+    _onLocationUpdateCallback = callback;
   }
 
   /// Get notified about positioning status changes. See
   /// [requestLocationUpdates].
-  Future<void> onStatusChange(OnStatusChangeCallback callback) async {
-    _onStatusChangeCallback = callback;
+  Future<void> onLocationStatus(OnLocationStatusCallback callback) async {
+    _onLocationStatusCallback = callback;
   }
 
   /// Get notified about positioning errors. See [requestLocationUpdates].
-  Future<void> onError(OnErrorCallback callback) async {
-    _onErrorCallback = callback;
+  Future<void> onLocationError(OnLocationErrorCallback callback) async {
+    _onLocationErrorCallback = callback;
   }
 
   /// Requests directions between two [Point]s using the given
@@ -274,15 +274,15 @@ class SitumSdk {
   // LOCATION UPDATES:
 
   void _onLocationChanged(arguments) {
-    _onLocationChangeCallback?.call(createLocation(arguments));
+    _onLocationUpdateCallback?.call(createLocation(arguments));
   }
 
   void _onStatusChanged(arguments) {
-    _onStatusChangeCallback?.call(arguments['statusName']);
+    _onLocationStatusCallback?.call(arguments['statusName']);
   }
 
   void _onError(arguments) {
-    _onErrorCallback?.call(Error(
+    _onLocationErrorCallback?.call(Error(
       code: "${arguments['code']}", // Ensure code is a string!
       message: arguments['message'],
     ));

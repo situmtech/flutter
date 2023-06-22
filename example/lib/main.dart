@@ -147,7 +147,7 @@ class _MyTabsState extends State<MyTabs> {
       useRemoteConfig: true,
     ));
     // Set up location listeners:
-    situmSdk.onLocationChange((location) {
+    situmSdk.onLocationUpdate((location) {
       _echo("""SDK> Location changed:
         B=${location.buildingIdentifier},
         F=${location.floorIdentifier},
@@ -157,10 +157,10 @@ class _MyTabsState extends State<MyTabs> {
       // location for it to be displayed on the map.
       mapViewController?.setCurrentLocation(location);
     });
-    situmSdk.onStatusChange((status) {
+    situmSdk.onLocationStatus((status) {
       _echo("SDK> STATUS: $status");
     });
-    situmSdk.onError((error) {
+    situmSdk.onLocationError((error) {
       _echo("SDK> Error: ${error.message}");
     });
     // Set up listener for events on geofences

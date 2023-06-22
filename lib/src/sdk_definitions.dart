@@ -627,9 +627,9 @@ class RouteProgress {
 // Result callbacks.
 
 // Location.
-typedef OnLocationChangeCallback = void Function(Location location);
-typedef OnStatusChangeCallback = void Function(String status);
-typedef OnErrorCallback = void Function(Error error);
+typedef OnLocationUpdateCallback = void Function(Location location);
+typedef OnLocationStatusCallback = void Function(String status);
+typedef OnLocationErrorCallback = void Function(Error error);
 
 // On enter/exit geofences.
 typedef OnEnteredGeofencesCallback = void Function(
