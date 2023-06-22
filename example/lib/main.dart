@@ -123,6 +123,9 @@ class _MyTabsState extends State<MyTabs> {
   }
 
   void _onLoad(MapViewController controller) {
+    // Use MapViewController to communicate with the map: methods and callbacks
+    // are available to perform actions and listen to events (e.g., set the user
+    // location, listen to POI selections, intercept navigation options, etc.).
     mapViewController = controller;
     controller.onPoiSelected((poiSelectedResult) {
       debugPrint("WYF> onPoiSelected: ${poiSelectedResult.poi.name}");
@@ -150,6 +153,8 @@ class _MyTabsState extends State<MyTabs> {
         F=${location.floorIdentifier},
         C=${location.coordinate.latitude}, ${location.coordinate.longitude}
       """);
+      // MapView is positioning system-agnostic. You need to provide the user's
+      // location for it to be displayed on the map.
       mapViewController?.setCurrentLocation(location);
     });
     situmSdk.onStatusChange((status) {

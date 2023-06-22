@@ -52,12 +52,12 @@ class MapViewController {
     widgetUpdater(configuration);
   }
 
-  void selectPoi(String id, String buildingId) async {
-    // TODO.
+  void _selectPoi(String id, String buildingId) async {
+    // TODO - make public.
   }
 
-  void navigateToPoi(String id, String buildingId) async {
-    // TODO.
+  void _navigateToPoi(String id, String buildingId) async {
+    // TODO - make public.
   }
 
   // WYF internal utils:
