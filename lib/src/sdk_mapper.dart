@@ -87,7 +87,7 @@ PoiCategory createCategory(Map map) {
 
 Point createPoint(arguments) => Point(
       buildingIdentifier: arguments["buildingIdentifier"],
-      floorIdentifier: arguments["floorIdentifier"], // Hmm
+      floorIdentifier: arguments["floorIdentifier"],
       coordinate: createCoordinate(arguments["coordinate"]),
       cartesianCoordinate:
           createCartesianCoordinate(arguments["cartesianCoordinate"]),
