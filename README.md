@@ -78,6 +78,15 @@ allprojects {
 
 Once included the app will ask the user for the appropriate permissions.
 
+3. To have offline support you will have to add the underlying web application's domain inside the entry `WKAppBoundDomains` on `Info.plist` as follows:
+
+```
+<key>WKAppBoundDomains</key>
+<array>
+	<string>map-viewer.situm.com</string>
+</array>
+```
+
 ## Versioning
 
 Please refer to [CHANGELOG.md](./CHANGELOG.md) for a list of notable changes for each version of the plugin.
