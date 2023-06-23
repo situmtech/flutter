@@ -114,7 +114,7 @@ class _MyTabsState extends State<MyTabs> {
           // Set configurationIdentifier or buildingIdentifier:
           configurationIdentifier: configurationIdentifier,
           buildingIdentifier: buildingIdentifier,
-          mapViewUrl: mapViewUrl,
+          baseUrl: mapViewUrl,
           enableDebugging: true,
         ),
         loadCallback: _onLoad,

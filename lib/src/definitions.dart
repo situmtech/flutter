@@ -18,7 +18,7 @@ class MapViewConfiguration {
   /// Alternatively you can pass a buildingIdentifier, but configurationIdentifier
   /// will be prioritized.
   final String? configurationIdentifier;
-  final String mapViewUrl;
+  final String baseUrl;
   final TextDirection directionality;
   final bool enableDebugging;
 
@@ -29,16 +29,16 @@ class MapViewConfiguration {
     required this.situmApiKey,
     this.buildingIdentifier,
     this.configurationIdentifier,
-    this.mapViewUrl = "https://map-viewer.situm.com",
+    this.baseUrl = "https://map-viewer.situm.com",
     this.directionality = TextDirection.ltr,
     this.enableDebugging = false,
   });
 
   String get _internalMapViewUrl {
-    if (mapViewUrl.endsWith("/")) {
-      return mapViewUrl.substring(0, mapViewUrl.length - 1);
+    if (baseUrl.endsWith("/")) {
+      return baseUrl.substring(0, baseUrl.length - 1);
     }
-    return mapViewUrl;
+    return baseUrl;
   }
 
   String _getMapViewerUrl() {
