@@ -1,6 +1,6 @@
 name: situm_flutter
 description: Situm for Flutter.
-version: 0.0.14
+version: 0.0.1
 homepage: https://github.com/situmtech/flutter-wayfinding
 
 environment:
