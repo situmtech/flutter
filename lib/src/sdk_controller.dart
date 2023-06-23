@@ -8,13 +8,13 @@ part of sdk;
 /// // Set up your credentials:
 /// situmSdk.init(situmUser, situmApiKey);
 /// // Set up location listeners:
-/// situmSdk.onLocationChange((location) {
+/// situmSdk.onLocationUpdate((location) {
 ///   ...
 /// });
-/// situmSdk.onStatusChange((status) {
+/// situmSdk.onLocationStatus((status) {
 ///   ...
 /// });
-/// situmSdk.onError((error) {
+/// situmSdk.onLocationError((error) {
 ///   ...
 /// });
 /// ```

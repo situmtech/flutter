@@ -126,6 +126,7 @@ class _MyTabsState extends State<MyTabs> {
     // Use MapViewController to communicate with the map: methods and callbacks
     // are available to perform actions and listen to events (e.g., set the user
     // location, listen to POI selections, intercept navigation options, etc.).
+    // You need to wait until the map is properly loaded to do so.
     mapViewController = controller;
     controller.onPoiSelected((poiSelectedResult) {
       debugPrint("WYF> onPoiSelected: ${poiSelectedResult.poi.name}");

@@ -117,45 +117,28 @@ class NavigationRequest {
     this.ignoreLowQualityLocations,
   });
 
+  void addToMap(String key, dynamic value, Map<String, dynamic> map) {
+    if (value != null && value > 0) {
+      map[key] = value;
+    }
+  }
+
   Map<String, dynamic> toMap() {
     Map<String, dynamic> map = {};
-    if (distanceToGoalThreshold != null && distanceToGoalThreshold! > 0) {
-      map['distanceToGoalThreshold'] = distanceToGoalThreshold!;
-    }
-    if (outsideRouteThreshold != null && outsideRouteThreshold! > 0) {
-      map['outsideRouteThreshold'] = outsideRouteThreshold!;
-    }
-    if (distanceToIgnoreFirstIndication != null &&
-        distanceToIgnoreFirstIndication! > 0) {
-      map['distanceToIgnoreFirstIndication'] = distanceToIgnoreFirstIndication!;
-    }
-    if (distanceToFloorChangeThreshold != null &&
-        distanceToFloorChangeThreshold! > 0) {
-      // Android vs iOS inconsistency.
-      map['distanceToChangeFloorThreshold'] = distanceToFloorChangeThreshold!;
-      map['distanceToFloorChangeThreshold'] = distanceToFloorChangeThreshold!;
-    }
-    if (distanceToChangeIndicationThreshold != null &&
-        distanceToChangeIndicationThreshold! > 0) {
-      map['distanceToChangeIndicationThreshold'] =
-          distanceToChangeIndicationThreshold!;
-    }
-    if (indicationsInterval != null && indicationsInterval! > 0) {
-      map['indicationsInterval'] = indicationsInterval!;
-    }
-    if (timeToFirstIndication != null && timeToFirstIndication! > 0) {
-      map['timeToFirstIndication'] = timeToFirstIndication!;
-    }
-    if (roundIndicationsStep != null && roundIndicationsStep! > 0) {
-      map['roundIndicationsStep'] = roundIndicationsStep!;
-    }
-    if (timeToIgnoreUnexpectedFloorChanges != null &&
-        timeToIgnoreUnexpectedFloorChanges! > 0) {
-      map['timeToIgnoreUnexpectedFloorChanges'] =
-          timeToIgnoreUnexpectedFloorChanges!;
-    }
+    addToMap('distanceToGoalThreshold', distanceToGoalThreshold, map);
+    addToMap('outsideRouteThreshold', outsideRouteThreshold, map);
+    addToMap('distanceToIgnoreFirstIndication', distanceToIgnoreFirstIndication, map);
+    // Android vs iOS inconsistency: both distanceToChangeFloorThreshold and
+    // distanceToFloorChangeThreshold are necessary.
+    addToMap('distanceToChangeFloorThreshold', distanceToFloorChangeThreshold, map);
+    addToMap('distanceToFloorChangeThreshold', distanceToFloorChangeThreshold, map);
+    addToMap('distanceToChangeIndicationThreshold', distanceToChangeIndicationThreshold, map);
+    addToMap('indicationsInterval', indicationsInterval, map);
+    addToMap('timeToFirstIndication', timeToFirstIndication, map);
+    addToMap('roundIndicationsStep', roundIndicationsStep, map);
+    addToMap('timeToIgnoreUnexpectedFloorChanges', timeToIgnoreUnexpectedFloorChanges, map);
     if (ignoreLowQualityLocations != null) {
-      map['ignoreLowQualityLocations'] = ignoreLowQualityLocations!;
+      map['ignoreLowQualityLocations'] = ignoreLowQualityLocations;
     }
     return map;
   }

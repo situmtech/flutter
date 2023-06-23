@@ -28,20 +28,6 @@ class _MapViewState extends State<MapView> {
 
   late MapViewConfiguration mapViewConfiguration;
 
-  String _createUri() {
-    var base = mapViewConfiguration._internalMapViewUrl;
-    var query =
-        "email=${mapViewConfiguration.situmUser}&apikey=${mapViewConfiguration.situmApiKey}&mode=embed";
-    if (mapViewConfiguration.configurationIdentifier != null) {
-      return "$base/id/${mapViewConfiguration.configurationIdentifier}?$query";
-    } else if (mapViewConfiguration.buildingIdentifier != null) {
-      query = "$query&buildingid=${mapViewConfiguration.buildingIdentifier}";
-      return "$base/?$query";
-    }
-    throw ArgumentError(
-        'Missing configuration: configurationIdentifier or buildingIdentifier must be provided.');
-  }
-
   @override
   void initState() {
     super.initState();
@@ -99,10 +85,9 @@ class _MapViewState extends State<MapView> {
     if (webViewController.platform is AndroidWebViewController) {
       AndroidWebViewController.enableDebugging(configuration.enableDebugging);
     }
-    // Create the final MapView URI.
-    final String uri = _createUri();
-    // Load the composed URI in the WebView.
-    webViewController.loadRequest(Uri.parse(uri));
+    final String mapViewUrl = mapViewConfiguration._getMapViewerUrl();
+    // Load the composed URL in the WebView.
+    webViewController.loadRequest(Uri.parse(mapViewUrl));
   }
 
   void _onMapReady(String url) {

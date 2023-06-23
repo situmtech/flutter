@@ -19,14 +19,6 @@ class MapViewConfiguration {
   /// will be prioritized.
   final String? configurationIdentifier;
   final String mapViewUrl;
-
-  String get _internalMapViewUrl {
-    if (mapViewUrl.endsWith("/")) {
-      return mapViewUrl.substring(0, mapViewUrl.length - 1);
-    }
-    return mapViewUrl;
-  }
-
   final TextDirection directionality;
   final bool enableDebugging;
 
@@ -41,6 +33,26 @@ class MapViewConfiguration {
     this.directionality = TextDirection.ltr,
     this.enableDebugging = false,
   });
+
+  String get _internalMapViewUrl {
+    if (mapViewUrl.endsWith("/")) {
+      return mapViewUrl.substring(0, mapViewUrl.length - 1);
+    }
+    return mapViewUrl;
+  }
+
+  String _getMapViewerUrl() {
+    var base = _internalMapViewUrl;
+    var query = "email=$situmUser&apikey=$situmApiKey&mode=embed";
+    if (configurationIdentifier != null) {
+      return "$base/id/$configurationIdentifier?$query";
+    } else if (buildingIdentifier != null) {
+      query = "$query&buildingid=$buildingIdentifier";
+      return "$base/?$query";
+    }
+    throw ArgumentError(
+        'Missing configuration: configurationIdentifier or buildingIdentifier must be provided.');
+  }
 }
 
 class DirectionsMessage {
