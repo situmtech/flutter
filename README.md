@@ -78,6 +78,15 @@ allprojects {
 
 Once included the app will ask the user for the appropriate permissions.
 
+3. To have offline support you will have to add the underlying web application's domain inside the entry `WKAppBoundDomains` on `Info.plist` as follows:
+
+```
+<key>WKAppBoundDomains</key>
+<array>
+	<string>map-viewer.situm.com</string>
+</array>
+```
+
 ## Migrate from the old [Situm Flutter Wayfinding plugin](https://pub.dev/packages/situm_flutter_wayfinding)
 
 The new Situm Flutter package breaks compatibility with the previous [Situm Flutter Wayfinding plugin](https://pub.dev/packages/situm_flutter_wayfinding).

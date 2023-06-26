@@ -11,13 +11,13 @@ class MapViewController {
   OnNavigationRequestInterceptor? _onNavigationRequestInterceptor;
 
   final Function(MapViewConfiguration) _widgetUpdater;
-  final WebViewController _webViewController;
+  final PlatformWebViewController _webViewController;
 
   MapViewController({
     required String situmUser,
     required String situmApiKey,
     required dynamic Function(MapViewConfiguration) widgetUpdater,
-    required WebViewController webViewController,
+    required PlatformWebViewController webViewController,
   }) : _webViewController = webViewController, _widgetUpdater = widgetUpdater {
     // Be sure to initialize the SitumSdk so it can be used in callbacks, etc.
     SitumSdk().init(situmUser, situmApiKey);

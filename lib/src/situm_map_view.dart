@@ -24,57 +24,72 @@ class MapView extends StatefulWidget {
 
 class _MapViewState extends State<MapView> {
   MapViewController? wyfController;
-  late final WebViewController webViewController;
-
+  late final PlatformWebViewController webViewController;
   late MapViewConfiguration mapViewConfiguration;
 
   @override
   void initState() {
     super.initState();
 
-    final WebViewController controller =
-        WebViewController.fromPlatformCreationParams(
-            const PlatformWebViewControllerCreationParams());
+    PlatformWebViewControllerCreationParams params =
+        defaultTargetPlatform == TargetPlatform.android
+            ? AndroidWebViewControllerCreationParams()
+            : WebKitWebViewControllerCreationParams(
+                limitsNavigationsToAppBoundDomains: true,
+              );
+
+    PlatformWebViewController controller = PlatformWebViewController(params);
 
     controller
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setBackgroundColor(const Color(0x00000000))
-      ..setNavigationDelegate(
-        NavigationDelegate(
-          onProgress: (int progress) {
+      ..setPlatformNavigationDelegate(
+        PlatformNavigationDelegate(
+          const PlatformNavigationDelegateCreationParams(),
+        )
+          ..setOnProgress((int progress) {
             // Do nothing.
-          },
-          onPageStarted: (String url) {
+          })
+          ..setOnPageStarted((String url) {
             // Do nothing.
-          },
-          onPageFinished: (String url) {
+          })
+          ..setOnPageFinished((String url) {
             _onMapReady(url);
-          },
-          onWebResourceError: (WebResourceError error) {
+          })
+          ..setOnWebResourceError((WebResourceError error) {
             debugPrint('''
               Page resource error:
                 code: ${error.errorCode}
                 description: ${error.description}
                 errorType: ${error.errorType}
                 isForMainFrame: ${error.isForMainFrame}
-          ''');
-          },
-          onNavigationRequest: (dynamic request) {
+            ''');
+          })
+          ..setOnNavigationRequest((dynamic request) {
             if (request.url.startsWith(mapViewConfiguration.baseUrl)) {
               return NavigationDecision.navigate;
             }
             return NavigationDecision.prevent;
-          },
-        ),
+          })
+          ..setOnUrlChange((UrlChange change) {
+            debugPrint('url change to ${change.url}');
+          }),
       )
-      ..addJavaScriptChannel(
-        WV_CHANNEL,
+      ..addJavaScriptChannel(JavaScriptChannelParams(
+        name: WV_CHANNEL,
         onMessageReceived: (JavaScriptMessage message) {
           Map<String, dynamic> map = jsonDecode(message.message);
           wyfController?.onMapViewerMessage(map["type"], map["payload"] ?? {});
         },
+      ))
+      ..setOnPlatformPermissionRequest(
+        (PlatformWebViewPermissionRequest request) {
+          debugPrint(
+            'requesting permissions for ${request.types.map((WebViewPermissionResourceType type) => type.name)}',
+          );
+          request.grant();
+        },
       );
-
     webViewController = controller;
     _loadWithConfig(widget.mapViewConfiguration);
   }
@@ -82,12 +97,13 @@ class _MapViewState extends State<MapView> {
   void _loadWithConfig(MapViewConfiguration configuration) {
     // Keep configuration.
     mapViewConfiguration = configuration;
-    if (webViewController.platform is AndroidWebViewController) {
+    if (webViewController is AndroidWebViewController) {
       AndroidWebViewController.enableDebugging(configuration.enableDebugging);
     }
     final String mapViewUrl = mapViewConfiguration._getMapViewerUrl();
     // Load the composed URL in the WebView.
-    webViewController.loadRequest(Uri.parse(mapViewUrl));
+    webViewController
+        .loadRequest(LoadRequestParams(uri: Uri.parse(mapViewUrl)));
   }
 
   void _onMapReady(String url) {
@@ -106,18 +122,19 @@ class _MapViewState extends State<MapView> {
 
   @override
   Widget build(BuildContext context) {
-    if (defaultTargetPlatform == TargetPlatform.android) {
-      return WebViewWidget.fromPlatformCreationParams(
-        params: AndroidWebViewWidgetCreationParams(
-          controller: webViewController.platform,
-          displayWithHybridComposition: true,
-        ),
-      );
-    }
-    return WebViewWidget(
-      controller: webViewController,
-      layoutDirection: mapViewConfiguration.directionality,
-    );
+    PlatformWebViewWidgetCreationParams params =
+        defaultTargetPlatform == TargetPlatform.android
+            ? AndroidWebViewWidgetCreationParams(
+                controller: webViewController,
+                displayWithHybridComposition: true,
+                layoutDirection: widget.mapViewConfiguration.directionality,
+              )
+            : PlatformWebViewWidgetCreationParams(
+                controller: webViewController,
+                layoutDirection: widget.mapViewConfiguration.directionality,
+              );
+
+    return PlatformWebViewWidget(params).build(context);
   }
 
   @override

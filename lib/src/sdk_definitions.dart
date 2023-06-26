@@ -152,11 +152,9 @@ class Location {
   final String buildingIdentifier;
   final String floorIdentifier;
   final Bearing? bearing;
-  final Bearing? cartesianBearing;
   final double accuracy;
   final bool isIndoor;
   final bool hasBearing;
-  final bool hasCartesianBearing;
   final int timestamp;
 
   Location({
@@ -167,9 +165,7 @@ class Location {
     required this.accuracy,
     required this.isIndoor,
     required this.hasBearing,
-    required this.hasCartesianBearing,
     this.bearing,
-    this.cartesianBearing,
     required this.timestamp,
   });
 
@@ -185,11 +181,9 @@ class Location {
         'buildingIdentifier': buildingIdentifier,
         'floorIdentifier': floorIdentifier,
         'bearing': bearing?.toMap(),
-        'cartesianBearing': cartesianBearing?.toMap(),
         'accuracy': accuracy,
         'isIndoor': isIndoor,
         'hasBearing': hasBearing,
-        'hasCartesianBearing': hasCartesianBearing,
         'timestamp': timestamp,
       };
 }

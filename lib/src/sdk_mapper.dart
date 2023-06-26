@@ -124,35 +124,30 @@ List<T> createList<T>(List maps, Function mapper) {
   return maps.map((o) => mapper(o)).toList().cast<T>();
 }
 
-Location createLocation(dynamic args) => Location(
-      coordinate: Coordinate(
-        latitude: args["coordinate"]["latitude"],
-        longitude: args["coordinate"]["longitude"],
-      ),
-      cartesianCoordinate: CartesianCoordinate(
-        x: args["cartesianCoordinate"]["x"],
-        y: args["cartesianCoordinate"]["y"],
-      ),
-      bearing: Bearing(
-        degrees: args["bearing"]["degrees"],
-        degreesClockwise: args["bearing"]["degreesClockwise"],
-        radians: args["bearing"]["radians"],
-        radiansMinusPiPi: args["bearing"]["radiansMinusPiPi"],
-      ),
-      cartesianBearing: Bearing(
-        degrees: args["cartesianBearing"]["degrees"],
-        degreesClockwise: args["cartesianBearing"]["degreesClockwise"],
-        radians: args["cartesianBearing"]["radians"],
-        radiansMinusPiPi: args["cartesianBearing"]["radiansMinusPiPi"],
-      ),
-      accuracy: args["accuracy"],
-      buildingIdentifier: args["buildingIdentifier"],
-      floorIdentifier: args["floorIdentifier"],
-      hasBearing: args["hasBearing"],
-      hasCartesianBearing: args["hasCartesianBearing"],
-      isIndoor: args["isIndoor"],
-      timestamp: args["timestamp"],
-    );
+Location createLocation(dynamic args) {
+  return Location(
+    coordinate: Coordinate(
+    latitude: args["coordinate"]["latitude"],
+    longitude: args["coordinate"]["longitude"],
+    ),
+    cartesianCoordinate: CartesianCoordinate(
+      x: args["cartesianCoordinate"]["x"],
+      y: args["cartesianCoordinate"]["y"],
+    ),
+    bearing: Bearing(
+      degrees: args["bearing"]["degrees"],
+      degreesClockwise: args["bearing"]["degreesClockwise"] ,
+      radians: args["bearing"]["radians"],
+      radiansMinusPiPi: args["bearing"]["radiansMinusPiPi"],
+    ),
+    accuracy: args["accuracy"],
+    buildingIdentifier: args["buildingIdentifier"],
+    floorIdentifier: args["floorIdentifier"],
+    hasBearing: args["hasBearing"],
+    isIndoor: args["isIndoor"],
+    timestamp: args["timestamp"].toInt(),
+  );
+}
 
 SitumRoute createRoute(arguments) {
   return SitumRoute(rawContent: arguments);
