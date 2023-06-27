@@ -172,7 +172,7 @@ const NSString* RESULTS_KEY = @"results";
 
 - (void)handleFetchPoisFromBuilding:(FlutterMethodCall*)call result:(FlutterResult)result {
     
-    NSString *buildingId = call.arguments[@"buildingId"];
+    NSString *buildingId = call.arguments[@"buildingIdentifier"];
     
     if (!buildingId) {
         FlutterError *error = [FlutterError errorWithCode:@"errorFetchPois"
@@ -213,7 +213,7 @@ const NSString* RESULTS_KEY = @"results";
 
 - (void)handleFetchBuildingInfo:(FlutterMethodCall*)call result:(FlutterResult)result {
     
-    NSString *buildingId = call.arguments[@"buildingId"];
+    NSString *buildingId = call.arguments[@"buildingIdentifier"];
     
     if (!buildingId) {
         FlutterError *error = [FlutterError errorWithCode:@"errorFetchBuildingInfo"
