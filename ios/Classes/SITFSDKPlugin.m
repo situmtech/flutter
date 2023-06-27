@@ -257,8 +257,8 @@ const NSString* RESULTS_KEY = @"results";
 
 - (void)requestNavigation:(FlutterMethodCall*)call
                    result:(FlutterResult)result{
-    SITDirectionsRequest *directionsRequest = [SITDirectionsRequest fromDictionary:call.arguments[@"directionsOptions"]];
-    SITNavigationRequest *navigationRequest = [SITNavigationRequest fromDictionary:call.arguments[@"navigationOptions"]];
+    SITDirectionsRequest *directionsRequest = [SITDirectionsRequest fromDictionary:call.arguments[@"directionsRequest"]];
+    SITNavigationRequest *navigationRequest = [SITNavigationRequest fromDictionary:call.arguments[@"navigationRequest"]];
     [SITNavigationManager.sharedManager requestNavigationUpdates:navigationRequest directionsRequest:directionsRequest completion:^(SITRoute * _Nullable route, NSError * _Nullable error) {
         if (error || route.routeSteps.count == 0){
             FlutterError *fError = [self creteFlutterErrorCalculatingRoute];
