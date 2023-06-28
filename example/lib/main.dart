@@ -41,8 +41,8 @@ class _MyTabsState extends State<MyTabs> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         _buttonsGroup(Icons.my_location, "Positioning", [
-          _sdkButton('Start', _requestUpdates),
-          _sdkButton('Global', _requestUpdatesGlobal),
+          _sdkButton('Start', _requestLocationUpdates),
+          _sdkButton('Global', _requestLocationUpdatesGlobal),
           _sdkButton('Stop', _removeUpdates),
         ]),
         _buttonsGroup(Icons.cloud_download, "Fetch resources", [
@@ -152,11 +152,8 @@ class _MyTabsState extends State<MyTabs> {
       _echo("""SDK> Location changed:
         B=${location.buildingIdentifier},
         F=${location.floorIdentifier},
-        C=${location.coordinate.latitude}, ${location.coordinate.longitude}
+        C=${location.coordinate.latitude.toStringAsFixed(5)}, ${location.coordinate.longitude.toStringAsFixed(5)}
       """);
-      // MapView is positioning system-agnostic. You need to provide the user's
-      // location for it to be displayed on the map.
-      mapViewController?.setCurrentLocation(location);
     });
     situmSdk.onLocationStatus((status) {
       _echo("SDK> STATUS: $status");
@@ -183,14 +180,18 @@ class _MyTabsState extends State<MyTabs> {
 
   // SDK auxiliary functions
 
-  void _requestUpdates() async {
+  void _requestLocationUpdates() async {
+    // Start positioning using the native SDK. You will receive location and
+    // status updates (as well as possible errors) in the defined callbacks.
+    // You don't need to do anything to draw the user's position on the map; the
+    // library handles it all internally for you.
     situmSdk.requestLocationUpdates(LocationRequest(
       buildingIdentifier: buildingIdentifier, //"-1"
       useDeadReckoning: false,
     ));
   }
 
-  void _requestUpdatesGlobal() async {
+  void _requestLocationUpdatesGlobal() async {
     situmSdk.requestLocationUpdates(LocationRequest(
       buildingIdentifier: "-1",
       useDeadReckoning: false,

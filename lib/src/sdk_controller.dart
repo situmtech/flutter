@@ -20,6 +20,7 @@ part of sdk;
 /// ```
 class SitumSdk {
   late final MethodChannel methodChannel;
+  Function(MethodCall call)? internalMethodCallDelegate;
 
   OnLocationUpdateCallback? _onLocationUpdateCallback;
   OnLocationStatusCallback? _onLocationStatusCallback;
@@ -46,7 +47,7 @@ class SitumSdk {
   }
 
   _initializeMethodChannel() {
-    methodChannel = const MethodChannel(CHANNEL_SDK_ID);
+    methodChannel = const MethodChannel(_CHANNEL_SDK_ID);
     methodChannel.setMethodCallHandler(_methodCallHandler);
   }
 
@@ -238,6 +239,13 @@ class SitumSdk {
     await methodChannel.invokeMethod('geofenceCallbacksRequested');
   }
 
+  /// Set a native [MethodCall] delegate.
+  /// Do not use this method as it is intended for internal use by the map
+  /// viewer module.
+  void internalSetMethodCallDelegate(Function(MethodCall call) delegate) {
+    internalMethodCallDelegate = delegate;
+  }
+
   // Callbacks:
 
   Future<void> _methodCallHandler(MethodCall call) async {
@@ -269,6 +277,8 @@ class SitumSdk {
       default:
         debugPrint('Method ${call.method} not found!');
     }
+    // Forward call to internal delegate (send locations to MapView).
+    internalMethodCallDelegate?.call(call);
   }
 
   // LOCATION UPDATES:

@@ -2,10 +2,6 @@ part of wayfinding;
 
 /// Controller for [MapView]. This class exposes methods and callbacks.
 class MapViewController {
-  // TODO: handle states.
-  bool mapViewLoaded = false;
-  bool onDisposeCalled = false;
-
   OnPoiSelectedCallback? _onPoiSelectedCallback;
   OnDirectionsRequestInterceptor? _onDirectionsRequestInterceptor;
   OnNavigationRequestInterceptor? _onNavigationRequestInterceptor;
@@ -18,23 +14,23 @@ class MapViewController {
     required String situmApiKey,
     required dynamic Function(MapViewConfiguration) widgetUpdater,
     required PlatformWebViewController webViewController,
-  }) : _webViewController = webViewController, _widgetUpdater = widgetUpdater {
+  })  : _webViewController = webViewController,
+        _widgetUpdater = widgetUpdater {
+    var situmSdk = SitumSdk();
     // Be sure to initialize the SitumSdk so it can be used in callbacks, etc.
-    SitumSdk().init(situmUser, situmApiKey);
+    situmSdk.init(situmUser, situmApiKey);
+    // Subscribe to native SDK messages so the location updates can be directly
+    // forwarded to the map viewer.
+    situmSdk.internalSetMethodCallDelegate(_methodCallHandler);
   }
 
-  /// Tell the SitumMap where the user is located at.
+  /// Tells the SitumMap where the user is located at.
   void setCurrentLocation(Location location) {
     _sendMessage(WV_MESSAGE_LOCATION, location.toMap());
   }
 
   void onMapViewerMessage(String type, Map<String, dynamic> payload) {
     MessageHandler(type).handleMessage(this, payload);
-  }
-
-  // Lifecycle utils:
-  void onWidgetDisposed() {
-    onDisposeCalled = true;
   }
 
   // Private utils:
@@ -73,7 +69,8 @@ class MapViewController {
     situmRoute.rawContent["destinationIdentifier"] = destinationIdentifier;
     // The map-viewer waits for an accessibility mode in the "type" attribute
     // of the payload. This is due to internal state management.
-    situmRoute.rawContent["type"] = routeType ?? AccessibilityMode.CHOOSE_SHORTEST;
+    situmRoute.rawContent["type"] =
+        routeType ?? AccessibilityMode.CHOOSE_SHORTEST;
     _sendMessage(
         WV_MESSAGE_DIRECTIONS_UPDATE, jsonEncode(situmRoute.rawContent));
   }
@@ -139,5 +136,37 @@ class MapViewController {
 
   void onNavigationRequestInterceptor(OnNavigationRequestInterceptor callback) {
     _onNavigationRequestInterceptor = callback;
+  }
+
+  // Native SDK callbacks:
+  // This component needs to listen the native SDK callbacks so it can send
+  // location (and status/errors) to the map-viewer automatically.
+
+  Future<void> _methodCallHandler(MethodCall call) async {
+    switch (call.method) {
+      case 'onLocationChanged':
+        _onLocationChanged(call.arguments);
+        break;
+      case 'onStatusChanged':
+        _onStatusChanged(call.arguments);
+        break;
+      case 'onError':
+        _onError(call.arguments);
+        break;
+    }
+  }
+
+  void _onLocationChanged(arguments) {
+    // Send location to the map-viewer.
+    setCurrentLocation(createLocation(arguments));
+  }
+
+  void _onStatusChanged(arguments) {
+    // currentLocationStatus = arguments['statusName'];
+    // TODO: send status to map viewer.
+  }
+
+  void _onError(arguments) {
+    // TODO: send errors to map viewer?
   }
 }

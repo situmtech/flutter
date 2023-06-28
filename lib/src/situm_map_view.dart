@@ -115,7 +115,6 @@ class _MapViewState extends State<MapView> {
         widgetUpdater: _loadWithConfig,
         webViewController: webViewController,
       );
-      wyfController!.mapViewLoaded = true;
       widget.loadCallback(wyfController!);
     }
   }
@@ -140,7 +139,7 @@ class _MapViewState extends State<MapView> {
   @override
   void didUpdateWidget(covariant MapView oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (wyfController?.mapViewLoaded == true) {
+    if (wyfController != null) {
       widget.didUpdateCallback?.call(wyfController!);
     }
   }
@@ -148,6 +147,6 @@ class _MapViewState extends State<MapView> {
   @override
   void dispose() {
     super.dispose();
-    wyfController?.onWidgetDisposed();
+    // wyfController?.onWidgetDisposed();
   }
 }
