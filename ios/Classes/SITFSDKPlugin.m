@@ -112,9 +112,7 @@ const NSString* RESULTS_KEY = @"results";
 
 - (void)handleClearCache:(FlutterMethodCall *)call
                   result:(FlutterResult)result {
-    [SITServices clearData];
-    [SITServices clearAllData];
-    
+    [[SITCommunicationManager sharedManager] clearCache];    
     result(@"DONE");
 }
 
