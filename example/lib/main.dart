@@ -111,8 +111,7 @@ class _MyTabsState extends State<MyTabs> {
           // Copy config.dart.example if you haven't already.
           situmUser: situmUser,
           situmApiKey: situmApiKey,
-          // Set configurationIdentifier or buildingIdentifier:
-          configurationIdentifier: configurationIdentifier,
+          // Set your building identifier:
           buildingIdentifier: buildingIdentifier,
           baseUrl: mapViewUrl,
           enableDebugging: true,
