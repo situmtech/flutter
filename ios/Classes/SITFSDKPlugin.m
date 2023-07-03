@@ -121,7 +121,6 @@ const NSString* RESULTS_KEY = @"results";
                               result:(FlutterResult)result {
     
     CLLocationManager *lManager = [CLLocationManager new];
-    [lManager requestWhenInUseAuthorization];
     [self.locManager addDelegate:self];
     SITLocationRequest * locationRequest = [self createLocationRequest:call.arguments];
     [self.locManager requestLocationUpdates:locationRequest];

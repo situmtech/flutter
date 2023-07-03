@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:situm_flutter/sdk.dart';
 import 'package:situm_flutter/wayfinding.dart';
 
@@ -42,7 +43,6 @@ class _MyTabsState extends State<MyTabs> {
       children: [
         _buttonsGroup(Icons.my_location, "Positioning", [
           _sdkButton('Start', _requestLocationUpdates),
-          _sdkButton('Global', _requestLocationUpdatesGlobal),
           _sdkButton('Stop', _removeUpdates),
         ]),
         _buttonsGroup(Icons.cloud_download, "Fetch resources", [
@@ -180,19 +180,17 @@ class _MyTabsState extends State<MyTabs> {
   // SDK auxiliary functions
 
   void _requestLocationUpdates() async {
+    var hasPermissions = await _requestPermissions();
+    if (!hasPermissions) {
+      _echo("You need to accept permissions to start positioning.");
+      return;
+    }
     // Start positioning using the native SDK. You will receive location and
     // status updates (as well as possible errors) in the defined callbacks.
     // You don't need to do anything to draw the user's position on the map; the
     // library handles it all internally for you.
     situmSdk.requestLocationUpdates(LocationRequest(
       buildingIdentifier: buildingIdentifier, //"-1"
-      useDeadReckoning: false,
-    ));
-  }
-
-  void _requestLocationUpdatesGlobal() async {
-    situmSdk.requestLocationUpdates(LocationRequest(
-      buildingIdentifier: "-1",
       useDeadReckoning: false,
     ));
   }
@@ -277,5 +275,20 @@ class _MyTabsState extends State<MyTabs> {
     setState(() {
       _selectedIndex = index;
     });
+  }
+
+  /// Example of a function that request permissions and check the result:
+  Future<bool> _requestPermissions() async {
+    Map<Permission, PermissionStatus> statuses = await [
+      // Both Android and iOS:
+      Permission.location,
+      // Android:
+      Permission.bluetoothConnect,
+      Permission.bluetoothScan,
+      // iOS:
+      Permission.bluetooth,
+    ].request();
+
+    return statuses.values.every((status) => status.isGranted);
   }
 }
