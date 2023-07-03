@@ -47,8 +47,6 @@ class Navigation private constructor(
                 if (navigationRequestArgs != null) {
                     // If requested, start navigation:
                     val navigationRequest = NavigationRequest.fromMap(navigationRequestArgs)
-                    // TODO: delete this log:
-                    Log.d("VALIDACIÓN", "navigationRequest: ${navigationRequest.toMap()}")
                     navigationRequest.route = route
                     SitumSdk.navigationManager().requestNavigationUpdates(
                         navigationRequest, this@Navigation
