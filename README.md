@@ -57,6 +57,12 @@ allprojects {
 }
 ```
 
+Add the `ACCESS_FINE_LOCATION` permission to your `AndroidManifest.xml` file if required:
+
+```xml
+  <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+```
+
 ### iOS
 
 1. Run `pod install` or `pod update` to bring the dependencies to your project.
