@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:situm_flutter/sdk.dart';
@@ -279,16 +281,18 @@ class _MyTabsState extends State<MyTabs> {
 
   /// Example of a function that request permissions and check the result:
   Future<bool> _requestPermissions() async {
-    Map<Permission, PermissionStatus> statuses = await [
-      // Both Android and iOS:
-      Permission.location,
-      // Android:
-      Permission.bluetoothConnect,
-      Permission.bluetoothScan,
-      // iOS:
-      Permission.bluetooth,
-    ].request();
-
+    var permissions = <Permission>[
+      Permission.locationWhenInUse,
+    ];
+    if (Platform.isAndroid) {
+      permissions.addAll([
+        Permission.bluetoothConnect,
+        Permission.bluetoothScan,
+      ]);
+    } else if (Platform.isIOS) {
+      permissions.add(Permission.bluetooth);
+    }
+    Map<Permission, PermissionStatus> statuses = await permissions.request();
     return statuses.values.every((status) => status.isGranted);
   }
 }

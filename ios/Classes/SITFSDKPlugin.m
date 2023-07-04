@@ -119,8 +119,6 @@ const NSString* RESULTS_KEY = @"results";
 
 - (void)handleRequestLocationUpdates:(FlutterMethodCall*)call
                               result:(FlutterResult)result {
-    
-    CLLocationManager *lManager = [CLLocationManager new];
     [self.locManager addDelegate:self];
     SITLocationRequest * locationRequest = [self createLocationRequest:call.arguments];
     [self.locManager requestLocationUpdates:locationRequest];
@@ -133,6 +131,7 @@ const NSString* RESULTS_KEY = @"results";
     if (buildingID){
         locationRequest.buildingID = buildingID;
     }
+    locationRequest.useDeadReckoning = arguments[@"useDeadReckoning"];
     return locationRequest;
 }
 
