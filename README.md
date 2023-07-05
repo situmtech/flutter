@@ -46,7 +46,7 @@ up a Situm account.
 
 ### Android
 
-Include the Situm repository in your project level `build.gradle`:
+1. Include the Situm repository in your project level `build.gradle`:
 
 ```groovy
 allprojects {
@@ -57,17 +57,21 @@ allprojects {
 }
 ```
 
-Add the `ACCESS_FINE_LOCATION` permission to your `AndroidManifest.xml` file if required:
+2. Add the `ACCESS_FINE_LOCATION` permission to your `AndroidManifest.xml` file if you have configured Situm SDK to [use GPS](<https://developers.situm.com/sdk_documentation/android/javadoc/latest/es/situm/sdk/location/locationrequest#useGps()>):
 
 ```xml
   <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 ```
 
+3. Set the `minSdkVersion` to 21 or later on your app's `build.gradle` file.
+
 ### iOS
 
-1. Run `pod install` or `pod update` to bring the dependencies to your project.
+1. Remove the "use_frameworks!" directive in the `Podfile` of your iOS project:
 
-2. To successfully start positioning you will need to declare the following permissions in your app's `Info.plist` file:
+2. Run `pod install` or `pod update` to bring the dependencies to your project.
+
+3. Declare the following permissions in your app's `Info.plist` file to successfully start positioning:
 
 ```
 <key>NSLocationWhenInUseUsageDescription</key>
@@ -82,9 +86,7 @@ Add the `ACCESS_FINE_LOCATION` permission to your `AndroidManifest.xml` file if 
 	<string>Bluetooth is required to find out where you are</string>
 ```
 
-Once included the app will ask the user for the appropriate permissions.
-
-3. To have offline support you will have to add the underlying web application's domain inside the entry `WKAppBoundDomains` on `Info.plist` as follows:
+4. For offline support you will have to add the underlying web application's domain inside the entry `WKAppBoundDomains` on `Info.plist` as follows:
 
 ```
 <key>WKAppBoundDomains</key>
