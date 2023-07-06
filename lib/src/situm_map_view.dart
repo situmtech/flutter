@@ -4,8 +4,8 @@ part of wayfinding;
 /// This widget will load your Situm building on a map, based on the given
 /// [MapViewConfiguration].
 class MapView extends StatefulWidget {
-  final MapViewConfiguration mapViewConfiguration;
-  final MapViewCallback loadCallback;
+  final MapViewConfiguration configuration;
+  final MapViewCallback onLoad;
   final MapViewCallback? didUpdateCallback;
 
   /// MapView is the main component and entry point for Situm Flutter Wayfinding.
@@ -13,8 +13,8 @@ class MapView extends StatefulWidget {
   /// [MapViewConfiguration].
   const MapView({
     required Key key,
-    required this.mapViewConfiguration,
-    required this.loadCallback,
+    required this.configuration,
+    required this.onLoad,
     this.didUpdateCallback,
   }) : super(key: key);
 
@@ -91,7 +91,7 @@ class _MapViewState extends State<MapView> {
         },
       );
     webViewController = controller;
-    _loadWithConfig(widget.mapViewConfiguration);
+    _loadWithConfig(widget.configuration);
   }
 
   void _loadWithConfig(MapViewConfiguration configuration) {
@@ -115,7 +115,7 @@ class _MapViewState extends State<MapView> {
         widgetUpdater: _loadWithConfig,
         webViewController: webViewController,
       );
-      widget.loadCallback(wyfController!);
+      widget.onLoad(wyfController!);
     }
   }
 
@@ -126,11 +126,11 @@ class _MapViewState extends State<MapView> {
             ? AndroidWebViewWidgetCreationParams(
                 controller: webViewController,
                 displayWithHybridComposition: true,
-                layoutDirection: widget.mapViewConfiguration.directionality,
+                layoutDirection: widget.configuration.directionality,
               )
             : PlatformWebViewWidgetCreationParams(
                 controller: webViewController,
-                layoutDirection: widget.mapViewConfiguration.directionality,
+                layoutDirection: widget.configuration.directionality,
               );
 
     return PlatformWebViewWidget(params).build(context);

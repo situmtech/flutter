@@ -17,7 +17,7 @@ class MapViewConfiguration {
   /// A String identifier that allows you to remotely configure all map settings.
   /// Alternatively you can pass a buildingIdentifier, but configurationIdentifier
   /// will be prioritized.
-  final String? configurationIdentifier;
+  final String? remoteIdentifier;
   final String baseUrl;
   final TextDirection directionality;
   final bool enableDebugging;
@@ -28,7 +28,7 @@ class MapViewConfiguration {
     required this.situmUser,
     required this.situmApiKey,
     this.buildingIdentifier,
-    this.configurationIdentifier,
+    this.remoteIdentifier,
     this.baseUrl = "https://map-viewer.situm.com",
     this.directionality = TextDirection.ltr,
     this.enableDebugging = false,
@@ -44,8 +44,8 @@ class MapViewConfiguration {
   String _getMapViewerUrl() {
     var base = _internalMapViewUrl;
     var query = "email=$situmUser&apikey=$situmApiKey&mode=embed";
-    if (configurationIdentifier != null) {
-      return "$base/id/$configurationIdentifier?$query";
+    if (remoteIdentifier != null) {
+      return "$base/id/$remoteIdentifier?$query";
     } else if (buildingIdentifier != null) {
       query = "$query&buildingid=$buildingIdentifier";
       return "$base/?$query";

@@ -108,7 +108,7 @@ class _MyTabsState extends State<MyTabs> {
     return Stack(children: [
       MapView(
         key: const Key("situm_map"),
-        mapViewConfiguration: MapViewConfiguration(
+        configuration: MapViewConfiguration(
           // Your Situm credentials.
           // Copy config.dart.example if you haven't already.
           situmUser: situmUser,
@@ -118,7 +118,7 @@ class _MyTabsState extends State<MyTabs> {
           baseUrl: mapViewUrl,
           enableDebugging: true,
         ),
-        loadCallback: _onLoad,
+        onLoad: _onLoad,
       ),
     ]);
   }
