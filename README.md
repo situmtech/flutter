@@ -1,5 +1,5 @@
 <p align="center"> <img width="233" src="https://situm.com/wp-content/themes/situm/img/logo-situm.svg" style="margin-bottom:1rem" />
-<h1 align="center">@situm/flutter-wayfinding</h1>
+<h1 align="center">@situm/flutter</h1>
 </p>
 
 <p align="center" style="text-align:center">
