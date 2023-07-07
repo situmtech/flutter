@@ -128,11 +128,24 @@ const NSString* RESULTS_KEY = @"results";
 -(SITLocationRequest *)createLocationRequest:(NSDictionary *)arguments{
     SITLocationRequest *locationRequest = [SITLocationRequest new];
     NSString *buildingID = arguments[@"buildingIdentifier"];
-    if (buildingID){
+    if ([self isValidBuildingId:buildingID]){
         locationRequest.buildingID = buildingID;
     }
     locationRequest.useDeadReckoning = [arguments[@"useDeadReckoning"] boolValue];
     return locationRequest;
+}
+
+-(BOOL)isValidBuildingId:(NSString *)buildingId{
+    if (!buildingId){
+        return NO;
+    }
+    if (buildingId.length == 0){
+        return NO;
+    }
+    if ([buildingId isEqualToString:@"-1"]){
+        return NO;
+    }
+    return YES;
 }
 
 - (void)handleRemoveUpdates:(FlutterMethodCall*)call result:(FlutterResult)result {
