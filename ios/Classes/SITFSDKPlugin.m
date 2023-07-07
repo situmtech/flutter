@@ -1,21 +1,21 @@
 //
 //  SITFSDKPlugin.m
-//  situm_flutter_wayfinding
+//  situm_flutter
 //
 //  Created by Abraham Barros Barros on 30/9/22.
 //
 
 #import "SITFSDKPlugin.h"
 #import "SITFSDKUtils.h"
-
 #import <SitumSDK/SitumSDK.h>
-
 #import <CoreLocation/CoreLocation.h>
+#import "SITNavigationHandler.h"
 
 @interface SITFSDKPlugin() <SITLocationDelegate, SITGeofencesDelegate>
 
 @property (nonatomic, strong) SITCommunicationManager *comManager;
 @property (nonatomic, strong) SITLocationManager *locManager;
+@property (nonatomic, strong) SITNavigationHandler *navigationHandler;
 
 @property (nonatomic, strong) FlutterMethodChannel *channel;
 
@@ -30,6 +30,9 @@ const NSString* RESULTS_KEY = @"results";
     SITFSDKPlugin* instance = [[SITFSDKPlugin alloc] init];
     instance.comManager = [SITCommunicationManager sharedManager];
     instance.locManager = [SITLocationManager sharedInstance];
+    instance.navigationHandler = [SITNavigationHandler sharedInstance];
+    instance.navigationHandler.channel = channel;
+    SITNavigationManager.sharedManager.delegate = instance.navigationHandler;
     instance.channel = channel;
     [registrar addMethodCallDelegate:instance channel:channel];
 }
@@ -66,8 +69,17 @@ const NSString* RESULTS_KEY = @"results";
     } else if ([@"fetchBuildingInfo" isEqualToString:call.method]) {
         [self handleFetchBuildingInfo:call
                                result:result];
-    }else if ([@"getDeviceId" isEqualToString:call.method]) {
+    } else if ([@"getDeviceId" isEqualToString:call.method]) {
         [self getDeviceId:call result:result];
+    } else if ([@"requestNavigation" isEqualToString:call.method]) {
+        [self requestNavigation:call
+                         result:result];
+    } else if ([@"requestDirections" isEqualToString:call.method]) {
+        [self requestDirections:call
+                         result:result];
+    } else if ([@"stopNavigation" isEqualToString:call.method]){
+        [self stopNavigation:call
+                      result:result];
     }
     else {
         result(FlutterMethodNotImplemented);
@@ -100,18 +112,13 @@ const NSString* RESULTS_KEY = @"results";
 
 - (void)handleClearCache:(FlutterMethodCall *)call
                   result:(FlutterResult)result {
-    [SITServices clearData];
-    [SITServices clearAllData];
-    
+    [[SITCommunicationManager sharedManager] clearCache];    
     result(@"DONE");
 }
 
 
 - (void)handleRequestLocationUpdates:(FlutterMethodCall*)call
                               result:(FlutterResult)result {
-    
-    CLLocationManager *lManager = [CLLocationManager new];
-    [lManager requestWhenInUseAuthorization];
     [self.locManager addDelegate:self];
     SITLocationRequest * locationRequest = [self createLocationRequest:call.arguments];
     [self.locManager requestLocationUpdates:locationRequest];
@@ -121,10 +128,24 @@ const NSString* RESULTS_KEY = @"results";
 -(SITLocationRequest *)createLocationRequest:(NSDictionary *)arguments{
     SITLocationRequest *locationRequest = [SITLocationRequest new];
     NSString *buildingID = arguments[@"buildingIdentifier"];
-    if (buildingID){
+    if ([self isValidBuildingId:buildingID]){
         locationRequest.buildingID = buildingID;
     }
+    locationRequest.useDeadReckoning = [arguments[@"useDeadReckoning"] boolValue];
     return locationRequest;
+}
+
+-(BOOL)isValidBuildingId:(NSString *)buildingId{
+    if (!buildingId){
+        return NO;
+    }
+    if (buildingId.length == 0){
+        return NO;
+    }
+    if ([buildingId isEqualToString:@"-1"]){
+        return NO;
+    }
+    return YES;
 }
 
 - (void)handleRemoveUpdates:(FlutterMethodCall*)call result:(FlutterResult)result {
@@ -160,7 +181,7 @@ const NSString* RESULTS_KEY = @"results";
 
 - (void)handleFetchPoisFromBuilding:(FlutterMethodCall*)call result:(FlutterResult)result {
     
-    NSString *buildingId = call.arguments[@"buildingId"];
+    NSString *buildingId = call.arguments[@"buildingIdentifier"];
     
     if (!buildingId) {
         FlutterError *error = [FlutterError errorWithCode:@"errorFetchPois"
@@ -201,7 +222,7 @@ const NSString* RESULTS_KEY = @"results";
 
 - (void)handleFetchBuildingInfo:(FlutterMethodCall*)call result:(FlutterResult)result {
     
-    NSString *buildingId = call.arguments[@"buildingId"];
+    NSString *buildingId = call.arguments[@"buildingIdentifier"];
     
     if (!buildingId) {
         FlutterError *error = [FlutterError errorWithCode:@"errorFetchBuildingInfo"
@@ -243,6 +264,46 @@ const NSString* RESULTS_KEY = @"results";
     result(deviceID);
 }
 
+- (void)requestNavigation:(FlutterMethodCall*)call
+                   result:(FlutterResult)result{
+    SITDirectionsRequest *directionsRequest = [SITDirectionsRequest fromDictionary:call.arguments[@"directionsRequest"]];
+    SITNavigationRequest *navigationRequest = [SITNavigationRequest fromDictionary:call.arguments[@"navigationRequest"]];
+    [SITNavigationManager.sharedManager requestNavigationUpdates:navigationRequest directionsRequest:directionsRequest completion:^(SITRoute * _Nullable route, NSError * _Nullable error) {
+        if (error || route.routeSteps.count == 0){
+            FlutterError *fError = [self creteFlutterErrorCalculatingRoute];
+            result(fError);
+            return;
+        }
+        result(route.toDictionary);
+    }];
+}
+
+- (void)requestDirections:(FlutterMethodCall*)call
+                   result:(FlutterResult)result{
+    SITDirectionsRequest *directionsRequest = [SITDirectionsRequest fromDictionary:call.arguments];
+    [SITDirectionsManager.sharedInstance requestDirections:directionsRequest completion:^(SITRoute * _Nullable route, NSError * _Nullable error) {
+        if (error || route.routeSteps.count == 0){
+            FlutterError *fError = [self creteFlutterErrorCalculatingRoute];
+            result(fError);
+            return;
+        }
+        result(route.toDictionary);
+    }];
+}
+
+-(FlutterError *)creteFlutterErrorCalculatingRoute{
+    FlutterError *fError = [FlutterError errorWithCode:@"errorCalculatingRoute"
+                                              message:@"Unable to calulate route"
+                                              details:nil];
+    return fError;
+}
+
+- (void)stopNavigation:(FlutterMethodCall*)call
+                   result:(FlutterResult)result{
+    [SITNavigationManager.sharedManager removeUpdates];
+    result(@"DONE");
+}
+
 
 - (void)locationManager:(id<SITLocationInterface> _Nonnull)locationManager
        didFailWithError:(NSError * _Nullable)error {
@@ -260,7 +321,6 @@ const NSString* RESULTS_KEY = @"results";
 
 - (void)locationManager:(id<SITLocationInterface> _Nonnull)locationManager
       didUpdateLocation:(SITLocation * _Nonnull)location {
-
     NSLog(@"location Manager on location: %@", location);
     NSDictionary *args = location.toDictionary;
     [self.channel invokeMethod:@"onLocationChanged" arguments:args];
@@ -268,10 +328,10 @@ const NSString* RESULTS_KEY = @"results";
 
 - (void)locationManager:(id<SITLocationInterface> _Nonnull)locationManager
          didUpdateState:(SITLocationState)state {
-
     NSLog(@"location Manager on state: %ld", state);
     NSMutableDictionary *args = [NSMutableDictionary new];
-    args[@"statusName"] = [NSString stringWithFormat:@"%d", state];
+    SITEnumMapper *enumMapper = [SITEnumMapper new];
+    args[@"statusName"] = [enumMapper mapLocationStateToString:state];
     [self.channel invokeMethod:@"onStatusChanged" arguments:args];
 }
 

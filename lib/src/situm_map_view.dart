@@ -1,155 +1,145 @@
-part of situm_flutter_wayfinding;
+part of wayfinding;
 
-// The Widget!
-class SitumMapView extends StatefulWidget {
-  final String situmUser;
-  final String situmApiKey;
-  final String buildingIdentifier;
-  final String situmMapUrl;
-  final TextDirection directionality;
-  final String searchViewPlaceholder;
-  final bool useDashboardTheme;
-  final bool showPoiNames;
-  final bool hasSearchView;
-  final bool enablePoiClustering;
-  final bool enableDebugging;
-  final bool showNavigationIndications;
+/// MapView is the main component and entry point for Situm Flutter Wayfinding.
+/// This widget will load your Situm building on a map, based on the given
+/// [MapViewConfiguration].
+class MapView extends StatefulWidget {
+  final MapViewConfiguration configuration;
+  final MapViewCallback onLoad;
+  final MapViewCallback? didUpdateCallback;
 
-  final SitumMapViewCallback loadCallback;
-  final SitumMapViewCallback? didUpdateCallback;
-
-  const SitumMapView({
+  /// MapView is the main component and entry point for Situm Flutter Wayfinding.
+  /// This widget will load your Situm building on a map, based on the given
+  /// [MapViewConfiguration].
+  const MapView({
     required Key key,
-    required this.situmUser,
-    required this.situmApiKey,
-    required this.buildingIdentifier,
-    required this.loadCallback,
-    this.situmMapUrl = "https://map-viewer.situm.com",
+    required this.configuration,
+    required this.onLoad,
     this.didUpdateCallback,
-    this.directionality = TextDirection.ltr,
-    this.searchViewPlaceholder = "Situm Flutter Wayfinding",
-    this.useDashboardTheme = true,
-    this.hasSearchView = true,
-    this.showPoiNames = true,
-    this.enablePoiClustering = true,
-    this.enableDebugging = false,
-    this.showNavigationIndications = false,
   }) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _SitumMapViewState();
+  State<StatefulWidget> createState() => _MapViewState();
 }
 
-class _SitumMapViewState extends State<SitumMapView> {
-  SitumFlutterWYF? wyfController;
-  late final WebViewController webViewController;
-
-  String _createUri() {
-    String uri =
-        "${widget.situmMapUrl}/?email=${widget.situmUser}&apikey=${widget.situmApiKey}&buildingid=${widget.buildingIdentifier}&mode=embed";
-    List<String> elementsToHide = [];
-    if (!widget.hasSearchView) {
-      elementsToHide.add("ec");
-    }
-    if (!widget.showPoiNames) {
-      elementsToHide.add("pn");
-    }
-    if (!widget.enablePoiClustering) {
-      elementsToHide.add("pcl");
-    }
-    if (widget.showNavigationIndications) {
-      elementsToHide.add("ni");
-    }
-    if (elementsToHide.isNotEmpty) {
-      uri = "$uri&hide=${elementsToHide.join(',')}";
-    }
-    return uri;
-  }
+class _MapViewState extends State<MapView> {
+  MapViewController? wyfController;
+  late final PlatformWebViewController webViewController;
+  late MapViewConfiguration mapViewConfiguration;
 
   @override
   void initState() {
     super.initState();
 
-    final WebViewController controller =
-        WebViewController.fromPlatformCreationParams(
-            const PlatformWebViewControllerCreationParams());
+    PlatformWebViewControllerCreationParams params =
+        defaultTargetPlatform == TargetPlatform.android
+            ? AndroidWebViewControllerCreationParams()
+            : WebKitWebViewControllerCreationParams(
+                limitsNavigationsToAppBoundDomains: true,
+              );
 
-    final String uri = _createUri();
+    PlatformWebViewController controller = PlatformWebViewController(params);
 
     controller
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setBackgroundColor(const Color(0x00000000))
-      ..setNavigationDelegate(
-        NavigationDelegate(
-          onProgress: (int progress) {
+      ..setPlatformNavigationDelegate(
+        PlatformNavigationDelegate(
+          const PlatformNavigationDelegateCreationParams(),
+        )
+          ..setOnProgress((int progress) {
             // Do nothing.
-          },
-          onPageStarted: (String url) {
+          })
+          ..setOnPageStarted((String url) {
             // Do nothing.
-          },
-          onPageFinished: (String url) {
-            if (wyfController == null) {
-              debugPrint('Page finished loading, created wyfController: $url');
-              wyfController = SitumFlutterWYF(
-                widget: widget,
-                webViewController: webViewController,
-              );
-              wyfController!.situmMapLoaded = true;
-              widget.loadCallback(wyfController!);
-            }
-          },
-          onWebResourceError: (WebResourceError error) {
+          })
+          ..setOnPageFinished((String url) {
+            _onMapReady(url);
+          })
+          ..setOnWebResourceError((WebResourceError error) {
             debugPrint('''
               Page resource error:
                 code: ${error.errorCode}
                 description: ${error.description}
                 errorType: ${error.errorType}
                 isForMainFrame: ${error.isForMainFrame}
-          ''');
-          },
-          onNavigationRequest: (NavigationRequest request) {
-            if (request.url.startsWith(widget.situmMapUrl)) {
+            ''');
+          })
+          ..setOnNavigationRequest((dynamic request) {
+            if (request.url.startsWith(mapViewConfiguration.baseUrl)) {
               return NavigationDecision.navigate;
             }
             return NavigationDecision.prevent;
-          },
-        ),
+          })
+          ..setOnUrlChange((UrlChange change) {
+            debugPrint('url change to ${change.url}');
+          }),
       )
-      ..addJavaScriptChannel(
-        WV_CHANNEL,
+      ..addJavaScriptChannel(JavaScriptChannelParams(
+        name: WV_CHANNEL,
         onMessageReceived: (JavaScriptMessage message) {
           Map<String, dynamic> map = jsonDecode(message.message);
           wyfController?.onMapViewerMessage(map["type"], map["payload"] ?? {});
         },
-      )
-      ..loadRequest(Uri.parse(uri));
-
-    if (controller.platform is AndroidWebViewController) {
-      AndroidWebViewController.enableDebugging(widget.enableDebugging);
-    }
+      ))
+      ..setOnPlatformPermissionRequest(
+        (PlatformWebViewPermissionRequest request) {
+          debugPrint(
+            'requesting permissions for ${request.types.map((WebViewPermissionResourceType type) => type.name)}',
+          );
+          request.grant();
+        },
+      );
     webViewController = controller;
+    _loadWithConfig(widget.configuration);
+  }
+
+  void _loadWithConfig(MapViewConfiguration configuration) {
+    // Keep configuration.
+    mapViewConfiguration = configuration;
+    if (webViewController is AndroidWebViewController) {
+      AndroidWebViewController.enableDebugging(configuration.enableDebugging);
+    }
+    final String mapViewUrl = mapViewConfiguration._getMapViewerUrl();
+    // Load the composed URL in the WebView.
+    webViewController
+        .loadRequest(LoadRequestParams(uri: Uri.parse(mapViewUrl)));
+  }
+
+  void _onMapReady(String url) {
+    if (wyfController == null) {
+      debugPrint('Page finished loading, created wyfController: $url');
+      wyfController = MapViewController(
+        situmUser: mapViewConfiguration.situmUser,
+        situmApiKey: mapViewConfiguration.situmApiKey,
+        widgetUpdater: _loadWithConfig,
+        webViewController: webViewController,
+      );
+      widget.onLoad(wyfController!);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    if (defaultTargetPlatform == TargetPlatform.android) {
-      return WebViewWidget.fromPlatformCreationParams(
-        params: AndroidWebViewWidgetCreationParams(
-          controller: webViewController.platform,
-          displayWithHybridComposition: true,
-        ),
-      );
-    }
-    return WebViewWidget(
-      controller: webViewController,
-      layoutDirection: widget.directionality,
-    );
+    PlatformWebViewWidgetCreationParams params =
+        defaultTargetPlatform == TargetPlatform.android
+            ? AndroidWebViewWidgetCreationParams(
+                controller: webViewController,
+                displayWithHybridComposition: true,
+                layoutDirection: widget.configuration.directionality,
+              )
+            : PlatformWebViewWidgetCreationParams(
+                controller: webViewController,
+                layoutDirection: widget.configuration.directionality,
+              );
+
+    return PlatformWebViewWidget(params).build(context);
   }
 
   @override
-  void didUpdateWidget(covariant SitumMapView oldWidget) {
+  void didUpdateWidget(covariant MapView oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (wyfController?.situmMapLoaded == true) {
+    if (wyfController != null) {
       widget.didUpdateCallback?.call(wyfController!);
     }
   }
@@ -157,6 +147,6 @@ class _SitumMapViewState extends State<SitumMapView> {
   @override
   void dispose() {
     super.dispose();
-    wyfController?.onWidgetDisposed();
+    // wyfController?.onWidgetDisposed();
   }
 }

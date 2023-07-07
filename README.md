@@ -11,7 +11,7 @@
 <div align="center" style="text-align:center">
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![Pub Version](https://img.shields.io/pub/v/situm_flutter_wayfinding?color=blueviolet)](https://pub.dev/packages/situm_flutter_wayfinding)
+[![Pub Version](https://img.shields.io/pub/v/situm_flutter?color=blueviolet)](https://pub.dev/packages/situm_flutter)
 [![Flutter](https://img.shields.io/badge/{/}-flutter-blueviolet)](https://flutter.dev/)
 
 </div>
@@ -25,7 +25,7 @@ These steps have already been done for you in the example application of this re
 
 ## Running the example
 
-Check the [example/README](./example/README.md) file of this repository to create your first Flutter application using Situm Wayfinding.
+Check the [example/README](./example/README.md) file of this repository to create your first Flutter application using Situm Flutter.
 
 ## Configure the plugin on your Flutter project
 
@@ -34,7 +34,7 @@ Check the [example/README](./example/README.md) file of this repository to creat
 To add the Situm dependency to your Flutter project, you can use the `flutter pub add` command. To add this dependency to your project, you can use the following command in your terminal:
 
 ```
-flutter pub add situm_flutter_wayfinding
+flutter pub add situm_flutter
 ```
 
 ### Set up your Situm credentials
@@ -46,7 +46,7 @@ up a Situm account.
 
 ### Android
 
-Include the Situm repository in your project level `build.gradle`:
+1. Include the Situm repository in your project level `build.gradle`:
 
 ```groovy
 allprojects {
@@ -57,11 +57,21 @@ allprojects {
 }
 ```
 
+2. Add the `ACCESS_FINE_LOCATION` permission to your `AndroidManifest.xml` file if you have configured Situm SDK to [use GPS](<https://developers.situm.com/sdk_documentation/android/javadoc/latest/es/situm/sdk/location/locationrequest#useGps()>):
+
+```xml
+  <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+```
+
+3. Set the `minSdkVersion` to 21 or later on your app's `build.gradle` file.
+
 ### iOS
 
-1. Run `pod install` or `pod update` to bring the dependencies to your project.
+1. Remove the "use_frameworks!" directive in the `Podfile` of your iOS project:
 
-2. In order for the wayfinding module to successfully activate positioning you will need to declare the following permissions in your app's `Info.plist` file:
+2. Run `pod install` or `pod update` to bring the dependencies to your project.
+
+3. Declare the following permissions in your app's `Info.plist` file to successfully start positioning:
 
 ```
 <key>NSLocationWhenInUseUsageDescription</key>
@@ -76,7 +86,19 @@ allprojects {
 	<string>Bluetooth is required to find out where you are</string>
 ```
 
-Once included the app will ask the user for the appropriate permissions.
+4. For offline support you will have to add the underlying web application's domain inside the entry `WKAppBoundDomains` on `Info.plist` as follows:
+
+```
+<key>WKAppBoundDomains</key>
+<array>
+	<string>map-viewer.situm.com</string>
+</array>
+```
+
+## Migrate from the old [Situm Flutter Wayfinding plugin](https://pub.dev/packages/situm_flutter_wayfinding)
+
+The new Situm Flutter package breaks compatibility with the previous [Situm Flutter Wayfinding plugin](https://pub.dev/packages/situm_flutter_wayfinding).
+Integrating the new version is simpler and more straightforward. If you want to migrate your application, follow the steps described in the [Situm documentation](TODO://link!).
 
 ## Versioning
 

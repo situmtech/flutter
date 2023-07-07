@@ -1,6 +1,59 @@
-part of situm_flutter_wayfinding;
+part of wayfinding;
 
 // Public definitions:
+
+/// The [MapView] settings.
+class MapViewConfiguration {
+  /// Your Situm user.
+  final String situmUser;
+
+  /// Your Situm API key.
+  final String situmApiKey;
+
+  /// The building that will be loaded on the map. Alternatively you can pass a
+  /// configurationIdentifier (that will be prioritized).
+  final String? buildingIdentifier;
+
+  /// A String identifier that allows you to remotely configure all map settings.
+  /// Alternatively you can pass a buildingIdentifier, but configurationIdentifier
+  /// will be prioritized.
+  final String? remoteIdentifier;
+  final String baseUrl;
+  final TextDirection directionality;
+  final bool enableDebugging;
+
+  /// The [MapView] settings. Required fields are your Situm user and API key,
+  /// but also a buildingIdentifier or configurationIdentifier.
+  MapViewConfiguration({
+    required this.situmUser,
+    required this.situmApiKey,
+    this.buildingIdentifier,
+    this.remoteIdentifier,
+    this.baseUrl = "https://map-viewer.situm.com",
+    this.directionality = TextDirection.ltr,
+    this.enableDebugging = false,
+  });
+
+  String get _internalMapViewUrl {
+    if (baseUrl.endsWith("/")) {
+      return baseUrl.substring(0, baseUrl.length - 1);
+    }
+    return baseUrl;
+  }
+
+  String _getMapViewerUrl() {
+    var base = _internalMapViewUrl;
+    var query = "email=$situmUser&apikey=$situmApiKey&mode=embed";
+    if (remoteIdentifier != null) {
+      return "$base/id/$remoteIdentifier?$query";
+    } else if (buildingIdentifier != null) {
+      query = "$query&buildingid=$buildingIdentifier";
+      return "$base/?$query";
+    }
+    throw ArgumentError(
+        'Missing configuration: configurationIdentifier or buildingIdentifier must be provided.');
+  }
+}
 
 class DirectionsMessage {
   static const CATEGORY_POI = "POI";
@@ -12,7 +65,6 @@ class DirectionsMessage {
   final String originIdentifier;
   final String destinationCategory;
   final String destinationIdentifier;
-  final DirectionsOptions directionsOptions;
 
   DirectionsMessage({
     required this.buildingIdentifier,
@@ -20,7 +72,6 @@ class DirectionsMessage {
     this.originIdentifier = EMPTY_ID,
     required this.destinationCategory,
     this.destinationIdentifier = EMPTY_ID,
-    required this.directionsOptions,
   });
 }
 
@@ -43,15 +94,15 @@ class OnPoiDeselectedResult {
 // Result callbacks.
 
 // WYF load callback.
-typedef SitumMapViewCallback = void Function(SitumFlutterWYF controller);
+typedef MapViewCallback = void Function(MapViewController controller);
 // POI selection callback.
 typedef OnPoiSelectedCallback = void Function(
     OnPoiSelectedResult poiSelectedResult);
 // POI deselection callback.
 typedef OnPoiDeselectedCallback = void Function(
     OnPoiDeselectedResult poiDeselectedResult);
-// DirectionsOptions interceptor.
-typedef OnDirectionsOptionsInterceptor = void Function(
-    DirectionsOptions directionsOptions);
-typedef OnNavigationOptionsInterceptor = void Function(
-    NavigationOptions navigationOptions);
+// Directions and navigation interceptor.
+typedef OnDirectionsRequestInterceptor = void Function(
+    DirectionsRequest directionsRequest);
+typedef OnNavigationRequestInterceptor = void Function(
+    NavigationRequest navigationRequest);

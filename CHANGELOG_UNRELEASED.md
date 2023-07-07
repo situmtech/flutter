@@ -1,7 +1,7 @@
 ## Unreleased
 
 ### Added
-* Added new positioning callbacks: `onLocationChange()`, `onStatusChange()` and `onError()`. These
+* Added new positioning callbacks: `onLocationUpdate()`, `onLocationUpdate()` and `onLocationError()`. These
   callbacks are a replacement for the previous `LocationListener`.
 * Added `Location` class. Now the callback `onLocationChange()` will receive coordinates, bearing
   and more info at every location update.
@@ -11,5 +11,6 @@
 
 
 ### Changed
+* Updated the name of both package and libraries to `situm_flutter`, `situm_flutter/wayfinding` and `situm_flutter/sdk`.
 * Refactored `requestLocationUpdates()` to receive a single `LocationRequest` parameter.
 * Replaced native WYF implementations with the brand new [Situm map-viewer](https://situm.com/docs/map-viewer-quickstart-guide/).

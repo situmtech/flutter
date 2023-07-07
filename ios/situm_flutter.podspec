@@ -1,9 +1,9 @@
 #
 # To learn more about a Podspec see http://guides.cocoapods.org/syntax/podspec.html.
-# Run `pod lib lint situm_flutter_wayfinding.podspec` to validate before publishing.
+# Run `pod lib lint situm_flutter.podspec` to validate before publishing.
 #
 Pod::Spec.new do |s|
-  s.name             = 'situm_flutter_wayfinding'
+  s.name             = 'situm_flutter'
   s.version          = '0.0.14'
   s.summary          = 'Situm Flutter plugin.'
   s.description      = <<-DESC
@@ -15,7 +15,7 @@ Pod::Spec.new do |s|
   s.source           = { :path => '.' }
   s.source_files = 'Classes/**/*'
   s.dependency 'Flutter'
-  s.dependency 'SitumSDK', '~> 2.59.0'
+  s.dependency 'SitumSDK', '~> 2.61.0'
   s.platform = :ios, '9.0'
 
   # Flutter.framework does not contain a i386 slice.

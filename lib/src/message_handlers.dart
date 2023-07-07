@@ -1,4 +1,4 @@
-part of situm_flutter_wayfinding;
+part of wayfinding;
 
 abstract class MessageHandler {
   factory MessageHandler(String type) {
@@ -19,7 +19,7 @@ abstract class MessageHandler {
   }
 
   void handleMessage(
-    SitumFlutterWYF situmFlutterWYF,
+    MapViewController mapViewController,
     Map<String, dynamic> payload,
   );
 }
@@ -27,7 +27,7 @@ abstract class MessageHandler {
 class EmptyMessageHandler implements MessageHandler {
   @override
   void handleMessage(
-    SitumFlutterWYF situmFlutterWYF,
+    MapViewController mapViewController,
     Map<String, dynamic> payload,
   ) {
     // Do nothing.
@@ -38,26 +38,27 @@ class EmptyMessageHandler implements MessageHandler {
 class DirectionsMessageHandler implements MessageHandler {
   @override
   void handleMessage(
-    SitumFlutterWYF situmFlutterWYF,
+    MapViewController mapViewController,
     Map<String, dynamic> payload,
   ) async {
-    var sdk = SitumFlutterSDK();
+    var sdk = SitumSdk();
     var directionsMessage = createDirectionsMessage(payload);
-    var directionsOptions = directionsMessage.directionsOptions;
+    var directionsRequest = createDirectionsRequest(payload["directionsRequest"]);
     // Send DirectionsOptions so it can be intercepted.
-    situmFlutterWYF._onDirectionsRequested(directionsOptions);
+    mapViewController._onDirectionsRequested(directionsRequest);
     // Calculate route and send it to the web-view.
     try {
-      SitumRoute situmRoute = await sdk.requestDirections(directionsOptions);
-      situmFlutterWYF._setRoute(
+      SitumRoute situmRoute = await sdk.requestDirections(directionsRequest);
+      mapViewController._setRoute(
         directionsMessage.originIdentifier,
         directionsMessage.destinationIdentifier,
+        directionsRequest.accessibilityMode?.name,
         situmRoute,
       );
     } on PlatformException catch (e) {
-      situmFlutterWYF._setRouteError(e.code);
+      mapViewController._setRouteError(e.code);
     } catch (e) {
-      situmFlutterWYF._setRouteError(-1);
+      mapViewController._setRouteError(-1);
     }
   }
 }
@@ -65,15 +66,15 @@ class DirectionsMessageHandler implements MessageHandler {
 class NavigationMessageHandler implements MessageHandler {
   @override
   void handleMessage(
-    SitumFlutterWYF situmFlutterWYF,
+    MapViewController mapViewController,
     Map<String, dynamic> payload,
   ) async {
-    var sdk = SitumFlutterSDK();
+    var sdk = SitumSdk();
     var directionsMessage = createDirectionsMessage(payload);
-    var directionsOptions = directionsMessage.directionsOptions;
-    situmFlutterWYF._onDirectionsRequested(directionsOptions);
-    var navigationOptions = const NavigationOptions();
-    situmFlutterWYF._onNavigationRequested(navigationOptions);
+    var directionsRequest = createDirectionsRequest(payload["directionsRequest"]);
+    mapViewController._onDirectionsRequested(directionsRequest);
+    var navigationRequest = createNavigationRequest(payload["navigationRequest"]);
+    mapViewController._onNavigationRequested(navigationRequest);
     // TODO: this will overwrite any previously established callbacks!!!
     // Option 1: add private callbacks in SitumFlutterSDK. SDK and WYF libraries
     // must be merged into one library...
@@ -83,28 +84,28 @@ class NavigationMessageHandler implements MessageHandler {
     // Option 4: delete the following lines, let them be implemented by the
     // integrator (code snippet). All the _internal methods must be exposed...
     sdk.onNavigationFinished(() {
-      situmFlutterWYF._setNavigationFinished();
+      mapViewController._setNavigationFinished();
     });
     sdk.onNavigationOutOfRoute(() {
-      situmFlutterWYF._setNavigationOutOfRoute();
+      mapViewController._setNavigationOutOfRoute();
     });
     sdk.onNavigationProgress((progress) {
-      situmFlutterWYF._setNavigationProgress(progress);
+      mapViewController._setNavigationProgress(progress);
     });
     SitumRoute situmRoute = await sdk.requestNavigation(
-      directionsOptions,
-      navigationOptions,
+      directionsRequest,
+      navigationRequest,
     );
     try {
-      situmFlutterWYF._setNavigationRoute(
+      mapViewController._setNavigationRoute(
         directionsMessage.originIdentifier,
         directionsMessage.destinationIdentifier,
         situmRoute,
       );
     } on PlatformException catch (e) {
-      situmFlutterWYF._setRouteError(e.code);
+      mapViewController._setRouteError(e.code);
     } catch (e) {
-      situmFlutterWYF._setRouteError(-1);
+      mapViewController._setRouteError(-1);
     }
   }
 }
@@ -112,8 +113,8 @@ class NavigationMessageHandler implements MessageHandler {
 class NavigationStopMessageHandler implements MessageHandler {
   @override
   void handleMessage(
-      SitumFlutterWYF situmFlutterWYF, Map<String, dynamic> payload) {
-    var sdk = SitumFlutterSDK();
+      MapViewController mapViewController, Map<String, dynamic> payload) {
+    var sdk = SitumSdk();
     sdk.stopNavigation();
   }
 }
@@ -121,12 +122,14 @@ class NavigationStopMessageHandler implements MessageHandler {
 class PoiSelectedMessageHandler implements MessageHandler {
   @override
   void handleMessage(
-      SitumFlutterWYF situmFlutterWYF, Map<String, dynamic> payload) async {
-    var poiId = "${payload["identifier"]}";
-    if (situmFlutterWYF._onPoiSelectedCallback != null) {
-      var poi = await situmFlutterWYF._fetchPoiFromCurrentBuilding(poiId);
+      MapViewController mapViewController, Map<String, dynamic> payload) async {
+    if (mapViewController._onPoiSelectedCallback != null) {
+      var poiId = "${payload["identifier"]}";
+      var buildingId = "${payload["buildingIdentifier"]}";
+      var sdk = SitumSdk();
+      var poi = await sdk.fetchPoiFromBuilding(buildingId, poiId);
       if (poi != null) {
-        situmFlutterWYF._onPoiSelectedCallback
+        mapViewController._onPoiSelectedCallback
             ?.call(OnPoiSelectedResult(poi: poi));
       }
     }

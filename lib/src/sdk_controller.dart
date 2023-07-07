@@ -1,11 +1,30 @@
-part of situm_flutter_sdk;
+part of sdk;
 
-class SitumFlutterSDK {
+/// Main entry point for the Situm Flutter SDK. Use [SitumSdk] to start
+/// positioning, calculate routes and fetch resources.
+///
+/// ```dart
+/// var situmSdk = SitumSdk();
+/// // Set up your credentials:
+/// situmSdk.init(situmUser, situmApiKey);
+/// // Set up location listeners:
+/// situmSdk.onLocationUpdate((location) {
+///   ...
+/// });
+/// situmSdk.onLocationStatus((status) {
+///   ...
+/// });
+/// situmSdk.onLocationError((error) {
+///   ...
+/// });
+/// ```
+class SitumSdk {
   late final MethodChannel methodChannel;
+  Function(MethodCall call)? internalMethodCallDelegate;
 
-  OnLocationChangeCallback? _onLocationChangeCallback;
-  OnStatusChangeCallback? _onStatusChangeCallback;
-  OnErrorCallback? _onErrorCallback;
+  OnLocationUpdateCallback? _onLocationUpdateCallback;
+  OnLocationStatusCallback? _onLocationStatusCallback;
+  OnLocationErrorCallback? _onLocationErrorCallback;
 
   OnEnteredGeofencesCallback? _onEnteredGeofencesCallback;
   OnExitedGeofencesCallback? _onExitedGeofencesCallback;
@@ -14,26 +33,28 @@ class SitumFlutterSDK {
   OnNavigationProgressCallback? _onNavigationProgressCallback;
   OnNavigationOutOfRouteCallback? _onNavigationOORCallback;
 
-  static final SitumFlutterSDK _controller = SitumFlutterSDK._internal();
+  static final SitumSdk _controller = SitumSdk._internal();
 
-  factory SitumFlutterSDK() {
+  /// Main entry point for the Situm Flutter SDK. Use [SitumSdk] to start
+  /// positioning, calculate routes and fetch resources.
+  factory SitumSdk() {
     // Factory: ensure only one controller exists.
     return _controller;
   }
 
-  SitumFlutterSDK._internal() {
+  SitumSdk._internal() {
     _initializeMethodChannel();
   }
 
   _initializeMethodChannel() {
-    methodChannel = const MethodChannel(CHANNEL_SDK_ID);
+    methodChannel = const MethodChannel(_CHANNEL_SDK_ID);
     methodChannel.setMethodCallHandler(_methodCallHandler);
   }
 
   // Calls
 
-  /// Initialize SDK. You have to call this function prior any call to other
-  /// method.
+  /// Initializes [SitumSdk]. You have to call this function prior any call to
+  /// other method.
   Future<void> init(String situmUser, String situmApiKey) async {
     await methodChannel.invokeMethod<String>(
       'init',
@@ -53,8 +74,8 @@ class SitumFlutterSDK {
     );
   }
 
-  /// Start positioning. Use [onLocationChange], [onStatusChange] and
-  /// [onError] callbacks to receive location updates, status changes and
+  /// Starts positioning. Use [onLocationUpdate], [onLocationStatus] and
+  /// [onLocationError] callbacks to receive location updates, status changes and
   /// positioning errors.
   Future<void> requestLocationUpdates(LocationRequest locationRequest) async {
     await methodChannel.invokeMethod(
@@ -62,67 +83,70 @@ class SitumFlutterSDK {
   }
 
   /// Get notified about location updates. See [requestLocationUpdates].
-  Future<void> onLocationChange(OnLocationChangeCallback callback) async {
-    _onLocationChangeCallback = callback;
+  Future<void> onLocationUpdate(OnLocationUpdateCallback callback) async {
+    _onLocationUpdateCallback = callback;
   }
 
   /// Get notified about positioning status changes. See
   /// [requestLocationUpdates].
-  Future<void> onStatusChange(OnStatusChangeCallback callback) async {
-    _onStatusChangeCallback = callback;
+  Future<void> onLocationStatus(OnLocationStatusCallback callback) async {
+    _onLocationStatusCallback = callback;
   }
 
   /// Get notified about positioning errors. See [requestLocationUpdates].
-  Future<void> onError(OnErrorCallback callback) async {
-    _onErrorCallback = callback;
+  Future<void> onLocationError(OnLocationErrorCallback callback) async {
+    _onLocationErrorCallback = callback;
   }
 
-  /// Request directions between two [Point]s, using the given
-  /// [DirectionsOptions].
+  /// Requests directions between two [Point]s using the given
+  /// [DirectionsRequest].
   Future<SitumRoute> requestDirections(
-      DirectionsOptions directionsOptions) async {
+      DirectionsRequest directionsRequest) async {
     Map response = await methodChannel.invokeMethod(
-        'requestDirections', directionsOptions.toMap());
+        'requestDirections', directionsRequest.toMap());
     return createRoute(response);
   }
 
-  /// Request navigation between two [Point]s, using the given
-  /// [DirectionsOptions] and [NavigationOptions].
-  Future<SitumRoute> requestNavigation(DirectionsOptions directionsOptions,
-      NavigationOptions navigationOptions) async {
+  /// Requests navigation between two [Point]s, using the given
+  /// [DirectionsRequest] and [NavigationRequest].
+  Future<SitumRoute> requestNavigation(DirectionsRequest directionsRequest,
+      NavigationRequest navigationRequest) async {
     Map response = await methodChannel.invokeMethod('requestNavigation', {
       // For convenience on the native side, set the buildingId here:
-      "buildingIdentifier": directionsOptions.buildingIdentifier,
+      "buildingIdentifier": directionsRequest.buildingIdentifier,
       // Set directions/navigation options:
-      "directionsOptions": directionsOptions.toMap(),
-      "navigationOptions": navigationOptions.toMap(),
+      "directionsRequest": directionsRequest.toMap(),
+      "navigationRequest": navigationRequest.toMap(),
     });
     return createRoute(response);
   }
 
-  /// Stop navigation if running.
+  /// Stops navigation if running.
   Future<void> stopNavigation() async {
     await methodChannel.invokeMethod("stopNavigation", {});
   }
 
-  /// Set a callback that will be notified when the navigation finishes.
+  /// Sets a callback that will be notified when the navigation finishes.
   /// This will happen when the user is close to the destination of the current
-  /// route by less than the distanceToGoalThreshold of [NavigationOptions].
+  /// route by less than the distanceToGoalThreshold of [NavigationRequest].
+  ///
   /// See [requestNavigation].
   Future<void> onNavigationFinished(
       OnNavigationFinishedCallback callback) async {
     _onNavigationFinishedCallback = callback;
   }
 
-  /// Set a callback that will be notified on every navigation progress.
+  /// Sets a callback that will be notified on every navigation progress.
+  ///
   /// See [requestNavigation].
   Future<void> onNavigationProgress(
       OnNavigationProgressCallback callback) async {
     _onNavigationProgressCallback = callback;
   }
 
-  /// Set a callback that will be notified when the current user gets out
+  /// Sets a callback that will be notified when the current user gets out
   /// of the current route.
+  ///
   /// See [requestNavigation].
   Future<void> onNavigationOutOfRoute(
       OnNavigationOutOfRouteCallback callback) async {
@@ -133,27 +157,27 @@ class SitumFlutterSDK {
     await methodChannel.invokeMethod('clearCache');
   }
 
-  /// Stop positioning.
+  /// Stops positioning.
   Future<void> removeUpdates() async {
     await methodChannel.invokeMethod('removeUpdates');
   }
 
-  /// Download all the buildings for the current user.
+  /// Downloads all the buildings for the current user.
   Future<List<Building>> fetchBuildings() async {
     List response = await methodChannel.invokeMethod("fetchBuildings");
     return createList<Building>(response, createBuilding);
   }
 
-  /// Download all the building data for the selected building. This info
+  /// Downloads all the building data for the selected building. This info
   /// includes [Floor]s, indoor and outdoor [Poi]s, events and paths. It also
   /// download floor maps and [PoiCategory] icons to local storage.
   Future<BuildingInfo> fetchBuildingInfo(String buildingIdentifier) async {
-    Map response = await methodChannel
-        .invokeMethod("fetchBuildingInfo", {"buildingIdentifier": buildingIdentifier});
+    Map response = await methodChannel.invokeMethod(
+        "fetchBuildingInfo", {"buildingIdentifier": buildingIdentifier});
     return createBuildingInfo(response);
   }
 
-  /// Download all the necessary information to start positioning. This includes
+  /// Downloads all the necessary information to start positioning. This includes
   /// [Building], [BuildingInfo] and the building's model. Downloaded
   /// information will be saved in cache.
   Future<String> prefetchPositioningInfo(
@@ -179,11 +203,12 @@ class SitumFlutterSDK {
     return createList<Poi>(response, createPoi);
   }
 
-  Future<Poi?> fetchPoiFromBuilding(String buildingIdentifier, String poiIdentifier) async {
+  Future<Poi?> fetchPoiFromBuilding(
+      String buildingIdentifier, String poiIdentifier) async {
     List<Poi> buildingPois = await fetchPoisFromBuilding(buildingIdentifier);
-    return buildingPois
-        .cast<Poi?>()
-        .firstWhere((poi) => poi?.identifier == poiIdentifier, orElse: () => null);
+    return buildingPois.cast<Poi?>().firstWhere(
+        (poi) => poi?.identifier == poiIdentifier,
+        orElse: () => null);
   }
 
   Future<List<PoiCategory>> fetchPoiCategories() async {
@@ -212,6 +237,13 @@ class SitumFlutterSDK {
     // Install the native listener only when it was explicitly required as it
     // supposes a computational costs.
     await methodChannel.invokeMethod('geofenceCallbacksRequested');
+  }
+
+  /// Set a native [MethodCall] delegate.
+  /// Do not use this method as it is intended for internal use by the map
+  /// viewer module.
+  void internalSetMethodCallDelegate(Function(MethodCall call) delegate) {
+    internalMethodCallDelegate = delegate;
   }
 
   // Callbacks:
@@ -245,20 +277,22 @@ class SitumFlutterSDK {
       default:
         debugPrint('Method ${call.method} not found!');
     }
+    // Forward call to internal delegate (send locations to MapView).
+    internalMethodCallDelegate?.call(call);
   }
 
   // LOCATION UPDATES:
 
   void _onLocationChanged(arguments) {
-    _onLocationChangeCallback?.call(createLocation(arguments));
+    _onLocationUpdateCallback?.call(createLocation(arguments));
   }
 
   void _onStatusChanged(arguments) {
-    _onStatusChangeCallback?.call(arguments['statusName']);
+    _onLocationStatusCallback?.call(arguments['statusName']);
   }
 
   void _onError(arguments) {
-    _onErrorCallback?.call(Error(
+    _onLocationErrorCallback?.call(Error(
       code: "${arguments['code']}", // Ensure code is a string!
       message: arguments['message'],
     ));

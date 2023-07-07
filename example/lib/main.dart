@@ -1,12 +1,15 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:situm_flutter_wayfinding/situm_flutter_sdk.dart';
-import 'package:situm_flutter_wayfinding/situm_flutter_wayfinding.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:situm_flutter/sdk.dart';
+import 'package:situm_flutter/wayfinding.dart';
 
 import './config.dart';
 
 void main() => runApp(const MyApp());
 
-const _title = "Situm Flutter Wayfinding";
+const _title = "Situm Flutter";
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -28,49 +31,65 @@ class MyTabs extends StatefulWidget {
 }
 
 class _MyTabsState extends State<MyTabs> {
-  late SitumFlutterSDK situmSdk;
+  late SitumSdk situmSdk;
   int _selectedIndex = 0;
   String currentOutput = "---";
 
-  SitumFlutterWYF? situmFlutterWYF;
+  MapViewController? mapViewController;
 
   // Widget to showcase some SDK API functions
   Widget _createHomeTab() {
     // Home:
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 30, horizontal: 0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          const Text(
-            'SitumSdk',
-            textAlign: TextAlign.center,
-            style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
-          ),
-          SizedBox(
-              height: 225,
-              child: GridView.count(
-                  crossAxisCount: 4,
-                  padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-                  shrinkWrap: true,
-                  childAspectRatio: 1.5,
-                  children: [
-                    _sdkButton('Start', _requestUpdates),
-                    _sdkButton('Global', _requestUpdatesGlobal),
-                    _sdkButton('Stop', _removeUpdates),
-                    _sdkButton('Device Id', _getDeviceId),
-                    _sdkButton('Prefetch', _prefetch),
-                    _sdkButton('Clear cache', _clearCache),
-                    _sdkButton('Pois', _fetchPois),
-                    _sdkButton('Categories', _fetchCategories),
-                    _sdkButton('Buildings', _fetchBuildings),
-                    _sdkButton('Building Info', _fetchBuildingInfo),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        _buttonsGroup(Icons.my_location, "Positioning", [
+          _sdkButton('Start', _requestLocationUpdates),
+          _sdkButton('Stop', _removeUpdates),
+        ]),
+        _buttonsGroup(Icons.cloud_download, "Fetch resources", [
+          _sdkButton('Prefetch', _prefetch),
+          _sdkButton('Clear cache', _clearCache),
+          _sdkButton('Pois', _fetchPois),
+          _sdkButton('Categories', _fetchCategories),
+          _sdkButton('Buildings', _fetchBuildings),
+          _sdkButton('Building Info', _fetchBuildingInfo),
+        ]),
+        Expanded(
+            child: SingleChildScrollView(
+                padding: const EdgeInsets.all(30), child: Text(currentOutput)))
+      ],
+    );
+  }
 
-                  ])),
-          Expanded(
-              child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(30),
-                  child: Text(currentOutput)))
+  Card _buttonsGroup(IconData iconData, String title, List<Widget> children) {
+    return Card(
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+            child: Row(
+              children: [
+                Icon(iconData, color: Colors.black45),
+                const SizedBox(width: 16.0),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          GridView.count(
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisCount: 3,
+            padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+            shrinkWrap: true,
+            childAspectRatio: 2.5,
+            children: children,
+          ),
         ],
       ),
     );
@@ -84,43 +103,45 @@ class _MyTabsState extends State<MyTabs> {
         child: Text(buttonText));
   }
 
-  // Widget that for the Wayfinding module
+  // Widget that shows the Situm MapView.
   Widget _createSitumMapTab() {
-    // The Situm map:
     return Stack(children: [
-      SitumMapView(
+      MapView(
         key: const Key("situm_map"),
-        // Your Situm credentials and building, see config.dart.
-        // Copy config.dart.example if you haven't already.
-        searchViewPlaceholder: "Situm Flutter Wayfinding",
-        situmUser: situmUser,
-        situmApiKey: situmApiKey,
-        buildingIdentifier: buildingIdentifier,
-        // Config:
-        situmMapUrl: "https://map-viewer-des.situm.com",
-        //situmMapUrl: "http://192.168.1.139:5173",
-        showPoiNames: true,
-        hasSearchView: true,
-        showNavigationIndications: true,
-        enableDebugging: true,
-        loadCallback: _onWYFLoaded,
+        configuration: MapViewConfiguration(
+          // Your Situm credentials.
+          // Copy config.dart.example if you haven't already.
+          situmUser: situmUser,
+          situmApiKey: situmApiKey,
+          // Set your building identifier:
+          buildingIdentifier: buildingIdentifier,
+          baseUrl: mapViewUrl,
+          enableDebugging: true,
+        ),
+        onLoad: _onLoad,
       ),
     ]);
   }
 
-  void _onWYFLoaded(SitumFlutterWYF controller) {
-    situmFlutterWYF = controller;
+  void _onLoad(MapViewController controller) {
+    // Use MapViewController to communicate with the map: methods and callbacks
+    // are available to perform actions and listen to events (e.g., set the user
+    // location, listen to POI selections, intercept navigation options, etc.).
+    // You need to wait until the map is properly loaded to do so.
+    mapViewController = controller;
     controller.onPoiSelected((poiSelectedResult) {
       debugPrint("WYF> onPoiSelected: ${poiSelectedResult.poi.name}");
     });
+    controller.onNavigationRequestInterceptor((navigationRequest) {
+      debugPrint("WYF> Navigation interceptor: ${navigationRequest.toMap()}");
+      //   navigationRequest.distanceToGoalThreshold = 10.0;
+      //   ...
+    });
   }
 
-  /*
-  * On the state initialization of this widget, we initialize Situm SDK
-  */
   @override
   void initState() {
-    situmSdk = SitumFlutterSDK();
+    situmSdk = SitumSdk();
     // Set up your credentials
     situmSdk.init(situmUser, situmApiKey);
     // Configure SDK
@@ -128,18 +149,17 @@ class _MyTabsState extends State<MyTabs> {
       useRemoteConfig: true,
     ));
     // Set up location listeners:
-    situmSdk.onLocationChange((location) {
+    situmSdk.onLocationUpdate((location) {
       _echo("""SDK> Location changed:
         B=${location.buildingIdentifier},
         F=${location.floorIdentifier},
-        C=${location.coordinate.latitude}, ${location.coordinate.longitude}
+        C=${location.coordinate.latitude.toStringAsFixed(5)}, ${location.coordinate.longitude.toStringAsFixed(5)}
       """);
-      situmFlutterWYF?.setCurrentLocation(location);
     });
-    situmSdk.onStatusChange((status) {
+    situmSdk.onLocationStatus((status) {
       _echo("SDK> STATUS: $status");
     });
-    situmSdk.onError((error) {
+    situmSdk.onLocationError((error) {
       _echo("SDK> Error: ${error.message}");
     });
     // Set up listener for events on geofences
@@ -159,19 +179,20 @@ class _MyTabsState extends State<MyTabs> {
     });
   }
 
-  /*
-  * SDK auxiliary functions
-  */
-  void _requestUpdates() async {
+  // SDK auxiliary functions
+
+  void _requestLocationUpdates() async {
+    var hasPermissions = await _requestPermissions();
+    if (!hasPermissions) {
+      _echo("You need to accept permissions to start positioning.");
+      return;
+    }
+    // Start positioning using the native SDK. You will receive location and
+    // status updates (as well as possible errors) in the defined callbacks.
+    // You don't need to do anything to draw the user's position on the map; the
+    // library handles it all internally for you.
     situmSdk.requestLocationUpdates(LocationRequest(
       buildingIdentifier: buildingIdentifier, //"-1"
-      useDeadReckoning: false,
-    ));
-  }
-
-  void _requestUpdatesGlobal() async {
-    situmSdk.requestLocationUpdates(LocationRequest(
-      buildingIdentifier: "-1",
       useDeadReckoning: false,
     ));
   }
@@ -221,13 +242,7 @@ class _MyTabsState extends State<MyTabs> {
     _echo("SDK> RESPONSE: BUILDINGS = \n\n$buildings");
   }
 
-  void _getDeviceId() async {
-    _echo("SDK> Device Id...");
-    var deviceId = await situmSdk.getDeviceId();
-    _echo("SDK> RESPONSE: DEVICEID = \n\n$deviceId");
-  }
-
-  /* --- */
+  // ---
 
   @override
   Widget build(BuildContext context) {
@@ -262,5 +277,22 @@ class _MyTabsState extends State<MyTabs> {
     setState(() {
       _selectedIndex = index;
     });
+  }
+
+  /// Example of a function that request permissions and check the result:
+  Future<bool> _requestPermissions() async {
+    var permissions = <Permission>[
+      Permission.locationWhenInUse,
+    ];
+    if (Platform.isAndroid) {
+      permissions.addAll([
+        Permission.bluetoothConnect,
+        Permission.bluetoothScan,
+      ]);
+    } else if (Platform.isIOS) {
+      permissions.add(Permission.bluetooth);
+    }
+    Map<Permission, PermissionStatus> statuses = await permissions.request();
+    return statuses.values.every((status) => status.isGranted);
   }
 }

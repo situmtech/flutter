@@ -1,4 +1,4 @@
-package com.situm.situm_flutter_wayfinding
+package com.situm.situm_flutter
 
 import android.content.Context
 import android.os.Looper
@@ -20,8 +20,8 @@ import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 
-// SitumFlutterSDKPlugin.
-class SitumFlutterSDKPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCallHandler {
+// SitumFlutterPlugin.
+class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCallHandler {
 
     private lateinit var channel: MethodChannel
     private lateinit var navigation: Navigation
@@ -181,10 +181,10 @@ class SitumFlutterSDKPlugin : FlutterPlugin, ActivityAware, MethodChannel.Method
 
     private fun requestNavigation(arguments: Map<String, Any>, result: MethodChannel.Result) {
         val buildingIdentifier = arguments["buildingIdentifier"] as String
-        val directionsOptionsArgs = arguments["directionsOptions"] as Map<String, Any>
-        val navigationOptionsArgs = arguments["navigationOptions"] as Map<String, Any>
+        val directionsRequestArgs = arguments["directionsRequest"] as Map<String, Any>
+        val navigationRequestArgs = arguments["navigationRequest"] as Map<String, Any>
         navigation.requestDirections(
-            buildingIdentifier, directionsOptionsArgs, navigationOptionsArgs, result
+            buildingIdentifier, directionsRequestArgs, navigationRequestArgs, result
         )
     }
 

@@ -1,4 +1,4 @@
-part of situm_flutter_sdk;
+part of sdk;
 
 /// A data object that allows you to configure the positioning parameters.
 class LocationRequest {
@@ -16,20 +16,36 @@ class LocationRequest {
       };
 }
 
+/// Available accessibility modes used in the [DirectionsRequest].
+enum AccessibilityMode {
+  /// The route should choose the best route, without taking into account if it is accessible or not.
+  /// This option is the default so you don't have to do anything in order to use it.
+  CHOOSE_SHORTEST,
+
+  /// The route should always use accessible nodes.
+  ONLY_ACCESSIBLE,
+
+  /// The route should never use accessible floor changes (use this to force routes not to use lifts).
+  ONLY_NOT_ACCESSIBLE_FLOOR_CHANGES,
+}
+
 /// Parameters to request a route.
-class DirectionsOptions {
-  // buildingId populated in the constructor body.
-  late String buildingIdentifier;
+class DirectionsRequest {
   final Point from;
   final Point to;
-  final Angle? bearingFrom;
-  final bool? minimizeFloorChanges;
+  Angle? bearingFrom;
+  bool? minimizeFloorChanges;
+  AccessibilityMode? accessibilityMode;
 
-  DirectionsOptions({
+  // buildingId populated in the constructor body.
+  late String buildingIdentifier;
+
+  DirectionsRequest({
     required this.from,
     required this.to,
     this.bearingFrom,
     this.minimizeFloorChanges,
+    this.accessibilityMode,
   }) {
     // This buildingId is useful on the native side.
     buildingIdentifier = from.buildingIdentifier;
@@ -47,26 +63,82 @@ class DirectionsOptions {
     if (bearingFrom != null) {
       map['bearingFrom'] = bearingFrom?.toMap();
     }
+    if (accessibilityMode != null) {
+      map['accessibilityMode'] = accessibilityMode!.name;
+    }
     return map;
   }
 }
 
-class NavigationOptions {
-  final double outsideRouteThreshold;
-  final double distanceToGoalThreshold;
+/// A data object that allows you to configure the navigation parameters.
+class NavigationRequest {
+  /// Distance threshold to consider reaching the goal (meters).
+  int? distanceToGoalThreshold;
 
-  const NavigationOptions({
-    this.outsideRouteThreshold = -1,
-    this.distanceToGoalThreshold = -1,
+  /// Distance threshold to consider being outside the route (meters).
+  int? outsideRouteThreshold;
+
+  /// Maximum distance to ignore the first indication when navigating (meters).
+  int? distanceToIgnoreFirstIndication;
+
+  /// Distance threshold from when a floor change is considered reached (meters).
+  int? distanceToFloorChangeThreshold;
+
+  /// Distance threshold to change the indication (meters).
+  int? distanceToChangeIndicationThreshold;
+
+  /// Interval between indications (milliseconds).
+  int? indicationsInterval;
+
+  /// Time to wait until the first indication is returned (milliseconds).
+  int? timeToFirstIndication;
+
+  /// Step to round indications (meters).
+  int? roundIndicationsStep;
+
+  /// Time to ignore the locations received during navigation, when the next indication is a floor change,
+  /// if the locations are on a wrong floor (not in origin or destination floors) (milliseconds).
+  int? timeToIgnoreUnexpectedFloorChanges;
+
+  /// Ignore low-quality locations.
+  bool? ignoreLowQualityLocations;
+
+  /// Configure the navigation parameters.
+  NavigationRequest({
+    this.distanceToGoalThreshold,
+    this.outsideRouteThreshold,
+    this.distanceToIgnoreFirstIndication,
+    this.distanceToFloorChangeThreshold,
+    this.distanceToChangeIndicationThreshold,
+    this.indicationsInterval,
+    this.timeToFirstIndication,
+    this.roundIndicationsStep,
+    this.timeToIgnoreUnexpectedFloorChanges,
+    this.ignoreLowQualityLocations,
   });
+
+  void addToMap(String key, dynamic value, Map<String, dynamic> map) {
+    if (value != null && value > 0) {
+      map[key] = value;
+    }
+  }
 
   Map<String, dynamic> toMap() {
     Map<String, dynamic> map = {};
-    if (outsideRouteThreshold > 0) {
-      map['outsideRouteThreshold'] = outsideRouteThreshold;
-    }
-    if (distanceToGoalThreshold > 0) {
-      map['distanceToGoalThreshold'] = distanceToGoalThreshold;
+    addToMap('distanceToGoalThreshold', distanceToGoalThreshold, map);
+    addToMap('outsideRouteThreshold', outsideRouteThreshold, map);
+    addToMap('distanceToIgnoreFirstIndication', distanceToIgnoreFirstIndication, map);
+    // Android vs iOS inconsistency: both distanceToChangeFloorThreshold and
+    // distanceToFloorChangeThreshold are necessary.
+    addToMap('distanceToChangeFloorThreshold', distanceToFloorChangeThreshold, map);
+    addToMap('distanceToFloorChangeThreshold', distanceToFloorChangeThreshold, map);
+    addToMap('distanceToChangeIndicationThreshold', distanceToChangeIndicationThreshold, map);
+    addToMap('indicationsInterval', indicationsInterval, map);
+    addToMap('timeToFirstIndication', timeToFirstIndication, map);
+    addToMap('roundIndicationsStep', roundIndicationsStep, map);
+    addToMap('timeToIgnoreUnexpectedFloorChanges', timeToIgnoreUnexpectedFloorChanges, map);
+    if (ignoreLowQualityLocations != null) {
+      map['ignoreLowQualityLocations'] = ignoreLowQualityLocations;
     }
     return map;
   }
@@ -80,11 +152,9 @@ class Location {
   final String buildingIdentifier;
   final String floorIdentifier;
   final Bearing? bearing;
-  final Bearing? cartesianBearing;
   final double accuracy;
   final bool isIndoor;
   final bool hasBearing;
-  final bool hasCartesianBearing;
   final int timestamp;
 
   Location({
@@ -95,9 +165,7 @@ class Location {
     required this.accuracy,
     required this.isIndoor,
     required this.hasBearing,
-    required this.hasCartesianBearing,
     this.bearing,
-    this.cartesianBearing,
     required this.timestamp,
   });
 
@@ -113,11 +181,9 @@ class Location {
         'buildingIdentifier': buildingIdentifier,
         'floorIdentifier': floorIdentifier,
         'bearing': bearing?.toMap(),
-        'cartesianBearing': cartesianBearing?.toMap(),
         'accuracy': accuracy,
         'isIndoor': isIndoor,
         'hasBearing': hasBearing,
-        'hasCartesianBearing': hasCartesianBearing,
         'timestamp': timestamp,
       };
 }
@@ -199,8 +265,8 @@ class Angle {
   });
 
   Map<String, dynamic> toMap() => {
-    "radians": radians,
-  };
+        "radians": radians,
+      };
 }
 
 /// Represents a rectangle bounds in a greographic 2D space.
@@ -538,9 +604,9 @@ class RouteProgress {
 // Result callbacks.
 
 // Location.
-typedef OnLocationChangeCallback = void Function(Location location);
-typedef OnStatusChangeCallback = void Function(String status);
-typedef OnErrorCallback = void Function(Error error);
+typedef OnLocationUpdateCallback = void Function(Location location);
+typedef OnLocationStatusCallback = void Function(String status);
+typedef OnLocationErrorCallback = void Function(Error error);
 
 // On enter/exit geofences.
 typedef OnEnteredGeofencesCallback = void Function(
