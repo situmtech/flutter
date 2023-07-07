@@ -131,7 +131,7 @@ const NSString* RESULTS_KEY = @"results";
     if (buildingID){
         locationRequest.buildingID = buildingID;
     }
-    locationRequest.useDeadReckoning = arguments[@"useDeadReckoning"];
+    locationRequest.useDeadReckoning = [arguments[@"useDeadReckoning"] boolValue];
     return locationRequest;
 }
 
