@@ -98,7 +98,7 @@ allprojects {
 ## Migrate from the old [Situm Flutter Wayfinding plugin](https://pub.dev/packages/situm_flutter_wayfinding)
 
 The new Situm Flutter package breaks compatibility with the previous [Situm Flutter Wayfinding plugin](https://pub.dev/packages/situm_flutter_wayfinding).
-Integrating the new version is simpler and more straightforward. If you want to migrate your application, follow the steps described in the [Situm documentation](TODO://link!).
+Integrating the new version is simpler and more straightforward. If you want to migrate your application, follow the steps described in the [Situm documentation](https://situm.com/docs/flutter-wayfinding-migration-guide).
 
 ## Versioning
 
