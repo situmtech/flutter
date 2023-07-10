@@ -1,6 +1,6 @@
 //
 //  SITFSDKUtils.h
-//  situm_flutter_wayfinding
+//  situm_flutter
 //
 //  Created by albasitum on 6/3/23.
 //

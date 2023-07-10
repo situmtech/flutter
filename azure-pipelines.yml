@@ -31,7 +31,7 @@ steps:
   - checkout: self
     fetchTags: false
     fetchDepth: 1
-    path: flutter-wayfinding
+    path: flutter
     displayName: Checkout self
 
   - bash: |
@@ -94,8 +94,8 @@ steps:
 
       echo -e "\n[+] Change version in pubspec.yaml\n"
       sed "s/^version:\s[0-9].*$/version: $(version)/g" -i pubspec.yaml  
-      echo -e "\n[+] Change version in situm_flutter_wayfinding.podspec"
-      sed "s/s.version\s.*= '[0-9\.].*'$/s.version          = '$(version)'/g" -i ios/situm_flutter_wayfinding.podspec
+      echo -e "\n[+] Change version in situm_flutter.podspec"
+      sed "s/s.version\s.*= '[0-9\.].*'$/s.version          = '$(version)'/g" -i ios/situm_flutter.podspec
       echo -e "\n[+] Set new plugin version in examples"
       cd example
       flutter pub get
@@ -115,7 +115,7 @@ steps:
         bitbucket_user: situmops
       system: "N/A"
       server: "github"
-      repofolder: "../flutter-wayfinding"
+      repofolder: "../flutter"
       mergeBranches:
         - "master"
         - "develop"
