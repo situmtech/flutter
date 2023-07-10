@@ -61,6 +61,7 @@ steps:
 
           echo -e "\n[+] Pod install"
           cd ..
+          rm -rf Podfile.lock
           pod install
   
           echo -e "\n[+] Build example with fastlane \n"
