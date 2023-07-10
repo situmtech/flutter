@@ -1,5 +1,5 @@
 <p align="center"> <img width="233" src="https://situm.com/wp-content/themes/situm/img/logo-situm.svg" style="margin-bottom:1rem" />
-<h1 align="center">@situm/flutter-wayfinding</h1>
+<h1 align="center">@situm/flutter</h1>
 </p>
 
 <p align="center" style="text-align:center">
@@ -98,7 +98,7 @@ allprojects {
 ## Migrate from the old [Situm Flutter Wayfinding plugin](https://pub.dev/packages/situm_flutter_wayfinding)
 
 The new Situm Flutter package breaks compatibility with the previous [Situm Flutter Wayfinding plugin](https://pub.dev/packages/situm_flutter_wayfinding).
-Integrating the new version is simpler and more straightforward. If you want to migrate your application, follow the steps described in the [Situm documentation](TODO://link!).
+Integrating the new version is simpler and more straightforward. If you want to migrate your application, follow the steps described in the [Situm documentation](https://situm.com/docs/flutter-wayfinding-migration-guide).
 
 ## Versioning
 

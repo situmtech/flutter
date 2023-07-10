@@ -31,7 +31,7 @@ steps:
   - checkout: self
     fetchTags: false
     fetchDepth: 1
-    path: flutter-wayfinding
+    path: flutter
     displayName: Checkout self
 
   - bash: |
@@ -115,7 +115,7 @@ steps:
         bitbucket_user: situmops
       system: "N/A"
       server: "github"
-      repofolder: "../flutter-wayfinding"
+      repofolder: "../flutter"
       mergeBranches:
         - "master"
         - "develop"
