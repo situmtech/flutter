@@ -1,4 +1,9 @@
+// Your Situm user and API Key.
 const situmUser = "YOUR-SITUM-USER";
 const situmApiKey = "YOUR-SITUM-API-KEY";
+// Set here the building identifier you want on the map.
 const buildingIdentifier = "YOUR-SITUM-BUILDING-IDENTIFIER";
-const googleMapsApiKey = "YOUR-GOOGLE-MAPS-API-KEY";
+// Alternatively, you can set an identifier that allows you to remotely configure all map settings.
+// For now, you need to contact Situm to obtain yours.
+const configurationIdentifier = null;
+const mapViewUrl = "https://map-viewer.situm.com";

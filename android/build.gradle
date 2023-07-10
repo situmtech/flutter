@@ -1,4 +1,4 @@
-group 'com.situm.situm_flutter_wayfinding'
+group 'com.situm.situm_flutter'
 version '1.0-SNAPSHOT'
 
 buildscript {
@@ -48,7 +48,7 @@ android {
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
     implementation 'androidx.appcompat:appcompat:1.4.1'
-    implementation ('es.situm:situm-wayfinding:0.27.3-alpha@aar') {
+    implementation ('es.situm:situm-sdk:2.87.0@aar') {
         transitive = true
     }
 }
