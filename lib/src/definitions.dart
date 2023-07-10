@@ -1,144 +1,108 @@
-part of situm_flutter_wayfinding;
+part of wayfinding;
 
 // Public definitions:
 
+/// The [MapView] settings.
+class MapViewConfiguration {
+  /// Your Situm user.
+  final String situmUser;
+
+  /// Your Situm API key.
+  final String situmApiKey;
+
+  /// The building that will be loaded on the map. Alternatively you can pass a
+  /// configurationIdentifier (that will be prioritized).
+  final String? buildingIdentifier;
+
+  /// A String identifier that allows you to remotely configure all map settings.
+  /// Alternatively you can pass a buildingIdentifier, but configurationIdentifier
+  /// will be prioritized.
+  final String? remoteIdentifier;
+  final String baseUrl;
+  final TextDirection directionality;
+  final bool enableDebugging;
+
+  /// The [MapView] settings. Required fields are your Situm user and API key,
+  /// but also a buildingIdentifier or configurationIdentifier.
+  MapViewConfiguration({
+    required this.situmUser,
+    required this.situmApiKey,
+    this.buildingIdentifier,
+    this.remoteIdentifier,
+    this.baseUrl = "https://map-viewer.situm.com",
+    this.directionality = TextDirection.ltr,
+    this.enableDebugging = false,
+  });
+
+  String get _internalMapViewUrl {
+    if (baseUrl.endsWith("/")) {
+      return baseUrl.substring(0, baseUrl.length - 1);
+    }
+    return baseUrl;
+  }
+
+  String _getMapViewerUrl() {
+    var base = _internalMapViewUrl;
+    var query = "email=$situmUser&apikey=$situmApiKey&mode=embed";
+    if (remoteIdentifier != null) {
+      return "$base/id/$remoteIdentifier?$query";
+    } else if (buildingIdentifier != null) {
+      query = "$query&buildingid=$buildingIdentifier";
+      return "$base/?$query";
+    }
+    throw ArgumentError(
+        'Missing configuration: configurationIdentifier or buildingIdentifier must be provided.');
+  }
+}
+
+class DirectionsMessage {
+  static const CATEGORY_POI = "POI";
+  static const CATEGORY_LOCATION = "LOCATION";
+  static const EMPTY_ID = "-1";
+
+  final String buildingIdentifier;
+  final String originCategory;
+  final String originIdentifier;
+  final String destinationCategory;
+  final String destinationIdentifier;
+
+  DirectionsMessage({
+    required this.buildingIdentifier,
+    required this.originCategory,
+    this.originIdentifier = EMPTY_ID,
+    required this.destinationCategory,
+    this.destinationIdentifier = EMPTY_ID,
+  });
+}
+
 class OnPoiSelectedResult {
-  final String buildingId;
-  final String buildingName;
-  final String floorId;
-  final String floorName;
-  final String poiId;
-  final String poiName;
-  final String poiInfoHtml;
+  final Poi poi;
 
   const OnPoiSelectedResult({
-    required this.buildingId,
-    required this.buildingName,
-    required this.floorId,
-    required this.floorName,
-    required this.poiId,
-    required this.poiName,
-    required this.poiInfoHtml,
+    required this.poi,
   });
 }
 
 class OnPoiDeselectedResult {
   final String buildingId;
-  final String buildingName;
 
   const OnPoiDeselectedResult({
     required this.buildingId,
-    required this.buildingName,
   });
-}
-
-class NavigationSettings {
-  final double outsideRouteThreshold;
-  final double distanceToGoalThreshold;
-
-  const NavigationSettings({
-    this.outsideRouteThreshold = -1,
-    this.distanceToGoalThreshold = -1,
-  });
-
-  Map<String, dynamic> toMap() {
-    return {
-      "outsideRouteThreshold": outsideRouteThreshold,
-      "distanceToGoalThreshold": distanceToGoalThreshold
-    };
-  }
-}
-
-class DirectionsSettings {
-  final bool? minimizeFloorChanges;
-
-  const DirectionsSettings({
-    this.minimizeFloorChanges,
-  });
-
-  Map<String, dynamic> toMap() {
-    Map<String, dynamic> map = {};
-
-    if (minimizeFloorChanges != null) {
-      map['minimizeFloorChanges'] = minimizeFloorChanges;
-    }
-    return map;
-  }
-}
-
-class Route {
-  final double distance;
-
-  const Route({
-    this.distance = -1,
-  });
-}
-
-class NavigationResult {
-  final String destinationId;
-  final Route? route;
-
-  const NavigationResult({
-    required this.destinationId,
-    this.route,
-  });
-}
-
-class Coordinates {
-  final double latitude;
-  final double longitude;
-
-  Coordinates({
-    required this.latitude,
-    required this.longitude,
-  });
-
-  @override
-  String toString() {
-    return "$latitude, $longitude";
-  }
-}
-
-class CustomPoi {
-  final int id;
-  final String name;
-  final String description;
-  final int buildingId;
-  final int levelId;
-  final Coordinates coordinates;
-
-  const CustomPoi(
-      {required this.id,
-      required this.name,
-      required this.description,
-      required this.buildingId,
-      required this.levelId,
-      required this.coordinates});
-
-  @override
-  String toString() {
-    return "[$id] $name: $description - MAP($coordinates)";
-  }
 }
 
 // Result callbacks.
 
 // WYF load callback.
-typedef SitumMapViewCallback = void Function(SitumFlutterWayfinding controller);
+typedef MapViewCallback = void Function(MapViewController controller);
 // POI selection callback.
 typedef OnPoiSelectedCallback = void Function(
     OnPoiSelectedResult poiSelectedResult);
 // POI deselection callback.
 typedef OnPoiDeselectedCallback = void Function(
     OnPoiDeselectedResult poiDeselectedResult);
-// Navigation callbacks
-typedef OnNavigationRequestedCallback = void Function(String destinationId);
-typedef OnNavigationErrorCallback = void Function(
-    String destinationId, String errorMessage);
-typedef OnNavigationFinishedCallback = void Function(String destinationId);
-typedef OnNavigationStartedCallback = void Function(
-    NavigationResult navigation);
-typedef OnCustomPoiCreatedCallback = void Function(CustomPoi customPoi);
-typedef OnCustomPoiRemovedCallback = void Function(CustomPoi poiId);
-typedef OnCustomPoiSelectedCallback = void Function(CustomPoi poiId);
-typedef OnCustomPoiDeselectedCallback = void Function(CustomPoi poiId);
+// Directions and navigation interceptor.
+typedef OnDirectionsRequestInterceptor = void Function(
+    DirectionsRequest directionsRequest);
+typedef OnNavigationRequestInterceptor = void Function(
+    NavigationRequest navigationRequest);

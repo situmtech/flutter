@@ -1,8 +1,8 @@
-part of situm_flutter_sdk;
+part of sdk;
 
 BuildingInfo createBuildingInfo(Map map) {
   return BuildingInfo(
-      id: map["building"]["buildingIdentifier"],
+      identifier: map["building"]["buildingIdentifier"],
       name: map["building"]["name"],
       building: createBuilding(map["building"]),
       floors: createList<Floor>(map["floors"], createFloor),
@@ -13,7 +13,17 @@ BuildingInfo createBuildingInfo(Map map) {
 }
 
 Coordinate createCoordinate(Map map) {
-  return Coordinate(latitude: map["latitude"], longitude: map["longitude"]);
+  return Coordinate(
+    latitude: (map["latitude"] ?? 0).toDouble(),
+    longitude: (map["longitude"] ?? 0).toDouble(),
+  );
+}
+
+CartesianCoordinate createCartesianCoordinate(Map map) {
+  return CartesianCoordinate(
+    x: (map["x"] ?? 0).toDouble(),
+    y: (map["y"] ?? 0).toDouble(),
+  );
 }
 
 Bounds createBounds(Map map) {
@@ -26,9 +36,9 @@ Bounds createBounds(Map map) {
 
 Floor createFloor(Map map) {
   return Floor(
-    id: map["floorIdentifier"],
+    identifier: map["floorIdentifier"],
     name: map["name"],
-    buildingId: map["buildingIdentifier"],
+    buildingIdentifier: map["buildingIdentifier"],
     floorIndex: map["floor"],
     mapUrl: map["mapUrl"],
     scale: map["scale"],
@@ -40,7 +50,7 @@ Floor createFloor(Map map) {
 
 Building createBuilding(Map map) {
   return Building(
-      id: map["buildingIdentifier"],
+      identifier: map["buildingIdentifier"],
       name: map["name"],
       address: map["address"],
       bounds: createBounds(map["bounds"]),
@@ -59,9 +69,9 @@ Building createBuilding(Map map) {
 
 Poi createPoi(Map map) {
   return Poi(
-    id: map["identifier"],
+    identifier: map["identifier"],
     name: map["poiName"],
-    buildingId: map["buildingIdentifier"],
+    buildingIdentifier: map["buildingIdentifier"],
     poiCategory: createCategory(map["category"]),
     position: createPoint(map["position"]),
     customFields: Map<String, dynamic>.from(map["customFields"]),
@@ -70,23 +80,22 @@ Poi createPoi(Map map) {
 
 PoiCategory createCategory(Map map) {
   return PoiCategory(
-    id: map["identifier"].toString(),
+    identifier: map["identifier"].toString(),
     name: map["poiCategoryName"],
   );
 }
 
-Point createPoint(Map map) {
-  return Point(
-    buildingId: map["buildingIdentifier"],
-    floorId: map["floorIdentifier"],
-    latitude: map["coordinate"]["latitude"],
-    longitude: map["coordinate"]["longitude"],
-  );
-}
+Point createPoint(arguments) => Point(
+      buildingIdentifier: arguments["buildingIdentifier"],
+      floorIdentifier: arguments["floorIdentifier"],
+      coordinate: createCoordinate(arguments["coordinate"]),
+      cartesianCoordinate:
+          createCartesianCoordinate(arguments["cartesianCoordinate"]),
+    );
 
 Geofence createGeofence(Map map) {
   return Geofence(
-      id: map["identifier"],
+      identifier: map["identifier"],
       name: map["name"],
       buildingId: map["buildingIdentifier"],
       floorId: map["floorIdentifier"],
@@ -105,7 +114,7 @@ CircleArea createCircleArea(Map map) {
 
 Event createEvent(Map map) {
   return Event(
-      id: map["identifier"].toString(),
+      identifier: map["identifier"].toString(),
       name: map["name"],
       customFields: Map<String, dynamic>.from(map["customFields"]),
       trigger: createCircleArea(map["trigger"]));
@@ -114,3 +123,68 @@ Event createEvent(Map map) {
 List<T> createList<T>(List maps, Function mapper) {
   return maps.map((o) => mapper(o)).toList().cast<T>();
 }
+
+Location createLocation(dynamic args) {
+  return Location(
+    coordinate: Coordinate(
+    latitude: args["coordinate"]["latitude"],
+    longitude: args["coordinate"]["longitude"],
+    ),
+    cartesianCoordinate: CartesianCoordinate(
+      x: args["cartesianCoordinate"]["x"],
+      y: args["cartesianCoordinate"]["y"],
+    ),
+    bearing: Bearing(
+      degrees: args["bearing"]["degrees"],
+      degreesClockwise: args["bearing"]["degreesClockwise"] ,
+      radians: args["bearing"]["radians"],
+      radiansMinusPiPi: args["bearing"]["radiansMinusPiPi"],
+    ),
+    accuracy: args["accuracy"],
+    buildingIdentifier: args["buildingIdentifier"],
+    floorIdentifier: args["floorIdentifier"],
+    hasBearing: args["hasBearing"],
+    isIndoor: args["isIndoor"],
+    timestamp: args["timestamp"].toInt(),
+  );
+}
+
+SitumRoute createRoute(arguments) {
+  return SitumRoute(rawContent: arguments);
+}
+
+DirectionsRequest createDirectionsRequest(arguments) {
+  var directionsRequest = DirectionsRequest(
+    from: createPoint(arguments["from"]),
+    to: createPoint(arguments["to"]),
+    bearingFrom: Angle(
+      radians: (arguments["bearingFrom"] != null
+              ? arguments["bearingFrom"]["radians"]
+              : 0)
+          .toDouble(),
+    ),
+    minimizeFloorChanges: arguments["minimizeFloorChanges"],
+  );
+  if (arguments["accessibilityMode"] != null) {
+    directionsRequest.accessibilityMode = AccessibilityMode.values.firstWhere(
+        (element) => element.name == arguments["accessibilityMode"]);
+  }
+  return directionsRequest;
+}
+
+NavigationRequest createNavigationRequest(arguments) => NavigationRequest(
+      distanceToGoalThreshold: arguments['distanceToGoalThreshold'],
+      outsideRouteThreshold: arguments['outsideRouteThreshold'],
+      distanceToIgnoreFirstIndication:
+          arguments['distanceToIgnoreFirstIndication'],
+      distanceToFloorChangeThreshold:
+          arguments['distanceToFloorChangeThreshold'],
+      distanceToChangeIndicationThreshold:
+          arguments['distanceToChangeIndicationThreshold'],
+      indicationsInterval: arguments['indicationsInterval'],
+      timeToFirstIndication: arguments['timeToFirstIndication'],
+      roundIndicationsStep: arguments['roundIndicationsStep'],
+      timeToIgnoreUnexpectedFloorChanges:
+          arguments['timeToIgnoreUnexpectedFloorChanges'],
+      ignoreLowQualityLocations: arguments['ignoreLowQualityLocations'],
+    );
