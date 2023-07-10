@@ -117,8 +117,8 @@ steps:
       server: "github"
       repofolder: "../flutter-wayfinding"
       mergeBranches:
-        - "master"
-        - "develop"
+        - "master-legacy"
+        - "develop-legacy"
 
 
   - task: DownloadSecureFile@1
