@@ -144,10 +144,11 @@ class SitumFlutterSDK {
   }
 
   void _onError(arguments) {
-    locationListener?.onError(Error(
-      code: arguments['code'],
+    Error error = Error(
+      code: "${arguments['code']}", // Ensure code is a string!
       message: arguments['message'],
-    ));
+    );
+    locationListener?.onError(error);
   }
 
   void _onEnterGeofences(arguments) {
