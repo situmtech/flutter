@@ -3,7 +3,8 @@
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
 
-trigger: none
+trigger: 
+  - release/*
 pr: none
 
 
@@ -34,15 +35,27 @@ steps:
     path: flutter
     displayName: Checkout self
 
+  - ${{ if eq(variables['Build.Reason'],'manual') }}:
+    - bash: |
+        if [[ "${{ parameters.flutterVersion }}" == "0.0.0" ]];then
+          echo -e "\n[!] IMPORTANT: You don't set the plugin version when you run the release branch and I'm not fortune teller\n"
+          exit 1
+        else
+          echo "##vso[task.setvariable variable=version]$(echo ${{ parameters.flutterVersion }})"
+          echo -e "\n[+] I'm a shy step so I don't tell you anything\n"
+        fi
+ 
+      displayName: Set Flutter Version Manual
+ 
+  - ${{ if ne(variables['Build.Reason'],'manual') }}:
+    - bash: |
+        FlutterVersion=$(echo $(Build.SourceBranch) | cut -d "/" -f 4)
+        echo "##vso[task.setvariable variable=version]$(echo $FlutterVersion)"
+        echo -e "\n[+] I'm a shy step that only executes where this pipeline run automatic\n"
+      displayName: Set Flutter Version Automatic
+
   - bash: |
 
-      if [[ "${{ parameters.flutterVersion }}" == "0.0.0" ]];then
-        echo -e "\n[!] IMPORTANT: You don't set the plugin version when you run the release branch and I'm not fortune teller\n"
-        exit 1
-
-      fi
-
-      echo "##vso[task.setvariable variable=version]$(echo ${{ parameters.flutterVersion }})"
       currentBranch=$(echo $(Build.SourceBranch) | cut -d "/" -f 3,4)
       echo "##vso[task.setvariable variable=currentBranch]$(echo $currentBranch)"
       echo -e "\n[+] Defined versions:"
