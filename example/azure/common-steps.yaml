@@ -7,6 +7,8 @@ parameters:
     type: string
   - name: BUILDINGID
     type: string
+  - name: MAPVIEWURL
+    type: string
 
 steps:
   - checkout: self
@@ -30,8 +32,7 @@ steps:
       echo -n "const situmApiKey = \"${{ parameters.XAPIKEY }}\";" >> lib/config.dart
       echo -n "const buildingIdentifier = \"${{ parameters.BUILDINGID }}\";" >> lib/config.dart
       echo -n "const googleMapsApiKey = \"$(MAPS_APIKEY_EXAMPLE)\";" >> lib/config.dart
-      # TODO: parameterize this config variable:
-      echo -n "const mapViewUrl = \"https://map-viewer.situm.com\";" >> lib/config.dart
+      echo -n "const mapViewUrl = \"$(MAPVIEWURL)\";" >> lib/config.dart
 
       echo -e "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<resources>\n\t<string name=\"google_api_key\">$(MAPS_APIKEY_EXAMPLE)</string>\n</resources>" > android/app/src/main/res/values/google_api_key.xml
 
