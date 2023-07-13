@@ -7,56 +7,56 @@ parameters:
     type: string
   - name: BUILDINGID
     type: string
+  - name: MAPVIEWURL
+    type: string
 
 steps:
   - checkout: self
     fetchDepth: 1
     fetchTags: false
     displayName: Clone repository
- 
- 
+
   - bash: |
-     pluginVersion=$(grep "^version: [0-9\.].*$" pubspec.yaml | awk -F":" '{print $2}')
-     echo "##vso[task.setvariable variable=pluginVersion]$(echo $pluginVersion)"
-     cd example
- 
-     echo -e "\n[+] Credentials:"
-     echo -e "\t[+] XAPIEMAIL: ${{ parameters.XAPIEMAIL }}"
-     echo -e "\t[+] BUILDINGID: ${{ parameters.BUILDINGID }}"
-     echo -e "\t[+] Plugin Version: $pluginVersion"
-     echo -e "\t[+] WORKING DIR: $(pwd)"
+      pluginVersion=$(grep "^version: [0-9\.].*$" pubspec.yaml | awk -F":" '{print $2}')
+      echo "##vso[task.setvariable variable=pluginVersion]$(echo $pluginVersion)"
+      cd example
 
- 
-     echo -n "const situmUser = \"${{ parameters.XAPIEMAIL }}\";" > lib/config.dart
-     echo -n "const situmApiKey = \"${{ parameters.XAPIKEY }}\";" >> lib/config.dart
-     echo -n "const buildingIdentifier = \"${{ parameters.BUILDINGID }}\";" >> lib/config.dart
-     echo -n "const googleMapsApiKey = \"$(MAPS_APIKEY_EXAMPLE)\";" >> lib/config.dart
+      echo -e "\n[+] Credentials:"
+      echo -e "\t[+] XAPIEMAIL: ${{ parameters.XAPIEMAIL }}"
+      echo -e "\t[+] BUILDINGID: ${{ parameters.BUILDINGID }}"
+      echo -e "\t[+] Plugin Version: $pluginVersion"
+      echo -e "\t[+] WORKING DIR: $(pwd)"
 
-     echo -e "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<resources>\n\t<string name=\"google_api_key\">$(MAPS_APIKEY_EXAMPLE)</string>\n</resources>" > android/app/src/main/res/values/google_api_key.xml
 
- 
+      echo -n "const situmUser = \"${{ parameters.XAPIEMAIL }}\";" > lib/config.dart
+      echo -n "const situmApiKey = \"${{ parameters.XAPIKEY }}\";" >> lib/config.dart
+      echo -n "const buildingIdentifier = \"${{ parameters.BUILDINGID }}\";" >> lib/config.dart
+      echo -n "const googleMapsApiKey = \"$(MAPS_APIKEY_EXAMPLE)\";" >> lib/config.dart
+      echo -n "const mapViewUrl = \"$(MAPVIEWURL)\";" >> lib/config.dart
+
+      echo -e "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<resources>\n\t<string name=\"google_api_key\">$(MAPS_APIKEY_EXAMPLE)</string>\n</resources>" > android/app/src/main/res/values/google_api_key.xml
+
     displayName: Configure credentials
 
-  - ${{ if eq(parameters.system,'android') }}: 
-    - bash: |
-         mkdir $(Agent.BuildDirectory)/binaries
-         cd $(Agent.BuildDirectory)/binaries
-         echo -e "\n[+] Download Flutter version $(flutterLinuxVersion)\n"
-         wget -q $(flutterLinuxVersion)
-         echo -e "\n[+] Untar Flutter version\n"
-         find . -iname "*.tar.xz" -exec tar xf {} \;
-      displayName: Install Binaries
+  - ${{ if eq(parameters.system,'android') }}:
+      - bash: |
+          mkdir $(Agent.BuildDirectory)/binaries
+          cd $(Agent.BuildDirectory)/binaries
+          echo -e "\n[+] Download Flutter version $(flutterLinuxVersion)\n"
+          wget -q $(flutterLinuxVersion)
+          echo -e "\n[+] Untar Flutter version\n"
+          find . -iname "*.tar.xz" -exec tar xf {} \;
+        displayName: Install Binaries
 
-  - ${{ if eq(parameters.system,'iOS') }}: 
-    - bash: |
-         mkdir $(Agent.BuildDirectory)/binaries
-         cd $(Agent.BuildDirectory)/binaries
-         echo -e "\n[+] Download Flutter version $(flutterMacOSVersion)\n"
-         wget -q $(flutterMacOSVersion)
-         echo -e "\n[+] Untar Flutter version\n"
-         find . -iname "*.zip" -exec unzip {} \;
-      displayName: Install Binaries
-
+  - ${{ if eq(parameters.system,'iOS') }}:
+      - bash: |
+          mkdir $(Agent.BuildDirectory)/binaries
+          cd $(Agent.BuildDirectory)/binaries
+          echo -e "\n[+] Download Flutter version $(flutterMacOSVersion)\n"
+          wget -q $(flutterMacOSVersion)
+          echo -e "\n[+] Untar Flutter version\n"
+          find . -iname "*.zip" -exec unzip {} \;
+        displayName: Install Binaries
 
   - bash: |
       export PATH="$PATH:$(Agent.BuildDirectory)/binaries/flutter/bin"
@@ -66,4 +66,3 @@ steps:
       flutter pub get
 
     displayName: Install Dependencies
-
