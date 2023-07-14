@@ -37,7 +37,7 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(flutterPluginBinding.binaryMessenger, CHANNEL_ID_SDK)
         channel.setMethodCallHandler(this)
-        navigation = Navigation.init(channel)
+        navigation = Navigation.init(channel, handler)
     }
 
     override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
@@ -182,7 +182,7 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
 
     private fun requestDirections(arguments: Map<String, Any>, result: MethodChannel.Result) {
         val buildingIdentifier = arguments["buildingIdentifier"] as String
-        navigation.requestDirections(
+        navigation.request(
             buildingIdentifier, arguments, null, result
         )
     }
@@ -191,7 +191,7 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
         val buildingIdentifier = arguments["buildingIdentifier"] as String
         val directionsRequestArgs = arguments["directionsRequest"] as Map<String, Any>
         val navigationRequestArgs = arguments["navigationRequest"] as Map<String, Any>
-        navigation.requestDirections(
+        navigation.request(
             buildingIdentifier, directionsRequestArgs, navigationRequestArgs, result
         )
     }
