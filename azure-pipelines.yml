@@ -3,7 +3,8 @@
 # Add steps that build, run tests, deploy, and more:
 # https://aka.ms/yaml
 
-trigger: none
+trigger: 
+  - release/*
 pr: none
 
 
@@ -31,18 +32,31 @@ steps:
   - checkout: self
     fetchTags: false
     fetchDepth: 1
-    path: flutter
     displayName: Checkout self
 
+  - ${{ if eq(variables['Build.Reason'],'manual') }}:
+    - bash: |
+        if [[ "${{ parameters.flutterVersion }}" == "0.0.0" ]];then
+          echo -e "\n[!] IMPORTANT: You don't set the plugin version when you run the release branch and I'm not fortune teller\n"
+          exit 1
+        else
+          echo "##vso[task.setvariable variable=version]$(echo ${{ parameters.flutterVersion }})"
+          echo -e "\n[+] I'm a shy step so I don't tell you anything\n"
+        fi
+ 
+      displayName: Set Flutter Version Manual
+ 
+  - ${{ if ne(variables['Build.Reason'],'manual') }}:
+    - bash: |
+        FlutterVersion=$(echo $(Build.SourceBranch) | cut -d "/" -f 4)
+        echo "##vso[task.setvariable variable=version]$(echo $FlutterVersion)"
+        echo -e "\n[+] I'm a shy step that only executes where this pipeline run automatic\n"
+      displayName: Set Flutter Version Automatic
+
   - bash: |
-
-      if [[ "${{ parameters.flutterVersion }}" == "0.0.0" ]];then
-        echo -e "\n[!] IMPORTANT: You don't set the plugin version when you run the release branch and I'm not fortune teller\n"
-        exit 1
-
+      if [ -d "flutter" ];then
+        cd flutter
       fi
-
-      echo "##vso[task.setvariable variable=version]$(echo ${{ parameters.flutterVersion }})"
       currentBranch=$(echo $(Build.SourceBranch) | cut -d "/" -f 3,4)
       echo "##vso[task.setvariable variable=currentBranch]$(echo $currentBranch)"
       echo -e "\n[+] Defined versions:"
@@ -61,37 +75,39 @@ steps:
     displayName: Initial Vars & Configs
 
   - bash: |
-
+ 
       mkdir $(Agent.BuildDirectory)/binaries
       cd $(Agent.BuildDirectory)/binaries
       echo -e "\n[+] Download Flutter version $(flutterLinuxVersion)\n"
-
+ 
       wget -q $(flutterLinuxVersion)
-
+ 
       echo -e "\n[+] Untar Flutter version\n"
       find . -iname "*.tar.xz" -exec tar xf {} \;
-
+ 
       echo -e "\n[+] Download gcloud cli version $(gcloudCliVersion)\n"
       curl -O $(gcloudCliVersion)
-
+ 
       echo -e "\n[+] Untar gcloud Cli version\n"
       find . -iname  "*.tar.gz" -exec tar xzf {} \;
-
+ 
     displayName: Install Binaries
-
+ 
   - bash: |
-
+      if [ -d "flutter" ];then
+        cd flutter
+      fi
       #Export binary paths
       export PATH="$PATH:$(Agent.BuildDirectory)/binaries/flutter/bin"
       export PATH="$PATH:$(Agent.BuildDirectory)/binaries/google-cloud-sdk/bin"
-
+ 
       echo -e "\n[+] Fetch all branches\n"
       git fetch
-
+ 
       echo -e "\n[+] Checkout to $(currentBranch)\n"
-
+ 
       git checkout $(currentBranch)
-
+ 
       echo -e "\n[+] Change version in pubspec.yaml\n"
       sed "s/^version:\s[0-9].*$/version: $(version)/g" -i pubspec.yaml  
       echo -e "\n[+] Change version in situm_flutter.podspec"
@@ -102,11 +118,11 @@ steps:
       
       echo -e "\n[+] Add,commit and push changes to $(currentBranch)"
       git pull origin $(currentBranch)
-      git commit -am "Update version to $(version)"
-
+      git commit -am "[skip ci] Setting the Flutter version to $(version)"
+ 
       git push --set-upstream origin $(currentBranch)
       git push
-
+ 
     displayName: Set version
 
   - template: azure-templates/publish_release.yml@sys_kubernetes_templates
@@ -115,7 +131,7 @@ steps:
         bitbucket_user: situmops
       system: "N/A"
       server: "github"
-      repofolder: "../flutter"
+      repofolder: "flutter"
       mergeBranches:
         - "master"
         - "develop"
@@ -145,7 +161,85 @@ steps:
       echo -e "\n[+] Create temporary token \n"
       gcloud auth print-identity-token --audiences=https://pub.dev | dart pub token add https://pub.dev
 
+      if [ -d "flutter" ];then
+        cd flutter
+      fi
+
       echo -e "\n[+] Publish flutter package\n"
       dart pub publish --force
 
     displayName: Publish packages
+
+  - bash: |
+      if [ -d "flutter" ]; then
+        cd flutter
+      fi
+  
+      echo -e "\n[+] Pull master changes and change to master branch \n"
+      git fetch
+      git checkout master
+      git pull origin master
+  
+      iossdk=$(grep -i situmsdk ios/situm_flutter.podspec | grep -o "[0-9]\+\.[0-9]\+\.[0-9]\+")
+      androidsdk=$(grep situm-sdk android/build.gradle | grep -o "[0-9]\+\.[0-9]\+\.[0-9]\+")
+
+      echo -e "\n[+] Checkout to previous commit\n"
+      git checkout HEAD~1
+  
+
+      iossdk_old=$(grep -i situmsdk ios/situm_flutter.podspec | grep -o "[0-9]\+\.[0-9]\+\.[0-9]\+")
+      androidsdk_old=$(grep situm-sdk android/build.gradle | grep -o "[0-9]\+\.[0-9]\+\.[0-9]\+")
+  
+      echo -e "\n[+] Return repository to master branch\n"
+      git checkout master
+  
+      echo -e "\n[+] Versions:"
+      echo -e "\t[+] Flutter SDK: $(version)"
+      echo -e "\t[+] ANDROID SDK: $androidsdk"
+      echo -e "\t[+] IOS SDK: $iossdk"
+      echo -e "\t[+] ANDROID SDK (OLD VERSION): $androidsdk_old"
+      echo -e "\t[+] IOS SDK (OLD IOS): $iossdk_old"
+      
+      versions="| *VERSIÓN* | *FECHA* | *ANDROID SDK* | *IOS SDK* |\n|$(version)|$(date +"%d/%m/%Y")|"
+  
+      if [ "$androidsdk" != "$androidsdk_old" ];then
+        versions="$versions *$androidsdk* |"
+        android_changelog_version=$androidsdk
+      else
+        android_changelog_version="0.0.0"
+        versions="$versions $androidsdk|"
+      fi
+  
+      if [ "$iossdk" != "$iossdk_old" ];then
+        versions="$versions *$iossdk*|"
+        ios_changelog_version=$iossdk
+      else
+        ios_changelog_version="0.0.0"
+        versions="$versions $iossdk|"
+      fi
+  
+      echo "##vso[task.setvariable variable=versions]$(echo $versions)"
+      echo "##vso[task.setvariable variable=android_changelog_version]$(echo $android_changelog_version)"
+      echo "##vso[task.setvariable variable=ios_changelog_version]$(echo $ios_changelog_version)"
+  
+    displayName: Get Versions
+   
+  - ${{ if ne(variables['Build.Reason'],'manual') }}:
+    - template: azure-templates/publish-changelog.yaml@sys_kubernetes_templates
+      parameters:
+        changelogId: $(Flutter_Changelog_id)
+        android_changelog_version: $(android_changelog_version)
+        ios_changelog_version: $(ios_changelog_version)
+  
+  - template: azure-templates/release-table.yaml@sys_kubernetes_templates
+    parameters:
+      versions: $(versions)
+      releaseTable: FLUTER_SDK_TABLE
+      confluence_release_page: $(FLUTTER_SDK_TABLE)
+      confluence_release_page_title: "SDK Automatic Release Table - Flutter Plugin"
+      bitbucket:
+        bitbucket_user: $(bitbucket_user)
+        bitbucket_pass: $(bitbucket_pass)
+ 
+
+
