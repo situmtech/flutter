@@ -7,4 +7,4 @@
 
 ### Fixed
 * Fixed an error that produced missing native messages while navigating, after the app transitions
-  to background and back again to foreground.
+  to background and back again to foreground (Android).
