@@ -32,7 +32,6 @@ steps:
   - checkout: self
     fetchTags: false
     fetchDepth: 1
-    path: flutter
     displayName: Checkout self
 
   - ${{ if eq(variables['Build.Reason'],'manual') }}:
@@ -132,7 +131,7 @@ steps:
         bitbucket_user: situmops
       system: "N/A"
       server: "github"
-      repofolder: "../flutter"
+      repofolder: "flutter"
       mergeBranches:
         - "master"
         - "develop"
