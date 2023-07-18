@@ -55,7 +55,9 @@ steps:
       displayName: Set Flutter Version Automatic
 
   - bash: |
-
+      if [ -d "flutter" ];then
+        cd flutter
+      fi
       currentBranch=$(echo $(Build.SourceBranch) | cut -d "/" -f 3,4)
       echo "##vso[task.setvariable variable=currentBranch]$(echo $currentBranch)"
       echo -e "\n[+] Defined versions:"
@@ -93,7 +95,9 @@ steps:
     displayName: Install Binaries
  
   - bash: |
- 
+      if [ -d "flutter" ];then
+        cd flutter
+      fi
       #Export binary paths
       export PATH="$PATH:$(Agent.BuildDirectory)/binaries/flutter/bin"
       export PATH="$PATH:$(Agent.BuildDirectory)/binaries/google-cloud-sdk/bin"
@@ -157,6 +161,10 @@ steps:
 
       echo -e "\n[+] Create temporary token \n"
       gcloud auth print-identity-token --audiences=https://pub.dev | dart pub token add https://pub.dev
+
+      if [ -d "flutter" ];then
+        cd flutter
+      fi
 
       echo -e "\n[+] Publish flutter package\n"
       dart pub publish --force
