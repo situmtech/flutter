@@ -32,7 +32,6 @@ steps:
   - checkout: self
     fetchTags: false
     fetchDepth: 1
-    path: flutter
     displayName: Checkout self
 
   - ${{ if eq(variables['Build.Reason'],'manual') }}:
@@ -55,7 +54,9 @@ steps:
       displayName: Set Flutter Version Automatic
 
   - bash: |
-
+      if [ -d "flutter" ];then
+        cd flutter
+      fi
       currentBranch=$(echo $(Build.SourceBranch) | cut -d "/" -f 3,4)
       echo "##vso[task.setvariable variable=currentBranch]$(echo $currentBranch)"
       echo -e "\n[+] Defined versions:"
@@ -93,7 +94,9 @@ steps:
     displayName: Install Binaries
  
   - bash: |
- 
+      if [ -d "flutter" ];then
+        cd flutter
+      fi
       #Export binary paths
       export PATH="$PATH:$(Agent.BuildDirectory)/binaries/flutter/bin"
       export PATH="$PATH:$(Agent.BuildDirectory)/binaries/google-cloud-sdk/bin"
@@ -115,19 +118,20 @@ steps:
       
       echo -e "\n[+] Add,commit and push changes to $(currentBranch)"
       git pull origin $(currentBranch)
-      git commit -am "Update version to $(version)"
+      git commit -am "[skip ci] Setting the Flutter version to $(version)"
  
       git push --set-upstream origin $(currentBranch)
       git push
  
     displayName: Set version
+
   - template: azure-templates/publish_release.yml@sys_kubernetes_templates
     parameters:
       bitbucket:
         bitbucket_user: situmops
       system: "N/A"
       server: "github"
-      repofolder: "../flutter"
+      repofolder: "flutter"
       mergeBranches:
         - "master"
         - "develop"
@@ -156,6 +160,10 @@ steps:
 
       echo -e "\n[+] Create temporary token \n"
       gcloud auth print-identity-token --audiences=https://pub.dev | dart pub token add https://pub.dev
+
+      if [ -d "flutter" ];then
+        cd flutter
+      fi
 
       echo -e "\n[+] Publish flutter package\n"
       dart pub publish --force
