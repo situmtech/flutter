@@ -234,7 +234,7 @@ steps:
   - template: azure-templates/release-table.yaml@sys_kubernetes_templates
     parameters:
       versions: $(versions)
-      releaseTable: FLUTER_SDK_TABLE
+      releaseTable: FLUTTER_SDK_TABLE
       confluence_release_page: $(FLUTTER_SDK_TABLE)
       confluence_release_page_title: "SDK Automatic Release Table - Flutter Plugin"
       bitbucket:
