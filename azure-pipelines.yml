@@ -60,7 +60,7 @@ steps:
       currentBranch=$(echo $(Build.SourceBranch) | cut -d "/" -f 3,4)
       echo "##vso[task.setvariable variable=currentBranch]$(echo $currentBranch)"
       echo -e "\n[+] Defined versions:"
-      echo -e "\t[+] Flutter Plugin version: ${{ parameters.flutterVersion }}"
+      echo -e "\t[+] Flutter Plugin version: $(version)"
       echo -e "\t[+] Current branch: $currentBranch"
 
       echo -e "\n[+] Setting git to push NPM version\n"
