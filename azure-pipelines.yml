@@ -11,6 +11,7 @@ pr: none
 variables:
   - group: Passwords
   - group: SoftwareVersions
+  - group: ChangelogIds
 
 parameters:
   - name: flutterVersion
