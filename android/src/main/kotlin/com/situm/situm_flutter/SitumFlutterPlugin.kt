@@ -37,7 +37,7 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         channel = MethodChannel(flutterPluginBinding.binaryMessenger, CHANNEL_ID_SDK)
         channel.setMethodCallHandler(this)
-        navigation = Navigation.init(channel)
+        navigation = Navigation.init(channel, handler)
     }
 
     override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
@@ -68,6 +68,34 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
             "stopNavigation" -> stopNavigation(result)
             else -> result.notImplemented()
         }
+    }
+
+    // Private methods:
+
+    // Start listening location updates, regardless of whether the positioning has been initiated or not.
+    private fun startListeningLocationUpdates() {
+        locationListener?.let {
+            SitumSdk.locationManager().removeLocationListener(it)
+        }
+
+        locationListener = object : LocationListener {
+            override fun onLocationChanged(location: Location) {
+                handler.post { channel.invokeMethod("onLocationChanged", location.toMap()) }
+            }
+
+            override fun onStatusChanged(status: LocationStatus) {
+                handler.post {
+                    channel.invokeMethod("onStatusChanged", status.toMap())
+                }
+            }
+
+            override fun onError(error: Error) {
+                handler.post {
+                    channel.invokeMethod("onError", error.toDartError())
+                }
+            }
+        }
+        SitumSdk.locationManager().addLocationListener(locationListener!!)
     }
 
     // Public methods (impl):
@@ -137,32 +165,12 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
         SitumSdk.init(context)
         SitumSdk.configuration()
             .setApiKey(arguments["situmUser"] as String, arguments["situmApiKey"] as String)
+        startListeningLocationUpdates()
         result.success("DONE")
     }
 
     private fun requestLocationUpdates(arguments: Map<String, Any>, result: MethodChannel.Result) {
-        locationListener?.let {
-            SitumSdk.locationManager().removeLocationListener(it)
-        }
         val locationRequest = LocationRequest.Builder().fromArguments(arguments).build()
-        locationListener = object : LocationListener {
-            override fun onLocationChanged(location: Location) {
-                handler.post { channel.invokeMethod("onLocationChanged", location.toMap()) }
-            }
-
-            override fun onStatusChanged(status: LocationStatus) {
-                handler.post {
-                    channel.invokeMethod("onStatusChanged", status.toMap())
-                }
-            }
-
-            override fun onError(error: Error) {
-                handler.post {
-                    channel.invokeMethod("onError", error.toDartError())
-                }
-            }
-        }
-        SitumSdk.locationManager().addLocationListener(locationListener!!)
         SitumSdk.locationManager().requestLocationUpdates(locationRequest)
         result.success("DONE")
     }
@@ -174,7 +182,7 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
 
     private fun requestDirections(arguments: Map<String, Any>, result: MethodChannel.Result) {
         val buildingIdentifier = arguments["buildingIdentifier"] as String
-        navigation.requestDirections(
+        navigation.request(
             buildingIdentifier, arguments, null, result
         )
     }
@@ -183,7 +191,7 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
         val buildingIdentifier = arguments["buildingIdentifier"] as String
         val directionsRequestArgs = arguments["directionsRequest"] as Map<String, Any>
         val navigationRequestArgs = arguments["navigationRequest"] as Map<String, Any>
-        navigation.requestDirections(
+        navigation.request(
             buildingIdentifier, directionsRequestArgs, navigationRequestArgs, result
         )
     }

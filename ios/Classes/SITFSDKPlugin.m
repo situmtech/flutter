@@ -104,9 +104,12 @@ const NSString* RESULTS_KEY = @"results";
     [SITServices provideAPIKey:situmApiKey
                       forEmail:situmUser];
     
-    
+    // TODO: por que está esto aquí?
     [SITServices setUseRemoteConfig:YES];
-    
+
+    // Start listening location updates as soon as the SDK gets initialized:
+    [self.locManager addDelegate:self];
+
     result(@"DONE");
 }
 
@@ -119,7 +122,6 @@ const NSString* RESULTS_KEY = @"results";
 
 - (void)handleRequestLocationUpdates:(FlutterMethodCall*)call
                               result:(FlutterResult)result {
-    [self.locManager addDelegate:self];
     SITLocationRequest * locationRequest = [self createLocationRequest:call.arguments];
     [self.locManager requestLocationUpdates:locationRequest];
     result(@"DONE");

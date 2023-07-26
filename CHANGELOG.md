@@ -1,3 +1,3 @@
 # Changelog
 
-Please refer to the [Flutter Wayfinding Changelog](https://situm.com/docs/flutter-wayfinding-changelog/) in our documentation.
+Please refer to the [Situm Flutter Changelog](https://situm.com/docs/flutter-changelog/) in our documentation.

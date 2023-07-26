@@ -108,7 +108,6 @@ class _MapViewState extends State<MapView> {
 
   void _onMapReady(String url) {
     if (wyfController == null) {
-      debugPrint('Page finished loading, created wyfController: $url');
       wyfController = MapViewController(
         situmUser: mapViewConfiguration.situmUser,
         situmApiKey: mapViewConfiguration.situmApiKey,
