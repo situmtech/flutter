@@ -1,6 +1,5 @@
 package com.situm.situm_flutter
 
-import android.os.Looper
 import android.util.Log
 import es.situm.sdk.SitumSdk
 import es.situm.sdk.directions.DirectionsRequest
@@ -17,24 +16,29 @@ import es.situm.sdk.utils.Handler
 import io.flutter.plugin.common.MethodChannel
 
 class Navigation private constructor(
-    private val channel: MethodChannel,
 ) : LocationListener, NavigationListener {
-    private var handler = android.os.Handler(Looper.getMainLooper())
+
+    private lateinit var channel: MethodChannel
+    private lateinit var osHandler: android.os.Handler
 
     // Navigation will be a singleton so we can be sure that calls to
     // locationManager.addListener(this) always receive the same instance.
     companion object {
         private var instance: Navigation? = null
 
-        fun init(channel: MethodChannel): Navigation {
+        fun init(channel: MethodChannel, handler: android.os.Handler): Navigation {
             if (instance == null) {
-                instance = Navigation(channel)
+                instance = Navigation()
+            }
+            instance?.let {
+                it.channel = channel
+                it.osHandler = handler
             }
             return instance!!
         }
     }
 
-    fun requestDirections(
+    fun request(
         buildingIdentifier: String,
         directionsRequestArgs: Map<String, Any>,
         navigationRequestArgs: Map<String, Any>?,
@@ -97,19 +101,19 @@ class Navigation private constructor(
     // Navigation listener:
 
     override fun onDestinationReached() {
-        handler.post {
+        osHandler.post {
             channel.invokeMethod("onNavigationFinished", null)
         }
     }
 
     override fun onProgress(progress: NavigationProgress) {
-        handler.post {
+        osHandler.post {
             channel.invokeMethod("onNavigationProgress", progress.toMap())
         }
     }
 
     override fun onUserOutsideRoute() {
-        handler.post {
+        osHandler.post {
             channel.invokeMethod("onUserOutsideRoute", null)
         }
     }
