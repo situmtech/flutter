@@ -164,10 +164,20 @@ class _MyTabsState extends State<MyTabs> {
     });
     // Set up listener for events on geofences
     situmSdk.onEnterGeofences((geofencesResult) {
-      _echo("SDK> Enter geofences: ${geofencesResult.geofences}.");
+      _echo("Situm> SDK> Enter geofences: ${geofencesResult.geofences}.");
     });
     situmSdk.onExitGeofences((geofencesResult) {
-      _echo("SDK> Exit geofences: ${geofencesResult.geofences}.");
+      _echo("Situm> SDK> Exit geofences: ${geofencesResult.geofences}.");
+    });
+    // TODO: delete!!!
+    situmSdk.onNavigationProgress((progress) {
+      _echo("Situm> SDK> Navigation PROGRESS received.");
+    });
+    situmSdk.onNavigationOutOfRoute(() {
+      _echo("Situm> SDK> Navigation OOR received.");
+    });
+    situmSdk.onNavigationFinished(() {
+      _echo("Situm> SDK> Navigation FINISHED received.");
     });
     super.initState();
   }
