@@ -12,6 +12,7 @@ variables:
   - group: Passwords
   - group: SoftwareVersions
   - group: ChangelogIds
+  - group: ConfluencePages
 
 parameters:
   - name: flutterVersion
