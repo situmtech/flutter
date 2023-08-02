@@ -56,7 +56,8 @@ class _MyTabsState extends State<MyTabs> {
                   childAspectRatio: 1.5,
                   children: [
                     _sdkButton('Start', _requestUpdates),
-                    _sdkButton('Start *', _requestUpdatesGlobalWithoutFGS),
+                    _sdkButton('Global No FGS', _requestUpdatesGlobalWithoutFGS),
+                    _sdkButton('Default', _requestUpdatesWithDefaultValues),
                     _sdkButton('Stop', _removeUpdates),
                     _sdkButton('Device Id', _getDeviceId),
                     _sdkButton('Prefetch', _prefetch),
@@ -180,7 +181,10 @@ class _MyTabsState extends State<MyTabs> {
   void _requestUpdates() async {
     situmSdk.requestLocationUpdates(
       _MyLocationListener(echoer: _echo),
-      {"buildingIdentifier": buildingIdentifier},
+      {
+        "buildingIdentifier": buildingIdentifier,
+        "useForegroundService": true,
+      },
     );
   }
 
@@ -192,6 +196,10 @@ class _MyTabsState extends State<MyTabs> {
         "useForegroundService": false, // No Foreground Service.
       },
     );
+  }
+
+  void _requestUpdatesWithDefaultValues() async {
+    situmSdk.requestLocationUpdates(_MyLocationListener(echoer: _echo), {});
   }
 
   void _removeUpdates() async {
