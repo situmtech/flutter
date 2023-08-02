@@ -31,5 +31,9 @@ fun LocationRequest.Builder.fromArguments(args: Map<String, Any>): LocationReque
             buildingIdentifier(buildingIdentifier)
         }
     }
+    if (args.containsKey("useForegroundService")) {
+        val useForegroundService = args["useForegroundService"] as Boolean
+        useForegroundService(useForegroundService)
+    }
     return this
 }

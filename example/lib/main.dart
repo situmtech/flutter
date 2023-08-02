@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:situm_flutter_wayfinding/situm_flutter_sdk.dart';
-import 'package:situm_flutter_wayfinding/situm_flutter_wayfinding.dart';
 import 'package:flutterWayfindingPlugin/config.dart';
 import 'package:flutterWayfindingPlugin/find_my_car/find_my_car.dart';
+import 'package:situm_flutter_wayfinding/situm_flutter_sdk.dart';
+import 'package:situm_flutter_wayfinding/situm_flutter_wayfinding.dart';
 
 void main() => runApp(const MyApp());
 
@@ -56,6 +56,7 @@ class _MyTabsState extends State<MyTabs> {
                   childAspectRatio: 1.5,
                   children: [
                     _sdkButton('Start', _requestUpdates),
+                    _sdkButton('Start *', _requestUpdatesGlobalWithoutFGS),
                     _sdkButton('Stop', _removeUpdates),
                     _sdkButton('Device Id', _getDeviceId),
                     _sdkButton('Prefetch', _prefetch),
@@ -180,6 +181,16 @@ class _MyTabsState extends State<MyTabs> {
     situmSdk.requestLocationUpdates(
       _MyLocationListener(echoer: _echo),
       {"buildingIdentifier": buildingIdentifier},
+    );
+  }
+
+  void _requestUpdatesGlobalWithoutFGS() async {
+    situmSdk.requestLocationUpdates(
+      _MyLocationListener(echoer: _echo),
+      {
+        "buildingIdentifier": "-1", // Force Global Mode.
+        "useForegroundService": false, // No Foreground Service.
+      },
     );
   }
 

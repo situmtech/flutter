@@ -147,7 +147,6 @@ class SitumFlutterSDKPlugin : FlutterPlugin, ActivityAware, MethodChannel.Method
         }
         val locationRequest = LocationRequest.Builder()
             .fromArguments(arguments)
-            .useForegroundService(true)
             .foregroundServiceNotification(Utils.createNotification("Stop", context!!))
             .build()
         locationListener = object : LocationListener {
