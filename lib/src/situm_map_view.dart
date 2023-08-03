@@ -8,14 +8,17 @@ class MapView extends StatefulWidget {
   final MapViewCallback onLoad;
   final MapViewCallback? didUpdateCallback;
 
+  String? navigationDestination;
+
   /// MapView is the main component and entry point for Situm Flutter Wayfinding.
   /// This widget will load your Situm building on a map, based on the given
   /// [MapViewConfiguration].
-  const MapView({
+  MapView({
     required Key key,
     required this.configuration,
     required this.onLoad,
     this.didUpdateCallback,
+    this.navigationDestination,
   }) : super(key: key);
 
   @override
@@ -141,7 +144,20 @@ class _MapViewState extends State<MapView> {
     if (wyfController != null) {
       widget.didUpdateCallback?.call(wyfController!);
     }
+    if (widget.navigationDestination != null &&
+        oldWidget.navigationDestination != widget.navigationDestination) {
+      wyfController?.navigateToPoi(
+          widget.navigationDestination!, "BUILDING_ID");
+      // TODO: xestionar cando nullear navigationDestination, por si navegas
+      // dúas veces seguidas ao mismo poi.
+      // TODO: seguramente navigationDestination non sexa só un string, debería
+      // ser un obxecto que tamén inclua o building ID.
+    }
   }
+
+  // método_reactivo_reacciona_cando_cambia_myNavigationDestination {
+  //   wyfController.navigateToPoi(id, buildingId)
+  // }
 
   @override
   void dispose() {

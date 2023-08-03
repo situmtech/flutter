@@ -53,8 +53,9 @@ class MapViewController {
     // TODO - make public.
   }
 
-  void _navigateToPoi(String id, String buildingId) async {
+  void navigateToPoi(String id, String buildingId) async {
     // TODO - make public.
+    debugPrint("Situm> WYF> Called navigateToPoi($id, $buildingId)");
   }
 
   // WYF internal utils:

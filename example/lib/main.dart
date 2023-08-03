@@ -36,6 +36,8 @@ class _MyTabsState extends State<MyTabs> {
   String currentOutput = "---";
 
   MapViewController? mapViewController;
+  String? myNavigationDestination;
+  String? navegandoAUnPoi;
 
   // Widget to showcase some SDK API functions
   Widget _createHomeTab() {
@@ -46,6 +48,8 @@ class _MyTabsState extends State<MyTabs> {
         _buttonsGroup(Icons.my_location, "Positioning", [
           _sdkButton('Start', _requestLocationUpdates),
           _sdkButton('Stop', _removeUpdates),
+          _sdkButton('NAV', _navigateToPoi),
+          _sdkButton('NAV2', _navigateToPoi2),
         ]),
         _buttonsGroup(Icons.cloud_download, "Fetch resources", [
           _sdkButton('Prefetch', _prefetch),
@@ -119,6 +123,7 @@ class _MyTabsState extends State<MyTabs> {
           enableDebugging: true,
         ),
         onLoad: _onLoad,
+        navigationDestination: myNavigationDestination,
       ),
     ]);
   }
@@ -137,6 +142,35 @@ class _MyTabsState extends State<MyTabs> {
       //   navigationRequest.distanceToGoalThreshold = 10.0;
       //   ...
     });
+
+    navegandoAUnPoi = "NAVEGANDO-A-UN-POI-INIT";
+    checkNavigation();
+  }
+
+  void checkNavigation() {
+    if (navegandoAUnPoi != null) {
+      mapViewController?.navigateToPoi(navegandoAUnPoi!, "buildingId");
+    }
+  }
+
+  void _navigateToPoi() {
+    // Opción 1:
+    // setState(() {
+    //   myNavigationDestination = "Y";
+    // });
+    // Opción 2:
+    navegandoAUnPoi = "NAVEGANDO-A-UN-POI";
+    checkNavigation();
+  }
+
+  void _navigateToPoi2() {
+    // Opción 1:
+    // setState(() {
+    //   myNavigationDestination = "Y";
+    // });
+    // Opción 2:
+    navegandoAUnPoi = "NAVEGANDO-A-UN-POI-2";
+    checkNavigation();
   }
 
   @override
