@@ -43,7 +43,8 @@ class DirectionsMessageHandler implements MessageHandler {
   ) async {
     var sdk = SitumSdk();
     var directionsMessage = createDirectionsMessage(payload);
-    var directionsRequest = createDirectionsRequest(payload["directionsRequest"]);
+    var directionsRequest =
+        createDirectionsRequest(payload["directionsRequest"]);
     // Send DirectionsOptions so it can be intercepted.
     mapViewController._onDirectionsRequested(directionsRequest);
     // Calculate route and send it to the web-view.
@@ -70,28 +71,16 @@ class NavigationMessageHandler implements MessageHandler {
     Map<String, dynamic> payload,
   ) async {
     var sdk = SitumSdk();
+    // Calculate route and start navigation. WayfindingController will listen
+    // for native callbacks to get up to date with the navigation status, using
+    // the internal _methodCallHandler.
     var directionsMessage = createDirectionsMessage(payload);
-    var directionsRequest = createDirectionsRequest(payload["directionsRequest"]);
+    var directionsRequest =
+        createDirectionsRequest(payload["directionsRequest"]);
     mapViewController._onDirectionsRequested(directionsRequest);
-    var navigationRequest = createNavigationRequest(payload["navigationRequest"]);
+    var navigationRequest =
+        createNavigationRequest(payload["navigationRequest"]);
     mapViewController._onNavigationRequested(navigationRequest);
-    // TODO: this will overwrite any previously established callbacks!!!
-    // Option 1: add private callbacks in SitumFlutterSDK. SDK and WYF libraries
-    // must be merged into one library...
-    // Option 2: add public "internal" callbacks.
-    // Option 3: replicate callbacks in wayfinding library. Only works if WYF
-    // has been loaded...
-    // Option 4: delete the following lines, let them be implemented by the
-    // integrator (code snippet). All the _internal methods must be exposed...
-    sdk.onNavigationFinished(() {
-      mapViewController._setNavigationFinished();
-    });
-    sdk.onNavigationOutOfRoute(() {
-      mapViewController._setNavigationOutOfRoute();
-    });
-    sdk.onNavigationProgress((progress) {
-      mapViewController._setNavigationProgress(progress);
-    });
     SitumRoute situmRoute = await sdk.requestNavigation(
       directionsRequest,
       navigationRequest,

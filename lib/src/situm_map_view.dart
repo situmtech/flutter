@@ -25,6 +25,7 @@ class MapView extends StatefulWidget {
 class _MapViewState extends State<MapView> {
   MapViewController? wyfController;
   late final PlatformWebViewController webViewController;
+  late final PlatformWebViewWidget webViewWidget;
   late MapViewConfiguration mapViewConfiguration;
 
   @override
@@ -91,6 +92,18 @@ class _MapViewState extends State<MapView> {
         },
       );
     webViewController = controller;
+    PlatformWebViewWidgetCreationParams webViewParams =
+        defaultTargetPlatform == TargetPlatform.android
+            ? AndroidWebViewWidgetCreationParams(
+                controller: webViewController,
+                displayWithHybridComposition: true,
+                layoutDirection: widget.configuration.directionality,
+              )
+            : PlatformWebViewWidgetCreationParams(
+                controller: webViewController,
+                layoutDirection: widget.configuration.directionality,
+              );
+    webViewWidget = PlatformWebViewWidget(webViewParams);
     _loadWithConfig(widget.configuration);
   }
 
@@ -120,19 +133,13 @@ class _MapViewState extends State<MapView> {
 
   @override
   Widget build(BuildContext context) {
-    PlatformWebViewWidgetCreationParams params =
-        defaultTargetPlatform == TargetPlatform.android
-            ? AndroidWebViewWidgetCreationParams(
-                controller: webViewController,
-                displayWithHybridComposition: true,
-                layoutDirection: widget.configuration.directionality,
-              )
-            : PlatformWebViewWidgetCreationParams(
-                controller: webViewController,
-                layoutDirection: widget.configuration.directionality,
-              );
-
-    return PlatformWebViewWidget(params).build(context);
+    // In the example of the plugin (https://pub.dev/packages/webview_flutter_android/example),
+    // PlatformWebViewWidget is instantiated in each call to the 'build' method.
+    // However, we avoid doing so because it is causing a native view to be
+    // generated with each 'build' call, resulting in flashes and even crashes.
+    // To solve this, we store a reference to the PlatformWebViewWidget and
+    // invoke its 'build' method.
+    return webViewWidget.build(context);
   }
 
   @override
