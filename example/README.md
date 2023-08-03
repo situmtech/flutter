@@ -32,13 +32,13 @@ This folder contains the necessary source code for an example application using 
 The first step is to download this repo:
 
 ```bash
-git clone https://github.com/situmtech/flutter-wayfinding.git
+git clone https://github.com/situmtech/flutter.git
 ```
 
 And then install the plugin dependencies alongside the `example` app as follows:
 
 ```bash
-cd flutter-wayfinding/example
+cd flutter/example
 flutter pub get
 ```
 

@@ -153,6 +153,18 @@ class MapViewController {
       case 'onError':
         _onError(call.arguments);
         break;
+      // Navigation finished/progress/OOR callbacks are used by both WYF and
+      // the integrator. If WYF uses them, they will be overwritten. To avoid
+      // that problem, we listen for native calls here.
+      case 'onNavigationFinished':
+        _setNavigationFinished();
+        break;
+      case 'onNavigationProgress':
+        _setNavigationProgress(RouteProgress(rawContent: call.arguments));
+        break;
+      case 'onUserOutsideRoute':
+        _setNavigationOutOfRoute();
+        break;
     }
   }
 
