@@ -169,16 +169,6 @@ class _MyTabsState extends State<MyTabs> {
     situmSdk.onExitGeofences((geofencesResult) {
       _echo("Situm> SDK> Exit geofences: ${geofencesResult.geofences}.");
     });
-    // TODO: delete!!!
-    situmSdk.onNavigationProgress((progress) {
-      _echo("Situm> SDK> Navigation PROGRESS received.");
-    });
-    situmSdk.onNavigationOutOfRoute(() {
-      _echo("Situm> SDK> Navigation OOR received.");
-    });
-    situmSdk.onNavigationFinished(() {
-      _echo("Situm> SDK> Navigation FINISHED received.");
-    });
     super.initState();
   }
 
