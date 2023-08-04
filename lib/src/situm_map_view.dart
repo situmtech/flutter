@@ -166,7 +166,6 @@ class _SitumMapViewState extends State<SitumMapView> {
     Map<String, dynamic> creationParams,
     TextDirection directionality,
   ) {
-    print("Situm> Using hybrid components");
     return PlatformViewLink(
       viewType: CHANNEL_ID,
       surfaceFactory: (context, controller) {
