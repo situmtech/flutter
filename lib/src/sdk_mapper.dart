@@ -125,6 +125,9 @@ List<T> createList<T>(List maps, Function mapper) {
 }
 
 Location createLocation(dynamic args) {
+
+  // debugPrint("PRUEBAS> inside args: $args");
+
   return Location(
     coordinate: Coordinate(
     latitude: args["coordinate"]["latitude"],
@@ -145,6 +148,7 @@ Location createLocation(dynamic args) {
     floorIdentifier: args["floorIdentifier"],
     hasBearing: args["hasBearing"],
     isIndoor: args["isIndoor"],
+    isOutdoor: args["isOutdoor"],
     timestamp: args["timestamp"].toInt(),
   );
 }

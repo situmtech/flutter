@@ -154,6 +154,7 @@ class Location {
   final Bearing? bearing;
   final double accuracy;
   final bool isIndoor;
+  final bool isOutdoor;
   final bool hasBearing;
   final int timestamp;
 
@@ -164,6 +165,7 @@ class Location {
     required this.floorIdentifier,
     required this.accuracy,
     required this.isIndoor,
+    required this.isOutdoor,
     required this.hasBearing,
     this.bearing,
     required this.timestamp,
@@ -183,9 +185,17 @@ class Location {
         'bearing': bearing?.toMap(),
         'accuracy': accuracy,
         'isIndoor': isIndoor,
+        'isOutdoor': isOutdoor,
         'hasBearing': hasBearing,
         'timestamp': timestamp,
       };
+}
+
+enum LocationStatus {
+  STARTING,
+  CALCULATING,
+  USER_NOT_IN_BUILDING,
+  STOPPED,
 }
 
 class OnEnteredGeofenceResult {

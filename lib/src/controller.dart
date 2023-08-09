@@ -9,6 +9,8 @@ class MapViewController {
   final Function(MapViewConfiguration) _widgetUpdater;
   final PlatformWebViewController _webViewController;
 
+  LocationStatus currentLocationStatus = LocationStatus.STOPPED;
+
   MapViewController({
     required String situmUser,
     required String situmApiKey,
@@ -26,7 +28,12 @@ class MapViewController {
 
   /// Tells the SitumMap where the user is located at.
   void setCurrentLocation(Location location) {
-    _sendMessage(WV_MESSAGE_LOCATION, location.toMap());
+    Map locationMap = location.toMap();
+    locationMap["status"] = '"${currentLocationStatus.name}"';
+
+    // debugPrint("PRUEBAS> enviando nuevo estado: ${locationMap["status"]}");
+
+    _sendMessage(WV_MESSAGE_LOCATION, locationMap);
   }
 
   void onMapViewerMessage(String type, Map<String, dynamic> payload) {
@@ -174,8 +181,23 @@ class MapViewController {
   }
 
   void _onStatusChanged(arguments) {
-    // currentLocationStatus = arguments['statusName'];
-    // TODO: send status to map viewer.
+    currentLocationStatus = LocationStatus.STOPPED;
+
+    switch(arguments["statusName"]) {
+      case "STARTING":
+        currentLocationStatus = LocationStatus.STARTING;
+        break;
+      case "CALCULATING":
+        currentLocationStatus = LocationStatus.CALCULATING;
+        break;
+      case "USER_NOT_IN_BUILDING":
+        currentLocationStatus = LocationStatus.USER_NOT_IN_BUILDING;
+        break;
+      case "STOPPED":
+        currentLocationStatus = LocationStatus.STOPPED;
+        break;
+    }
+    debugPrint("FLUTTER> currentLocationStatus: $currentLocationStatus");
   }
 
   void _onError(arguments) {
