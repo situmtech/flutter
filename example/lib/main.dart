@@ -192,7 +192,7 @@ class _MyTabsState extends State<MyTabs> {
     // You don't need to do anything to draw the user's position on the map; the
     // library handles it all internally for you.
     situmSdk.requestLocationUpdates(LocationRequest(
-      buildingIdentifier: /* buildingIdentifier, */ "-1",
+      buildingIdentifier: buildingIdentifier, /* "-1" ,*/
       useDeadReckoning: false,
     ));
   }
