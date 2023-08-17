@@ -187,9 +187,6 @@ class MapViewController {
       case "STARTING":
         currentLocationStatus = LocationStatus.STARTING;
         break;
-      case "CALCULATING":
-        currentLocationStatus = LocationStatus.CALCULATING;
-        break;
       case "USER_NOT_IN_BUILDING":
       // TODO: make map-viewer react to only location status, and decouple location from its status.
         currentLocationStatus = LocationStatus.USER_NOT_IN_BUILDING;
@@ -199,6 +196,9 @@ class MapViewController {
         break;
       case "STOPPED":
         currentLocationStatus = LocationStatus.STOPPED;
+        break;
+      default:
+        currentLocationStatus = LocationStatus.CALCULATING;
         break;
     }
   }
