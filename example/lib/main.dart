@@ -194,6 +194,7 @@ class _MyTabsState extends State<MyTabs> {
     situmSdk.requestLocationUpdates(LocationRequest(
       buildingIdentifier: buildingIdentifier, //"-1"
       useDeadReckoning: false,
+      useForegroundService: false,
     ));
   }
 

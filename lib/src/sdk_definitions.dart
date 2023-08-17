@@ -4,15 +4,19 @@ part of sdk;
 class LocationRequest {
   final String buildingIdentifier;
   final bool useDeadReckoning;
+  final bool useForegroundService;
+  
 
   LocationRequest({
     this.buildingIdentifier = "-1",
     this.useDeadReckoning = false,
+    this.useForegroundService = false,
   });
 
   Map<String, dynamic> toMap() => {
         "buildingIdentifier": buildingIdentifier,
         "useDeadReckoning": useDeadReckoning,
+        "useForegroundService": useForegroundService,
       };
 }
 
