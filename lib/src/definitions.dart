@@ -43,7 +43,7 @@ class MapViewConfiguration {
 
   String _getMapViewerUrl() {
     var base = _internalMapViewUrl;
-    var query = "email=$situmUser&apikey=$situmApiKey&mode=embed";
+    var query = "email=$situmUser&apikey=$situmApiKey&mode=embed&global=true";
     if (remoteIdentifier != null) {
       return "$base/id/$remoteIdentifier?$query";
     } else if (buildingIdentifier != null) {
