@@ -258,9 +258,6 @@ class SitumSdk {
         break;
       case 'onStatusChanged':
         _onStatusChanged(call.arguments);
-        if (call.arguments["statusName"] == "USER_NOT_IN_BUILDING") {
-          call.arguments["location"] = _currentLocation!.toMap();
-        }
         break;
       case 'onError':
         _onError(call.arguments);
@@ -308,6 +305,7 @@ class SitumSdk {
       case "USER_NOT_IN_BUILDING":
       // TODO: make map-viewer react to only location status, and decouple location from its status.
         _currentLocationStatus = LocationStatus.USER_NOT_IN_BUILDING;
+        arguments["location"] = _currentLocation!.toMap();
         break;
       case "STOPPED":
         _currentLocationStatus = LocationStatus.STOPPED;
