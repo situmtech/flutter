@@ -35,6 +35,9 @@ class SitumSdk {
 
   static final SitumSdk _controller = SitumSdk._internal();
 
+  Location? _currentLocation;
+  LocationStatus _currentLocationStatus = LocationStatus.STOPPED;
+
   /// Main entry point for the Situm Flutter SDK. Use [SitumSdk] to start
   /// positioning, calculate routes and fetch resources.
   factory SitumSdk() {
@@ -255,6 +258,9 @@ class SitumSdk {
         break;
       case 'onStatusChanged':
         _onStatusChanged(call.arguments);
+        if (call.arguments["statusName"] == "USER_NOT_IN_BUILDING") {
+          call.arguments["location"] = _currentLocation!.toMap();
+        }
         break;
       case 'onError':
         _onError(call.arguments);
@@ -284,11 +290,33 @@ class SitumSdk {
   // LOCATION UPDATES:
 
   void _onLocationChanged(arguments) {
-    _onLocationUpdateCallback?.call(createLocation(arguments));
+    if (_currentLocationStatus == LocationStatus.USER_NOT_IN_BUILDING) {
+      _currentLocationStatus = LocationStatus.CALCULATING;
+    }
+
+    arguments["statusName"] = '"${_currentLocationStatus.name}"';
+    _currentLocation = createLocation(arguments);
+    _onLocationUpdateCallback?.call(_currentLocation!);
   }
 
   void _onStatusChanged(arguments) {
-    _onLocationStatusCallback?.call(arguments['statusName']);
+
+    switch(arguments["statusName"]) {
+      case "STARTING":
+        _currentLocationStatus = LocationStatus.STARTING;
+        break;
+      case "USER_NOT_IN_BUILDING":
+      // TODO: make map-viewer react to only location status, and decouple location from its status.
+        _currentLocationStatus = LocationStatus.USER_NOT_IN_BUILDING;
+        break;
+      case "STOPPED":
+        _currentLocationStatus = LocationStatus.STOPPED;
+        break;
+      default:
+        _currentLocationStatus = LocationStatus.CALCULATING;
+        break;
+    }
+    _onLocationStatusCallback?.call(_currentLocationStatus.name);
   }
 
   void _onError(arguments) {

@@ -9,9 +9,6 @@ class MapViewController {
   final Function(MapViewConfiguration) _widgetUpdater;
   final PlatformWebViewController _webViewController;
 
-  LocationStatus currentLocationStatus = LocationStatus.STOPPED;
-  Location? currentLocation;
-
   MapViewController({
     required String situmUser,
     required String situmApiKey,
@@ -28,10 +25,7 @@ class MapViewController {
   }
 
   /// Tells the SitumMap where the user is located at.
-  void setCurrentLocation(Location location) {
-    Map locationMap = location.toMap();
-    locationMap["status"] = '"${currentLocationStatus.name}"';
-
+  void setCurrentLocation(dynamic locationMap) {
     _sendMessage(WV_MESSAGE_LOCATION, locationMap);
   }
 
@@ -176,30 +170,18 @@ class MapViewController {
 
   void _onLocationChanged(arguments) {
     // Send location to the map-viewer.
-    currentLocation = createLocation(arguments);
-    setCurrentLocation(createLocation(arguments));
+    dynamic locationMap = createLocation(arguments).toMap();
+    locationMap["status"] = arguments["statusName"];
+    
+    setCurrentLocation(locationMap);
   }
 
   void _onStatusChanged(arguments) {
-    currentLocationStatus = LocationStatus.STOPPED;
+    if (arguments["statusName"] == "USER_NOT_IN_BUILDING") {
+      dynamic locationMap = createLocation(arguments["location"]).toMap();
+      locationMap["status"] = '"${arguments["statusName"]}"';
 
-    switch(arguments["statusName"]) {
-      case "STARTING":
-        currentLocationStatus = LocationStatus.STARTING;
-        break;
-      case "USER_NOT_IN_BUILDING":
-      // TODO: make map-viewer react to only location status, and decouple location from its status.
-        currentLocationStatus = LocationStatus.USER_NOT_IN_BUILDING;
-        if (currentLocation != null) {
-          setCurrentLocation(currentLocation!);
-        }
-        break;
-      case "STOPPED":
-        currentLocationStatus = LocationStatus.STOPPED;
-        break;
-      default:
-        currentLocationStatus = LocationStatus.CALCULATING;
-        break;
+      setCurrentLocation(locationMap);
     }
   }
 
