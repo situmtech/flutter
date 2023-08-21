@@ -67,7 +67,7 @@ class _MapViewState extends State<MapView> {
             ''');
           })
           ..setOnNavigationRequest((dynamic request) {
-            if (request.url.startsWith(mapViewConfiguration.baseUrl)) {
+            if (request.url.startsWith(mapViewConfiguration.mapViewerDomain)) {
               return NavigationDecision.navigate;
             }
             return NavigationDecision.prevent;
@@ -124,6 +124,7 @@ class _MapViewState extends State<MapView> {
       wyfController = MapViewController(
         situmUser: mapViewConfiguration.situmUser,
         situmApiKey: mapViewConfiguration.situmApiKey,
+        apiDomain: mapViewConfiguration.apiDomain,
         widgetUpdater: _loadWithConfig,
         webViewController: webViewController,
       );

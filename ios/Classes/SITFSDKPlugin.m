@@ -95,12 +95,15 @@ const NSString* RESULTS_KEY = @"results";
 - (void)handleInit:(FlutterMethodCall*)call result:(FlutterResult)result {
     NSString *situmUser = call.arguments[@"situmUser"];
     NSString *situmApiKey = call.arguments[@"situmApiKey"];
+    NSString *url = call.arguments[@"url"];
     
     if (!situmUser || !situmApiKey) {
         NSLog(@"error providing credentials");
         // TODO: Send error to dart
     }
     
+    [SITServices setDashboardURL:url];
+
     [SITServices provideAPIKey:situmApiKey
                       forEmail:situmUser];
     

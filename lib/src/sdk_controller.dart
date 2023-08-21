@@ -55,12 +55,13 @@ class SitumSdk {
 
   /// Initializes [SitumSdk]. You have to call this function prior any call to
   /// other method.
-  Future<void> init(String situmUser, String situmApiKey) async {
+  Future<void> init(String situmUser, String situmApiKey, String? apiDomain) async {
     await methodChannel.invokeMethod<String>(
       'init',
       <String, dynamic>{
         'situmUser': situmUser,
         'situmApiKey': situmApiKey,
+        'url': apiDomain ?? "https://dashboard.situm.com",
       },
     );
   }

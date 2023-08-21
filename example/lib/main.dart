@@ -115,7 +115,8 @@ class _MyTabsState extends State<MyTabs> {
           situmApiKey: situmApiKey,
           // Set your building identifier:
           buildingIdentifier: buildingIdentifier,
-          baseUrl: mapViewUrl,
+          mapViewerDomain: mapViewerDomainUrl,
+          apiDomain: apiDomainUrl,
           enableDebugging: true,
         ),
         onLoad: _onLoad,
@@ -142,8 +143,9 @@ class _MyTabsState extends State<MyTabs> {
   @override
   void initState() {
     situmSdk = SitumSdk();
-    // Set up your credentials
-    situmSdk.init(situmUser, situmApiKey);
+    // In case you wan't to use our SDK before initializing our MapView widget, 
+    // you can set up your credentials with this line of code
+    situmSdk.init(situmUser, situmApiKey, apiDomainUrl);
     // Configure SDK
     situmSdk.setConfiguration(ConfigurationOptions(
       useRemoteConfig: true,
