@@ -125,19 +125,18 @@ List<T> createList<T>(List maps, Function mapper) {
 }
 
 Location createLocation(dynamic args) {
-
   return Location(
     coordinate: Coordinate(
-    latitude: args["coordinate"]["latitude"],
-    longitude: args["coordinate"]["longitude"],
+      latitude: args["coordinate"]["latitude"],
+      longitude: args["coordinate"]["longitude"],
     ),
     cartesianCoordinate: CartesianCoordinate(
-      x: args["cartesianCoordinate"]["x"],
-      y: args["cartesianCoordinate"]["y"],
+      x: args["cartesianCoordinate"]["x"] ?? 0,
+      y: args["cartesianCoordinate"]["y"] ?? 0,
     ),
     bearing: Bearing(
       degrees: args["bearing"]["degrees"],
-      degreesClockwise: args["bearing"]["degreesClockwise"] ,
+      degreesClockwise: args["bearing"]["degreesClockwise"],
       radians: args["bearing"]["radians"],
       radiansMinusPiPi: args["bearing"]["radiansMinusPiPi"],
     ),
