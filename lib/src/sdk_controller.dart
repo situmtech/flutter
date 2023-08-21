@@ -33,6 +33,8 @@ class SitumSdk {
   OnNavigationProgressCallback? _onNavigationProgressCallback;
   OnNavigationOutOfRouteCallback? _onNavigationOORCallback;
 
+  String? _internalApiURL;
+
   static final SitumSdk _controller = SitumSdk._internal();
 
   /// Main entry point for the Situm Flutter SDK. Use [SitumSdk] to start
@@ -53,15 +55,20 @@ class SitumSdk {
 
   // Calls
 
+  /// Set
+  Future<void> setDashboardURL(String? url) async {
+    _internalApiURL = url;
+  }
+
   /// Initializes [SitumSdk]. You have to call this function prior any call to
   /// other method.
-  Future<void> init(String situmUser, String situmApiKey, String? apiDomain) async {
+  Future<void> init(String situmUser, String situmApiKey) async {
     await methodChannel.invokeMethod<String>(
       'init',
       <String, dynamic>{
         'situmUser': situmUser,
         'situmApiKey': situmApiKey,
-        'url': apiDomain ?? "https://dashboard.situm.com",
+        'url': _internalApiURL ?? "https://dashboard.situm.com",
       },
     );
   }

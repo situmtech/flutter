@@ -6,6 +6,6 @@ const buildingIdentifier = "YOUR-SITUM-BUILDING-IDENTIFIER";
 // Alternatively, you can set an identifier that allows you to remotely configure all map settings.
 // For now, you need to contact Situm to obtain yours.
 const configurationIdentifier = null;
-const mapViewUrl = "https://map-viewer.situm.com";
+const mapViewURL = "https://map-viewer.situm.com";
 // Set here the api which you will use to retrieve the data from. Default is https://dashboard.situm.com
-const apiDomainUrl = "dashboard.situm.com";
+const apiURL = "https://dashboard.situm.com";
