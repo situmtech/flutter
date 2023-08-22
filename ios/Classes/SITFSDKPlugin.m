@@ -40,7 +40,9 @@ const NSString* RESULTS_KEY = @"results";
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
     if ([@"init" isEqualToString:call.method]) {
         [self handleInit:call result:result];
-    } else if ([@"clearCache" isEqualToString:call.method]) {
+    } else if ([@"setApiKey" isEqualToString:call.method]) {
+        [self handleSetApiKey:call result:result];
+    }else if ([@"clearCache" isEqualToString:call.method]) {
         [self handleClearCache:call result:result];
     } else if ([@"requestLocationUpdates" isEqualToString:call.method]) {
         [self handleRequestLocationUpdates:call
@@ -86,33 +88,34 @@ const NSString* RESULTS_KEY = @"results";
     }
 }
 
-- (void)handleSetConfiguration:(FlutterMethodCall*)call result:(FlutterResult)result {
-    BOOL useRemoteConfig = [call.arguments[@"useRemoteConfig"] boolValue];
-    [SITServices setUseRemoteConfig:useRemoteConfig];
+- (void)handleInit:(FlutterMethodCall*)call result:(FlutterResult)result {
+    // Start listening location updates as soon as the SDK gets initialized:
+    [self.locManager addDelegate:self];
+
     result(@"DONE");
 }
 
-- (void)handleInit:(FlutterMethodCall*)call result:(FlutterResult)result {
+- (void)handleSetConfiguration:(FlutterMethodCall*)call result:(FlutterResult)result {
+    BOOL useRemoteConfig = [call.arguments[@"useRemoteConfig"] boolValue];
+    NSString *dashboardURL = call.arguments[@"dashboardURL"];
+    
+    [SITServices setUseRemoteConfig:useRemoteConfig];
+    [SITServices setDashboardURL: dashboardURL];
+
+    result(@"DONE");
+}
+
+- (void)handleSetApiKey:(FlutterMethodCall*)call result:(FlutterResult)result {
     NSString *situmUser = call.arguments[@"situmUser"];
     NSString *situmApiKey = call.arguments[@"situmApiKey"];
-    NSString *url = call.arguments[@"url"];
     
     if (!situmUser || !situmApiKey) {
         NSLog(@"error providing credentials");
         // TODO: Send error to dart
     }
     
-    [SITServices setDashboardURL:url];
-
     [SITServices provideAPIKey:situmApiKey
                       forEmail:situmUser];
-    
-    // TODO: por que está esto aquí?
-    [SITServices setUseRemoteConfig:YES];
-
-    // Start listening location updates as soon as the SDK gets initialized:
-    [self.locManager addDelegate:self];
-
     result(@"DONE");
 }
 
