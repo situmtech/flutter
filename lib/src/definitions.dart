@@ -18,8 +18,8 @@ class MapViewConfiguration {
   /// Alternatively you can pass a buildingIdentifier, but configurationIdentifier
   /// will be prioritized.
   final String? remoteIdentifier;
-  final String mapViewerURL;
-  final String apiURL;
+  final String viewerDomain;
+  final String sdkDomain;
   final TextDirection directionality;
   final bool enableDebugging;
 
@@ -30,26 +30,26 @@ class MapViewConfiguration {
     required this.situmApiKey,
     this.buildingIdentifier,
     this.remoteIdentifier,
-    this.mapViewerURL = "https://map-viewer.situm.com",
-    this.apiURL = "dashboard.situm.com",
+    this.viewerDomain = "https://map-viewer.situm.com",
+    this.sdkDomain = "dashboard.situm.com",
     this.directionality = TextDirection.ltr,
     this.enableDebugging = false,
   });
 
-  String get _internalMapViewerUrl {
-    if (mapViewerURL.endsWith("/")) {
-      return mapViewerURL.substring(0, mapViewerURL.length - 1);
+  String get _internalViewerDomain {
+    if (viewerDomain.endsWith("/")) {
+      return viewerDomain.substring(0, viewerDomain.length - 1);
     }
-    return mapViewerURL;
+    return viewerDomain;
   }
 
-  String get _internalapiURL {
-    return apiURL.replaceFirst(RegExp(r'https://'), '');
+  String get _internalSdkDomain {
+    return sdkDomain.replaceFirst(RegExp(r'https://'), '');
   }
 
-  String _getMapViewerUrl() {
-    var base = _internalMapViewerUrl;
-    var query = "email=$situmUser&apikey=$situmApiKey&domain=$_internalapiURL&mode=embed";
+  String _getViewerDomain() {
+    var base = _internalViewerDomain;
+    var query = "email=$situmUser&apikey=$situmApiKey&domain=$_internalSdkDomain&mode=embed";
     if (remoteIdentifier != null) {
       return "$base/id/$remoteIdentifier?$query";
     } else if (buildingIdentifier != null) {

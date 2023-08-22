@@ -67,7 +67,7 @@ class _MapViewState extends State<MapView> {
             ''');
           })
           ..setOnNavigationRequest((dynamic request) {
-            if (request.url.startsWith(mapViewConfiguration.mapViewerURL)) {
+            if (request.url.startsWith(mapViewConfiguration.viewerDomain)) {
               return NavigationDecision.navigate;
             }
             return NavigationDecision.prevent;
@@ -113,7 +113,7 @@ class _MapViewState extends State<MapView> {
     if (webViewController is AndroidWebViewController) {
       AndroidWebViewController.enableDebugging(configuration.enableDebugging);
     }
-    final String mapViewUrl = mapViewConfiguration._getMapViewerUrl();
+    final String mapViewUrl = mapViewConfiguration._getViewerDomain();
     // Load the composed URL in the WebView.
     webViewController
         .loadRequest(LoadRequestParams(uri: Uri.parse(mapViewUrl)));
@@ -124,7 +124,7 @@ class _MapViewState extends State<MapView> {
       wyfController = MapViewController(
         situmUser: mapViewConfiguration.situmUser,
         situmApiKey: mapViewConfiguration.situmApiKey,
-        apiURL: mapViewConfiguration.apiURL,
+        sdkDomain: mapViewConfiguration.sdkDomain,
         widgetUpdater: _loadWithConfig,
         webViewController: webViewController,
       );

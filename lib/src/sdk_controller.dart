@@ -33,7 +33,7 @@ class SitumSdk {
   OnNavigationProgressCallback? _onNavigationProgressCallback;
   OnNavigationOutOfRouteCallback? _onNavigationOORCallback;
 
-  String? _internalApiURL;
+  String? _internalSdkDomain;
 
   static final SitumSdk _controller = SitumSdk._internal();
 
@@ -57,7 +57,7 @@ class SitumSdk {
 
   /// Set
   Future<void> setDashboardURL(String? url) async {
-    _internalApiURL = url;
+    _internalSdkDomain = url;
   }
 
   /// Initializes [SitumSdk]. You have to call this function prior any call to
@@ -68,7 +68,7 @@ class SitumSdk {
       <String, dynamic>{
         'situmUser': situmUser,
         'situmApiKey': situmApiKey,
-        'url': _internalApiURL ?? "https://dashboard.situm.com",
+        'url': _internalSdkDomain ?? "https://dashboard.situm.com",
       },
     );
   }
