@@ -55,29 +55,34 @@ class SitumSdk {
 
   // Calls
 
-  /// Set
-  Future<void> setDashboardURL(String? url) async {
-    _internalSdkDomain = url;
-  }
-
   /// Initializes [SitumSdk]. You have to call this function prior any call to
   /// other method.
-  Future<void> init(String situmUser, String situmApiKey) async {
+  Future<void> init() async {
     await methodChannel.invokeMethod<String>(
-      'init',
-      <String, dynamic>{
-        'situmUser': situmUser,
-        'situmApiKey': situmApiKey,
-        'url': _internalSdkDomain ?? "https://dashboard.situm.com",
-      },
+      'init'
     );
   }
 
+  /// Sets the sdk configuration that should be defined before authenticating 
+  /// with [setApiKey].
   Future<void> setConfiguration(ConfigurationOptions options) async {
     await methodChannel.invokeMethod(
       "setConfiguration",
       <String, dynamic>{
         'useRemoteConfig': options.useRemoteConfig,
+        'dashboardURL': options.dashboardURL,
+      },
+    );
+  }
+
+  /// Authenticate yourself into our SDK to start positioning, navigating 
+  /// and using further functionalities of our SDK.
+  Future<void> setApiKey(String situmUser, String situmApiKey) async {
+    await methodChannel.invokeMethod(
+      "setApiKey",
+      <String, dynamic>{
+        'situmUser': situmUser,
+        'situmApiKey': situmApiKey,
       },
     );
   }

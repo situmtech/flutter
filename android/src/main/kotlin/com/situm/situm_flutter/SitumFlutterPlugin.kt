@@ -51,9 +51,9 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
     override fun onMethodCall(methodCall: MethodCall, result: MethodChannel.Result) {
         val arguments = (methodCall.arguments ?: emptyMap<String, Any>()) as Map<String, Any>
         when (methodCall.method) {
-            "setDashboardURL" -> setDashboardURL(arguments, result)
-            "init" -> init(arguments, result)
+            "init" -> init(result)
             "setConfiguration" -> setConfiguration(arguments, result)
+            "setApiKey" -> setApiKey(arguments, result)
             "requestLocationUpdates" -> requestLocationUpdates(arguments, result)
             "removeUpdates" -> removeUpdates(result)
             "prefetchPositioningInfo" -> prefetchPositioningInfo(arguments, result)
@@ -101,10 +101,25 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
 
     // Public methods (impl):
 
+    private fun init(result: MethodChannel.Result) {
+        SitumSdk.init(context)
+        startListeningLocationUpdates()
+        result.success("DONE")
+    }
+
     private fun setConfiguration(arguments: Map<String, Any>, result: MethodChannel.Result) {
         if (arguments.containsKey("useRemoteConfig")) {
             SitumSdk.configuration().isUseRemoteConfig = arguments["useRemoteConfig"] as Boolean
         }
+        if (arguments.containsKey("dashboardURL")) {
+            SitumSdk.configuration().setDashboardURL(arguments["dashboardURL"] as String)
+        }
+        result.success("DONE")
+    }
+
+    private fun setApiKey(arguments: Map<String, Any>, result: MethodChannel.Result) {
+        SitumSdk.configuration()
+            .setApiKey(arguments["situmUser"] as String, arguments["situmApiKey"] as String)
         result.success("DONE")
     }
 
@@ -160,22 +175,6 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
                     result.notifySitumSdkError(error)
                 }
             })
-    }
-
-    private fun init(arguments: Map<String, Any>, result: MethodChannel.Result) {
-        val url = arguments["url"] as String
-        SitumSdk.init(context)
-        SitumSdk.configuration().setDashboardURL(url)
-        SitumSdk.configuration()
-            .setApiKey(arguments["situmUser"] as String, arguments["situmApiKey"] as String)
-        startListeningLocationUpdates()
-        result.success("DONE")
-    }
-
-    private fun setDashboardURL(arguments: Map<String, Any>, result: MethodChannel.Result) {
-        val url = arguments["url"] as String
-        SitumSdk.configuration().setDashboardURL(url)
-        result.success("DONE")
     }
 
     private fun requestLocationUpdates(arguments: Map<String, Any>, result: MethodChannel.Result) {

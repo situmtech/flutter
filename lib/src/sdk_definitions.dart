@@ -564,9 +564,11 @@ class PoiCategory extends NamedResource {
 
 class ConfigurationOptions {
   final bool useRemoteConfig;
+  final String? dashboardURL;
 
   ConfigurationOptions({
     this.useRemoteConfig = true,
+    this.dashboardURL,
   });
 }
 
