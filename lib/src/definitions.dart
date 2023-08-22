@@ -18,7 +18,7 @@ class MapViewConfiguration {
   /// Alternatively you can pass a buildingIdentifier, but configurationIdentifier
   /// will be prioritized.
   final String? remoteIdentifier;
-  final String viewerDomain;
+  final String baseUrl;
   final String sdkDomain;
   final TextDirection directionality;
   final bool enableDebugging;
@@ -30,17 +30,17 @@ class MapViewConfiguration {
     required this.situmApiKey,
     this.buildingIdentifier,
     this.remoteIdentifier,
-    this.viewerDomain = "https://map-viewer.situm.com",
+    this.baseUrl = "https://map-viewer.situm.com",
     this.sdkDomain = "dashboard.situm.com",
     this.directionality = TextDirection.ltr,
     this.enableDebugging = false,
   });
 
   String get _internalViewerDomain {
-    if (viewerDomain.endsWith("/")) {
-      return viewerDomain.substring(0, viewerDomain.length - 1);
+    if (baseUrl.endsWith("/")) {
+      return baseUrl.substring(0, baseUrl.length - 1);
     }
-    return viewerDomain;
+    return baseUrl;
   }
 
   String get _internalSdkDomain {
