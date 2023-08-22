@@ -116,7 +116,7 @@ class _MyTabsState extends State<MyTabs> {
           // Set your building identifier:
           buildingIdentifier: buildingIdentifier,
           baseUrl: viewerDomain,
-          sdkDomain: sdkDomain,
+          apiDomain: apiDomain,
           enableDebugging: true,
         ),
         onLoad: _onLoad,
@@ -147,7 +147,7 @@ class _MyTabsState extends State<MyTabs> {
     // you can set up your credentials with this line of code :
     situmSdk.init();
     // Define which API you will use to retrieve the data. Default will be https://dashboard.situm.com
-    situmSdk.setDashboardURL(sdkDomain);
+    situmSdk.setDashboardURL(apiDomain);
     // Authenticate with your account and API key. 
     // You can find yours at https://dashboard.situm.com/accounts/profile
     situmSdk.setApiKey(situmUser, situmApiKey);

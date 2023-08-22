@@ -8,4 +8,4 @@ const buildingIdentifier = "YOUR-SITUM-BUILDING-IDENTIFIER";
 const configurationIdentifier = null;
 const viewerDomain = "https://map-viewer.situm.com";
 // Set here the api which you will use to retrieve the data from. Default is https://dashboard.situm.com
-const sdkDomain = "https://dashboard.situm.com";
+const apiDomain = "https://dashboard.situm.com";

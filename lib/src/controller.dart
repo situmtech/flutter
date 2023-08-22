@@ -12,7 +12,7 @@ class MapViewController {
   MapViewController({
     required String situmUser,
     required String situmApiKey,
-    String? sdkDomain,
+    String? apiDomain,
     required dynamic Function(MapViewConfiguration) widgetUpdater,
     required PlatformWebViewController webViewController,
   })  : _webViewController = webViewController,
@@ -21,7 +21,7 @@ class MapViewController {
     // Be sure to initialize, configure and authenticate in our SDK 
     // so it can be used in callbacks, etc.
     situmSdk.init();
-    situmSdk.setDashboardURL(sdkDomain);
+    situmSdk.setDashboardURL(apiDomain);
     situmSdk.setApiKey(situmUser, situmApiKey);
     situmSdk.setConfiguration(ConfigurationOptions(
       useRemoteConfig: true

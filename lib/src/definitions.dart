@@ -19,7 +19,7 @@ class MapViewConfiguration {
   /// will be prioritized.
   final String? remoteIdentifier;
   final String baseUrl;
-  final String sdkDomain;
+  final String apiDomain;
   final TextDirection directionality;
   final bool enableDebugging;
 
@@ -31,7 +31,7 @@ class MapViewConfiguration {
     this.buildingIdentifier,
     this.remoteIdentifier,
     this.baseUrl = "https://map-viewer.situm.com",
-    this.sdkDomain = "dashboard.situm.com",
+    this.apiDomain = "dashboard.situm.com",
     this.directionality = TextDirection.ltr,
     this.enableDebugging = false,
   });
@@ -43,13 +43,13 @@ class MapViewConfiguration {
     return baseUrl;
   }
 
-  String get _internalSdkDomain {
-    return sdkDomain.replaceFirst(RegExp(r'https://'), '');
+  String get _internalApiDomain {
+    return apiDomain.replaceFirst(RegExp(r'https://'), '');
   }
 
   String _getViewerURL() {
     var base = _internalViewerDomain;
-    var query = "email=$situmUser&apikey=$situmApiKey&domain=$_internalSdkDomain&mode=embed";
+    var query = "email=$situmUser&apikey=$situmApiKey&domain=$_internalApiDomain&mode=embed";
     if (remoteIdentifier != null) {
       return "$base/id/$remoteIdentifier?$query";
     } else if (buildingIdentifier != null) {

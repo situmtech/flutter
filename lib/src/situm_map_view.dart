@@ -124,7 +124,7 @@ class _MapViewState extends State<MapView> {
       wyfController = MapViewController(
         situmUser: mapViewConfiguration.situmUser,
         situmApiKey: mapViewConfiguration.situmApiKey,
-        sdkDomain: mapViewConfiguration.sdkDomain,
+        apiDomain: mapViewConfiguration.apiDomain,
         widgetUpdater: _loadWithConfig,
         webViewController: webViewController,
       );
