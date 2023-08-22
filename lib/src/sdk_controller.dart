@@ -33,8 +33,6 @@ class SitumSdk {
   OnNavigationProgressCallback? _onNavigationProgressCallback;
   OnNavigationOutOfRouteCallback? _onNavigationOORCallback;
 
-  String? _internalSdkDomain;
-
   static final SitumSdk _controller = SitumSdk._internal();
 
   /// Main entry point for the Situm Flutter SDK. Use [SitumSdk] to start

@@ -47,7 +47,7 @@ class MapViewConfiguration {
     return sdkDomain.replaceFirst(RegExp(r'https://'), '');
   }
 
-  String _getViewerDomain() {
+  String _getViewerURL() {
     var base = _internalViewerDomain;
     var query = "email=$situmUser&apikey=$situmApiKey&domain=$_internalSdkDomain&mode=embed";
     if (remoteIdentifier != null) {

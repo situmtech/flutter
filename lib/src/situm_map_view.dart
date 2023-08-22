@@ -113,7 +113,7 @@ class _MapViewState extends State<MapView> {
     if (webViewController is AndroidWebViewController) {
       AndroidWebViewController.enableDebugging(configuration.enableDebugging);
     }
-    final String mapViewUrl = mapViewConfiguration._getViewerDomain();
+    final String mapViewUrl = mapViewConfiguration._getViewerURL();
     // Load the composed URL in the WebView.
     webViewController
         .loadRequest(LoadRequestParams(uri: Uri.parse(mapViewUrl)));
