@@ -61,8 +61,7 @@ class SitumSdk {
     );
   }
 
-  /// Sets the sdk configuration that should be defined before authenticating 
-  /// with [setApiKey].
+  /// Sets the API you will use to retrieve the data.
   Future<void> setDashboardURL(String? url) async {
     await methodChannel.invokeMethod(
       "setDashboardURL",
@@ -84,7 +83,7 @@ class SitumSdk {
     );
   }
 
-  /// Sets the API you will use to retrieve the data.
+  /// Sets the SDK [ConfigurationOptions].
   Future<void> setConfiguration(ConfigurationOptions options) async {
     await methodChannel.invokeMethod(
       "setConfiguration",

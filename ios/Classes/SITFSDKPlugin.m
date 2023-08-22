@@ -104,12 +104,6 @@ const NSString* RESULTS_KEY = @"results";
     result(@"DONE");
 }
 
-- (void)handleSetConfiguration:(FlutterMethodCall*)call result:(FlutterResult)result {
-    BOOL useRemoteConfig = [call.arguments[@"useRemoteConfig"] boolValue];
-    [SITServices setUseRemoteConfig:useRemoteConfig];
-    result(@"DONE");
-}
-
 - (void)handleSetApiKey:(FlutterMethodCall*)call result:(FlutterResult)result {
     NSString *situmUser = call.arguments[@"situmUser"];
     NSString *situmApiKey = call.arguments[@"situmApiKey"];
@@ -121,6 +115,12 @@ const NSString* RESULTS_KEY = @"results";
     
     [SITServices provideAPIKey:situmApiKey
                       forEmail:situmUser];
+    result(@"DONE");
+}
+
+- (void)handleSetConfiguration:(FlutterMethodCall*)call result:(FlutterResult)result {
+    BOOL useRemoteConfig = [call.arguments[@"useRemoteConfig"] boolValue];
+    [SITServices setUseRemoteConfig:useRemoteConfig];
     result(@"DONE");
 }
 
