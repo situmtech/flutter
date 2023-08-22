@@ -40,9 +40,15 @@ const NSString* RESULTS_KEY = @"results";
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
     if ([@"init" isEqualToString:call.method]) {
         [self handleInit:call result:result];
+    } else if ([@"setDashboardURL" isEqualToString:call.method]) {
+        [self handleSetDashboardURL: call
+                              result: result];
     } else if ([@"setApiKey" isEqualToString:call.method]) {
         [self handleSetApiKey:call result:result];
-    }else if ([@"clearCache" isEqualToString:call.method]) {
+    } else if ([@"setConfiguration" isEqualToString:call.method]) {
+        [self handleSetConfiguration: call
+                              result: result];
+    } else if ([@"clearCache" isEqualToString:call.method]) {
         [self handleClearCache:call result:result];
     } else if ([@"requestLocationUpdates" isEqualToString:call.method]) {
         [self handleRequestLocationUpdates:call
@@ -62,9 +68,6 @@ const NSString* RESULTS_KEY = @"results";
     } else if ([@"geofenceCallbacksRequested" isEqualToString:call.method]){
         [self handleGeofenceCallbacksRequested: call
                                         result: result];
-    } else if ([@"setConfiguration" isEqualToString:call.method]) {
-        [self handleSetConfiguration: call
-                              result: result];
     } else if ([@"fetchBuildings" isEqualToString:call.method]) {
         [self handleFetchBuildings:call
                             result:result];
@@ -95,13 +98,15 @@ const NSString* RESULTS_KEY = @"results";
     result(@"DONE");
 }
 
+- (void)handleSetDashboardURL:(FlutterMethodCall*)call result:(FlutterResult)result {
+    NSString *url = call.arguments[@"url"];
+    [SITServices setDashboardURL: url];
+    result(@"DONE");
+}
+
 - (void)handleSetConfiguration:(FlutterMethodCall*)call result:(FlutterResult)result {
     BOOL useRemoteConfig = [call.arguments[@"useRemoteConfig"] boolValue];
-    NSString *dashboardURL = call.arguments[@"dashboardURL"];
-    
     [SITServices setUseRemoteConfig:useRemoteConfig];
-    [SITServices setDashboardURL: dashboardURL];
-
     result(@"DONE");
 }
 

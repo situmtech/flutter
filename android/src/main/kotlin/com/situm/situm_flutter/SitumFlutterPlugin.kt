@@ -52,8 +52,9 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
         val arguments = (methodCall.arguments ?: emptyMap<String, Any>()) as Map<String, Any>
         when (methodCall.method) {
             "init" -> init(result)
-            "setConfiguration" -> setConfiguration(arguments, result)
+            "setDashboardURL" -> setDashboardURL(arguments, result)
             "setApiKey" -> setApiKey(arguments, result)
+            "setConfiguration" -> setConfiguration(arguments, result)
             "requestLocationUpdates" -> requestLocationUpdates(arguments, result)
             "removeUpdates" -> removeUpdates(result)
             "prefetchPositioningInfo" -> prefetchPositioningInfo(arguments, result)
@@ -107,12 +108,9 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
         result.success("DONE")
     }
 
-    private fun setConfiguration(arguments: Map<String, Any>, result: MethodChannel.Result) {
-        if (arguments.containsKey("useRemoteConfig")) {
-            SitumSdk.configuration().isUseRemoteConfig = arguments["useRemoteConfig"] as Boolean
-        }
-        if (arguments.containsKey("dashboardURL")) {
-            SitumSdk.configuration().setDashboardURL(arguments["dashboardURL"] as String)
+    private fun setDashboardURL(arguments: Map<String, Any>, result: MethodChannel.Result) {
+        if (arguments.containsKey("url")) {
+            SitumSdk.configuration().setDashboardURL(arguments["url"] as String)
         }
         result.success("DONE")
     }
@@ -120,6 +118,13 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
     private fun setApiKey(arguments: Map<String, Any>, result: MethodChannel.Result) {
         SitumSdk.configuration()
             .setApiKey(arguments["situmUser"] as String, arguments["situmApiKey"] as String)
+        result.success("DONE")
+    }
+
+    private fun setConfiguration(arguments: Map<String, Any>, result: MethodChannel.Result) {
+        if (arguments.containsKey("useRemoteConfig")) {
+            SitumSdk.configuration().isUseRemoteConfig = arguments["useRemoteConfig"] as Boolean
+        }
         result.success("DONE")
     }
 

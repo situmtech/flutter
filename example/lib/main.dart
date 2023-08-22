@@ -146,17 +146,18 @@ class _MyTabsState extends State<MyTabs> {
     // In case you wan't to use our SDK before initializing our MapView widget, 
     // you can set up your credentials with this line of code :
     situmSdk.init();
-    // Configure SDK before authenticating.
-    situmSdk.setConfiguration(ConfigurationOptions(
-      // In case you want to use our remote configuration (https://dashboard.situm.com/settings).
-      // With this practical dashboard you can edit your location request and other SDK configurations.
-      useRemoteConfig: true,
-      // Define which API you will use to retrieve the data. Default will be https://dashboard.situm.com
-      dashboardURL: sdkDomain
-    ));
+    // Define which API you will use to retrieve the data. Default will be https://dashboard.situm.com
+    situmSdk.setDashboardURL(sdkDomain);
     // Authenticate with your account and API key. 
     // You can find yours at https://dashboard.situm.com/accounts/profile
     situmSdk.setApiKey(situmUser, situmApiKey);
+    // Configure SDK before authenticating.
+    situmSdk.setConfiguration(ConfigurationOptions(
+      // In case you want to use our remote configuration (https://dashboard.situm.com/settings).
+      // With this practical dashboard you can edit your location request and other SDK configurations
+      // with ease and no code changes.
+      useRemoteConfig: true
+    ));
     // Set up location listeners:
     situmSdk.onLocationUpdate((location) {
       _echo("""SDK> Location changed:

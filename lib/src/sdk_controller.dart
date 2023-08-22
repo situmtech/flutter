@@ -65,12 +65,11 @@ class SitumSdk {
 
   /// Sets the sdk configuration that should be defined before authenticating 
   /// with [setApiKey].
-  Future<void> setConfiguration(ConfigurationOptions options) async {
+  Future<void> setDashboardURL(String? url) async {
     await methodChannel.invokeMethod(
-      "setConfiguration",
+      "setDashboardURL",
       <String, dynamic>{
-        'useRemoteConfig': options.useRemoteConfig,
-        'dashboardURL': options.dashboardURL,
+        'url': url ?? "https://dashboard.situm.com",
       },
     );
   }
@@ -83,6 +82,16 @@ class SitumSdk {
       <String, dynamic>{
         'situmUser': situmUser,
         'situmApiKey': situmApiKey,
+      },
+    );
+  }
+
+  /// Sets the API you will use to retrieve the data.
+  Future<void> setConfiguration(ConfigurationOptions options) async {
+    await methodChannel.invokeMethod(
+      "setConfiguration",
+      <String, dynamic>{
+        'useRemoteConfig': options.useRemoteConfig,
       },
     );
   }
