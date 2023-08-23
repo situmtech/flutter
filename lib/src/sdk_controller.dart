@@ -35,9 +35,6 @@ class SitumSdk {
 
   static final SitumSdk _controller = SitumSdk._internal();
 
-  Location? _currentLocation;
-  LocationStatus _currentLocationStatus = LocationStatus.STOPPED;
-
   /// Main entry point for the Situm Flutter SDK. Use [SitumSdk] to start
   /// positioning, calculate routes and fetch resources.
   factory SitumSdk() {
@@ -280,41 +277,20 @@ class SitumSdk {
       default:
         debugPrint('Method ${call.method} not found!');
     }
-    // Forward call to internal delegate (send locations to MapView).
+    // Forward call to internal delegate (send locations and status to MapViewController).
     internalMethodCallDelegate?.call(call);
   }
 
   // LOCATION UPDATES:
 
   void _onLocationChanged(arguments) {
-    if (_currentLocationStatus == LocationStatus.USER_NOT_IN_BUILDING) {
-      _currentLocationStatus = LocationStatus.CALCULATING;
-    }
-
-    arguments["statusName"] = '"${_currentLocationStatus.name}"';
-    _currentLocation = createLocation(arguments);
-    _onLocationUpdateCallback?.call(_currentLocation!);
+    // Send location to the _onLocationUpdateCallback.
+    _onLocationUpdateCallback?.call(createLocation(arguments));
   }
 
   void _onStatusChanged(arguments) {
-
-    switch(arguments["statusName"]) {
-      case "STARTING":
-        _currentLocationStatus = LocationStatus.STARTING;
-        break;
-      case "USER_NOT_IN_BUILDING":
-      // TODO: make map-viewer react to only location status, and decouple location from its status.
-        _currentLocationStatus = LocationStatus.USER_NOT_IN_BUILDING;
-        arguments["location"] = _currentLocation!.toMap();
-        break;
-      case "STOPPED":
-        _currentLocationStatus = LocationStatus.STOPPED;
-        break;
-      default:
-        _currentLocationStatus = LocationStatus.CALCULATING;
-        break;
-    }
-    _onLocationStatusCallback?.call(_currentLocationStatus.name);
+    // Send location status to the _onLocationStatusCallback.
+    _onLocationStatusCallback?.call(arguments["statusName"]);
   }
 
   void _onError(arguments) {
