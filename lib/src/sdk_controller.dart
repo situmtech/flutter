@@ -6,7 +6,8 @@ part of sdk;
 /// ```dart
 /// var situmSdk = SitumSdk();
 /// // Set up your credentials:
-/// situmSdk.init(situmUser, situmApiKey);
+/// situmSdk.init();
+/// situmSdk.setApiKey(situmUser, situmApiKey);
 /// // Set up location listeners:
 /// situmSdk.onLocationUpdate((location) {
 ///   ...
