@@ -6,7 +6,7 @@ part of sdk;
 /// ```dart
 /// var situmSdk = SitumSdk();
 /// // Set up your credentials:
-/// situmSdk.initSdk();
+/// situmSdk.init();
 /// situmSdk.setApiKey(situmUser, situmApiKey);
 /// // Set up location listeners:
 /// situmSdk.onLocationUpdate((location) {
@@ -54,34 +54,42 @@ class SitumSdk {
 
   // Calls
 
-  /// Deprecated method, instead use [initSdk] alongside [setApiKey]
+  /// Initializes and authenticates [SitumSdk]. You have to call this function prior any call to
+  /// other method.
   /// 
-  /// Initializes [SitumSdk]. You have to call this function prior any call to
-  /// other method.
-  Future<void> init(String situmUser, String situmApiKey) async {
-    await methodChannel.invokeMethod<String>(
-      'init',
-      <String, dynamic>{
-        'situmUser': situmUser,
-        'situmApiKey': situmApiKey,
-      },
-    );
-  }
-
-  /// Initializes [SitumSdk]. You have to call this function prior any call to
-  /// other method.
-  Future<void> initSdk() async {
-    await methodChannel.invokeMethod<String>(
-      'initSdk'
-    );
+  /// ** Calling this method with no parameters declared 
+  ///    will only initialize our SDK. Remember to call afterwards [setApiKey] in this case.
+  Future<void> init([String? situmUser, String? situmApiKey]) async {
+    
+    if (situmUser == null && situmApiKey == null){
+      await methodChannel.invokeMethod<String>(
+        'initSdk'
+      );
+    } else {
+      await methodChannel.invokeMethod<String>(
+        'init',
+        <String, dynamic>{
+          'situmUser': situmUser,
+          'situmApiKey': situmApiKey,
+        },
+      );
+    }  
+    
   }
 
   /// Sets the API you will use to retrieve the data.
   Future<void> setDashboardURL(String? url) async {
+
+    if (url == null){
+      url = "https://dashboard.situm.com";
+    } else if (!url.startsWith(RegExp(r'https://'))){
+      url = "https://$url";
+    }
+
     await methodChannel.invokeMethod(
       "setDashboardURL",
       <String, dynamic>{
-        'url': url ?? "https://dashboard.situm.com",
+        'url': url,
       },
     );
   }
