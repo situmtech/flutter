@@ -6,7 +6,7 @@ part of sdk;
 /// ```dart
 /// var situmSdk = SitumSdk();
 /// // Set up your credentials:
-/// situmSdk.init();
+/// situmSdk.initSdk();
 /// situmSdk.setApiKey(situmUser, situmApiKey);
 /// // Set up location listeners:
 /// situmSdk.onLocationUpdate((location) {
@@ -54,11 +54,25 @@ class SitumSdk {
 
   // Calls
 
+  /// Deprecated method, instead use [initSdk] alongside [setApiKey]
+  /// 
   /// Initializes [SitumSdk]. You have to call this function prior any call to
   /// other method.
-  Future<void> init() async {
+  Future<void> init(String situmUser, String situmApiKey) async {
     await methodChannel.invokeMethod<String>(
-      'init'
+      'init',
+      <String, dynamic>{
+        'situmUser': situmUser,
+        'situmApiKey': situmApiKey,
+      },
+    );
+  }
+
+  /// Initializes [SitumSdk]. You have to call this function prior any call to
+  /// other method.
+  Future<void> initSdk() async {
+    await methodChannel.invokeMethod<String>(
+      'initSdk'
     );
   }
 

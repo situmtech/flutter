@@ -40,6 +40,9 @@ const NSString* RESULTS_KEY = @"results";
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
     if ([@"init" isEqualToString:call.method]) {
         [self handleInit:call result:result];
+    } else if ([@"initSdk" isEqualToString:call.method]) {
+        [self handleInitSdk: call
+                              result: result];
     } else if ([@"setDashboardURL" isEqualToString:call.method]) {
         [self handleSetDashboardURL: call
                               result: result];
@@ -92,6 +95,27 @@ const NSString* RESULTS_KEY = @"results";
 }
 
 - (void)handleInit:(FlutterMethodCall*)call result:(FlutterResult)result {
+    NSString *situmUser = call.arguments[@"situmUser"];
+    NSString *situmApiKey = call.arguments[@"situmApiKey"];
+    
+    if (!situmUser || !situmApiKey) {
+        NSLog(@"error providing credentials");
+        // TODO: Send error to dart
+    }
+    
+    [SITServices provideAPIKey:situmApiKey
+                      forEmail:situmUser];
+    
+    // TODO: por que está esto aquí?
+    [SITServices setUseRemoteConfig:YES];
+
+    // Start listening location updates as soon as the SDK gets initialized:
+    [self.locManager addDelegate:self];
+
+    result(@"DONE");
+}
+
+- (void)handleInitSdk:(FlutterMethodCall*)call result:(FlutterResult)result {
     // Start listening location updates as soon as the SDK gets initialized:
     [self.locManager addDelegate:self];
 

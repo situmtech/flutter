@@ -51,7 +51,8 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
     override fun onMethodCall(methodCall: MethodCall, result: MethodChannel.Result) {
         val arguments = (methodCall.arguments ?: emptyMap<String, Any>()) as Map<String, Any>
         when (methodCall.method) {
-            "init" -> init(result)
+            "init" -> init(arguments, result)
+            "initSdk" -> initSdk(result)
             "setDashboardURL" -> setDashboardURL(arguments, result)
             "setApiKey" -> setApiKey(arguments, result)
             "setConfiguration" -> setConfiguration(arguments, result)
@@ -102,7 +103,15 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
 
     // Public methods (impl):
 
-    private fun init(result: MethodChannel.Result) {
+    private fun init(arguments: Map<String, Any>, result: MethodChannel.Result) {
+        SitumSdk.init(context)
+        SitumSdk.configuration()
+            .setApiKey(arguments["situmUser"] as String, arguments["situmApiKey"] as String)
+        startListeningLocationUpdates()
+        result.success("DONE")
+    }
+    
+    private fun initSdk(result: MethodChannel.Result) {
         SitumSdk.init(context)
         startListeningLocationUpdates()
         result.success("DONE")

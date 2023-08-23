@@ -20,7 +20,7 @@ class MapViewController {
     var situmSdk = SitumSdk();
     // Be sure to initialize, configure and authenticate in our SDK 
     // so it can be used in callbacks, etc.
-    situmSdk.init();
+    situmSdk.initSdk();
     situmSdk.setDashboardURL(apiDomain);
     situmSdk.setApiKey(situmUser, situmApiKey);
     situmSdk.setConfiguration(ConfigurationOptions(
