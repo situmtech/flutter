@@ -31,7 +31,7 @@ class MapViewConfiguration {
     this.buildingIdentifier,
     this.remoteIdentifier,
     this.baseUrl = "https://map-viewer.situm.com",
-    this.apiDomain = "dashboard.situm.com",
+    this.apiDomain = "https://dashboard.situm.com",
     this.directionality = TextDirection.ltr,
     this.enableDebugging = false,
   });
