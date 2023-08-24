@@ -79,12 +79,19 @@ class SitumSdk {
 
   /// Sets the API you will use to retrieve the data. To use correctly this method,
   /// you should call respectively [init], [setDashboardURL] and then [setApiKey].
+  /// 
+  /// [url] - only introduce the protocol and the domain (e.g. "https://dashboard.situm.com")
   Future<void> setDashboardURL(String? url) async {
 
     if (url == null){
       url = "https://dashboard.situm.com";
-    } else if (!url.startsWith(RegExp(r'https://'))){
-      url = "https://$url";
+    } else {
+      if (!url.startsWith(RegExp(r'https://'))){
+        url = "https://$url";
+      }
+      if (url.endsWith('/')){
+        url = url.substring(0, url.length - 1);
+      }
     }
 
     await methodChannel.invokeMethod(

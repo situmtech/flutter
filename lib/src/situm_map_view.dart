@@ -67,7 +67,7 @@ class _MapViewState extends State<MapView> {
             ''');
           })
           ..setOnNavigationRequest((dynamic request) {
-            if (request.url.startsWith(mapViewConfiguration.baseUrl)) {
+            if (request.url.startsWith(mapViewConfiguration.viewerDomain)) {
               return NavigationDecision.navigate;
             }
             return NavigationDecision.prevent;
