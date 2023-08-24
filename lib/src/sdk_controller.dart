@@ -77,7 +77,8 @@ class SitumSdk {
     
   }
 
-  /// Sets the API you will use to retrieve the data.
+  /// Sets the API you will use to retrieve the data. To use correctly this method,
+  /// you should call respectively [init], [setDashboardURL] and then [setApiKey].
   Future<void> setDashboardURL(String? url) async {
 
     if (url == null){
