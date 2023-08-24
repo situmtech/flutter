@@ -7,20 +7,20 @@ part of wayfinding;
 /// ```dart
 /// MapView(
 ///   key: const Key("situm_map"),
-///     configuration: MapViewConfiguration(
-///       // Your Situm credentials.
-///       situmUser: "YOUR-SITUM-USER",
-///       situmApiKey: "YOUR-SITUM-API-KEY",
-///       // Set your building identifier:
-///       buildingIdentifier: "YOUR-SITUM-BUILDING-IDENTIFIER",
-///       // Alternatively, you can set an identifier that allows you to remotely configure all map settings.
-///       // For now, you need to contact Situm to obtain yours.
-///       // remoteIdentifier: null;
-///       viewerDomain: "https://map-viewer.situm.com",
-///       // Set here the api which you will use to retrieve the cartography from. Default is https://dashboard.situm.com
-///       apiDomain = "dashboard.situm.com";
-///    ),
-///    onLoad: _onLoad,
+///   configuration: MapViewConfiguration(
+///   // Your Situm credentials.
+///     situmUser: "YOUR-SITUM-USER",
+///     situmApiKey: "YOUR-SITUM-API-KEY",
+///   // Set your building identifier:
+///     buildingIdentifier: "YOUR-SITUM-BUILDING-IDENTIFIER",
+///   // Alternatively, you can set an identifier that allows you to remotely configure all map settings.
+///   // For now, you need to contact Situm to obtain yours.
+///   // remoteIdentifier: null;
+///     viewerDomain: "https://map-viewer.situm.com",
+///     apiDomain: "dashboard.situm.com",
+///     directionality: TextDirection.ltr,
+///     enableDebugging: false,
+///   ),
 /// ),
 /// ```
 class MapViewConfiguration {
@@ -31,24 +31,31 @@ class MapViewConfiguration {
   final String situmApiKey;
 
   /// The building that will be loaded on the map. Alternatively you can pass a
-  /// configurationIdentifier (that will be prioritized).
+  /// remoteIdentifier (that will be prioritized).
   final String? buildingIdentifier;
 
   /// A String identifier that allows you to remotely configure all map settings.
-  /// Alternatively you can pass a buildingIdentifier, but configurationIdentifier
+  /// Alternatively you can pass a buildingIdentifier, but remoteIdentifier
   /// will be prioritized.
   final String? remoteIdentifier;
   final String viewerDomain;
-  /// A String parameter that allows you to choose the API you will be retrieving our cartography from. Default will be [dashboard.situm.com](https://dashboard.situm.com)
+  /// A String parameter that allows you to choose the API you will be retrieving 
+  /// our cartography from. Default is [dashboard.situm.com](https://dashboard.situm.com).
   /// 
   /// [apiDomain] should include only the domain (e.g., "dashboard.situm.com")
   /// * **Note**: When using [SitumSdk.setDashboardURL], make sure you introduce the same domain.
   final String apiDomain;
+  /// Sets the directionality of the texts that will be displayed inside [MapView].
+  /// Default is [TextDirection.ltr].
   final TextDirection directionality;
+  /// Whether to enable the platform's webview content debugging tools.
+  /// See [AndroidWebViewController.enableDebugging].
+  /// 
+  /// Default is false.
   final bool enableDebugging;
 
   /// The [MapView] settings. Required fields are your Situm user and API key,
-  /// but also a buildingIdentifier or configurationIdentifier.
+  /// but also a buildingIdentifier or remoteIdentifier.
   MapViewConfiguration({
     required this.situmUser,
     required this.situmApiKey,
@@ -87,7 +94,7 @@ class MapViewConfiguration {
       return "$base/?$query";
     }
     throw ArgumentError(
-        'Missing configuration: configurationIdentifier or buildingIdentifier must be provided.');
+        'Missing configuration: remoteIdentifier or buildingIdentifier must be provided.');
   }
 }
 

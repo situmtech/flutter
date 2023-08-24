@@ -146,7 +146,7 @@ class _MyTabsState extends State<MyTabs> {
     // In case you wan't to use our SDK before initializing our MapView widget, 
     // you can set up your credentials with this line of code :
     situmSdk.init();
-    // Define which API you will use to retrieve the data. Default will be https://dashboard.situm.com
+    // Define which API you will use to retrieve the data. Default is https://dashboard.situm.com
     situmSdk.setDashboardURL(apiDomain);
     // Authenticate with your account and API key. 
     // You can find yours at https://dashboard.situm.com/accounts/profile
