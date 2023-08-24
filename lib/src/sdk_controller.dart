@@ -93,7 +93,7 @@ class SitumSdk {
   /// Failing to follow this order might result in unexpected behavior.
   /// 
   /// * Also make sure you have declared the [MapViewConfiguration.apiDomain] parameter when using our [MapView] widget. 
-  /// Take a look at the implementation the widget in our example (https://github.com/situmtech/flutter/blob/master/example/lib/main.dart)
+  /// Take a look at the implementation the widget in our [example](https://situm.com/docs/a-basic-flutter-app/#code-sample)
   ///
   /// Failing to implement this parameter might result in unexpected behavior.
   ///
