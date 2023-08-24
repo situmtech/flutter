@@ -57,6 +57,9 @@ class SitumSdk {
   /// Initializes and authenticates [SitumSdk]. You have to call this function prior any call to
   /// other method.
   /// 
+  /// [situmUser] - your email's account
+  /// [situmApiKey] - your account's API key that you can find in https://dashboard.situm.com/accounts/profile
+  /// 
   /// ** Calling this method with no parameters declared 
   ///    will only initialize our SDK. Remember to call afterwards [setApiKey] in this case.
   Future<void> init([String? situmUser, String? situmApiKey]) async {
@@ -77,10 +80,17 @@ class SitumSdk {
     
   }
 
-  /// Sets the API you will use to retrieve the data. To use correctly this method,
-  /// you should call respectively [init], [setDashboardURL] and then [setApiKey].
-  /// 
-  /// [url] - only introduce the protocol and the domain (e.g. "https://dashboard.situm.com")
+  /// Sets the API's base URL to retrieve the data.
+  ///
+  /// For this method to work correctly, you should call methods in the following order:
+  /// 1. [init]
+  /// 2. [setDashboardURL]
+  /// 3. [setApiKey]
+  ///
+  /// Failing to follow this order might result in unexpected behavior.
+  ///
+  /// [url] should include only the protocol and the domain (e.g., "https://dashboard.situm.com").
+  /// Do not include paths or query parameters.
   Future<void> setDashboardURL(String? url) async {
 
     if (url == null){
@@ -104,6 +114,8 @@ class SitumSdk {
 
   /// Authenticate yourself into our SDK to start positioning, navigating 
   /// and using further functionalities of our SDK.
+  /// 
+  /// This method should be used after init() with no parameters.
   Future<void> setApiKey(String situmUser, String situmApiKey) async {
     await methodChannel.invokeMethod(
       "setApiKey",
