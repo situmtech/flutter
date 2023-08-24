@@ -111,7 +111,6 @@ class _MyTabsState extends State<MyTabs> {
         configuration: MapViewConfiguration(
           // Your Situm credentials.
           // Copy config.dart.example if you haven't already.
-          situmUser: situmUser,
           situmApiKey: situmApiKey,
           // Set your building identifier:
           buildingIdentifier: buildingIdentifier,
@@ -143,21 +142,20 @@ class _MyTabsState extends State<MyTabs> {
   @override
   void initState() {
     situmSdk = SitumSdk();
-    // In case you wan't to use our SDK before initializing our MapView widget, 
+    // In case you wan't to use our SDK before initializing our MapView widget,
     // you can set up your credentials with this line of code :
-    situmSdk.init();
+    situmSdk.init(situmApiKey);
     // Define which API you will use to retrieve the data. Default is https://dashboard.situm.com
     situmSdk.setDashboardURL(apiDomain);
-    // Authenticate with your account and API key. 
+    // Authenticate with your account and API key.
     // You can find yours at https://dashboard.situm.com/accounts/profile
-    situmSdk.setApiKey(situmUser, situmApiKey);
+    situmSdk.setApiKey(situmApiKey);
     // Configure SDK before authenticating.
     situmSdk.setConfiguration(ConfigurationOptions(
-      // In case you want to use our remote configuration (https://dashboard.situm.com/settings).
-      // With this practical dashboard you can edit your location request and other SDK configurations
-      // with ease and no code changes.
-      useRemoteConfig: true
-    ));
+        // In case you want to use our remote configuration (https://dashboard.situm.com/settings).
+        // With this practical dashboard you can edit your location request and other SDK configurations
+        // with ease and no code changes.
+        useRemoteConfig: true));
     // Set up location listeners:
     situmSdk.onLocationUpdate((location) {
       _echo("""SDK> Location changed:
@@ -231,7 +229,7 @@ class _MyTabsState extends State<MyTabs> {
   void _fetchPois() async {
     _echo("SDK> POIS...");
     var pois = await situmSdk.fetchPoisFromBuilding(buildingIdentifier);
-    _echo("SDK> RESPONSE: POIS = \n\n$pois");
+    _echo("SDK> RESPONSE: POIS = \n\n");
   }
 
   void _fetchCategories() async {

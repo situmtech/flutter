@@ -122,7 +122,6 @@ class _MapViewState extends State<MapView> {
   void _onMapReady(String url) {
     if (wyfController == null) {
       wyfController = MapViewController(
-        situmUser: mapViewConfiguration.situmUser,
         situmApiKey: mapViewConfiguration.situmApiKey,
         apiDomain: mapViewConfiguration.apiDomain,
         widgetUpdater: _loadWithConfig,

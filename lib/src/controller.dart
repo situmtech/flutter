@@ -10,7 +10,7 @@ class MapViewController {
   final PlatformWebViewController _webViewController;
 
   MapViewController({
-    required String situmUser,
+    String? situmUser,
     required String situmApiKey,
     String? apiDomain,
     required dynamic Function(MapViewConfiguration) widgetUpdater,
@@ -18,14 +18,12 @@ class MapViewController {
   })  : _webViewController = webViewController,
         _widgetUpdater = widgetUpdater {
     var situmSdk = SitumSdk();
-    // Be sure to initialize, configure and authenticate in our SDK 
+    // Be sure to initialize, configure and authenticate in our SDK
     // so it can be used in callbacks, etc.
     situmSdk.init();
     situmSdk.setDashboardURL(apiDomain);
-    situmSdk.setApiKey(situmUser, situmApiKey);
-    situmSdk.setConfiguration(ConfigurationOptions(
-      useRemoteConfig: true
-    ));
+    situmSdk.setApiKey(situmApiKey);
+    situmSdk.setConfiguration(ConfigurationOptions(useRemoteConfig: true));
     // Subscribe to native SDK messages so the location updates can be directly
     // forwarded to the map viewer.
     situmSdk.internalSetMethodCallDelegate(_methodCallHandler);

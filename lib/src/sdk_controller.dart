@@ -56,31 +56,27 @@ class SitumSdk {
 
   /// Initializes and authenticates [SitumSdk].
   ///
-  /// This method must be called before invoking any other methods. The use of parameters in this method is 
+  /// This method must be called before invoking any other methods. The use of parameters in this method is
   /// deprecated, instead call it without them followed by setApiKey to authenticate yourself.
   ///
-  /// * [situmUser] (deprecated) is your Situm account email.
-  /// * [situmApiKey] (deprecated) is the API key associated with your account. 
+  /// * [situmApiKey] (deprecated) is the API key associated with your account.
   /// You can find this key at https://dashboard.situm.com/accounts/profile.
   ///
-  /// **Note**: If you call this method without providing any parameters, 
+  /// **Note**: If you call this method without providing any parameters,
   /// it will only initialize the SDK. In this case, ensure to call [setApiKey] afterwards.
-  Future<void> init([String? situmUser, String? situmApiKey]) async {
-    
-    if (situmUser == null && situmApiKey == null){
-      await methodChannel.invokeMethod<String>(
-        'initSdk'
-      );
+  Future<void> init([String? situmApiKey]) async {
+    if (situmApiKey == null) {
+      await methodChannel.invokeMethod<String>('initSdk');
     } else {
       await methodChannel.invokeMethod<String>(
         'init',
         <String, dynamic>{
-          'situmUser': situmUser,
+          'situmUser':
+              "---@situm.com", // Underlying sdk expects to have a non empty, non null and valid email. But is not used anymore.
           'situmApiKey': situmApiKey,
         },
       );
-    }  
-    
+    }
   }
 
   /// Sets the API's base URL to retrieve the data. **Make sure you follow the next steps**:
@@ -91,8 +87,8 @@ class SitumSdk {
   ///     3. [setApiKey]
   ///
   /// Failing to follow this order might result in unexpected behavior.
-  /// 
-  /// * Also make sure you have declared the same value for the 
+  ///
+  /// * Also make sure you have declared the same value for the
   /// [MapViewConfiguration.apiDomain] parameter if using our [MapView] widget.
   ///
   /// Failing to implement this parameter might result in unexpected behavior.
@@ -100,14 +96,13 @@ class SitumSdk {
   /// [url] should include only the protocol and the domain (e.g., "https://dashboard.situm.com").
   /// Do not include paths or query parameters.
   Future<void> setDashboardURL(String? url) async {
-
-    if (url == null){
+    if (url == null) {
       url = "https://dashboard.situm.com";
     } else {
-      if (!url.startsWith(RegExp(r'https://'))){
+      if (!url.startsWith(RegExp(r'https://'))) {
         url = "https://$url";
       }
-      if (url.endsWith('/')){
+      if (url.endsWith('/')) {
         url = url.substring(0, url.length - 1);
       }
     }
@@ -120,19 +115,19 @@ class SitumSdk {
     );
   }
 
-  /// Authenticate yourself into our SDK to start positioning, navigating 
+  /// Authenticate yourself into our SDK to start positioning, navigating
   /// and using further functionalities of our SDK.
-  /// 
-  /// * [situmUser] is your Situm account email.
-  /// * [situmApiKey] is the API key associated with your account. 
+  ///
+  /// * [situmApiKey] is the API key associated with your account.
   /// You can find this key at https://dashboard.situm.com/accounts/profile.
-  /// 
+  ///
   /// **Note**: This method should only be used if you have called [init] without the optional parameters
-  Future<void> setApiKey(String situmUser, String situmApiKey) async {
+  Future<void> setApiKey(String situmApiKey) async {
     await methodChannel.invokeMethod(
       "setApiKey",
       <String, dynamic>{
-        'situmUser': situmUser,
+        'situmUser':
+            "---@situm.com", // Underlying sdk expects to have a non empty, non null email. But is not used anymore.
         'situmApiKey': situmApiKey,
       },
     );

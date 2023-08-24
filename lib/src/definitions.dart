@@ -3,7 +3,7 @@ part of wayfinding;
 // Public definitions:
 
 /// The [MapView] settings.
-/// 
+///
 /// ```dart
 /// MapView(
 ///   key: const Key("situm_map"),
@@ -25,7 +25,7 @@ part of wayfinding;
 /// ```
 class MapViewConfiguration {
   /// Your Situm user.
-  final String situmUser;
+  final String? situmUser;
 
   /// Your Situm API key.
   final String situmApiKey;
@@ -39,25 +39,28 @@ class MapViewConfiguration {
   /// will be prioritized.
   final String? remoteIdentifier;
   final String viewerDomain;
-  /// A String parameter that allows you to choose the API you will be retrieving 
+
+  /// A String parameter that allows you to choose the API you will be retrieving
   /// our cartography from. Default is [dashboard.situm.com](https://dashboard.situm.com).
-  /// 
+  ///
   /// [apiDomain] should include only the domain (e.g., "dashboard.situm.com")
   /// * **Note**: When using [SitumSdk.setDashboardURL], make sure you introduce the same domain.
   final String apiDomain;
+
   /// Sets the directionality of the texts that will be displayed inside [MapView].
   /// Default is [TextDirection.ltr].
   final TextDirection directionality;
+
   /// Whether to enable the platform's webview content debugging tools.
   /// See [AndroidWebViewController.enableDebugging].
-  /// 
+  ///
   /// Default is false.
   final bool enableDebugging;
 
   /// The [MapView] settings. Required fields are your Situm user and API key,
   /// but also a buildingIdentifier or remoteIdentifier.
   MapViewConfiguration({
-    required this.situmUser,
+    this.situmUser,
     required this.situmApiKey,
     this.buildingIdentifier,
     this.remoteIdentifier,
@@ -77,7 +80,7 @@ class MapViewConfiguration {
   String get _internalApiDomain {
     String finalApiDomain = apiDomain.replaceFirst(RegExp(r'https://'), '');
 
-    if (finalApiDomain.endsWith('/')){
+    if (finalApiDomain.endsWith('/')) {
       finalApiDomain = finalApiDomain.substring(0, finalApiDomain.length - 1);
     }
 
@@ -86,7 +89,7 @@ class MapViewConfiguration {
 
   String _getViewerURL() {
     var base = _internalViewerDomain;
-    var query = "email=$situmUser&apikey=$situmApiKey&domain=$_internalApiDomain&mode=embed";
+    var query = "apikey=$situmApiKey&domain=$_internalApiDomain&mode=embed";
     if (remoteIdentifier != null) {
       return "$base/id/$remoteIdentifier?$query";
     } else if (buildingIdentifier != null) {
