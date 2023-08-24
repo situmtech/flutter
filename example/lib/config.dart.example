@@ -7,5 +7,5 @@ const buildingIdentifier = "YOUR-SITUM-BUILDING-IDENTIFIER";
 // For now, you need to contact Situm to obtain yours.
 const configurationIdentifier = null;
 const viewerDomain = "https://map-viewer.situm.com";
-// Set here the api which you will use to retrieve the data from. Default is https://dashboard.situm.com
+// Set here the api which you will use to retrieve the cartography from. Default is https://dashboard.situm.com
 const apiDomain = "https://dashboard.situm.com";

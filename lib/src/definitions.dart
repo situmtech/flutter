@@ -3,6 +3,26 @@ part of wayfinding;
 // Public definitions:
 
 /// The [MapView] settings.
+/// 
+/// ```dart
+/// MapView(
+///   key: const Key("situm_map"),
+///     configuration: MapViewConfiguration(
+///       // Your Situm credentials.
+///       situmUser: "YOUR-SITUM-USER",
+///       situmApiKey: "YOUR-SITUM-API-KEY",
+///       // Set your building identifier:
+///       buildingIdentifier: "YOUR-SITUM-BUILDING-IDENTIFIER",
+///       // Alternatively, you can set an identifier that allows you to remotely configure all map settings.
+///       // For now, you need to contact Situm to obtain yours.
+///       // remoteIdentifier: null;
+///       viewerDomain: "https://map-viewer.situm.com",
+///       // Set here the api which you will use to retrieve the cartography from. Default is https://dashboard.situm.com
+///       apiDomain = "dashboard.situm.com";
+///    ),
+///    onLoad: _onLoad,
+/// ),
+/// ```
 class MapViewConfiguration {
   /// Your Situm user.
   final String situmUser;
@@ -19,6 +39,10 @@ class MapViewConfiguration {
   /// will be prioritized.
   final String? remoteIdentifier;
   final String viewerDomain;
+  /// A String parameter that allows you to choose the API you will be retrieving our cartography from. Default will be [dashboard.situm.com](https://dashboard.situm.com)
+  /// 
+  /// [apiDomain] should include only the domain (e.g., "dashboard.situm.com")
+  /// * **Note**: When using [SitumSdk.setDashboardURL], make sure you introduce the same domain.
   final String apiDomain;
   final TextDirection directionality;
   final bool enableDebugging;
@@ -31,7 +55,7 @@ class MapViewConfiguration {
     this.buildingIdentifier,
     this.remoteIdentifier,
     this.viewerDomain = "https://map-viewer.situm.com",
-    this.apiDomain = "https://dashboard.situm.com",
+    this.apiDomain = "dashboard.situm.com",
     this.directionality = TextDirection.ltr,
     this.enableDebugging = false,
   });
