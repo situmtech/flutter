@@ -58,13 +58,13 @@ class SitumSdk {
   ///
   /// This method must be called before invoking any other methods. The use of parameters in this method is
   /// deprecated, instead call it without them followed by setApiKey to authenticate yourself.
-  ///
+  /// * [situmUser] (deprecated) email associated with your account.
   /// * [situmApiKey] (deprecated) is the API key associated with your account.
   /// You can find this key at https://dashboard.situm.com/accounts/profile.
   ///
   /// **Note**: If you call this method without providing any parameters,
   /// it will only initialize the SDK. In this case, ensure to call [setApiKey] afterwards.
-  Future<void> init([String? situmApiKey]) async {
+  Future<void> init([String? situmUser, String? situmApiKey]) async {
     if (situmApiKey == null) {
       await methodChannel.invokeMethod<String>('initSdk');
     } else {
