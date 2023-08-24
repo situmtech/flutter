@@ -54,14 +54,16 @@ class SitumSdk {
 
   // Calls
 
-  /// Initializes and authenticates [SitumSdk]. You have to call this function prior any call to
-  /// other method.
-  /// 
-  /// [situmUser] - your email's account
-  /// [situmApiKey] - your account's API key that you can find in https://dashboard.situm.com/accounts/profile
-  /// 
-  /// ** Calling this method with no parameters declared 
-  ///    will only initialize our SDK. Remember to call afterwards [setApiKey] in this case.
+  /// Initializes and authenticates [SitumSdk].
+  ///
+  /// This method must be called before invoking any other methods.
+  ///
+  /// [situmUser] is your Situm account email.
+  /// [situmApiKey] is the API key associated with your account. 
+  /// You can find this key at https://dashboard.situm.com/accounts/profile.
+  ///
+  /// **Note**: If you call this method without providing any parameters, 
+  /// it will only initialize the SDK. In this case, ensure to call [setApiKey] afterwards.
   Future<void> init([String? situmUser, String? situmApiKey]) async {
     
     if (situmUser == null && situmApiKey == null){
