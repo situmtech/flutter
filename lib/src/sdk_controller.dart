@@ -83,14 +83,19 @@ class SitumSdk {
     
   }
 
-  /// Sets the API's base URL to retrieve the data.
+  /// Sets the API's base URL to retrieve the data. **Make sure you follow the next steps**:
   ///
-  /// For this method to work correctly, you should call methods in the following order:
-  /// 1. [init]
-  /// 2. [setDashboardURL]
-  /// 3. [setApiKey]
+  /// * For this method to work correctly, you should call methods in the following order:
+  ///     1. [init]
+  ///     2. [setDashboardURL]
+  ///     3. [setApiKey]
   ///
   /// Failing to follow this order might result in unexpected behavior.
+  /// 
+  /// * Also make sure you have declared the [MapViewConfiguration.apiDomain] parameter when using our [MapView] widget. 
+  /// Take a look at the implementation the widget in our example (https://github.com/situmtech/flutter/blob/master/example/lib/main.dart)
+  ///
+  /// Failing to implement this parameter might result in unexpected behavior.
   ///
   /// [url] should include only the protocol and the domain (e.g., "https://dashboard.situm.com").
   /// Do not include paths or query parameters.
