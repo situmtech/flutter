@@ -114,8 +114,6 @@ class _MyTabsState extends State<MyTabs> {
           situmApiKey: situmApiKey,
           // Set your building identifier:
           buildingIdentifier: buildingIdentifier,
-          viewerDomain: viewerDomain,
-          apiDomain: apiDomain,
           enableDebugging: true,
         ),
         onLoad: _onLoad,
@@ -144,7 +142,7 @@ class _MyTabsState extends State<MyTabs> {
     situmSdk = SitumSdk();
     // In case you wan't to use our SDK before initializing our MapView widget,
     // you can set up your credentials with this line of code :
-    situmSdk.init("", situmApiKey);
+    situmSdk.init();
     // Define which API you will use to retrieve the data. Default is https://dashboard.situm.com
     situmSdk.setDashboardURL(apiDomain);
     // Authenticate with your account and API key.
@@ -229,7 +227,7 @@ class _MyTabsState extends State<MyTabs> {
   void _fetchPois() async {
     _echo("SDK> POIS...");
     var pois = await situmSdk.fetchPoisFromBuilding(buildingIdentifier);
-    _echo("SDK> RESPONSE: POIS = \n\n");
+    _echo("SDK> RESPONSE: POIS = \n\n$pois");
   }
 
   void _fetchCategories() async {

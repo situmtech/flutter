@@ -21,7 +21,6 @@ class MapViewController {
     // Be sure to initialize, configure and authenticate in our SDK
     // so it can be used in callbacks, etc.
     situmSdk.init();
-    situmSdk.setDashboardURL(apiDomain);
     situmSdk.setApiKey(situmApiKey);
     situmSdk.setConfiguration(ConfigurationOptions(useRemoteConfig: true));
     // Subscribe to native SDK messages so the location updates can be directly
