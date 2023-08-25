@@ -566,7 +566,7 @@ class ConfigurationOptions {
   final bool useRemoteConfig;
 
   ConfigurationOptions({
-    this.useRemoteConfig = true,
+    this.useRemoteConfig = true
   });
 }
 
