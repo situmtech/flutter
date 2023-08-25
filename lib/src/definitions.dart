@@ -38,6 +38,13 @@ class MapViewConfiguration {
   /// Alternatively you can pass a buildingIdentifier, but remoteIdentifier
   /// will be prioritized.
   final String? remoteIdentifier;
+
+  /// A String parameter that allows you to specify 
+  /// which domain will be displayed inside our webview.
+  /// 
+  /// Default is https://map-viewer.situm.com.
+  /// 
+  ///[viewerDomain] should include the protocol and the domain (e.g. https://map-viewer.situm.com).
   final String viewerDomain;
 
   /// A String parameter that allows you to choose the API you will be retrieving
