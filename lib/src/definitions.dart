@@ -3,47 +3,100 @@ part of wayfinding;
 // Public definitions:
 
 /// The [MapView] settings.
+///
+/// ```dart
+/// MapView(
+///   key: const Key("situm_map"),
+///   configuration: MapViewConfiguration(
+///   // Your Situm credentials.
+///     situmUser: "YOUR-SITUM-USER",
+///     situmApiKey: "YOUR-SITUM-API-KEY",
+///   // Set your building identifier:
+///     buildingIdentifier: "YOUR-SITUM-BUILDING-IDENTIFIER",
+///   // Alternatively, you can set an identifier that allows you to remotely configure all map settings.
+///   // For now, you need to contact Situm to obtain yours.
+///   // remoteIdentifier: null;
+///     viewerDomain: "https://map-viewer.situm.com",
+///     apiDomain: "dashboard.situm.com",
+///     directionality: TextDirection.ltr,
+///     enableDebugging: false,
+///   ),
+/// ),
+/// ```
 class MapViewConfiguration {
   /// Your Situm user.
-  final String situmUser;
+  final String? situmUser;
 
   /// Your Situm API key.
   final String situmApiKey;
 
   /// The building that will be loaded on the map. Alternatively you can pass a
-  /// configurationIdentifier (that will be prioritized).
+  /// remoteIdentifier (that will be prioritized).
   final String? buildingIdentifier;
 
   /// A String identifier that allows you to remotely configure all map settings.
-  /// Alternatively you can pass a buildingIdentifier, but configurationIdentifier
+  /// Alternatively you can pass a buildingIdentifier, but remoteIdentifier
   /// will be prioritized.
   final String? remoteIdentifier;
-  final String baseUrl;
+
+  /// A String parameter that allows you to specify 
+  /// which domain will be displayed inside our webview.
+  /// 
+  /// Default is https://map-viewer.situm.com.
+  /// 
+  ///[viewerDomain] should include the protocol and the domain (e.g. https://map-viewer.situm.com).
+  final String viewerDomain;
+
+  /// A String parameter that allows you to choose the API you will be retrieving
+  /// our cartography from. Default is [dashboard.situm.com](https://dashboard.situm.com).
+  ///
+  /// [apiDomain] should include only the domain (e.g., "dashboard.situm.com")
+  /// * **Note**: When using [SitumSdk.setDashboardURL], make sure you introduce the same domain.
+  final String apiDomain;
+
+  /// Sets the directionality of the texts that will be displayed inside [MapView].
+  /// Default is [TextDirection.ltr].
   final TextDirection directionality;
+
+  /// Whether to enable the platform's webview content debugging tools.
+  /// See [AndroidWebViewController.enableDebugging].
+  ///
+  /// Default is false.
   final bool enableDebugging;
 
   /// The [MapView] settings. Required fields are your Situm user and API key,
-  /// but also a buildingIdentifier or configurationIdentifier.
+  /// but also a buildingIdentifier or remoteIdentifier.
   MapViewConfiguration({
-    required this.situmUser,
+    this.situmUser,
     required this.situmApiKey,
     this.buildingIdentifier,
     this.remoteIdentifier,
-    this.baseUrl = "https://map-viewer.situm.com",
+    this.viewerDomain = "https://map-viewer.situm.com",
+    this.apiDomain = "dashboard.situm.com",
     this.directionality = TextDirection.ltr,
     this.enableDebugging = false,
   });
 
-  String get _internalMapViewUrl {
-    if (baseUrl.endsWith("/")) {
-      return baseUrl.substring(0, baseUrl.length - 1);
+  String get _internalViewerDomain {
+    if (viewerDomain.endsWith("/")) {
+      return viewerDomain.substring(0, viewerDomain.length - 1);
     }
-    return baseUrl;
+    return viewerDomain;
   }
 
-  String _getMapViewerUrl() {
-    var base = _internalMapViewUrl;
-    var query = "email=$situmUser&apikey=$situmApiKey&mode=embed";
+  String get _internalApiDomain {
+    String finalApiDomain = apiDomain.replaceFirst(RegExp(r'https://'), '');
+
+    if (finalApiDomain.endsWith('/')) {
+      finalApiDomain = finalApiDomain.substring(0, finalApiDomain.length - 1);
+    }
+
+    return finalApiDomain;
+  }
+
+  String _getViewerURL() {
+    var base = _internalViewerDomain;
+    var query = "apikey=$situmApiKey&domain=$_internalApiDomain&mode=embed";
     if (remoteIdentifier != null) {
       return "$base/id/$remoteIdentifier?$query";
     } else if (buildingIdentifier != null) {
@@ -51,7 +104,7 @@ class MapViewConfiguration {
       return "$base/?$query";
     }
     throw ArgumentError(
-        'Missing configuration: configurationIdentifier or buildingIdentifier must be provided.');
+        'Missing configuration: remoteIdentifier or buildingIdentifier must be provided.');
   }
 }
 

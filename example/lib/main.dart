@@ -111,11 +111,9 @@ class _MyTabsState extends State<MyTabs> {
         configuration: MapViewConfiguration(
           // Your Situm credentials.
           // Copy config.dart.example if you haven't already.
-          situmUser: situmUser,
           situmApiKey: situmApiKey,
           // Set your building identifier:
           buildingIdentifier: buildingIdentifier,
-          baseUrl: mapViewUrl,
           enableDebugging: true,
         ),
         onLoad: _onLoad,
@@ -142,12 +140,20 @@ class _MyTabsState extends State<MyTabs> {
   @override
   void initState() {
     situmSdk = SitumSdk();
-    // Set up your credentials
-    situmSdk.init(situmUser, situmApiKey);
-    // Configure SDK
+    // In case you wan't to use our SDK before initializing our MapView widget,
+    // you can set up your credentials with this line of code :
+    situmSdk.init();
+    // Define which API you will use to retrieve the data. Default is https://dashboard.situm.com
+    situmSdk.setDashboardURL(apiDomain);
+    // Authenticate with your account and API key.
+    // You can find yours at https://dashboard.situm.com/accounts/profile
+    situmSdk.setApiKey(situmApiKey);
+    // Configure SDK before authenticating.
     situmSdk.setConfiguration(ConfigurationOptions(
-      useRemoteConfig: true,
-    ));
+        // In case you want to use our remote configuration (https://dashboard.situm.com/settings).
+        // With this practical dashboard you can edit your location request and other SDK configurations
+        // with ease and no code changes.
+        useRemoteConfig: true));
     // Set up location listeners:
     situmSdk.onLocationUpdate((location) {
       _echo("""SDK> Location changed:

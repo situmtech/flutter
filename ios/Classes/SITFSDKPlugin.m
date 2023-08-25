@@ -40,6 +40,17 @@ const NSString* RESULTS_KEY = @"results";
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
     if ([@"init" isEqualToString:call.method]) {
         [self handleInit:call result:result];
+    } else if ([@"initSdk" isEqualToString:call.method]) {
+        [self handleInitSdk: call
+                              result: result];
+    } else if ([@"setDashboardURL" isEqualToString:call.method]) {
+        [self handleSetDashboardURL: call
+                              result: result];
+    } else if ([@"setApiKey" isEqualToString:call.method]) {
+        [self handleSetApiKey:call result:result];
+    } else if ([@"setConfiguration" isEqualToString:call.method]) {
+        [self handleSetConfiguration: call
+                              result: result];
     } else if ([@"clearCache" isEqualToString:call.method]) {
         [self handleClearCache:call result:result];
     } else if ([@"requestLocationUpdates" isEqualToString:call.method]) {
@@ -60,9 +71,6 @@ const NSString* RESULTS_KEY = @"results";
     } else if ([@"geofenceCallbacksRequested" isEqualToString:call.method]){
         [self handleGeofenceCallbacksRequested: call
                                         result: result];
-    } else if ([@"setConfiguration" isEqualToString:call.method]) {
-        [self handleSetConfiguration: call
-                              result: result];
     } else if ([@"fetchBuildings" isEqualToString:call.method]) {
         [self handleFetchBuildings:call
                             result:result];
@@ -86,12 +94,6 @@ const NSString* RESULTS_KEY = @"results";
     }
 }
 
-- (void)handleSetConfiguration:(FlutterMethodCall*)call result:(FlutterResult)result {
-    BOOL useRemoteConfig = [call.arguments[@"useRemoteConfig"] boolValue];
-    [SITServices setUseRemoteConfig:useRemoteConfig];
-    result(@"DONE");
-}
-
 - (void)handleInit:(FlutterMethodCall*)call result:(FlutterResult)result {
     NSString *situmUser = call.arguments[@"situmUser"];
     NSString *situmApiKey = call.arguments[@"situmApiKey"];
@@ -110,6 +112,39 @@ const NSString* RESULTS_KEY = @"results";
     // Start listening location updates as soon as the SDK gets initialized:
     [self.locManager addDelegate:self];
 
+    result(@"DONE");
+}
+
+- (void)handleInitSdk:(FlutterMethodCall*)call result:(FlutterResult)result {
+    // Start listening location updates as soon as the SDK gets initialized:
+    [self.locManager addDelegate:self];
+
+    result(@"DONE");
+}
+
+- (void)handleSetDashboardURL:(FlutterMethodCall*)call result:(FlutterResult)result {
+    NSString *url = call.arguments[@"url"];
+    [SITServices setDashboardURL: url];
+    result(@"DONE");
+}
+
+- (void)handleSetApiKey:(FlutterMethodCall*)call result:(FlutterResult)result {
+    NSString *situmUser = call.arguments[@"situmUser"];
+    NSString *situmApiKey = call.arguments[@"situmApiKey"];
+    
+    if (!situmUser || !situmApiKey) {
+        NSLog(@"error providing credentials");
+        // TODO: Send error to dart
+    }
+    
+    [SITServices provideAPIKey:situmApiKey
+                      forEmail:situmUser];
+    result(@"DONE");
+}
+
+- (void)handleSetConfiguration:(FlutterMethodCall*)call result:(FlutterResult)result {
+    BOOL useRemoteConfig = [call.arguments[@"useRemoteConfig"] boolValue];
+    [SITServices setUseRemoteConfig:useRemoteConfig];
     result(@"DONE");
 }
 
