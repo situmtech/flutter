@@ -3,6 +3,7 @@ part of wayfinding;
 /// Controller for [MapView]. This class exposes methods and callbacks.
 class MapViewController {
   OnPoiSelectedCallback? _onPoiSelectedCallback;
+  OnPoiDeselectedCallback? _onPoiDeselectedCallback;
   OnDirectionsRequestInterceptor? _onDirectionsRequestInterceptor;
   OnNavigationRequestInterceptor? _onNavigationRequestInterceptor;
 
@@ -125,6 +126,10 @@ class MapViewController {
   // Callbacks:
   void onPoiSelected(OnPoiSelectedCallback callback) {
     _onPoiSelectedCallback = callback;
+  }
+
+  void onPoiDeselected(OnPoiDeselectedCallback callback) {
+    _onPoiDeselectedCallback = callback;
   }
 
   // Directions & Navigation Interceptors:

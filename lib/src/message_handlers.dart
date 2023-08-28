@@ -12,6 +12,8 @@ abstract class MessageHandler {
         return NavigationStopMessageHandler();
       case WV_MESSAGE_CARTOGRAPHY_POI_SELECTED:
         return PoiSelectedMessageHandler();
+      case WV_MESSAGE_CARTOGRAPHY_POI_DESELECTED:
+        return PoiDeselectedMessageHandler();
       default:
         debugPrint("EmptyMessageHandler handles message of type: $type");
         return EmptyMessageHandler();
@@ -108,19 +110,38 @@ class NavigationStopMessageHandler implements MessageHandler {
   }
 }
 
-class PoiSelectedMessageHandler implements MessageHandler {
+abstract class PoiSelectionMessageHandler implements MessageHandler {
   @override
   void handleMessage(
       MapViewController mapViewController, Map<String, dynamic> payload) async {
-    if (mapViewController._onPoiSelectedCallback != null) {
-      var poiId = "${payload["identifier"]}";
-      var buildingId = "${payload["buildingIdentifier"]}";
-      var sdk = SitumSdk();
-      var poi = await sdk.fetchPoiFromBuilding(buildingId, poiId);
-      if (poi != null) {
-        mapViewController._onPoiSelectedCallback
-            ?.call(OnPoiSelectedResult(poi: poi));
-      }
+    if (mapViewController._onPoiSelectedCallback == null &&
+        mapViewController._onPoiDeselectedCallback == null) {
+      return;
     }
+    var poiId = "${payload["identifier"]}";
+    var buildingId = "${payload["buildingIdentifier"]}";
+    var sdk = SitumSdk();
+    var poi = await sdk.fetchPoiFromBuilding(buildingId, poiId);
+    if (poi != null) {
+      handlePoiSelection(mapViewController, poi);
+    }
+  }
+
+  void handlePoiSelection(MapViewController mapViewController, Poi poi);
+}
+
+class PoiSelectedMessageHandler extends PoiSelectionMessageHandler {
+  @override
+  void handlePoiSelection(MapViewController mapViewController, Poi poi) {
+    mapViewController._onPoiSelectedCallback
+        ?.call(OnPoiSelectedResult(poi: poi));
+  }
+}
+
+class PoiDeselectedMessageHandler extends PoiSelectionMessageHandler {
+  @override
+  void handlePoiSelection(MapViewController mapViewController, Poi poi) {
+    mapViewController._onPoiDeselectedCallback
+        ?.call(OnPoiDeselectedResult(poi: poi));
   }
 }

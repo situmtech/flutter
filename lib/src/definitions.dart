@@ -138,10 +138,10 @@ class OnPoiSelectedResult {
 }
 
 class OnPoiDeselectedResult {
-  final String buildingId;
+  final Poi poi;
 
   const OnPoiDeselectedResult({
-    required this.buildingId,
+    required this.poi,
   });
 }
 

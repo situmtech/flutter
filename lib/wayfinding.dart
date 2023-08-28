@@ -30,6 +30,7 @@ const WV_MESSAGE_DIRECTIONS_REQUESTED = "directions.requested";
 const WV_MESSAGE_NAVIGATION_REQUESTED = "navigation.requested";
 const WV_MESSAGE_NAVIGATION_STOP = "navigation.stopped";
 const WV_MESSAGE_CARTOGRAPHY_POI_SELECTED = "cartography.poi_selected";
+const WV_MESSAGE_CARTOGRAPHY_POI_DESELECTED = "cartography.poi_deselected";
 
 // Actions sent to map-viewer:
 const WV_MESSAGE_LOCATION = "location.update";
