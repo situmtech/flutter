@@ -39,11 +39,11 @@ class MapViewConfiguration {
   /// will be prioritized.
   final String? remoteIdentifier;
 
-  /// A String parameter that allows you to specify 
+  /// A String parameter that allows you to specify
   /// which domain will be displayed inside our webview.
-  /// 
+  ///
   /// Default is https://map-viewer.situm.com.
-  /// 
+  ///
   ///[viewerDomain] should include the protocol and the domain (e.g. https://map-viewer.situm.com).
   final String viewerDomain;
 
@@ -96,7 +96,8 @@ class MapViewConfiguration {
 
   String _getViewerURL() {
     var base = _internalViewerDomain;
-    var query = "apikey=$situmApiKey&domain=$_internalApiDomain&mode=embed";
+    var query =
+        "apikey=$situmApiKey&domain=$_internalApiDomain&mode=embed&global=true";
     if (remoteIdentifier != null) {
       return "$base/id/$remoteIdentifier?$query";
     } else if (buildingIdentifier != null) {

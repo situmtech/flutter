@@ -9,6 +9,9 @@ class MapViewController {
   final Function(MapViewConfiguration) _widgetUpdater;
   final PlatformWebViewController _webViewController;
 
+  Location? _currentLocation;
+  LocationStatus _currentLocationStatus = LocationStatus.STOPPED;
+
   MapViewController({
     String? situmUser,
     required String situmApiKey,
@@ -29,8 +32,8 @@ class MapViewController {
   }
 
   /// Tells the SitumMap where the user is located at.
-  void setCurrentLocation(Location location) {
-    _sendMessage(WV_MESSAGE_LOCATION, location.toMap());
+  void setCurrentLocation(dynamic locationMap) {
+    _sendMessage(WV_MESSAGE_LOCATION, locationMap);
   }
 
   void onMapViewerMessage(String type, Map<String, dynamic> payload) {
@@ -174,12 +177,39 @@ class MapViewController {
 
   void _onLocationChanged(arguments) {
     // Send location to the map-viewer.
-    setCurrentLocation(createLocation(arguments));
+    if (_currentLocationStatus == LocationStatus.USER_NOT_IN_BUILDING) {
+      _currentLocationStatus = LocationStatus.CALCULATING;
+    }
+
+    _currentLocation = createLocation(arguments);
+    dynamic locationMap = _currentLocation!.toMap();
+    locationMap["status"] = '"${_currentLocationStatus.name}"';
+    
+    setCurrentLocation(locationMap);
   }
 
   void _onStatusChanged(arguments) {
-    // currentLocationStatus = arguments['statusName'];
-    // TODO: send status to map viewer.
+    switch(arguments["statusName"]) {
+      case "STARTING":
+        _currentLocationStatus = LocationStatus.STARTING;
+        break;
+      case "USER_NOT_IN_BUILDING":
+      // Send the last location with USER_NOT_IN_BUILDING state so map-viewer paints the grey-dot
+      // TODO: make map-viewer react to only location status, and decouple location from its status.
+        _currentLocationStatus = LocationStatus.USER_NOT_IN_BUILDING;
+        if (_currentLocation != null) {
+          dynamic locationMap = _currentLocation?.toMap();
+          locationMap["status"] = '"${arguments["statusName"]}"';
+          setCurrentLocation(locationMap);
+        }
+        break;
+      case "STOPPED":
+        _currentLocationStatus = LocationStatus.STOPPED;
+        break;
+      default:
+        _currentLocationStatus = LocationStatus.CALCULATING;
+        break;
+    }
   }
 
   void _onError(arguments) {
