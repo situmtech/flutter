@@ -7,8 +7,9 @@ class MapViewController {
   OnDirectionsRequestInterceptor? _onDirectionsRequestInterceptor;
   OnNavigationRequestInterceptor? _onNavigationRequestInterceptor;
 
-  final Function(MapViewConfiguration) _widgetUpdater;
-  final PlatformWebViewController _webViewController;
+  late Function(MapViewConfiguration) _widgetUpdater;
+  late MapViewCallback _widgetLoadCallback;
+  late PlatformWebViewController _webViewController;
 
   Location? _currentLocation;
   LocationStatus _currentLocationStatus = LocationStatus.STOPPED;
@@ -16,11 +17,7 @@ class MapViewController {
   MapViewController({
     String? situmUser,
     required String situmApiKey,
-    String? apiDomain,
-    required dynamic Function(MapViewConfiguration) widgetUpdater,
-    required PlatformWebViewController webViewController,
-  })  : _webViewController = webViewController,
-        _widgetUpdater = widgetUpdater {
+  }) {
     var situmSdk = SitumSdk();
     // Be sure to initialize, configure and authenticate in our SDK
     // so it can be used in callbacks, etc.
@@ -57,8 +54,8 @@ class MapViewController {
     _widgetUpdater(configuration);
   }
 
-  void _selectPoi(String id, String buildingId) async {
-    // TODO - make public.
+  void selectPoi(String id, String buildingId) async {
+    _sendMessage(WV_MESSAGE_CARTOGRAPHY_SELECT_POI, {"identifier": id});
   }
 
   void _navigateToPoi(String id, String buildingId) async {
@@ -66,6 +63,10 @@ class MapViewController {
   }
 
   // WYF internal utils:
+
+  void _notifyMapIsReady() {
+    _widgetLoadCallback(this);
+  }
 
   void _setRoute(
     String originIdentifier,
@@ -189,18 +190,18 @@ class MapViewController {
     _currentLocation = createLocation(arguments);
     dynamic locationMap = _currentLocation!.toMap();
     locationMap["status"] = '"${_currentLocationStatus.name}"';
-    
+
     setCurrentLocation(locationMap);
   }
 
   void _onStatusChanged(arguments) {
-    switch(arguments["statusName"]) {
+    switch (arguments["statusName"]) {
       case "STARTING":
         _currentLocationStatus = LocationStatus.STARTING;
         break;
       case "USER_NOT_IN_BUILDING":
-      // Send the last location with USER_NOT_IN_BUILDING state so map-viewer paints the grey-dot
-      // TODO: make map-viewer react to only location status, and decouple location from its status.
+        // Send the last location with USER_NOT_IN_BUILDING state so map-viewer paints the grey-dot
+        // TODO: make map-viewer react to only location status, and decouple location from its status.
         _currentLocationStatus = LocationStatus.USER_NOT_IN_BUILDING;
         if (_currentLocation != null) {
           dynamic locationMap = _currentLocation?.toMap();

@@ -55,7 +55,8 @@ class _MapViewState extends State<MapView> {
             // Do nothing.
           })
           ..setOnPageFinished((String url) {
-            _onMapReady(url);
+            _onMapPageLoaded(url);
+            debugPrint("Situm> WYF> Page loaded.");
           })
           ..setOnWebResourceError((WebResourceError error) {
             debugPrint('''
@@ -119,16 +120,13 @@ class _MapViewState extends State<MapView> {
         .loadRequest(LoadRequestParams(uri: Uri.parse(mapViewUrl)));
   }
 
-  void _onMapReady(String url) {
-    if (wyfController == null) {
-      wyfController = MapViewController(
+  void _onMapPageLoaded(String url) {
+    wyfController ??= MapViewController(
         situmApiKey: mapViewConfiguration.situmApiKey,
-        apiDomain: mapViewConfiguration.apiDomain,
-        widgetUpdater: _loadWithConfig,
-        webViewController: webViewController,
       );
-      widget.onLoad(wyfController!);
-    }
+    wyfController!._widgetUpdater = _loadWithConfig;
+    wyfController!._widgetLoadCallback = widget.onLoad;
+    wyfController!._webViewController = webViewController;
   }
 
   @override

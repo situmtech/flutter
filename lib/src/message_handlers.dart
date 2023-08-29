@@ -4,6 +4,8 @@ abstract class MessageHandler {
   factory MessageHandler(String type) {
     debugPrint("GOT MESSAGE WITH type: $type");
     switch (type) {
+      case WV_MESSAGE_MAP_IS_READY:
+        return MapIsReadyHandler();
       case WV_MESSAGE_DIRECTIONS_REQUESTED:
         return DirectionsMessageHandler();
       case WV_MESSAGE_NAVIGATION_REQUESTED:
@@ -34,6 +36,13 @@ class EmptyMessageHandler implements MessageHandler {
   ) {
     // Do nothing.
     debugPrint("EmptyMessageHandler handles message from map-viewer: $payload");
+  }
+}
+
+class MapIsReadyHandler implements MessageHandler {
+  @override
+  void handleMessage(MapViewController mapViewController, Map<String, dynamic> payload) {
+    mapViewController._notifyMapIsReady();
   }
 }
 
