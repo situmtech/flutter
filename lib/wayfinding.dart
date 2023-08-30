@@ -46,4 +46,7 @@ const WV_MESSAGE_LOCATION = "location.update";
 const WV_MESSAGE_DIRECTIONS_UPDATE = "directions.update";
 const WV_MESSAGE_NAVIGATION_START = "navigation.start";
 const WV_MESSAGE_NAVIGATION_UPDATE = "navigation.update";
+const WV_MESSAGE_NAVIGATION_CANCEL = "navigation.cancel";
 const WV_MESSAGE_CARTOGRAPHY_SELECT_POI = "cartography.select_poi";
+const WV_MESSAGE_UI_SET_LANGUAGE = "ui.set_language";
+const WV_MESSAGE_CAMERA_FOLLOW_USER = "camera.follow_user";

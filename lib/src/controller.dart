@@ -54,12 +54,44 @@ class MapViewController {
     _widgetUpdater(configuration);
   }
 
-  void selectPoi(String id, String buildingId) async {
-    _sendMessage(WV_MESSAGE_CARTOGRAPHY_SELECT_POI, {"identifier": id});
+  /// Selects the given POI in the map.
+  void selectPoi(String identifier) async {
+    _sendMessage(WV_MESSAGE_CARTOGRAPHY_SELECT_POI, {"identifier": identifier});
   }
 
-  void _navigateToPoi(String id, String buildingId) async {
-    // TODO - make public.
+  /// Starts navigating to the given POI. You can optionally choose the desired
+  /// [AccessibilityMode] used to calculate the route.
+  void navigateToPoi(
+    String identifier, {
+    AccessibilityMode? accessibilityMode,
+  }) async {
+    dynamic message = {"navigationTo": identifier};
+    if (accessibilityMode != null) {
+      message["type"] = accessibilityMode.name;
+    }
+    _sendMessage(WV_MESSAGE_NAVIGATION_START, message);
+  }
+
+  /// Cancels the current navigation, if any.
+  void cancelNavigation() async {
+    _sendMessage(WV_MESSAGE_NAVIGATION_CANCEL, {});
+  }
+
+  /// Sets the UI language based on the given ISO 639-1 code. Checkout the
+  /// [Situm docs](https://situm.com/docs/query-params/) to see the list of
+  /// supported languages.
+  void setLanguage(String lang) async {
+    _sendMessage(WV_MESSAGE_UI_SET_LANGUAGE, lang);
+  }
+
+  /// Tells the map to always center the camera on the user position.
+  void followUser() async {
+    _sendMessage(WV_MESSAGE_CAMERA_FOLLOW_USER, true);
+  }
+
+  /// Stops following the user (see [followUser]).
+  void unfollowUser() async {
+    _sendMessage(WV_MESSAGE_CAMERA_FOLLOW_USER, false);
   }
 
   // WYF internal utils:
