@@ -114,6 +114,8 @@ class DirectionsMessage {
   static const CATEGORY_LOCATION = "LOCATION";
   static const EMPTY_ID = "-1";
 
+  // Identifier used by the map-viewer to
+  String? identifier;
   final String buildingIdentifier;
   final String originCategory;
   final String originIdentifier;
@@ -126,6 +128,7 @@ class DirectionsMessage {
     this.originIdentifier = EMPTY_ID,
     required this.destinationCategory,
     this.destinationIdentifier = EMPTY_ID,
+    this.identifier
   });
 }
 
