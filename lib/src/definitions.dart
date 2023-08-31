@@ -58,6 +58,10 @@ class MapViewConfiguration {
   /// Default is [TextDirection.ltr].
   final TextDirection directionality;
 
+  /// Whether limitate the camera to the building bounds or not.
+  /// Default is false.
+  final bool lockCameraToBuilding;
+
   /// Whether to enable the platform's webview content debugging tools.
   /// See [AndroidWebViewController.enableDebugging].
   ///
@@ -74,6 +78,7 @@ class MapViewConfiguration {
     this.viewerDomain = "https://map-viewer.situm.com",
     this.apiDomain = "dashboard.situm.com",
     this.directionality = TextDirection.ltr,
+    this.lockCameraToBuilding = false,
     this.enableDebugging = false,
   });
 
@@ -97,7 +102,7 @@ class MapViewConfiguration {
   String _getViewerURL() {
     var base = _internalViewerDomain;
     var query =
-        "apikey=$situmApiKey&domain=$_internalApiDomain&mode=embed&global=true";
+        "apikey=$situmApiKey&domain=$_internalApiDomain&mode=embed&global=${!lockCameraToBuilding}";
     if (remoteIdentifier != null) {
       return "$base/id/$remoteIdentifier?$query";
     } else if (buildingIdentifier != null) {
