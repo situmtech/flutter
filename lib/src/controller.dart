@@ -101,7 +101,7 @@ class MapViewController {
     _sendMessage(WV_MESSAGE_UI_SET_LANGUAGE, "'$lang'");
   }
 
-  /// Tells the map to always center the camera on the user position.
+  /// Tells the map to keep the camera centered on the user position.
   void followUser() async {
     _sendMessage(WV_MESSAGE_CAMERA_FOLLOW_USER, true);
   }
