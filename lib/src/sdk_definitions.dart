@@ -4,7 +4,6 @@ part of sdk;
 class LocationRequest {
   final String buildingIdentifier;
   final bool useDeadReckoning;
-  
 
   LocationRequest({
     this.buildingIdentifier = "-1",
@@ -128,16 +127,21 @@ class NavigationRequest {
     Map<String, dynamic> map = {};
     addToMap('distanceToGoalThreshold', distanceToGoalThreshold, map);
     addToMap('outsideRouteThreshold', outsideRouteThreshold, map);
-    addToMap('distanceToIgnoreFirstIndication', distanceToIgnoreFirstIndication, map);
+    addToMap('distanceToIgnoreFirstIndication', distanceToIgnoreFirstIndication,
+        map);
     // Android vs iOS inconsistency: both distanceToChangeFloorThreshold and
     // distanceToFloorChangeThreshold are necessary.
-    addToMap('distanceToChangeFloorThreshold', distanceToFloorChangeThreshold, map);
-    addToMap('distanceToFloorChangeThreshold', distanceToFloorChangeThreshold, map);
-    addToMap('distanceToChangeIndicationThreshold', distanceToChangeIndicationThreshold, map);
+    addToMap(
+        'distanceToChangeFloorThreshold', distanceToFloorChangeThreshold, map);
+    addToMap(
+        'distanceToFloorChangeThreshold', distanceToFloorChangeThreshold, map);
+    addToMap('distanceToChangeIndicationThreshold',
+        distanceToChangeIndicationThreshold, map);
     addToMap('indicationsInterval', indicationsInterval, map);
     addToMap('timeToFirstIndication', timeToFirstIndication, map);
     addToMap('roundIndicationsStep', roundIndicationsStep, map);
-    addToMap('timeToIgnoreUnexpectedFloorChanges', timeToIgnoreUnexpectedFloorChanges, map);
+    addToMap('timeToIgnoreUnexpectedFloorChanges',
+        timeToIgnoreUnexpectedFloorChanges, map);
     if (ignoreLowQualityLocations != null) {
       map['ignoreLowQualityLocations'] = ignoreLowQualityLocations;
     }
@@ -193,7 +197,6 @@ class Location {
 }
 
 enum LocationStatus {
-  STARTING,
   CALCULATING,
   USER_NOT_IN_BUILDING,
   STOPPED,
@@ -576,9 +579,7 @@ class PoiCategory extends NamedResource {
 class ConfigurationOptions {
   final bool useRemoteConfig;
 
-  ConfigurationOptions({
-    this.useRemoteConfig = true
-  });
+  ConfigurationOptions({this.useRemoteConfig = true});
 }
 
 class PrefetchOptions {
