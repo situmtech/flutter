@@ -81,7 +81,7 @@ class MapViewController {
   /// [Situm docs](https://situm.com/docs/query-params/) to see the list of
   /// supported languages.
   void setLanguage(String lang) async {
-    _sendMessage(WV_MESSAGE_UI_SET_LANGUAGE, lang);
+    _sendMessage(WV_MESSAGE_UI_SET_LANGUAGE, "'$lang'");
   }
 
   /// Tells the map to always center the camera on the user position.
@@ -101,11 +101,13 @@ class MapViewController {
   }
 
   void _setRoute(
+    String? routeIdentifier,
     String originIdentifier,
     String destinationIdentifier,
     String? routeType,
     SitumRoute situmRoute,
   ) async {
+    situmRoute.rawContent["identifier"] = routeIdentifier;
     situmRoute.rawContent["originIdentifier"] = originIdentifier;
     situmRoute.rawContent["destinationIdentifier"] = destinationIdentifier;
     // The map-viewer waits for an accessibility mode in the "type" attribute
