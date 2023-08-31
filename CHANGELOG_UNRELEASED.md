@@ -9,3 +9,6 @@
   code.
 - Added methods `followUser()` and `unfollowUser()` to keep the map camera centered on the user 
   position (and stop doing so).
+### Fixed
+- Fixed an issue where the remote config was consistently being overwritten with local
+  (default) parameters.
