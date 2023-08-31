@@ -16,7 +16,7 @@ part of wayfinding;
 ///   // Alternatively, you can set an identifier that allows you to remotely configure all map settings.
 ///   // For now, you need to contact Situm to obtain yours.
 ///   // remoteIdentifier: null;
-///     viewerDomain: "https://map-viewer.situm.com",
+///     viewerDomain: "map-viewer.situm.com",
 ///     apiDomain: "dashboard.situm.com",
 ///     directionality: TextDirection.ltr,
 ///     enableDebugging: false,
@@ -42,15 +42,15 @@ class MapViewConfiguration {
   /// A String parameter that allows you to specify
   /// which domain will be displayed inside our webview.
   ///
-  /// Default is https://map-viewer.situm.com.
+  /// Default is [map-viewer.situm.com] (https://map-viewer.situm.com).
   ///
-  ///[viewerDomain] should include the protocol and the domain (e.g. https://map-viewer.situm.com).
+  ///[viewerDomain] should include only the domain (e.g., "map-viewer.situm.com").
   final String viewerDomain;
 
   /// A String parameter that allows you to choose the API you will be retrieving
   /// our cartography from. Default is [dashboard.situm.com](https://dashboard.situm.com).
   ///
-  /// [apiDomain] should include only the domain (e.g., "dashboard.situm.com")
+  /// [apiDomain] should include only the domain (e.g., "dashboard.situm.com").
   /// * **Note**: When using [SitumSdk.setDashboardURL], make sure you introduce the same domain.
   final String apiDomain;
 
@@ -75,7 +75,7 @@ class MapViewConfiguration {
     required this.situmApiKey,
     this.buildingIdentifier,
     this.remoteIdentifier,
-    this.viewerDomain = "https://map-viewer.situm.com",
+    this.viewerDomain = "map-viewer.situm.com",
     this.apiDomain = "dashboard.situm.com",
     this.directionality = TextDirection.ltr,
     this.lockCameraToBuilding = false,
@@ -83,10 +83,14 @@ class MapViewConfiguration {
   });
 
   String get _internalViewerDomain {
-    if (viewerDomain.endsWith("/")) {
-      return viewerDomain.substring(0, viewerDomain.length - 1);
+    String finalViewerDomain = viewerDomain;
+    if (!finalViewerDomain.startsWith("https://")) {
+      finalViewerDomain = "https://$finalViewerDomain";
     }
-    return viewerDomain;
+    if (finalViewerDomain.endsWith("/")) {
+      finalViewerDomain.substring(0, finalViewerDomain.length - 1);
+    }
+    return finalViewerDomain;
   }
 
   String get _internalApiDomain {
