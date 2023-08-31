@@ -2,16 +2,19 @@ library wayfinding;
 // ignore_for_file: constant_identifier_names
 
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:situm_flutter/sdk.dart';
+import 'package:situm_flutter/src/location_status_adapter/location_status_adapter.dart';
 // WebView:
 // Not necessary, also included with webview_flutter_platform_interface:
 // import 'package:webview_flutter/webview_flutter.dart' hide NavigationRequest;
 // WebView Platform interface:
-import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart' hide NavigationRequest;
+import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart'
+    hide NavigationRequest;
 // Import for Android features.
 import 'package:webview_flutter_android/webview_flutter_android.dart';
 // Import for iOS features.

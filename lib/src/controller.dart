@@ -11,6 +11,8 @@ class MapViewController {
 
   Location? _currentLocation;
   LocationStatus _currentLocationStatus = LocationStatus.STOPPED;
+  LocationStatusAdapter statusAdapter =
+      LocationStatusAdapter(Platform.isAndroid);
 
   MapViewController({
     String? situmUser,
@@ -192,27 +194,11 @@ class MapViewController {
   }
 
   void _onStatusChanged(arguments) {
-    switch (arguments["statusName"]) {
-      case "STARTING":
-        _currentLocationStatus = LocationStatus.STARTING;
-        break;
-      case "USER_NOT_IN_BUILDING":
-        // Send the last location with USER_NOT_IN_BUILDING state so map-viewer paints the grey-dot
-        // TODO: make map-viewer react to only location status, and decouple location from its status.
-        _currentLocationStatus = LocationStatus.USER_NOT_IN_BUILDING;
-        if (_currentLocation != null) {
-          setCurrentLocation(_currentLocation!);
-        }
-        break;
-      case "STOPPED":
-        _currentLocationStatus = LocationStatus.STOPPED;
-        if (_currentLocation != null) {
-          setCurrentLocation(_currentLocation!);
-        }
-        break;
-      default:
-        _currentLocationStatus = LocationStatus.CALCULATING;
-        break;
+    _currentLocationStatus = statusAdapter.parseStatus(arguments["statusName"]);
+
+    if (_currentLocationStatus == LocationStatus.STOPPED ||
+        _currentLocationStatus == LocationStatus.USER_NOT_IN_BUILDING) {
+      setCurrentLocation(_currentLocation!);
     }
   }
 
