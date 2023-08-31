@@ -35,7 +35,7 @@ class MapViewConfiguration {
   final String? buildingIdentifier;
 
   /// A String identifier that allows you to remotely configure all map settings.
-  /// Alternatively you can pass a buildingIdentifier, but remoteIdentifier
+  /// Alternatively you can pass a buildingIdentifier, remoteIdentifier
   /// will be prioritized.
   final String? remoteIdentifier;
 
