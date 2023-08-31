@@ -62,6 +62,7 @@ class DirectionsMessageHandler implements MessageHandler {
     try {
       SitumRoute situmRoute = await sdk.requestDirections(directionsRequest);
       mapViewController._setRoute(
+        directionsMessage.identifier,
         directionsMessage.originIdentifier,
         directionsMessage.destinationIdentifier,
         directionsRequest.accessibilityMode?.name,
