@@ -12,3 +12,5 @@
 ### Fixed
 - Fixed an issue where the remote config was consistently being overwritten with local
   (default) parameters.
+### Changed
+- Now the load callback waits for the underlying map-viewer message `ui.map_is_ready`.
