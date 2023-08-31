@@ -32,8 +32,15 @@ class MapViewController {
   }
 
   /// Tells the SitumMap where the user is located at.
-  void setCurrentLocation(dynamic locationMap) {
-    _sendMessage(WV_MESSAGE_LOCATION, locationMap);
+  void setCurrentLocation(Location location) {
+    _sendMessage(WV_MESSAGE_LOCATION, _addStatusToLocation(location));
+  }
+
+  Map<String, dynamic> _addStatusToLocation(Location location) {
+    Map<String, dynamic> locationMap = location.toMap();
+    locationMap["status"] = '"${_currentLocationStatus.name}"';
+
+    return locationMap;
   }
 
   void onMapViewerMessage(String type, Map<String, dynamic> payload) {
@@ -180,31 +187,28 @@ class MapViewController {
     if (_currentLocationStatus == LocationStatus.USER_NOT_IN_BUILDING) {
       _currentLocationStatus = LocationStatus.CALCULATING;
     }
-
     _currentLocation = createLocation(arguments);
-    dynamic locationMap = _currentLocation!.toMap();
-    locationMap["status"] = '"${_currentLocationStatus.name}"';
-    
-    setCurrentLocation(locationMap);
+    setCurrentLocation(_currentLocation!);
   }
 
   void _onStatusChanged(arguments) {
-    switch(arguments["statusName"]) {
+    switch (arguments["statusName"]) {
       case "STARTING":
         _currentLocationStatus = LocationStatus.STARTING;
         break;
       case "USER_NOT_IN_BUILDING":
-      // Send the last location with USER_NOT_IN_BUILDING state so map-viewer paints the grey-dot
-      // TODO: make map-viewer react to only location status, and decouple location from its status.
+        // Send the last location with USER_NOT_IN_BUILDING state so map-viewer paints the grey-dot
+        // TODO: make map-viewer react to only location status, and decouple location from its status.
         _currentLocationStatus = LocationStatus.USER_NOT_IN_BUILDING;
         if (_currentLocation != null) {
-          dynamic locationMap = _currentLocation?.toMap();
-          locationMap["status"] = '"${arguments["statusName"]}"';
-          setCurrentLocation(locationMap);
+          setCurrentLocation(_currentLocation!);
         }
         break;
       case "STOPPED":
         _currentLocationStatus = LocationStatus.STOPPED;
+        if (_currentLocation != null) {
+          setCurrentLocation(_currentLocation!);
+        }
         break;
       default:
         _currentLocationStatus = LocationStatus.CALCULATING;
