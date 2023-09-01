@@ -135,11 +135,12 @@ class MapViewController {
         WV_MESSAGE_DIRECTIONS_UPDATE, jsonEncode(situmRoute.rawContent));
   }
 
-  void _setRouteError(dynamic code) {
+  void _setRouteError(dynamic code, {String? routeIdentifier}) {
     _sendMessage(
         WV_MESSAGE_DIRECTIONS_UPDATE,
         jsonEncode({
           "error": code,
+          "identifier": routeIdentifier,
         }));
   }
 
