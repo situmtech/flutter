@@ -12,5 +12,7 @@
 ### Fixed
 - Fixed an issue where the remote config was consistently being overwritten with local
   (default) parameters.
+- Fixed an inconsistency in behavior between Android and iOS when setting the global positioning 
+  mode using the identifier "-1".
 ### Changed
-- Now the load callback waits for the underlying map-viewer message `ui.map_is_ready`.
+- Now the load callback waits for the underlying map-viewer message `app.map_is_ready`.

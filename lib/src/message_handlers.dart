@@ -41,7 +41,8 @@ class EmptyMessageHandler implements MessageHandler {
 
 class MapIsReadyHandler implements MessageHandler {
   @override
-  void handleMessage(MapViewController mapViewController, Map<String, dynamic> payload) {
+  void handleMessage(
+      MapViewController mapViewController, Map<String, dynamic> payload) {
     mapViewController._notifyMapIsReady();
   }
 }
@@ -69,9 +70,11 @@ class DirectionsMessageHandler implements MessageHandler {
         situmRoute,
       );
     } on PlatformException catch (e) {
-      mapViewController._setRouteError(e.code);
+      mapViewController._setRouteError(e.code,
+          routeIdentifier: directionsMessage.identifier);
     } catch (e) {
-      mapViewController._setRouteError(-1);
+      mapViewController._setRouteError(-1,
+          routeIdentifier: directionsMessage.identifier);
     }
   }
 }
@@ -93,11 +96,11 @@ class NavigationMessageHandler implements MessageHandler {
     var navigationRequest =
         createNavigationRequest(payload["navigationRequest"]);
     mapViewController._onNavigationRequested(navigationRequest);
-    SitumRoute situmRoute = await sdk.requestNavigation(
-      directionsRequest,
-      navigationRequest,
-    );
     try {
+      SitumRoute situmRoute = await sdk.requestNavigation(
+        directionsRequest,
+        navigationRequest,
+      );
       mapViewController._setNavigationRoute(
         directionsMessage.originIdentifier,
         directionsMessage.destinationIdentifier,
@@ -133,16 +136,16 @@ abstract class PoiSelectionMessageHandler implements MessageHandler {
     var sdk = SitumSdk();
     var poi = await sdk.fetchPoiFromBuilding(buildingId, poiId);
     if (poi != null) {
-      handlePoiSelection(mapViewController, poi);
+      handlePoiInteraction(mapViewController, poi);
     }
   }
 
-  void handlePoiSelection(MapViewController mapViewController, Poi poi);
+  void handlePoiInteraction(MapViewController mapViewController, Poi poi);
 }
 
 class PoiSelectedMessageHandler extends PoiSelectionMessageHandler {
   @override
-  void handlePoiSelection(MapViewController mapViewController, Poi poi) {
+  void handlePoiInteraction(MapViewController mapViewController, Poi poi) {
     mapViewController._onPoiSelectedCallback
         ?.call(OnPoiSelectedResult(poi: poi));
   }
@@ -150,7 +153,7 @@ class PoiSelectedMessageHandler extends PoiSelectionMessageHandler {
 
 class PoiDeselectedMessageHandler extends PoiSelectionMessageHandler {
   @override
-  void handlePoiSelection(MapViewController mapViewController, Poi poi) {
+  void handlePoiInteraction(MapViewController mapViewController, Poi poi) {
     mapViewController._onPoiDeselectedCallback
         ?.call(OnPoiDeselectedResult(poi: poi));
   }

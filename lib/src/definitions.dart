@@ -115,7 +115,8 @@ class DirectionsMessage {
   static const CATEGORY_LOCATION = "LOCATION";
   static const EMPTY_ID = "-1";
 
-  // Identifier used by the map-viewer to
+  // Identifier used by the map-viewer on the pre-route UI, where multiple
+  // routes are calculated asynchronously.
   String? identifier;
   final String buildingIdentifier;
   final String originCategory;
