@@ -35,7 +35,7 @@ class MapViewConfiguration {
   final String? buildingIdentifier;
 
   /// A String identifier that allows you to remotely configure all map settings.
-  /// Alternatively you can pass a buildingIdentifier, but remoteIdentifier
+  /// Alternatively you can pass a buildingIdentifier, remoteIdentifier
   /// will be prioritized.
   final String? remoteIdentifier;
 
@@ -96,13 +96,14 @@ class MapViewConfiguration {
 
   String _getViewerURL() {
     var base = _internalViewerDomain;
-    var query =
-        "apikey=$situmApiKey&domain=$_internalApiDomain&mode=embed&global=true";
-    if (remoteIdentifier != null) {
+    var query = "apikey=$situmApiKey&domain=$_internalApiDomain&mode=embed";
+
+    if (remoteIdentifier != null && buildingIdentifier != null) {
+      return "$base/id/$remoteIdentifier?$query&buildingid=$buildingIdentifier";
+    } else if (remoteIdentifier != null) {
       return "$base/id/$remoteIdentifier?$query";
     } else if (buildingIdentifier != null) {
-      query = "$query&buildingid=$buildingIdentifier";
-      return "$base/?$query";
+      return "$base/?$query&buildingid=$buildingIdentifier";
     }
     throw ArgumentError(
         'Missing configuration: remoteIdentifier or buildingIdentifier must be provided.');
