@@ -71,7 +71,7 @@ class MapViewController {
     }
     _sendMessage(WV_MESSAGE_NAVIGATION_START, message);
   }  
-  void navigateToLocation(
+  void navigateToPoint(
     double lat,
     double lng,
     String floorIdentifier,
@@ -86,7 +86,7 @@ class MapViewController {
     if (navigationName != null) {
       message["navigationName"] = navigationName;
     }
-    _sendMessage(WV_MESSAGE_NAVIGATION_TO_LOCATION, message);
+    _sendMessage(WV_MESSAGE_NAVIGATION_START, message);
   }
 
   /// Cancels the current navigation, if any.
