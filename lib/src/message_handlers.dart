@@ -4,6 +4,8 @@ abstract class MessageHandler {
   factory MessageHandler(String type) {
     debugPrint("GOT MESSAGE WITH type: $type");
     switch (type) {
+      case WV_MESSAGE_MAP_IS_READY:
+        return MapIsReadyHandler();
       case WV_MESSAGE_DIRECTIONS_REQUESTED:
         return DirectionsMessageHandler();
       case WV_MESSAGE_NAVIGATION_REQUESTED:
@@ -12,6 +14,8 @@ abstract class MessageHandler {
         return NavigationStopMessageHandler();
       case WV_MESSAGE_CARTOGRAPHY_POI_SELECTED:
         return PoiSelectedMessageHandler();
+      case WV_MESSAGE_CARTOGRAPHY_POI_DESELECTED:
+        return PoiDeselectedMessageHandler();
       default:
         debugPrint("EmptyMessageHandler handles message of type: $type");
         return EmptyMessageHandler();
@@ -35,6 +39,14 @@ class EmptyMessageHandler implements MessageHandler {
   }
 }
 
+class MapIsReadyHandler implements MessageHandler {
+  @override
+  void handleMessage(
+      MapViewController mapViewController, Map<String, dynamic> payload) {
+    mapViewController._notifyMapIsReady();
+  }
+}
+
 class DirectionsMessageHandler implements MessageHandler {
   @override
   void handleMessage(
@@ -51,15 +63,18 @@ class DirectionsMessageHandler implements MessageHandler {
     try {
       SitumRoute situmRoute = await sdk.requestDirections(directionsRequest);
       mapViewController._setRoute(
+        directionsMessage.identifier,
         directionsMessage.originIdentifier,
         directionsMessage.destinationIdentifier,
         directionsRequest.accessibilityMode?.name,
         situmRoute,
       );
     } on PlatformException catch (e) {
-      mapViewController._setRouteError(e.code);
+      mapViewController._setRouteError(e.code,
+          routeIdentifier: directionsMessage.identifier);
     } catch (e) {
-      mapViewController._setRouteError(-1);
+      mapViewController._setRouteError(-1,
+          routeIdentifier: directionsMessage.identifier);
     }
   }
 }
@@ -81,11 +96,11 @@ class NavigationMessageHandler implements MessageHandler {
     var navigationRequest =
         createNavigationRequest(payload["navigationRequest"]);
     mapViewController._onNavigationRequested(navigationRequest);
-    SitumRoute situmRoute = await sdk.requestNavigation(
-      directionsRequest,
-      navigationRequest,
-    );
     try {
+      SitumRoute situmRoute = await sdk.requestNavigation(
+        directionsRequest,
+        navigationRequest,
+      );
       mapViewController._setNavigationRoute(
         directionsMessage.originIdentifier,
         directionsMessage.destinationIdentifier,
@@ -108,19 +123,38 @@ class NavigationStopMessageHandler implements MessageHandler {
   }
 }
 
-class PoiSelectedMessageHandler implements MessageHandler {
+abstract class PoiSelectionMessageHandler implements MessageHandler {
   @override
   void handleMessage(
       MapViewController mapViewController, Map<String, dynamic> payload) async {
-    if (mapViewController._onPoiSelectedCallback != null) {
-      var poiId = "${payload["identifier"]}";
-      var buildingId = "${payload["buildingIdentifier"]}";
-      var sdk = SitumSdk();
-      var poi = await sdk.fetchPoiFromBuilding(buildingId, poiId);
-      if (poi != null) {
-        mapViewController._onPoiSelectedCallback
-            ?.call(OnPoiSelectedResult(poi: poi));
-      }
+    if (mapViewController._onPoiSelectedCallback == null &&
+        mapViewController._onPoiDeselectedCallback == null) {
+      return;
     }
+    var poiId = "${payload["identifier"]}";
+    var buildingId = "${payload["buildingIdentifier"]}";
+    var sdk = SitumSdk();
+    var poi = await sdk.fetchPoiFromBuilding(buildingId, poiId);
+    if (poi != null) {
+      handlePoiInteraction(mapViewController, poi);
+    }
+  }
+
+  void handlePoiInteraction(MapViewController mapViewController, Poi poi);
+}
+
+class PoiSelectedMessageHandler extends PoiSelectionMessageHandler {
+  @override
+  void handlePoiInteraction(MapViewController mapViewController, Poi poi) {
+    mapViewController._onPoiSelectedCallback
+        ?.call(OnPoiSelectedResult(poi: poi));
+  }
+}
+
+class PoiDeselectedMessageHandler extends PoiSelectionMessageHandler {
+  @override
+  void handlePoiInteraction(MapViewController mapViewController, Poi poi) {
+    mapViewController._onPoiDeselectedCallback
+        ?.call(OnPoiDeselectedResult(poi: poi));
   }
 }

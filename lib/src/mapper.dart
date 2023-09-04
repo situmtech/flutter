@@ -6,4 +6,5 @@ DirectionsMessage createDirectionsMessage(arguments) => DirectionsMessage(
       originCategory: arguments["originCategory"],
       destinationIdentifier: (arguments["destinationIdentifier"] ?? -1).toString(),
       destinationCategory: arguments["destinationCategory"],
+      identifier: (arguments["identifier"] ?? "").toString()
     );

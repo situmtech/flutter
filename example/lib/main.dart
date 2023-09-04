@@ -127,7 +127,10 @@ class _MyTabsState extends State<MyTabs> {
     // You need to wait until the map is properly loaded to do so.
     mapViewController = controller;
     controller.onPoiSelected((poiSelectedResult) {
-      debugPrint("WYF> onPoiSelected: ${poiSelectedResult.poi.name}");
+      debugPrint("WYF> Poi SELECTED: ${poiSelectedResult.poi.name}");
+    });
+    controller.onPoiDeselected((poiDeselectedResult) {
+      debugPrint("WYF> Poi DESELECTED: ${poiDeselectedResult.poi.name}");
     });
     controller.onNavigationRequestInterceptor((navigationRequest) {
       debugPrint("WYF> Navigation interceptor: ${navigationRequest.toMap()}");
