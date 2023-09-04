@@ -34,6 +34,8 @@ class SitumSdk {
   OnNavigationProgressCallback? _onNavigationProgressCallback;
   OnNavigationOutOfRouteCallback? _onNavigationOORCallback;
 
+  LocationStatusAdapter? statusAdapter;
+
   static final SitumSdk _controller = SitumSdk._internal();
 
   /// Main entry point for the Situm Flutter SDK. Use [SitumSdk] to start
@@ -149,6 +151,8 @@ class SitumSdk {
   Future<void> requestLocationUpdates(LocationRequest locationRequest) async {
     await methodChannel.invokeMethod(
         'requestLocationUpdates', locationRequest.toMap());
+
+    statusAdapter = LocationStatusAdapter();
   }
 
   /// Get notified about location updates. See [requestLocationUpdates].
@@ -359,7 +363,11 @@ class SitumSdk {
 
   void _onStatusChanged(arguments) {
     // Send location status to the _onLocationStatusCallback.
-    _onLocationStatusCallback?.call(arguments["statusName"]);
+    String? currentLocationStatus =
+        statusAdapter!.handleStatus(arguments["statusName"]);
+    if (currentLocationStatus == null) return;
+
+    _onLocationStatusCallback?.call(currentLocationStatus);
   }
 
   void _onError(arguments) {

@@ -10,9 +10,7 @@ class MapViewController {
   final PlatformWebViewController _webViewController;
 
   Location? _currentLocation;
-  LocationStatus _currentLocationStatus = LocationStatus.STOPPED;
-  LocationStatusAdapter statusAdapter =
-      LocationStatusAdapter(Platform.isAndroid);
+  late String _currentLocationStatus;
 
   MapViewController({
     String? situmUser,
@@ -40,7 +38,7 @@ class MapViewController {
 
   Map<String, dynamic> _addStatusToLocation(Location location) {
     Map<String, dynamic> locationMap = location.toMap();
-    locationMap["status"] = '"${_currentLocationStatus.name}"';
+    locationMap["status"] = '"$_currentLocationStatus"';
 
     return locationMap;
   }
@@ -186,18 +184,15 @@ class MapViewController {
 
   void _onLocationChanged(arguments) {
     // Send location to the map-viewer.
-    if (_currentLocationStatus == LocationStatus.USER_NOT_IN_BUILDING) {
-      _currentLocationStatus = LocationStatus.CALCULATING;
-    }
     _currentLocation = createLocation(arguments);
     setCurrentLocation(_currentLocation!);
   }
 
   void _onStatusChanged(arguments) {
-    _currentLocationStatus = statusAdapter.parseStatus(arguments["statusName"]);
-
-    if (_currentLocationStatus == LocationStatus.STOPPED ||
-        _currentLocationStatus == LocationStatus.USER_NOT_IN_BUILDING) {
+    _currentLocationStatus = arguments["statusName"];
+    if (_currentLocation != null &&
+        (_currentLocationStatus == "STOPPED" ||
+            _currentLocationStatus == "USER_NOT_IN_BUILDING")) {
       setCurrentLocation(_currentLocation!);
     }
   }
