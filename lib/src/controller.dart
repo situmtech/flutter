@@ -67,7 +67,7 @@ class MapViewController {
   }) async {
     dynamic message = {"navigationTo": identifier};
     if (accessibilityMode != null) {
-      message["type"] = accessibilityMode.name;
+      message["type"] = "'${accessibilityMode.name}'";
     }
     _sendMessage(WV_MESSAGE_NAVIGATION_START, message);
   }  
