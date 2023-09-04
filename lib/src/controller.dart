@@ -81,12 +81,12 @@ class MapViewController {
   }) async {
     dynamic message = {"lat": lat,"lng": lng,"floorIdentifier": floorIdentifier};
     if (accessibilityMode != null) {
-      message["type"] = "'${accessibilityMode.name}'";
+      message["type"] = accessibilityMode.name;
     }
     if (navigationName != null) {
       message["navigationName"] = navigationName;
     }
-    _sendMessage(WV_MESSAGE_NAVIGATION_START, message);
+    _sendMessage(WV_MESSAGE_NAVIGATION_START, jsonEncode(message));
   }
 
   /// Cancels the current navigation, if any.
