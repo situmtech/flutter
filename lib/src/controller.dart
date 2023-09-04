@@ -81,7 +81,7 @@ class MapViewController {
   }) async {
     dynamic message = {"lat": lat,"lng": lng,"floorIdentifier": floorIdentifier};
     if (accessibilityMode != null) {
-      message["type"] = accessibilityMode.name;
+      message["type"] = "'${accessibilityMode.name}'";
     }
     if (navigationName != null) {
       message["navigationName"] = navigationName;
