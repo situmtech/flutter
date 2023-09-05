@@ -197,8 +197,22 @@ class Location {
 }
 
 enum LocationStatus {
+  /// The SDK is ready to start positioning and starts calculating the user's position.
   CALCULATING,
+
+  /// The first [Location] was given by the [SitumSdk.onLocationUpdate] callback,
+  /// so the user is now positioning (indoors or outdoors). You will also receive this status
+  /// when recovering the position after leaving the building ([LocationStatus.USER_NOT_IN_BUILDING]).
+  POSITIONING,
+
+  /// The user left the building specified in [LocationRequest.buildingIdentifier], so no location is
+  /// given by the [SitumSdk.onLocationUpdate]. In case we are positioning with [global mode] (enlazar documentacion),
+  /// this status won't be sent and the SDK will start sending outdoor locations (with buildingIdentifier = -1 and [Location.isOutdoor] = true)
   USER_NOT_IN_BUILDING,
+
+  /// The SDK stopped calculating positions. The positioning
+  /// may be stopped by calling [SitumSdk.removeUpdates]
+  /// or by some error thrown by the [SitumSdk.onLocationError] callback.
   STOPPED,
 }
 
