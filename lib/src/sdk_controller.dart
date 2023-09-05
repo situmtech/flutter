@@ -34,7 +34,7 @@ class SitumSdk {
   OnNavigationProgressCallback? _onNavigationProgressCallback;
   OnNavigationOutOfRouteCallback? _onNavigationOORCallback;
 
-  LocationStatusAdapter statusAdapter = LocationStatusAdapter();
+  final _LocationStatusAdapter _statusAdapter = _LocationStatusAdapter();
 
   static final SitumSdk _controller = SitumSdk._internal();
 
@@ -362,7 +362,7 @@ class SitumSdk {
   void _onStatusChanged(arguments) {
     // Send location status to the _onLocationStatusCallback.
     String? currentLocationStatus =
-        statusAdapter.handleStatus(arguments["statusName"]);
+        _statusAdapter.handleStatus(arguments["statusName"]);
     if (currentLocationStatus == null) return;
 
     _onLocationStatusCallback?.call(currentLocationStatus);

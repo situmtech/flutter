@@ -4,11 +4,11 @@ part of sdk;
 /// This class is in charge of handling the native LocationStatus
 /// that we are recieving from the native SDKs (Android and iOS),
 /// and giving a common status and behaviour between platforms.
-class LocationStatusAdapter {
+class _LocationStatusAdapter {
   late bool _isAndroid;
   String? _lastStatus;
 
-  LocationStatusAdapter() {
+  _LocationStatusAdapter() {
     _isAndroid = Platform.isAndroid;
   }
 
