@@ -35,7 +35,7 @@ class MapViewConfiguration {
   final String? buildingIdentifier;
 
   /// A String identifier that allows you to remotely configure all map settings.
-  /// Alternatively you can pass a buildingIdentifier, but remoteIdentifier
+  /// Alternatively you can pass a buildingIdentifier, remoteIdentifier
   /// will be prioritized.
   final String? remoteIdentifier;
 
@@ -96,13 +96,14 @@ class MapViewConfiguration {
 
   String _getViewerURL() {
     var base = _internalViewerDomain;
-    var query =
-        "apikey=$situmApiKey&domain=$_internalApiDomain&mode=embed&global=true";
-    if (remoteIdentifier != null) {
+    var query = "apikey=$situmApiKey&domain=$_internalApiDomain&mode=embed";
+
+    if (remoteIdentifier != null && buildingIdentifier != null) {
+      return "$base/id/$remoteIdentifier?$query&buildingid=$buildingIdentifier";
+    } else if (remoteIdentifier != null) {
       return "$base/id/$remoteIdentifier?$query";
     } else if (buildingIdentifier != null) {
-      query = "$query&buildingid=$buildingIdentifier";
-      return "$base/?$query";
+      return "$base/?$query&buildingid=$buildingIdentifier";
     }
     throw ArgumentError(
         'Missing configuration: remoteIdentifier or buildingIdentifier must be provided.');
@@ -114,6 +115,9 @@ class DirectionsMessage {
   static const CATEGORY_LOCATION = "LOCATION";
   static const EMPTY_ID = "-1";
 
+  // Identifier used by the map-viewer on the pre-route UI, where multiple
+  // routes are calculated asynchronously.
+  String? identifier;
   final String buildingIdentifier;
   final String originCategory;
   final String originIdentifier;
@@ -126,6 +130,7 @@ class DirectionsMessage {
     this.originIdentifier = EMPTY_ID,
     required this.destinationCategory,
     this.destinationIdentifier = EMPTY_ID,
+    this.identifier
   });
 }
 
@@ -138,10 +143,10 @@ class OnPoiSelectedResult {
 }
 
 class OnPoiDeselectedResult {
-  final String buildingId;
+  final Poi poi;
 
   const OnPoiDeselectedResult({
-    required this.buildingId,
+    required this.poi,
   });
 }
 

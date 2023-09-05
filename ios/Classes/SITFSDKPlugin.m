@@ -165,24 +165,16 @@ const NSString* RESULTS_KEY = @"results";
 -(SITLocationRequest *)createLocationRequest:(NSDictionary *)arguments{
     SITLocationRequest *locationRequest = [SITLocationRequest new];
     NSString *buildingID = arguments[@"buildingIdentifier"];
-    if ([self isValidBuildingId:buildingID]){
+    if ([SITFSDKUtils isValidIdentifier:buildingID]){
         locationRequest.buildingID = buildingID;
+    } else if ([SITFSDKUtils isGlobalModeIdentifier:buildingID]){
+        locationRequest.buildingID = @"";
     }
-    locationRequest.useDeadReckoning = [arguments[@"useDeadReckoning"] boolValue];
+    NSString *useDeadReckoning = arguments[@"useDeadReckoning"];
+    if (![SITFSDKUtils isNullArgument:useDeadReckoning]){
+        locationRequest.useDeadReckoning = [useDeadReckoning boolValue];
+    }
     return locationRequest;
-}
-
--(BOOL)isValidBuildingId:(NSString *)buildingId{
-    if (!buildingId){
-        return NO;
-    }
-    if (buildingId.length == 0){
-        return NO;
-    }
-    if ([buildingId isEqualToString:@"-1"]){
-        return NO;
-    }
-    return YES;
 }
 
 - (void)handleRemoveUpdates:(FlutterMethodCall*)call result:(FlutterResult)result {

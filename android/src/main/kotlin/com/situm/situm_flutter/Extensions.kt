@@ -28,15 +28,18 @@ fun MethodChannel.Result.notifySitumSdkError(error: Error) {
 
 fun LocationRequest.Builder.fromArguments(args: Map<String, Any>): LocationRequest.Builder {
     if (args.containsKey("buildingIdentifier")) {
-        val buildingIdentifier = args["buildingIdentifier"] as String
-        if (buildingIdentifier.isNotBlank()) {
+        val buildingIdentifier = args["buildingIdentifier"] as String?
+        if (buildingIdentifier.isValidIdentifier() || buildingIdentifier.isGlobalModeIdentifier()) {
             Log.d("SDK>", "Set buildingIdentifier: $buildingIdentifier")
-            buildingIdentifier(buildingIdentifier)
+            buildingIdentifier(buildingIdentifier!!)
         }
     }
     if (args.containsKey("useDeadReckoning")) {
-        Log.d("SDK>", "Set useDeadReckoning: ${args["useDeadReckoning"]}")
-        useDeadReckoning(args["useDeadReckoning"] as Boolean)
+        val useDeadReckoning = args["useDeadReckoning"] as Boolean?
+        if (useDeadReckoning != null) {
+            Log.d("SDK>", "Set useDeadReckoning: ${args["useDeadReckoning"]}")
+            useDeadReckoning(useDeadReckoning)
+        }
     }
     return this
 }
@@ -55,6 +58,19 @@ fun CommunicationManager.fetchBuilding(buildingId: String, handler: Handler<Buil
         override fun onFailure(error: Error) {
             handler.onFailure(error)
         }
-
     })
+}
+
+fun String?.isValidIdentifier(): Boolean {
+    return try {
+        val number = this?.toInt()
+        number != null && number > 0
+    } catch (e: NumberFormatException) {
+        false
+    }
+}
+
+fun String?.isGlobalModeIdentifier(): Boolean {
+    // Respect both Android and iOS
+    return this == "-1" || this?.isBlank() == true
 }

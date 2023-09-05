@@ -122,12 +122,15 @@ class _MyTabsState extends State<MyTabs> {
 
   void _onLoad(MapViewController controller) {
     // Use MapViewController to communicate with the map: methods and callbacks
-    // are available to perform actions and listen to events (e.g., set the user
-    // location, listen to POI selections, intercept navigation options, etc.).
+    // are available to perform actions and listen to events (e.g., listen to
+    // POI selections, intercept navigation options, navigate to POIs, etc.).
     // You need to wait until the map is properly loaded to do so.
     mapViewController = controller;
     controller.onPoiSelected((poiSelectedResult) {
-      debugPrint("WYF> onPoiSelected: ${poiSelectedResult.poi.name}");
+      debugPrint("WYF> Poi SELECTED: ${poiSelectedResult.poi.name}");
+    });
+    controller.onPoiDeselected((poiDeselectedResult) {
+      debugPrint("WYF> Poi DESELECTED: ${poiDeselectedResult.poi.name}");
     });
     controller.onNavigationRequestInterceptor((navigationRequest) {
       debugPrint("WYF> Navigation interceptor: ${navigationRequest.toMap()}");
@@ -292,8 +295,6 @@ class _MyTabsState extends State<MyTabs> {
         Permission.bluetoothConnect,
         Permission.bluetoothScan,
       ]);
-    } else if (Platform.isIOS) {
-      permissions.add(Permission.bluetooth);
     }
     Map<Permission, PermissionStatus> statuses = await permissions.request();
     return statuses.values.every((status) => status.isGranted);

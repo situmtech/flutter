@@ -2,13 +2,12 @@ part of sdk;
 
 /// A data object that allows you to configure the positioning parameters.
 class LocationRequest {
-  final String buildingIdentifier;
-  final bool useDeadReckoning;
-  
+  final String? buildingIdentifier;
+  final bool? useDeadReckoning;
 
   LocationRequest({
-    this.buildingIdentifier = "-1",
-    this.useDeadReckoning = false,
+    this.buildingIdentifier,
+    this.useDeadReckoning,
   });
 
   Map<String, dynamic> toMap() => {
@@ -128,16 +127,21 @@ class NavigationRequest {
     Map<String, dynamic> map = {};
     addToMap('distanceToGoalThreshold', distanceToGoalThreshold, map);
     addToMap('outsideRouteThreshold', outsideRouteThreshold, map);
-    addToMap('distanceToIgnoreFirstIndication', distanceToIgnoreFirstIndication, map);
+    addToMap('distanceToIgnoreFirstIndication', distanceToIgnoreFirstIndication,
+        map);
     // Android vs iOS inconsistency: both distanceToChangeFloorThreshold and
     // distanceToFloorChangeThreshold are necessary.
-    addToMap('distanceToChangeFloorThreshold', distanceToFloorChangeThreshold, map);
-    addToMap('distanceToFloorChangeThreshold', distanceToFloorChangeThreshold, map);
-    addToMap('distanceToChangeIndicationThreshold', distanceToChangeIndicationThreshold, map);
+    addToMap(
+        'distanceToChangeFloorThreshold', distanceToFloorChangeThreshold, map);
+    addToMap(
+        'distanceToFloorChangeThreshold', distanceToFloorChangeThreshold, map);
+    addToMap('distanceToChangeIndicationThreshold',
+        distanceToChangeIndicationThreshold, map);
     addToMap('indicationsInterval', indicationsInterval, map);
     addToMap('timeToFirstIndication', timeToFirstIndication, map);
     addToMap('roundIndicationsStep', roundIndicationsStep, map);
-    addToMap('timeToIgnoreUnexpectedFloorChanges', timeToIgnoreUnexpectedFloorChanges, map);
+    addToMap('timeToIgnoreUnexpectedFloorChanges',
+        timeToIgnoreUnexpectedFloorChanges, map);
     if (ignoreLowQualityLocations != null) {
       map['ignoreLowQualityLocations'] = ignoreLowQualityLocations;
     }
@@ -576,9 +580,7 @@ class PoiCategory extends NamedResource {
 class ConfigurationOptions {
   final bool useRemoteConfig;
 
-  ConfigurationOptions({
-    this.useRemoteConfig = true
-  });
+  ConfigurationOptions({this.useRemoteConfig = true});
 }
 
 class PrefetchOptions {

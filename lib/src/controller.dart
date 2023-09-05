@@ -3,11 +3,13 @@ part of wayfinding;
 /// Controller for [MapView]. This class exposes methods and callbacks.
 class MapViewController {
   OnPoiSelectedCallback? _onPoiSelectedCallback;
+  OnPoiDeselectedCallback? _onPoiDeselectedCallback;
   OnDirectionsRequestInterceptor? _onDirectionsRequestInterceptor;
   OnNavigationRequestInterceptor? _onNavigationRequestInterceptor;
 
-  final Function(MapViewConfiguration) _widgetUpdater;
-  final PlatformWebViewController _webViewController;
+  late Function(MapViewConfiguration) _widgetUpdater;
+  late MapViewCallback _widgetLoadCallback;
+  late PlatformWebViewController _webViewController;
 
   Location? _currentLocation;
   LocationStatus _currentLocationStatus = LocationStatus.STOPPED;
@@ -15,11 +17,7 @@ class MapViewController {
   MapViewController({
     String? situmUser,
     required String situmApiKey,
-    String? apiDomain,
-    required dynamic Function(MapViewConfiguration) widgetUpdater,
-    required PlatformWebViewController webViewController,
-  })  : _webViewController = webViewController,
-        _widgetUpdater = widgetUpdater {
+  }) {
     var situmSdk = SitumSdk();
     // Be sure to initialize, configure and authenticate in our SDK
     // so it can be used in callbacks, etc.
@@ -56,22 +54,60 @@ class MapViewController {
     _widgetUpdater(configuration);
   }
 
-  void _selectPoi(String id, String buildingId) async {
-    // TODO - make public.
+  /// Selects the given POI in the map.
+  void selectPoi(String identifier) async {
+    _sendMessage(WV_MESSAGE_CARTOGRAPHY_SELECT_POI, {"identifier": identifier});
   }
 
-  void _navigateToPoi(String id, String buildingId) async {
-    // TODO - make public.
+  /// Starts navigating to the given POI. You can optionally choose the desired
+  /// [AccessibilityMode] used to calculate the route.
+  void navigateToPoi(
+    String identifier, {
+    AccessibilityMode? accessibilityMode,
+  }) async {
+    dynamic message = {"navigationTo": identifier};
+    if (accessibilityMode != null) {
+      message["type"] = "'${accessibilityMode.name}'";
+    }
+    _sendMessage(WV_MESSAGE_NAVIGATION_START, message);
+  }
+
+  /// Cancels the current navigation, if any.
+  void cancelNavigation() async {
+    _sendMessage(WV_MESSAGE_NAVIGATION_CANCEL, {});
+  }
+
+  /// Sets the UI language based on the given ISO 639-1 code. Checkout the
+  /// [Situm docs](https://situm.com/docs/query-params/) to see the list of
+  /// supported languages.
+  void setLanguage(String lang) async {
+    _sendMessage(WV_MESSAGE_UI_SET_LANGUAGE, "'$lang'");
+  }
+
+  /// Tells the map to keep the camera centered on the user position.
+  void followUser() async {
+    _sendMessage(WV_MESSAGE_CAMERA_FOLLOW_USER, true);
+  }
+
+  /// Stops following the user (see [followUser]).
+  void unfollowUser() async {
+    _sendMessage(WV_MESSAGE_CAMERA_FOLLOW_USER, false);
   }
 
   // WYF internal utils:
 
+  void _notifyMapIsReady() {
+    _widgetLoadCallback(this);
+  }
+
   void _setRoute(
+    String? routeIdentifier,
     String originIdentifier,
     String destinationIdentifier,
     String? routeType,
     SitumRoute situmRoute,
   ) async {
+    situmRoute.rawContent["identifier"] = routeIdentifier;
     situmRoute.rawContent["originIdentifier"] = originIdentifier;
     situmRoute.rawContent["destinationIdentifier"] = destinationIdentifier;
     // The map-viewer waits for an accessibility mode in the "type" attribute
@@ -82,11 +118,12 @@ class MapViewController {
         WV_MESSAGE_DIRECTIONS_UPDATE, jsonEncode(situmRoute.rawContent));
   }
 
-  void _setRouteError(dynamic code) {
+  void _setRouteError(dynamic code, {String? routeIdentifier}) {
     _sendMessage(
         WV_MESSAGE_DIRECTIONS_UPDATE,
         jsonEncode({
           "error": code,
+          "identifier": routeIdentifier,
         }));
   }
 
@@ -125,6 +162,10 @@ class MapViewController {
   // Callbacks:
   void onPoiSelected(OnPoiSelectedCallback callback) {
     _onPoiSelectedCallback = callback;
+  }
+
+  void onPoiDeselected(OnPoiDeselectedCallback callback) {
+    _onPoiDeselectedCallback = callback;
   }
 
   // Directions & Navigation Interceptors:
@@ -184,18 +225,18 @@ class MapViewController {
     _currentLocation = createLocation(arguments);
     dynamic locationMap = _currentLocation!.toMap();
     locationMap["status"] = '"${_currentLocationStatus.name}"';
-    
+
     setCurrentLocation(locationMap);
   }
 
   void _onStatusChanged(arguments) {
-    switch(arguments["statusName"]) {
+    switch (arguments["statusName"]) {
       case "STARTING":
         _currentLocationStatus = LocationStatus.STARTING;
         break;
       case "USER_NOT_IN_BUILDING":
-      // Send the last location with USER_NOT_IN_BUILDING state so map-viewer paints the grey-dot
-      // TODO: make map-viewer react to only location status, and decouple location from its status.
+        // Send the last location with USER_NOT_IN_BUILDING state so map-viewer paints the grey-dot
+        // TODO: make map-viewer react to only location status, and decouple location from its status.
         _currentLocationStatus = LocationStatus.USER_NOT_IN_BUILDING;
         if (_currentLocation != null) {
           dynamic locationMap = _currentLocation?.toMap();
