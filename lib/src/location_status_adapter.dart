@@ -6,7 +6,7 @@ part of sdk;
 /// and giving a common status and behaviour between platforms.
 class LocationStatusAdapter {
   late bool _isAndroid;
-  String? lastStatus;
+  String? _lastStatus;
 
   LocationStatusAdapter() {
     _isAndroid = Platform.isAndroid;
@@ -20,27 +20,32 @@ class LocationStatusAdapter {
   String? _handleAndroidStatus(String status) {
     String? parsedStatus;
     switch (status) {
-      case "USER_NOT_IN_BUILDING":
-        if (shouldNotifyStatus("USER_NOT_IN_BUILDING")) {
-          parsedStatus = "USER_NOT_IN_BUILDING";
-          lastStatus = parsedStatus;
-        }
-        break;
-      case "STOPPED":
-        parsedStatus = "STOPPED";
-        break;
       case "CALCULATING":
-        if (shouldNotifyStatus("CALCULATING")) {
-          parsedStatus = "CALCULATING";
-          lastStatus = parsedStatus;
+      case "USER_NOT_IN_BUILDING":
+        if (shouldNotifyStatus(status)) {
+          parsedStatus = status;
+          _lastStatus = parsedStatus;
         }
+        break;
+      case "AUTO_ENABLE_BLE_FORBIDDEN":
+      case "COMPASS_CALIBRATION_NEEDED":
+      case "COMPASS_CALIBRATION_NOT_NEEDED":
+      case "WIFI_SCAN_THROTTLED":
+      case "TIME_SETTINGS_MANUAL":
+      case "LOCATION_DISABLED":
+      case "BLE_SENSOR_DISABLED_BY_USER":
+      case "BLE_NOT_AVAILABLE":
+      case "ALARM_PERMISSIONS_NEEDED_TO_AVOID_DOZE":
+      case "GEOFENCES_NOT_AVAILABLE":
+      case "GLOBAL_LOCATION_NOT_FOUND":
+      case "STOPPED":
+        parsedStatus = status;
         break;
       // Ignore these following cases for Android:
       //    case "STARTING":
-      //    case "AUTO_ENABLE_BLE_FORBIDDEN":
-      //    case "COMPASS_CALIBRATION_NEEDED":
       //    case "PREPARING_POSITIONING_MODEL":
       //    case "STARTING_DOWNLOADING_POSITIONING_MODEL":
+      //    case "RETRY_DOWNLOAD_POSITIONING_MODEL":
       //    case "PROCESSING_POSITIONING_MODEL":
       //    case "STARTING_POSITIONING":
     }
@@ -52,29 +57,25 @@ class LocationStatusAdapter {
   String? _handleIOSStatus(String status) {
     String? parsedStatus;
     switch (status) {
+      case "COMPASS_CALIBRATION_NEEDED":
       case "CALCULATING":
-        parsedStatus = "CALCULATING";
+      case "STOPPED":
+        parsedStatus = status;
         break;
       case "USER_NOT_IN_BUILDING":
-        if (shouldNotifyStatus("USER_NOT_IN_BUILDING")) {
-          parsedStatus = "USER_NOT_IN_BUILDING";
-          lastStatus = parsedStatus;
+        if (shouldNotifyStatus(status)) {
+          parsedStatus = status;
+          _lastStatus = parsedStatus;
         }
         break;
-      case "STOPPED":
-        parsedStatus = "STOPPED";
-        break;
-      case "STARTING":
-        // Ignore iOS STARTING statuses
-        break;
       // Ignore these following cases for iOS:
-      //  case "COMPASS_CALIBRATION_NEEDED":
+      //  case "STARTING":
     }
 
     return parsedStatus;
   }
 
   bool shouldNotifyStatus(String newStatus) {
-    return newStatus != lastStatus || lastStatus == null;
+    return newStatus != _lastStatus || _lastStatus == null;
   }
 }
