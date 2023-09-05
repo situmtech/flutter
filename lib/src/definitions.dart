@@ -100,7 +100,8 @@ class MapViewConfiguration {
 
   String _getViewerURL() {
     var base = _internalViewerDomain;
-    var query = "apikey=$situmApiKey&domain=$_internalApiDomain&mode=embed";
+    var query =
+        "apikey=$situmApiKey&domain=$_internalApiDomain&mode=embed&global=true";
     if (remoteIdentifier != null) {
       return "$base/id/$remoteIdentifier?$query";
     } else if (buildingIdentifier != null) {
