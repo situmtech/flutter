@@ -363,10 +363,11 @@ class SitumSdk {
 
   void _onStatusChanged(arguments) {
     // Send location status to the _onLocationStatusCallback.
-    String? parsedStatus = _statusAdapter.handleStatus(arguments["statusName"]);
-    arguments["statusName"] = parsedStatus;
-    if (parsedStatus != null) {
-      _onLocationStatusCallback?.call(parsedStatus);
+    String? processedStatus =
+        _statusAdapter.handleStatus(arguments["statusName"]);
+    arguments["statusName"] = processedStatus;
+    if (processedStatus != null) {
+      _onLocationStatusCallback?.call(processedStatus);
     }
   }
 

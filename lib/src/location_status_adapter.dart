@@ -18,13 +18,14 @@ class _LocationStatusAdapter {
 
   // Native Android statuses
   String? _handleAndroidStatus(String status) {
-    String? parsedStatus;
+    String? result;
+
     switch (status) {
       case "CALCULATING":
       case "USER_NOT_IN_BUILDING":
         if (shouldNotifyStatus(status)) {
-          parsedStatus = status;
-          _lastStatus = parsedStatus;
+          result = status;
+          _lastStatus = result;
         }
         break;
       // Ignore these following cases for Android:
@@ -36,8 +37,6 @@ class _LocationStatusAdapter {
       case "STARTING_POSITIONING":
         break;
       // Directly parse the remaining statuses:
-      // case "CALCULATING":
-      // case "USER_NOT_IN_BUILDING":
       // case "AUTO_ENABLE_BLE_FORBIDDEN":
       // case "COMPASS_CALIBRATION_NEEDED":
       // case "COMPASS_CALIBRATION_NOT_NEEDED":
@@ -51,21 +50,21 @@ class _LocationStatusAdapter {
       // case "GLOBAL_LOCATION_NOT_FOUND":
       // case "STOPPED":
       default:
-        parsedStatus = status;
+        result = status;
         break;
     }
 
-    return parsedStatus;
+    return result;
   }
 
   // Native IOS statuses
   String? _handleIOSStatus(String status) {
-    String? parsedStatus;
+    String? result;
     switch (status) {
       case "USER_NOT_IN_BUILDING":
         if (shouldNotifyStatus(status)) {
-          parsedStatus = status;
-          _lastStatus = parsedStatus;
+          result = status;
+          _lastStatus = result;
         }
         break;
       // Ignore STARTING status (Android does not have a similar status).
@@ -74,14 +73,13 @@ class _LocationStatusAdapter {
       // Directly parse the remaining statuses:
       // case "COMPASS_CALIBRATION_NEEDED":
       // case "CALCULATING":
-      // case "USER_NOT_IN_BUILDING":
       // case "STOPPED":
       default:
-        parsedStatus = status;
+        result = status;
         break;
     }
 
-    return parsedStatus;
+    return result;
   }
 
   bool shouldNotifyStatus(String newStatus) {
