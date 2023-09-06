@@ -82,11 +82,14 @@ class _LocationStatusAdapter {
     return result;
   }
 
+  /// Avoid sending USER_NOT_IN_BUILDING or CALCULATING multiple times.
   bool shouldNotifyStatus(String newStatus) {
     return newStatus != _lastStatus || _lastStatus == null;
   }
 
-  void updateLastStatus() {
+  // When some location is received
+  // the status must not be USER_NOT_IN_BUILDING or CALCULATING anymore.
+  void resetLastStatus() {
     _lastStatus = null;
   }
 }

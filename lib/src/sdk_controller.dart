@@ -325,7 +325,9 @@ class SitumSdk {
         _onLocationChanged(call.arguments);
         break;
       case 'onStatusChanged':
-        _onStatusChanged(call.arguments);
+        call.arguments["statusName"] = _onStatusChanged(call.arguments);
+        // statusName will be null when some non-shared native status should be ignored,
+        // so do not delegate this call to MapViewController in these cases.
         if (call.arguments["statusName"] == null) return;
         break;
       case 'onError':
@@ -358,17 +360,20 @@ class SitumSdk {
   void _onLocationChanged(arguments) {
     // Send location to the _onLocationUpdateCallback.
     _onLocationUpdateCallback?.call(createLocation(arguments));
-    _statusAdapter.updateLastStatus();
+    _statusAdapter.resetLastStatus();
   }
 
-  void _onStatusChanged(arguments) {
-    // Send location status to the _onLocationStatusCallback.
+  String? _onStatusChanged(arguments) {
+    // Process the raw native location status
     String? processedStatus =
         _statusAdapter.handleStatus(arguments["statusName"]);
-    arguments["statusName"] = processedStatus;
+
     if (processedStatus != null) {
+      // Send the processed location status to the _onLocationStatusCallback.
       _onLocationStatusCallback?.call(processedStatus);
     }
+
+    return processedStatus;
   }
 
   void _onError(arguments) {
