@@ -79,7 +79,8 @@ class MapViewConfiguration {
 
   String get _internalViewerDomain {
     String finalViewerDomain = viewerDomain;
-    if (!finalViewerDomain.startsWith("https://")) {
+    if (!finalViewerDomain.startsWith("https://") &&
+        !finalViewerDomain.startsWith("http://")) {
       finalViewerDomain = "https://$finalViewerDomain";
     }
     if (finalViewerDomain.endsWith("/")) {
