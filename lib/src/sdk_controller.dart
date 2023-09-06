@@ -326,6 +326,7 @@ class SitumSdk {
         break;
       case 'onStatusChanged':
         _onStatusChanged(call.arguments);
+        if (call.arguments["statusName"] == null) return;
         break;
       case 'onError':
         _onError(call.arguments);
@@ -357,15 +358,16 @@ class SitumSdk {
   void _onLocationChanged(arguments) {
     // Send location to the _onLocationUpdateCallback.
     _onLocationUpdateCallback?.call(createLocation(arguments));
+    _statusAdapter.updateLastStatus();
   }
 
   void _onStatusChanged(arguments) {
     // Send location status to the _onLocationStatusCallback.
-    String? currentLocationStatus =
-        _statusAdapter.handleStatus(arguments["statusName"]);
-    if (currentLocationStatus == null) return;
-
-    _onLocationStatusCallback?.call(currentLocationStatus);
+    String? parsedStatus = _statusAdapter.handleStatus(arguments["statusName"]);
+    arguments["statusName"] = parsedStatus;
+    if (parsedStatus != null) {
+      _onLocationStatusCallback?.call(parsedStatus);
+    }
   }
 
   void _onError(arguments) {
