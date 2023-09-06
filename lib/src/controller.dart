@@ -10,7 +10,7 @@ class MapViewController {
   final PlatformWebViewController _webViewController;
 
   Location? _currentLocation;
-  late String _currentLocationStatus;
+  String? _currentLocationStatus;
 
   MapViewController({
     String? situmUser,
@@ -38,7 +38,9 @@ class MapViewController {
 
   Map<String, dynamic> _addStatusToLocation(Location location) {
     Map<String, dynamic> locationMap = location.toMap();
-    locationMap["status"] = '"$_currentLocationStatus"';
+    if (_currentLocationStatus != null) {
+      locationMap["status"] = '"$_currentLocationStatus"';
+    }
 
     return locationMap;
   }
@@ -184,6 +186,9 @@ class MapViewController {
 
   void _onLocationChanged(arguments) {
     // Send location to the map-viewer.
+    if (_currentLocationStatus == "USER_NOT_IN_BUILDING") {
+      _currentLocationStatus = null;
+    }
     _currentLocation = createLocation(arguments);
     setCurrentLocation(_currentLocation!);
   }
