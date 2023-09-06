@@ -10,7 +10,6 @@ class MapViewController {
   final PlatformWebViewController _webViewController;
 
   Location? _currentLocation;
-  String? _currentLocationStatus;
 
   MapViewController({
     String? situmUser,
@@ -31,18 +30,16 @@ class MapViewController {
     situmSdk.internalSetMethodCallDelegate(_methodCallHandler);
   }
 
-  /// Tells the SitumMap where the user is located at.
+  /// Tells the [MapView] where the user is located at.
   void setCurrentLocation(Location location) {
-    _sendMessage(WV_MESSAGE_LOCATION, _addStatusToLocation(location));
+    _sendMessage(WV_MESSAGE_LOCATION, location.toMap());
   }
 
-  Map<String, dynamic> _addStatusToLocation(Location location) {
+  /// Notifies [MapView] about the new location status received from the SDK.
+  void _setCurrentLocationStatus(Location location, String status) {
     Map<String, dynamic> locationMap = location.toMap();
-    if (_currentLocationStatus != null) {
-      locationMap["status"] = '"$_currentLocationStatus"';
-    }
-
-    return locationMap;
+    locationMap["status"] = '"$status"';
+    _sendMessage(WV_MESSAGE_LOCATION, locationMap);
   }
 
   void onMapViewerMessage(String type, Map<String, dynamic> payload) {
@@ -186,19 +183,15 @@ class MapViewController {
 
   void _onLocationChanged(arguments) {
     // Send location to the map-viewer.
-    if (_currentLocationStatus == "USER_NOT_IN_BUILDING") {
-      _currentLocationStatus = null;
-    }
     _currentLocation = createLocation(arguments);
     setCurrentLocation(_currentLocation!);
   }
 
   void _onStatusChanged(arguments) {
-    _currentLocationStatus = arguments["statusName"];
+    String newStatus = arguments["statusName"];
     if (_currentLocation != null &&
-        (_currentLocationStatus == "STOPPED" ||
-            _currentLocationStatus == "USER_NOT_IN_BUILDING")) {
-      setCurrentLocation(_currentLocation!);
+        (newStatus == "STOPPED" || newStatus == "USER_NOT_IN_BUILDING")) {
+      _setCurrentLocationStatus(_currentLocation!, newStatus);
     }
   }
 

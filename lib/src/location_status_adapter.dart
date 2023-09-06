@@ -23,7 +23,7 @@ class _LocationStatusAdapter {
     switch (status) {
       case "CALCULATING":
       case "USER_NOT_IN_BUILDING":
-        if (shouldNotifyStatus(status)) {
+        if (_shouldNotifyStatus(status)) {
           result = status;
           _lastStatus = result;
         }
@@ -62,7 +62,7 @@ class _LocationStatusAdapter {
     String? result;
     switch (status) {
       case "USER_NOT_IN_BUILDING":
-        if (shouldNotifyStatus(status)) {
+        if (_shouldNotifyStatus(status)) {
           result = status;
           _lastStatus = result;
         }
@@ -83,13 +83,15 @@ class _LocationStatusAdapter {
   }
 
   /// Avoid sending USER_NOT_IN_BUILDING or CALCULATING multiple times.
-  bool shouldNotifyStatus(String newStatus) {
+  bool _shouldNotifyStatus(String newStatus) {
     return newStatus != _lastStatus || _lastStatus == null;
   }
 
   // When some location is received
-  // the status must not be USER_NOT_IN_BUILDING or CALCULATING anymore.
-  void resetLastStatus() {
-    _lastStatus = null;
+  // the status must not be USER_NOT_IN_BUILDING anymore.
+  void resetUserNotInBuilding() {
+    if (_lastStatus == "USER_NOT_IN_BUILDING") {
+      _lastStatus = null;
+    }
   }
 }

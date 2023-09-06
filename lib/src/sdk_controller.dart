@@ -322,13 +322,21 @@ class SitumSdk {
   Future<void> _methodCallHandler(MethodCall call) async {
     switch (call.method) {
       case 'onLocationChanged':
+        // Reset last status stored in case it was USER_NOT_IN_BUILDING
+        // and a new location is received.
+        _statusAdapter.resetUserNotInBuilding();
+
         _onLocationChanged(call.arguments);
         break;
       case 'onStatusChanged':
-        call.arguments["statusName"] = _onStatusChanged(call.arguments);
-        // statusName will be null when some non-shared native status should be ignored,
+        String? processedStatus =
+            _statusAdapter.handleStatus(call.arguments["statusName"]);
+        // statusName will be null when some native status should be ignored,
         // so do not delegate this call to MapViewController in these cases.
-        if (call.arguments["statusName"] == null) return;
+        if (processedStatus == null) return;
+
+        call.arguments["statusName"] = processedStatus;
+        _onStatusChanged(call.arguments);
         break;
       case 'onError':
         _onError(call.arguments);
@@ -360,20 +368,11 @@ class SitumSdk {
   void _onLocationChanged(arguments) {
     // Send location to the _onLocationUpdateCallback.
     _onLocationUpdateCallback?.call(createLocation(arguments));
-    _statusAdapter.resetLastStatus();
   }
 
-  String? _onStatusChanged(arguments) {
-    // Process the raw native location status
-    String? processedStatus =
-        _statusAdapter.handleStatus(arguments["statusName"]);
-
-    if (processedStatus != null) {
-      // Send the processed location status to the _onLocationStatusCallback.
-      _onLocationStatusCallback?.call(processedStatus);
-    }
-
-    return processedStatus;
+  void _onStatusChanged(arguments) {
+    // Send the processed location status to the _onLocationStatusCallback.
+    _onLocationStatusCallback?.call(arguments["statusName"]);
   }
 
   void _onError(arguments) {
