@@ -1,6 +1,6 @@
 part of sdk;
 
-/// [LocationStatusAdapter]
+/// [_LocationStatusAdapter]
 /// This class is in charge of handling the native LocationStatus
 /// that we are recieving from the native SDKs (Android and iOS),
 /// and giving a common status and behaviour between platforms.

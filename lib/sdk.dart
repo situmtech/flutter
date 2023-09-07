@@ -12,6 +12,6 @@ import 'package:flutter/services.dart';
 part 'src/sdk_mapper.dart';
 part 'src/sdk_controller.dart';
 part 'src/sdk_definitions.dart';
-part 'src/location_status_adapter.dart';
+part 'src/adapters/location_status_adapter.dart';
 
 const _CHANNEL_SDK_ID = 'situm.com/flutter_sdk';
