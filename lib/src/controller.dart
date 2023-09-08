@@ -72,6 +72,27 @@ class MapViewController {
     _sendMessage(WV_MESSAGE_NAVIGATION_START, message);
   }
 
+  void navigateToPoint(
+    double lat,
+    double lng,
+    String floorIdentifier, {
+    String? navigationName,
+    AccessibilityMode? accessibilityMode,
+  }) async {
+    dynamic message = {
+      "lat": lat,
+      "lng": lng,
+      "floorIdentifier": floorIdentifier
+    };
+    if (accessibilityMode != null) {
+      message["type"] = accessibilityMode.name;
+    }
+    if (navigationName != null) {
+      message["navigationName"] = navigationName;
+    }
+    _sendMessage(WV_MESSAGE_NAVIGATION_START, jsonEncode(message));
+  }
+
   /// Cancels the current navigation, if any.
   void cancelNavigation() async {
     _sendMessage(WV_MESSAGE_NAVIGATION_CANCEL, {});
