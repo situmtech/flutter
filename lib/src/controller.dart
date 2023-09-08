@@ -72,15 +72,18 @@ class MapViewController {
     _sendMessage(WV_MESSAGE_NAVIGATION_START, message);
   }
 
-    void navigateToPoint(
+  void navigateToPoint(
     double lat,
     double lng,
-    String floorIdentifier,
-     {
+    String floorIdentifier, {
     String? navigationName,
     AccessibilityMode? accessibilityMode,
   }) async {
-    dynamic message = {"lat": lat,"lng": lng,"floorIdentifier": floorIdentifier};
+    dynamic message = {
+      "lat": lat,
+      "lng": lng,
+      "floorIdentifier": floorIdentifier
+    };
     if (accessibilityMode != null) {
       message["type"] = accessibilityMode.name;
     }
