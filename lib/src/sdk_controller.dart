@@ -36,6 +36,8 @@ class SitumSdk {
 
   static final SitumSdk _controller = SitumSdk._internal();
 
+  final _LocationErrorAdapter _errorAdapter = _LocationErrorAdapter();
+
   /// Main entry point for the Situm Flutter SDK. Use [SitumSdk] to start
   /// positioning, calculate routes and fetch resources.
   factory SitumSdk() {
@@ -323,10 +325,18 @@ class SitumSdk {
         _onLocationChanged(call.arguments);
         break;
       case 'onStatusChanged':
-        _onStatusChanged(call.arguments);
+        if (call.arguments["statusName"] == "BLE_SENSOR_DISABLED_BY_USER") {
+          /// Send BLE_SENSOR_DISABLED_BY_USER as nonCritical error by onLocationError()
+          _sendStatusAsError(call);
+        } else {
+          _onStatusChanged(call.arguments);
+        }
         break;
       case 'onError':
-        _onError(call.arguments);
+        Error proccessedError = _errorAdapter.handleError(call.arguments);
+        call.arguments["code"] = proccessedError.code;
+        call.arguments["type"] = proccessedError.type;
+        _onError(proccessedError);
         break;
       case 'onEnteredGeofences':
         _onEnterGeofences(call.arguments);
@@ -362,11 +372,15 @@ class SitumSdk {
     _onLocationStatusCallback?.call(arguments["statusName"]);
   }
 
-  void _onError(arguments) {
-    _onLocationErrorCallback?.call(Error(
-      code: "${arguments['code']}", // Ensure code is a string!
-      message: arguments['message'],
-    ));
+  void _onError(Error proccessedError) {
+    _onLocationErrorCallback?.call(proccessedError);
+  }
+
+  void _sendStatusAsError(call) {
+    call.arguments["code"] = Error.bleDisabledError().code;
+    call.arguments["message"] = Error.bleDisabledError().message;
+    call.arguments["type"] = Error.bleDisabledError().type;
+    _onError(Error.bleDisabledError());
   }
 
   // GEOFENCES:

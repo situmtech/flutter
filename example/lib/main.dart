@@ -165,8 +165,8 @@ class _MyTabsState extends State<MyTabs> {
     situmSdk.onLocationStatus((status) {
       _echo("SDK> STATUS: $status");
     });
-    situmSdk.onLocationError((error) {
-      _echo("SDK> Error: ${error.message}");
+    situmSdk.onLocationError((Error error) {
+      _echo("SDK> Error ${error.code}:\n${error.message}");
     });
     // Set up listener for events on geofences
     situmSdk.onEnterGeofences((geofencesResult) {
@@ -188,11 +188,7 @@ class _MyTabsState extends State<MyTabs> {
   // SDK auxiliary functions
 
   void _requestLocationUpdates() async {
-    var hasPermissions = await _requestPermissions();
-    if (!hasPermissions) {
-      _echo("You need to accept permissions to start positioning.");
-      return;
-    }
+    await _requestPermissions();
     // Start positioning using the native SDK. You will receive location and
     // status updates (as well as possible errors) in the defined callbacks.
     // You don't need to do anything to draw the user's position on the map; the

@@ -591,11 +591,56 @@ class PrefetchOptions {
   });
 }
 
+/// [code] **LOCATION_PERMISSION_DENIED**
+/// type: [ErrorType.critical].
+///
+/// **CAUSE**: Location permissions were not granted yet,
+/// so SDK won't be able to start positioning. The permissions needed to fix this error are:
+///   * ACCESS_FINE_LOCATION (Android)
+///   * NSLocationWhenInUseUsageDescription (iOS) (at least)
+///
+/// [code] **BLUETOOTH_PERMISSION_DENIED**
+/// (Android only)
+/// type: [ErrorType.critical].
+///
+/// **CAUSE**: BLUETOOTH_CONNECT or BLUETOOTH_SCAN are not granted yet,
+/// so SDK won't be able to start positioning.
+///
+/// [code] **BLUETOOTH_SENSOR_DISABLED**
+/// type: [ErrorType.critical] for iOS but [ErrorType.nonCritical] for Android.
+///
+/// **CAUSE**: The bluetooth sensor of the device is off,
+/// so iOS will stop positioning and Android won't give a precise location as with this sensor on.
+///
+/// [code] **LOCATION_SENSOR_DISABLED**
+/// (Android only)
+/// type: [ErrorType.critical].
+///
+/// **CAUSE**: The GPS sensor is disabled, so SDK won't be able to start positioning.
+///
 class Error {
   final String code;
   final String message;
+  final ErrorType type;
 
-  const Error({required this.code, required this.message});
+  const Error({required this.code, required this.message, required this.type});
+
+  static Error bleDisabledError() {
+    return const Error(
+      code: "BLUETOOTH_SENSOR_DISABLED",
+      message:
+          "The bluetooth sensor of the device is off, so SDK won't give a precise location as with this sensor on.",
+      type: ErrorType.nonCritical,
+    );
+  }
+}
+
+enum ErrorType {
+  /// An error that must be fixed to be able to start positioning.
+  critical,
+
+  /// An error that does not stop positioning but should be fixed because limitates our SDK accuracy.
+  nonCritical,
 }
 
 class SitumRoute {
