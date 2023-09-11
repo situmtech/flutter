@@ -334,6 +334,8 @@ class SitumSdk {
         break;
       case 'onError':
         Error proccessedError = _errorAdapter.handleError(call.arguments);
+        // Modify the method call arguments with the processed error
+        // before sending it to the _onLocationErrorCallback and the MapViewController.
         call.arguments["code"] = proccessedError.code;
         call.arguments["type"] = proccessedError.type;
         _onError(proccessedError);
