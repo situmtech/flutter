@@ -14,15 +14,15 @@ class _LocationErrorAdapter {
         arguments["code"] = "LOCATION_PERMISSION_DENIED";
         break;
       case "8002": // LOCATION_DISABLED
-        arguments["code"] = "LOCATION_SENSOR_DISABLED";
+        arguments["code"] = "LOCATION_DISABLED";
         break;
       case "8012": // MISSING_BLUETOOTH_PERMISSION
         arguments["code"] = "BLUETOOTH_PERMISSION_DENIED";
         break;
       case "6": // kSITLocationErrorBluetoothisOff
-        arguments["code"] = "BLUETOOTH_SENSOR_DISABLED";
+        arguments["code"] = "BLUETOOTH_DISABLED";
         processedType = _isAndroid ? ErrorType.nonCritical : ErrorType.critical;
-        // BLUETOOTH_SENSOR_DISABLED is also sent
+        // BLUETOOTH_DISABLED is also sent
         // when BLE_DISABLED_BY_USER (Android) status is received, but with type: nonCritical
         break;
     }

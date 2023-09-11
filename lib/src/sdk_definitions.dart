@@ -606,13 +606,13 @@ class PrefetchOptions {
 /// **CAUSE**: BLUETOOTH_CONNECT or BLUETOOTH_SCAN are not granted yet,
 /// so SDK won't be able to start positioning.
 ///
-/// [code] **BLUETOOTH_SENSOR_DISABLED**
+/// [code] **BLUETOOTH_DISABLED**
 /// type: [ErrorType.critical] for iOS but [ErrorType.nonCritical] for Android.
 ///
 /// **CAUSE**: The bluetooth sensor of the device is off,
 /// so iOS will stop positioning and Android won't give a precise location as with this sensor on.
 ///
-/// [code] **LOCATION_SENSOR_DISABLED**
+/// [code] **LOCATION_DISABLED**
 /// (Android only)
 /// type: [ErrorType.critical].
 ///
@@ -627,7 +627,7 @@ class Error {
 
   static Error bleDisabledError() {
     return const Error(
-      code: "BLUETOOTH_SENSOR_DISABLED",
+      code: "BLUETOOTH_DISABLED",
       message:
           "The bluetooth sensor of the device is off, so SDK won't give a precise location as with this sensor on.",
       type: ErrorType.nonCritical,
