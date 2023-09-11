@@ -613,11 +613,11 @@ class PrefetchOptions {
 /// so iOS will stop positioning and Android won't give a precise location as with this sensor on.
 ///
 /// [code] **LOCATION_DISABLED**
-/// (Android only)
 /// type: [ErrorType.critical].
 ///
-/// **CAUSE**: The GPS sensor is disabled, so SDK won't be able to start positioning.
+/// **CAUSE**: The location service is disabled, so SDK won't be able to start positioning.
 ///
+/// There are other errors that we throw directly as we receive them from [Android](https://developers.situm.com/sdk_documentation/android/javadoc/latest/es/situm/sdk/location/locationmanager.code) and [iOS](https://developers.situm.com/sdk_documentation/ios/documentation/enums/sitlocationerror#/).
 class Error {
   final String code;
   final String message;
