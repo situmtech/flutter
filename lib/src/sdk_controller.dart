@@ -30,6 +30,7 @@ class SitumSdk {
   OnEnteredGeofencesCallback? _onEnteredGeofencesCallback;
   OnExitedGeofencesCallback? _onExitedGeofencesCallback;
 
+  OnNavigationStartCallback? _onNavigationStartCallback;
   OnNavigationFinishedCallback? _onNavigationFinishedCallback;
   OnNavigationProgressCallback? _onNavigationProgressCallback;
   OnNavigationOutOfRouteCallback? _onNavigationOORCallback;
@@ -71,8 +72,8 @@ class SitumSdk {
       await methodChannel.invokeMethod<String>(
         'init',
         <String, dynamic>{
-          'situmUser':
-              "---@situm.com", // Underlying sdk expects to have a non empty, non null and valid email. But is not used anymore.
+          'situmUser': "---@situm.com",
+          // Underlying sdk expects to have a non empty, non null and valid email. But is not used anymore.
           'situmApiKey': situmApiKey,
         },
       );
@@ -126,8 +127,8 @@ class SitumSdk {
     await methodChannel.invokeMethod(
       "setApiKey",
       <String, dynamic>{
-        'situmUser':
-            "---@situm.com", // Underlying sdk expects to have a non empty, non null email. But is not used anymore.
+        'situmUser': "---@situm.com",
+        // Underlying sdk expects to have a non empty, non null email. But is not used anymore.
         'situmApiKey': situmApiKey,
       },
     );
@@ -193,6 +194,13 @@ class SitumSdk {
   /// Stops navigation if running.
   Future<void> stopNavigation() async {
     await methodChannel.invokeMethod("stopNavigation", {});
+  }
+
+  /// Sets a callback that will be notified when the navigation starts.
+  ///
+  /// See [requestNavigation].
+  Future<void> onNavigationStart(OnNavigationStartCallback callback) async {
+    _onNavigationStartCallback = callback;
   }
 
   /// Sets a callback that will be notified when the navigation finishes.
@@ -337,6 +345,12 @@ class SitumSdk {
       case 'onNavigationFinished':
         _onNavigationFinished();
         break;
+      case 'onNavigationStart':
+        _onNavigationStart();
+        break;
+      case 'onNavigationStop':
+        _onNavigationStop();
+        break;
       case 'onNavigationProgress':
         _onNavigationProgress(call.arguments);
         break;
@@ -391,8 +405,16 @@ class SitumSdk {
 
   // NAVIGATION UPDATES:
 
+  void _onNavigationStart() {
+    _onNavigationStartCallback?.call();
+  }
+
+  void _onNavigationStop() {
+    _onNavigationFinishedCallback?.call(NavigationStatus.CANCELLED);
+  }
+
   void _onNavigationFinished() {
-    _onNavigationFinishedCallback?.call();
+    _onNavigationFinishedCallback?.call(NavigationStatus.DESTINATION_REACHED);
   }
 
   void _onNavigationProgress(arguments) {

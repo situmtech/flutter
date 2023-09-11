@@ -149,6 +149,12 @@ class NavigationRequest {
   }
 }
 
+/// Available statuses for navigation callbacks.
+enum NavigationStatus {
+  DESTINATION_REACHED,
+  CANCELLED
+}
+
 /// A location. It can be indoor or outdoor, check isIndoor and isOutdoor.
 /// A valid indoor location has floorIdentifier and cartesianCoordinate.
 class Location {
@@ -628,6 +634,8 @@ typedef OnExitedGeofencesCallback = void Function(
     OnExitedGeofenceResult onExitGeofenceResult);
 
 // Navigation.
-typedef OnNavigationFinishedCallback = void Function();
+// TODO: revisar nomes, con startED ou sin ED.
+typedef OnNavigationStartCallback = void Function();
+typedef OnNavigationFinishedCallback = void Function(NavigationStatus status);
 typedef OnNavigationProgressCallback = void Function(RouteProgress progress);
 typedef OnNavigationOutOfRouteCallback = void Function();
