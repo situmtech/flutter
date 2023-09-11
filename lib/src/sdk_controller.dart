@@ -326,8 +326,9 @@ class SitumSdk {
         break;
       case 'onStatusChanged':
         if (call.arguments["statusName"] == "BLE_SENSOR_DISABLED_BY_USER") {
-          /// Send BLE_SENSOR_DISABLED_BY_USER as nonCritical error by onLocationError()
-          _sendStatusAsError(call);
+          // Send Android BLE_SENSOR_DISABLED_BY_USER as nonCritical error
+          // to the _onLocationErrorCallback and the MapViewController.
+          _sendBleDisabledStatusAsError(call);
         } else {
           _onStatusChanged(call.arguments);
         }
@@ -378,7 +379,7 @@ class SitumSdk {
     _onLocationErrorCallback?.call(proccessedError);
   }
 
-  void _sendStatusAsError(call) {
+  void _sendBleDisabledStatusAsError(call) {
     call.arguments["code"] = Error.bleDisabledError().code;
     call.arguments["message"] = Error.bleDisabledError().message;
     call.arguments["type"] = Error.bleDisabledError().type;
