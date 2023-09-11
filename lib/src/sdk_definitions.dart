@@ -592,30 +592,30 @@ class PrefetchOptions {
 }
 
 /// [code] **LOCATION_PERMISSION_DENIED**
-/// type: [ErrorType.critical].
+/// * type: [ErrorType.critical].
 ///
-/// **CAUSE**: Location permissions were not granted yet,
+/// * **CAUSE**: Location permissions were not granted yet,
 /// so SDK won't be able to start positioning. The permissions needed to fix this error are:
 ///   * ACCESS_FINE_LOCATION (Android)
-///   * NSLocationWhenInUseUsageDescription (iOS) (at least)
+///   * NSLocationWhenInUseUsageDescription (iOS)
 ///
 /// [code] **BLUETOOTH_PERMISSION_DENIED**
-/// (Android only)
-/// type: [ErrorType.critical].
+/// * (Android only)
+/// * type: [ErrorType.critical].
 ///
-/// **CAUSE**: BLUETOOTH_CONNECT or BLUETOOTH_SCAN are not granted yet,
+/// * **CAUSE**: BLUETOOTH_CONNECT or BLUETOOTH_SCAN are not granted yet,
 /// so SDK won't be able to start positioning.
 ///
 /// [code] **BLUETOOTH_DISABLED**
-/// type: [ErrorType.critical] for iOS but [ErrorType.nonCritical] for Android.
+/// * type: [ErrorType.critical] for iOS but [ErrorType.nonCritical] for Android.
 ///
-/// **CAUSE**: The bluetooth sensor of the device is off,
+/// * **CAUSE**: The bluetooth sensor of the device is off,
 /// so iOS will stop positioning and Android won't give a precise location as with this sensor on.
 ///
 /// [code] **LOCATION_DISABLED**
-/// type: [ErrorType.critical].
+/// * type: [ErrorType.critical].
 ///
-/// **CAUSE**: The location service is disabled, so SDK won't be able to start positioning.
+/// * **CAUSE**: The location service is disabled, so SDK won't be able to start positioning.
 ///
 /// There are other errors that we throw directly as we receive them from [Android](https://developers.situm.com/sdk_documentation/android/javadoc/latest/es/situm/sdk/location/locationmanager.code) and [iOS](https://developers.situm.com/sdk_documentation/ios/documentation/enums/sitlocationerror#/).
 class Error {
