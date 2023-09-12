@@ -71,21 +71,23 @@ class MapViewConfiguration {
     required this.situmApiKey,
     this.buildingIdentifier,
     this.remoteIdentifier,
-    this.viewerDomain = "map-viewer.situm.com",
+    viewerDomain,
     this.apiDomain = "dashboard.situm.com",
     this.directionality = TextDirection.ltr,
     this.enableDebugging = false,
-  });
-
-  String get _internalViewerDomain {
-    if (!viewerDomain.startsWith("https://") &&
-        !viewerDomain.startsWith("http://")) {
-      viewerDomain = "https://$viewerDomain";
+  }) {
+    if (viewerDomain != null) {
+      if (!viewerDomain.startsWith("https://") &&
+          !viewerDomain.startsWith("http://")) {
+        viewerDomain = "https://$viewerDomain";
+      }
+      if (viewerDomain.endsWith("/")) {
+        viewerDomain = viewerDomain.substring(0, viewerDomain.length - 1);
+      }
+      this.viewerDomain = viewerDomain;
+    } else {
+      this.viewerDomain = "https://map-viewer.situm.com";
     }
-    if (viewerDomain.endsWith("/")) {
-      viewerDomain.substring(0, viewerDomain.length - 1);
-    }
-    return viewerDomain;
   }
 
   String get _internalApiDomain {
@@ -99,14 +101,13 @@ class MapViewConfiguration {
   }
 
   String _getViewerURL() {
-    var base = _internalViewerDomain;
     var query =
         "apikey=$situmApiKey&domain=$_internalApiDomain&mode=embed&global=true";
     if (remoteIdentifier != null) {
-      return "$base/id/$remoteIdentifier?$query";
+      return "$viewerDomain/id/$remoteIdentifier?$query";
     } else if (buildingIdentifier != null) {
       query = "$query&buildingid=$buildingIdentifier";
-      return "$base/?$query";
+      return "$viewerDomain/?$query";
     }
     throw ArgumentError(
         'Missing configuration: remoteIdentifier or buildingIdentifier must be provided.');
