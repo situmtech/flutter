@@ -45,7 +45,7 @@ class MapViewConfiguration {
   /// Default is [map-viewer.situm.com] (https://map-viewer.situm.com).
   ///
   ///[viewerDomain] should include only the domain (e.g., "map-viewer.situm.com").
-  final String viewerDomain;
+  late final String viewerDomain;
 
   /// A String parameter that allows you to choose the API you will be retrieving
   /// our cartography from. Default is [dashboard.situm.com](https://dashboard.situm.com).
@@ -78,15 +78,14 @@ class MapViewConfiguration {
   });
 
   String get _internalViewerDomain {
-    String finalViewerDomain = viewerDomain;
-    if (!finalViewerDomain.startsWith("https://") &&
-        !finalViewerDomain.startsWith("http://")) {
-      finalViewerDomain = "https://$finalViewerDomain";
+    if (!viewerDomain.startsWith("https://") &&
+        !viewerDomain.startsWith("http://")) {
+      viewerDomain = "https://$viewerDomain";
     }
-    if (finalViewerDomain.endsWith("/")) {
-      finalViewerDomain.substring(0, finalViewerDomain.length - 1);
+    if (viewerDomain.endsWith("/")) {
+      viewerDomain.substring(0, viewerDomain.length - 1);
     }
-    return finalViewerDomain;
+    return viewerDomain;
   }
 
   String get _internalApiDomain {
