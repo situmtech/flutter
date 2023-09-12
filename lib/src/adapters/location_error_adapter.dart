@@ -3,6 +3,8 @@ part of sdk;
 /// This private class adapts the native errors
 /// received from [Android](https://developers.situm.com/sdk_documentation/android/javadoc/latest/es/situm/sdk/location/locationmanager.code) and [iOS](https://developers.situm.com/sdk_documentation/ios/documentation/enums/sitlocationerror#/) and gives back a proccessed hibrid error.
 class _LocationErrorAdapter {
+  // TODO: The error codes might repeat between domains,
+  // so check also the domain when differentiating errors.
   Error handleError(arguments) {
     switch (arguments["code"]) {
       case "8001": // MISSING_LOCATION_PERMISSION

@@ -334,6 +334,9 @@ class SitumSdk {
         }
         break;
       case 'onError':
+        // TODO: We are currently processing only positioning errors,
+        // in some future we might need to differentiate between
+        // navigation errors, communication errors, ...
         Error proccessedError = _errorAdapter.handleError(call.arguments);
         // Modify the method call arguments with the processed error
         // before sending it to the _onLocationErrorCallback and the MapViewController.
