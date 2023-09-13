@@ -123,6 +123,7 @@ class DirectionsMessage {
   final String originIdentifier;
   final String destinationCategory;
   final String destinationIdentifier;
+  final AccessibilityMode? accessibilityMode;
 
   DirectionsMessage({
     required this.buildingIdentifier,
@@ -130,7 +131,8 @@ class DirectionsMessage {
     this.originIdentifier = EMPTY_ID,
     required this.destinationCategory,
     this.destinationIdentifier = EMPTY_ID,
-    this.identifier
+    this.identifier,
+    this.accessibilityMode,
   });
 }
 
@@ -165,3 +167,6 @@ typedef OnDirectionsRequestInterceptor = void Function(
     DirectionsRequest directionsRequest);
 typedef OnNavigationRequestInterceptor = void Function(
     NavigationRequest navigationRequest);
+// Directions callback.
+typedef OnDirectionsRequestedCallback = Function(
+    DirectionsMessage directionsMessage);

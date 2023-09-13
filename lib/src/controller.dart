@@ -6,6 +6,7 @@ class MapViewController {
   OnPoiDeselectedCallback? _onPoiDeselectedCallback;
   OnDirectionsRequestInterceptor? _onDirectionsRequestInterceptor;
   OnNavigationRequestInterceptor? _onNavigationRequestInterceptor;
+  OnDirectionsRequestedCallback? _onDirectionsRequestedCallback;
 
   late Function(MapViewConfiguration) _widgetUpdater;
   late MapViewCallback _widgetLoadCallback;
@@ -72,6 +73,10 @@ class MapViewController {
     _sendMessage(WV_MESSAGE_NAVIGATION_START, message);
   }
 
+  /// Starts navigating to the given coordinates, at the given floor. You can
+  /// optionally choose the desired [AccessibilityMode] used to calculate the
+  /// route. You can also set the name of the destination to be displayed on the
+  /// [MapView].
   void navigateToPoint(
     double lat,
     double lng,
@@ -122,19 +127,16 @@ class MapViewController {
   }
 
   void _setRoute(
-    String? routeIdentifier,
-    String originIdentifier,
-    String destinationIdentifier,
-    String? routeType,
-    SitumRoute situmRoute,
-  ) async {
-    situmRoute.rawContent["identifier"] = routeIdentifier;
-    situmRoute.rawContent["originIdentifier"] = originIdentifier;
-    situmRoute.rawContent["destinationIdentifier"] = destinationIdentifier;
+      DirectionsMessage directionsMessage, SitumRoute situmRoute) async {
+    situmRoute.rawContent["identifier"] = directionsMessage.identifier;
+    situmRoute.rawContent["originIdentifier"] =
+        directionsMessage.originIdentifier;
+    situmRoute.rawContent["destinationIdentifier"] =
+        directionsMessage.destinationIdentifier;
     // The map-viewer waits for an accessibility mode in the "type" attribute
     // of the payload. This is due to internal state management.
-    situmRoute.rawContent["type"] =
-        routeType ?? AccessibilityMode.CHOOSE_SHORTEST;
+    situmRoute.rawContent["type"] = directionsMessage.accessibilityMode?.name ??
+        AccessibilityMode.CHOOSE_SHORTEST;
     _sendMessage(
         WV_MESSAGE_DIRECTIONS_UPDATE, jsonEncode(situmRoute.rawContent));
   }
@@ -181,21 +183,29 @@ class MapViewController {
   }
 
   // Callbacks:
+
+  /// Get notified when a POI is selected.
   void onPoiSelected(OnPoiSelectedCallback callback) {
     _onPoiSelectedCallback = callback;
   }
 
+  /// Get notified when the selected POI is deselected.
   void onPoiDeselected(OnPoiDeselectedCallback callback) {
     _onPoiDeselectedCallback = callback;
   }
 
+  /// Get notified when the user requests a route to any destination.
+  void onDirectionsRequested(OnDirectionsRequestedCallback callback) {
+    _onDirectionsRequestedCallback = callback;
+  }
+
   // Directions & Navigation Interceptors:
 
-  void _onDirectionsRequested(DirectionsRequest directionsRequest) {
+  void _interceptDirectionsRequest(DirectionsRequest directionsRequest) {
     _onDirectionsRequestInterceptor?.call(directionsRequest);
   }
 
-  void _onNavigationRequested(NavigationRequest navigationRequest) {
+  void _interceptNavigationRequest(NavigationRequest navigationRequest) {
     _onNavigationRequestInterceptor?.call(navigationRequest);
   }
 
@@ -205,6 +215,12 @@ class MapViewController {
 
   void onNavigationRequestInterceptor(OnNavigationRequestInterceptor callback) {
     _onNavigationRequestInterceptor = callback;
+  }
+
+  // Directions callback:
+
+  void _notifyDirectionsRequested(DirectionsMessage directionsMessage) {
+    _onDirectionsRequestedCallback?.call(directionsMessage);
   }
 
   // Native SDK callbacks:

@@ -58,17 +58,13 @@ class DirectionsMessageHandler implements MessageHandler {
     var directionsRequest =
         createDirectionsRequest(payload["directionsRequest"]);
     // Send DirectionsOptions so it can be intercepted.
-    mapViewController._onDirectionsRequested(directionsRequest);
+    mapViewController._interceptDirectionsRequest(directionsRequest);
+    // Also notify callbacks.
+    mapViewController._notifyDirectionsRequested(directionsMessage);
     // Calculate route and send it to the web-view.
     try {
       SitumRoute situmRoute = await sdk.requestDirections(directionsRequest);
-      mapViewController._setRoute(
-        directionsMessage.identifier,
-        directionsMessage.originIdentifier,
-        directionsMessage.destinationIdentifier,
-        directionsRequest.accessibilityMode?.name,
-        situmRoute,
-      );
+      mapViewController._setRoute(directionsMessage, situmRoute);
     } on PlatformException catch (e) {
       mapViewController._setRouteError(e.code,
           routeIdentifier: directionsMessage.identifier);
@@ -92,10 +88,10 @@ class NavigationMessageHandler implements MessageHandler {
     var directionsMessage = createDirectionsMessage(payload);
     var directionsRequest =
         createDirectionsRequest(payload["directionsRequest"]);
-    mapViewController._onDirectionsRequested(directionsRequest);
+    mapViewController._interceptDirectionsRequest(directionsRequest);
     var navigationRequest =
         createNavigationRequest(payload["navigationRequest"]);
-    mapViewController._onNavigationRequested(navigationRequest);
+    mapViewController._interceptNavigationRequest(navigationRequest);
     try {
       SitumRoute situmRoute = await sdk.requestNavigation(
         directionsRequest,
