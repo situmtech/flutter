@@ -34,6 +34,8 @@ class SitumSdk {
   OnNavigationProgressCallback? _onNavigationProgressCallback;
   OnNavigationOutOfRouteCallback? _onNavigationOORCallback;
 
+  final _LocationStatusAdapter _statusAdapter = _LocationStatusAdapter();
+
   static final SitumSdk _controller = SitumSdk._internal();
 
   final _LocationErrorAdapter _errorAdapter = _LocationErrorAdapter();
@@ -322,6 +324,10 @@ class SitumSdk {
   Future<void> _methodCallHandler(MethodCall call) async {
     switch (call.method) {
       case 'onLocationChanged':
+        // Reset last status stored in case it was USER_NOT_IN_BUILDING
+        // and a new location is received.
+        _statusAdapter.resetUserNotInBuilding();
+
         _onLocationChanged(call.arguments);
         break;
       case 'onStatusChanged':
@@ -331,6 +337,13 @@ class SitumSdk {
           // NOTE: MapViewController will keep receiving a the status, not the processed error
           _sendBleDisabledStatusAsError();
         } else {
+          String? processedStatus =
+              _statusAdapter.handleStatus(call.arguments["statusName"]);
+          // statusName will be null when some native status should be ignored,
+          // so do not forward this call in these cases.
+          if (processedStatus == null) return;
+
+          call.arguments["statusName"] = processedStatus;
           _onStatusChanged(call.arguments);
         }
         break;
@@ -375,7 +388,7 @@ class SitumSdk {
   }
 
   void _onStatusChanged(arguments) {
-    // Send location status to the _onLocationStatusCallback.
+    // Send the processed location status to the _onLocationStatusCallback.
     _onLocationStatusCallback?.call(arguments["statusName"]);
   }
 

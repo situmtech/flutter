@@ -196,13 +196,6 @@ class Location {
       };
 }
 
-enum LocationStatus {
-  STARTING,
-  CALCULATING,
-  USER_NOT_IN_BUILDING,
-  STOPPED,
-}
-
 class OnEnteredGeofenceResult {
   final List<Geofence> geofences;
 
