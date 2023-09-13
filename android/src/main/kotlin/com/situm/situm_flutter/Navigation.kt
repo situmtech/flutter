@@ -32,29 +32,45 @@ class Navigation private constructor() : NavigationListener {
         }
     }
 
-    fun request(
+    fun requestNavigation(
         directionsRequestArgs: Map<String, Any>,
-        navigationRequestArgs: Map<String, Any>?,
+        navigationRequestArgs: Map<String, Any>,
         result: MethodChannel.Result,
     ) {
-        val navigationRequest = navigationRequestArgs?.let { NavigationRequest.fromMap(it) }
+        val navigationRequest = NavigationRequest.fromMap(navigationRequestArgs)
         val directionsRequest = DirectionsRequest.fromMap(directionsRequestArgs)
         SitumSdk.navigationManager().addNavigationListener(this)
         SitumSdk.navigationManager().requestNavigationUpdates(
             navigationRequest,
             directionsRequest,
-            object : Handler<Route> {
-                override fun onSuccess(route: Route) {
-                    // Both requestDirections and requestNavigation methods will return the
-                    // calculated route.
-                    result.success(route.toMap())
-                }
+            CommonHandler(result) { SitumSdk.navigationManager().removeNavigationListener(this) }
+        )
+    }
 
-                override fun onFailure(error: Error) {
-                    result.notifySitumSdkError(error)
-                    SitumSdk.navigationManager().removeNavigationListener(this@Navigation)
-                }
-            })
+    fun requestDirections(
+        directionsRequestArgs: Map<String, Any>,
+        result: MethodChannel.Result,
+    ) {
+        val directionsRequest = DirectionsRequest.fromMap(directionsRequestArgs)
+        SitumSdk.directionsManager().requestDirections(
+            directionsRequest, CommonHandler(result, null)
+        )
+    }
+
+    // Common handler:
+
+    private class CommonHandler(
+        private val result: MethodChannel.Result,
+        private val onError: (() -> Unit)?
+    ) : Handler<Route> {
+        override fun onSuccess(route: Route) {
+            result.success(route.toMap())
+        }
+
+        override fun onFailure(error: Error) {
+            result.notifySitumSdkError(error)
+            onError?.invoke()
+        }
     }
 
     // Navigation listener:
