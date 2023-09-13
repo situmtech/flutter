@@ -34,6 +34,8 @@ class SitumSdk {
   OnNavigationProgressCallback? _onNavigationProgressCallback;
   OnNavigationOutOfRouteCallback? _onNavigationOORCallback;
 
+  final _LocationStatusAdapter _statusAdapter = _LocationStatusAdapter();
+
   static final SitumSdk _controller = SitumSdk._internal();
 
   /// Main entry point for the Situm Flutter SDK. Use [SitumSdk] to start
@@ -320,9 +322,20 @@ class SitumSdk {
   Future<void> _methodCallHandler(MethodCall call) async {
     switch (call.method) {
       case 'onLocationChanged':
+        // Reset last status stored in case it was USER_NOT_IN_BUILDING
+        // and a new location is received.
+        _statusAdapter.resetUserNotInBuilding();
+
         _onLocationChanged(call.arguments);
         break;
       case 'onStatusChanged':
+        String? processedStatus =
+            _statusAdapter.handleStatus(call.arguments["statusName"]);
+        // statusName will be null when some native status should be ignored,
+        // so do not delegate this call to MapViewController in these cases.
+        if (processedStatus == null) return;
+
+        call.arguments["statusName"] = processedStatus;
         _onStatusChanged(call.arguments);
         break;
       case 'onError':
@@ -358,7 +371,7 @@ class SitumSdk {
   }
 
   void _onStatusChanged(arguments) {
-    // Send location status to the _onLocationStatusCallback.
+    // Send the processed location status to the _onLocationStatusCallback.
     _onLocationStatusCallback?.call(arguments["statusName"]);
   }
 
