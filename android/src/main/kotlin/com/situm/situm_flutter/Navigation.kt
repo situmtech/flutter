@@ -63,12 +63,12 @@ class Navigation private constructor() : NavigationListener {
         channel.invokeMethod("onNavigationStart", route.toMap())
     }
 
-    override fun onStop() {
-        channel.invokeMethod("onNavigationStop", null)
+    override fun onCancellation() {
+        channel.invokeMethod("onNavigationCancellation", null)
     }
 
     override fun onDestinationReached() {
-        channel.invokeMethod("onNavigationFinished", null)
+        channel.invokeMethod("onNavigationDestinationReached", null)
     }
 
     override fun onProgress(progress: NavigationProgress) {

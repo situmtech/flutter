@@ -31,7 +31,8 @@ class SitumSdk {
   OnExitedGeofencesCallback? _onExitedGeofencesCallback;
 
   OnNavigationStartCallback? _onNavigationStartCallback;
-  OnNavigationFinishedCallback? _onNavigationFinishedCallback;
+  OnNavigationDestinationReachedCallback? _onNavigationDestReachedCallback;
+  OnNavigationCancellationCallback? _onNavigationCancellationCallback;
   OnNavigationProgressCallback? _onNavigationProgressCallback;
   OnNavigationOutOfRouteCallback? _onNavigationOORCallback;
 
@@ -203,14 +204,21 @@ class SitumSdk {
     _onNavigationStartCallback = callback;
   }
 
-  /// Sets a callback that will be notified when the navigation finishes.
-  /// This will happen when the user is close to the destination of the current
-  /// route by less than the distanceToGoalThreshold of [NavigationRequest].
+  /// Sets a callback that will be notified when the destination is reached.
+  /// This will happen when the user is close to the destination by less than
+  /// the distanceToGoalThreshold of [NavigationRequest].
   ///
   /// See [requestNavigation].
-  Future<void> onNavigationFinished(
-      OnNavigationFinishedCallback callback) async {
-    _onNavigationFinishedCallback = callback;
+  Future<void> onNavigationDestinationReached(
+      OnNavigationDestinationReachedCallback callback) async {
+    _onNavigationDestReachedCallback = callback;
+  }
+
+  /// Sets a callback that will be notified when the navigation is cancelled.
+  /// This may happen due to user interaction or a call to [stopNavigation].
+  Future<void> onNavigationCancellation(
+      OnNavigationCancellationCallback callback) async {
+    _onNavigationCancellationCallback = callback;
   }
 
   /// Sets a callback that will be notified on every navigation progress.
@@ -342,14 +350,14 @@ class SitumSdk {
       case 'onExitedGeofences':
         _onExitGeofences(call.arguments);
         break;
-      case 'onNavigationFinished':
-        _onNavigationFinished();
+      case 'onNavigationDestinationReached':
+        _onNavigationDestinationReached();
         break;
       case 'onNavigationStart':
-        _onNavigationStart();
+        _onNavigationStart(call.arguments);
         break;
-      case 'onNavigationStop':
-        _onNavigationStop();
+      case 'onNavigationCancellation':
+        _onNavigationCancellation();
         break;
       case 'onNavigationProgress':
         _onNavigationProgress(call.arguments);
@@ -405,20 +413,20 @@ class SitumSdk {
 
   // NAVIGATION UPDATES:
 
-  void _onNavigationStart() {
-    _onNavigationStartCallback?.call();
-  }
-
-  void _onNavigationStop() {
-    _onNavigationFinishedCallback?.call(NavigationStatus.CANCELLED);
-  }
-
-  void _onNavigationFinished() {
-    _onNavigationFinishedCallback?.call(NavigationStatus.DESTINATION_REACHED);
+  void _onNavigationStart(arguments) {
+    _onNavigationStartCallback?.call(SitumRoute(rawContent: arguments));
   }
 
   void _onNavigationProgress(arguments) {
     _onNavigationProgressCallback?.call(RouteProgress(rawContent: arguments));
+  }
+
+  void _onNavigationDestinationReached() {
+    _onNavigationDestReachedCallback?.call();
+  }
+
+  void _onNavigationCancellation() {
+    _onNavigationCancellationCallback?.call();
   }
 
   void _onNavigationOutOfRoute() {

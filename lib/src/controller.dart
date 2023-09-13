@@ -167,7 +167,7 @@ class MapViewController {
         }));
   }
 
-  void _setNavigationFinished() {
+  void _setNavigationDestinationReached() {
     _sendMessage(
         WV_MESSAGE_NAVIGATION_UPDATE,
         jsonEncode({
@@ -222,11 +222,11 @@ class MapViewController {
       case 'onError':
         _onError(call.arguments);
         break;
-      // Navigation finished/progress/OOR callbacks are used by both WYF and
-      // the integrator. If WYF uses them, they will be overwritten. To avoid
-      // that problem, we listen for native calls here.
-      case 'onNavigationFinished':
-        _setNavigationFinished();
+      // Navigation callbacks are used by both WYF and the integrator. If WYF
+      // uses them, they will be overwritten. To avoid that problem, we listen
+      // for native calls here.
+      case 'onNavigationDestinationReached':
+        _setNavigationDestinationReached();
         break;
       case 'onNavigationProgress':
         _setNavigationProgress(RouteProgress(rawContent: call.arguments));
