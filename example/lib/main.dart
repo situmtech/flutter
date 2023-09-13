@@ -188,7 +188,11 @@ class _MyTabsState extends State<MyTabs> {
   // SDK auxiliary functions
 
   void _requestLocationUpdates() async {
-    await _requestPermissions();
+    var hasPermissions = await _requestPermissions();
+    if (!hasPermissions) {
+      _echo("You need to accept permissions to start positioning.");
+      return;
+    }
     // Start positioning using the native SDK. You will receive location and
     // status updates (as well as possible errors) in the defined callbacks.
     // You don't need to do anything to draw the user's position on the map; the
