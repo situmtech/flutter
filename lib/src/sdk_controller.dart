@@ -383,10 +383,11 @@ class SitumSdk {
   }
 
   void _sendBleDisabledStatusAsError(call) {
-    call.arguments["code"] = Error.bleDisabledError().code;
-    call.arguments["message"] = Error.bleDisabledError().message;
-    call.arguments["type"] = Error.bleDisabledError().type;
-    _onError(Error.bleDisabledError());
+    Error bleDisabledError = Error.bleDisabledError();
+    call.arguments["code"] = bleDisabledError.code;
+    call.arguments["message"] = bleDisabledError.message;
+    call.arguments["type"] = bleDisabledError.type;
+    _onError(bleDisabledError);
   }
 
   // GEOFENCES:
