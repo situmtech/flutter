@@ -10,10 +10,16 @@ class LocationRequest {
     this.useDeadReckoning,
   });
 
-  Map<String, dynamic> toMap() => {
-        "buildingIdentifier": buildingIdentifier,
-        "useDeadReckoning": useDeadReckoning,
-      };
+  Map<String, dynamic> toMap() {
+    Map<String, dynamic> map = {};
+    if (buildingIdentifier != null) {
+      map["buildingIdentifier"] = buildingIdentifier;
+    }
+    if (useDeadReckoning != null) {
+      map["useDeadReckoning"] = useDeadReckoning;
+    }
+    return map;
+  }
 }
 
 /// Available accessibility modes used in the [DirectionsRequest].
