@@ -36,6 +36,8 @@ class SitumSdk {
   OnNavigationProgressCallback? _onNavigationProgressCallback;
   OnNavigationOutOfRouteCallback? _onNavigationOORCallback;
 
+  OnDirectionsRequestedCallback? _onDirectionsRequestedCallback;
+
   static final SitumSdk _controller = SitumSdk._internal();
 
   /// Main entry point for the Situm Flutter SDK. Use [SitumSdk] to start
@@ -175,6 +177,7 @@ class SitumSdk {
       DirectionsRequest directionsRequest) async {
     Map response = await methodChannel.invokeMethod(
         'requestDirections', directionsRequest.toMap());
+    _onDirectionsRequestedCallback?.call(directionsRequest);
     return createRoute(response);
   }
 
@@ -236,6 +239,11 @@ class SitumSdk {
   Future<void> onNavigationOutOfRoute(
       OnNavigationOutOfRouteCallback callback) async {
     _onNavigationOORCallback = callback;
+  }
+
+  /// Get notified when the user requests a route to any destination.
+  void onDirectionsRequested(OnDirectionsRequestedCallback callback) {
+    _onDirectionsRequestedCallback = callback;
   }
 
   Future<void> clearCache() async {

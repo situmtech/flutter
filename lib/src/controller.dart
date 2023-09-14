@@ -6,7 +6,6 @@ class MapViewController {
   OnPoiDeselectedCallback? _onPoiDeselectedCallback;
   OnDirectionsRequestInterceptor? _onDirectionsRequestInterceptor;
   OnNavigationRequestInterceptor? _onNavigationRequestInterceptor;
-  OnDirectionsRequestedCallback? _onDirectionsRequestedCallback;
 
   late Function(MapViewConfiguration) _widgetUpdater;
   late MapViewCallback _widgetLoadCallback;
@@ -194,11 +193,6 @@ class MapViewController {
     _onPoiDeselectedCallback = callback;
   }
 
-  /// Get notified when the user requests a route to any destination.
-  void onDirectionsRequested(OnDirectionsRequestedCallback callback) {
-    _onDirectionsRequestedCallback = callback;
-  }
-
   // Directions & Navigation Interceptors:
 
   void _interceptDirectionsRequest(DirectionsRequest directionsRequest) {
@@ -215,12 +209,6 @@ class MapViewController {
 
   void onNavigationRequestInterceptor(OnNavigationRequestInterceptor callback) {
     _onNavigationRequestInterceptor = callback;
-  }
-
-  // Directions callback:
-
-  void _notifyDirectionsRequested(DirectionsMessage directionsMessage) {
-    _onDirectionsRequestedCallback?.call(directionsMessage);
   }
 
   // Native SDK callbacks:

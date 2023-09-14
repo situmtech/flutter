@@ -111,8 +111,6 @@ class MapViewConfiguration {
 }
 
 class DirectionsMessage {
-  static const CATEGORY_POI = "POI";
-  static const CATEGORY_LOCATION = "LOCATION";
   static const EMPTY_ID = "-1";
 
   // Identifier used by the map-viewer on the pre-route UI, where multiple
@@ -167,6 +165,3 @@ typedef OnDirectionsRequestInterceptor = void Function(
     DirectionsRequest directionsRequest);
 typedef OnNavigationRequestInterceptor = void Function(
     NavigationRequest navigationRequest);
-// Directions callback.
-typedef OnDirectionsRequestedCallback = Function(
-    DirectionsMessage directionsMessage);

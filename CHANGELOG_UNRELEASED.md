@@ -3,9 +3,7 @@
 - Added new callbacks to `SitumSdk`:
   - `onNavigationStart` to receive notifications when navigation starts.
   - `onNavigationCancellation` to get notified when a route is cancelled.
-- Added new callback to `MapViewController`:
-  - `onDirectionsRequested` for receiving notifications when the user requests a route to a
-    destination.
+  - `onDirectionsRequested` for receiving notifications when a route is requested.
 
 ### Changed
 - Renamed `onNavigationFinished` as `onNavigationDestinationReached` to

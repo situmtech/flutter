@@ -31,8 +31,24 @@ enum AccessibilityMode {
 
 /// Parameters to request a route.
 class DirectionsRequest {
+  static const CATEGORY_POI = "POI";
+  static const CATEGORY_LOCATION = "LOCATION";
+  static const EMPTY_ID = "-1";
+
   final Point from;
   final Point to;
+
+  /// Identifier of the route destination. Can be [EMPTY_ID] if [destinationCategory] is [CATEGORY_LOCATION].
+  String destinationIdentifier;
+
+  /// Informs us of the type of the destination [Point], which can be a [CATEGORY_POI] or a [CATEGORY_LOCATION].
+  String destinationCategory;
+
+  /// Identifier of the route destination. Can be [EMPTY_ID] if [originCategory] is [CATEGORY_LOCATION].
+  String originIdentifier;
+
+  /// Informs us of the type of the origin [Point], which can be a [CATEGORY_POI] or a [CATEGORY_LOCATION].
+  String originCategory;
   Angle? bearingFrom;
   bool? minimizeFloorChanges;
   AccessibilityMode? accessibilityMode;
@@ -46,6 +62,10 @@ class DirectionsRequest {
     this.bearingFrom,
     this.minimizeFloorChanges,
     this.accessibilityMode,
+    this.destinationIdentifier = EMPTY_ID,
+    this.destinationCategory = CATEGORY_LOCATION,
+    this.originIdentifier = EMPTY_ID,
+    this.originCategory = CATEGORY_LOCATION,
   }) {
     // This buildingId is useful on the native side.
     buildingIdentifier = from.buildingIdentifier;
@@ -634,3 +654,6 @@ typedef OnNavigationDestinationReachedCallback = void Function();
 typedef OnNavigationCancellationCallback = void Function();
 typedef OnNavigationProgressCallback = void Function(RouteProgress progress);
 typedef OnNavigationOutOfRouteCallback = void Function();
+// Directions callback.
+typedef OnDirectionsRequestedCallback = Function(
+    DirectionsRequest directionsRequest);
