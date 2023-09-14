@@ -28,8 +28,10 @@ class _LocationStatusAdapter {
           _lastStatus = result;
         }
         break;
+      case "STOPPED":
+        _lastStatus = null;
+        break;
       // Ignore these following cases for Android:
-      case "STARTING":
       case "PREPARING_POSITIONING_MODEL":
       case "STARTING_DOWNLOADING_POSITIONING_MODEL":
       case "RETRY_DOWNLOAD_POSITIONING_MODEL":
@@ -37,6 +39,7 @@ class _LocationStatusAdapter {
       case "STARTING_POSITIONING":
         break;
       // Directly parse the remaining statuses:
+      // case "STARTING":
       // case "AUTO_ENABLE_BLE_FORBIDDEN":
       // case "COMPASS_CALIBRATION_NEEDED":
       // case "COMPASS_CALIBRATION_NOT_NEEDED":
@@ -67,13 +70,18 @@ class _LocationStatusAdapter {
           _lastStatus = result;
         }
         break;
+      case "STOPPED":
+        _lastStatus = null;
+        break;
+      case "STARTED":
+        result = "STARTING";
+        break;
       // Ignore STARTING status (Android does not have a similar status).
       case "STARTING":
         break;
       // Directly parse the remaining statuses:
       // case "COMPASS_CALIBRATION_NEEDED":
       // case "CALCULATING":
-      // case "STOPPED":
       default:
         result = status;
         break;
