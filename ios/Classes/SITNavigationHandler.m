@@ -36,7 +36,7 @@
 
 - (void)navigationManager:(id<SITNavigationInterface> _Nonnull)navigationManager destinationReachedOnRoute:(SITRoute * _Nonnull)route {
     NSLog(@"Navigation-> Destination Reached");
-    [self.channel invokeMethod:@"onNavigationFinished" arguments: nil];
+    [self.channel invokeMethod:@"onNavigationDestinationReached" arguments: nil];
 }
 
 - (void)navigationManager:(id<SITNavigationInterface> _Nonnull)navigationManager didFailWithError:(NSError * _Nonnull)error {
