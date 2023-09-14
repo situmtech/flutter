@@ -67,7 +67,7 @@ class _LocationStatusAdapter {
 
     switch (status) {
       case "CALCULATING":
-        status = "STARTING";
+        result = "STARTING";
         break;
       case "USER_NOT_IN_BUILDING":
         if (_shouldNotifyStatus(status)) {
