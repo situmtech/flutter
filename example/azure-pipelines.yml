@@ -26,7 +26,7 @@ parameters:
     default: "1"
   - name: REMOTEIDENTIFIER
     type: string
-    default: ""
+    default: "demo"
   - name: MAPVIEWURL
     type: string
     default: "https://map-viewer.situm.com"
