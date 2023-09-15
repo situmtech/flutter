@@ -98,11 +98,11 @@ class MapViewConfiguration {
     var base = _internalViewerDomain;
     var query = "apikey=$situmApiKey&domain=$_internalApiDomain&mode=embed";
 
-    if (remoteIdentifier != null && buildingIdentifier != null) {
+    if (remoteIdentifier?.isNotEmpty == true && buildingIdentifier?.isNotEmpty == true) {
       return "$base/id/$remoteIdentifier?$query&buildingid=$buildingIdentifier";
-    } else if (remoteIdentifier != null) {
+    } else if (remoteIdentifier?.isNotEmpty == true) {
       return "$base/id/$remoteIdentifier?$query";
-    } else if (buildingIdentifier != null) {
+    } else if (buildingIdentifier?.isNotEmpty == true) {
       return "$base/?$query&buildingid=$buildingIdentifier";
     }
     throw ArgumentError(

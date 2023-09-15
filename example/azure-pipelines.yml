@@ -24,6 +24,9 @@ parameters:
   - name: BUILDINGID
     type: string
     default: "1"
+  - name: REMOTEIDENTIFIER
+    type: string
+    default: ""
   - name: MAPVIEWURL
     type: string
     default: "https://map-viewer.situm.com"
@@ -41,6 +44,8 @@ jobs:
               echo "##vso[task.setvariable variable=XAPIEMAIL]$(echo $(XAPIEMAIL_EXAMPLES))"
               echo "##vso[task.setvariable variable=BUILDINGID]$(echo $(BUILDING_ID_EXAMPLES))"
               echo "##vso[task.setvariable variable=MAPVIEWURL]$(echo $(DEFAULT_MAPVIEWURL))"
+              # TODO: add DEFAULT_REMOTEIDENTIFIER to Passwords.
+              echo "##vso[task.setvariable variable=REMOTEIDENTIFIER]$(echo $(DEFAULT_REMOTEIDENTIFIER))"
 
               echo -e "\n[!] I'm a shy step so I don't show any information. You'll see my work in the Configure Credentials step"
             displayName: Configure Automatic run Vars
@@ -51,6 +56,7 @@ jobs:
               echo "##vso[task.setvariable variable=XAPIEMAIL]$(echo ${{ parameters.XAPIEMAIL}})"
               echo "##vso[task.setvariable variable=BUILDINGID]$(echo ${{ parameters.BUILDINGID}})"
               echo "##vso[task.setvariable variable=MAPVIEWURL]$(echo ${{ parameters.MAPVIEWURL}})"
+              echo "##vso[task.setvariable variable=REMOTEIDENTIFIER]$(echo ${{ parameters.REMOTEIDENTIFIER}})"
 
               echo -e "\n[!] I'm a shy step so I don't show any information. You'll see my work in the Configure Credentials step"
             displayName: Configure Manual run Vars
@@ -60,6 +66,7 @@ jobs:
           XAPIKEY: $(XAPIKEY)
           XAPIEMAIL: $(XAPIEMAIL)
           BUILDINGID: $(BUILDINGID)
+          REMOTEIDENTIFIER: $(REMOTEIDENTIFIER)
           MAPVIEWURL: $(MAPVIEWURL)
           system: "Android"
 
@@ -68,6 +75,7 @@ jobs:
           system: $(ubuntuVersion)
           XAPIEMAIL: $(XAPIEMAIL)
           BUILDINGID: $(BUILDINGID)
+          REMOTEIDENTIFIER: $(REMOTEIDENTIFIER)
 
   - job: iOS_app
 
@@ -81,6 +89,8 @@ jobs:
               echo "##vso[task.setvariable variable=XAPIEMAIL]$(echo $(XAPIEMAIL_EXAMPLES))"
               echo "##vso[task.setvariable variable=BUILDINGID]$(echo $(BUILDING_ID_EXAMPLES))"
               echo "##vso[task.setvariable variable=MAPVIEWURL]$(echo $(DEFAULT_MAPVIEWURL))"
+              # TODO: add DEFAULT_REMOTEIDENTIFIER to Passwords.
+              echo "##vso[task.setvariable variable=REMOTEIDENTIFIER]$(echo $(DEFAULT_REMOTEIDENTIFIER))"
 
               echo -e "\n[!] I'm a shy step so I don't show any information. You'll see my work in the Configure Credentials step"
             displayName: Configure Automatic run Vars
@@ -91,6 +101,7 @@ jobs:
               echo "##vso[task.setvariable variable=XAPIEMAIL]$(echo ${{ parameters.XAPIEMAIL}})"
               echo "##vso[task.setvariable variable=BUILDINGID]$(echo ${{ parameters.BUILDINGID}})"
               echo "##vso[task.setvariable variable=MAPVIEWURL]$(echo ${{ parameters.MAPVIEWURL}})"
+              echo "##vso[task.setvariable variable=REMOTEIDENTIFIER]$(echo ${{ parameters.REMOTEIDENTIFIER}})"
 
               echo -e "\n[!] I'm a shy step so I don't show any information. You'll see my work in the Configure Credentials step"
             displayName: Configure Manual run Vars
@@ -100,6 +111,7 @@ jobs:
           XAPIKEY: $(XAPIKEY)
           XAPIEMAIL: $(XAPIEMAIL)
           BUILDINGID: $(BUILDINGID)
+          REMOTEIDENTIFIER: $(REMOTEIDENTIFIER)
           MAPVIEWURL: $(MAPVIEWURL)
           system: "iOS"
 
@@ -108,3 +120,4 @@ jobs:
           system: $(macOSVersion)
           XAPIEMAIL: $(XAPIEMAIL)
           BUILDINGID: $(BUILDINGID)
+          REMOTEIDENTIFIER: $(REMOTEIDENTIFIER)
