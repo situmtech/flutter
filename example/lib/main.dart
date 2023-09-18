@@ -168,27 +168,30 @@ class _MyTabsState extends State<MyTabs> {
             slivers: [
               SliverList(
                 delegate: SliverChildBuilderDelegate(
-                  (context, index) => Row(
-                    children: [
-                      Flexible(
-                        child: Text(
-                          pois[index].name,
-                          overflow: TextOverflow.ellipsis,
+                  (context, index) => Card(
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        ListTile(
+                          title: Text(pois[index].name),
                         ),
-                      ),
-                      TextButton(
-                        onPressed: () => _selectPoi(
-                          pois[index],
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: <Widget>[
+                            TextButton(
+                              child: const Text('Select'),
+                              onPressed: () => _selectPoi(pois[index]),
+                            ),
+                            const SizedBox(width: 8),
+                            TextButton(
+                              child: const Text('Navigate'),
+                              onPressed: () => _navigateToPoi(pois[index]),
+                            ),
+                            const SizedBox(width: 8),
+                          ],
                         ),
-                        child: const Text("Select"),
-                      ),
-                      TextButton(
-                        onPressed: () => _navigateToPoi(
-                          pois[index],
-                        ),
-                        child: const Text("Navigate"),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                   childCount: pois.length,
                 ),
