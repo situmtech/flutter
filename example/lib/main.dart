@@ -34,6 +34,9 @@ class _MyTabsState extends State<MyTabs> {
   late SitumSdk situmSdk;
   int _selectedIndex = 0;
   String currentOutput = "---";
+  List<Poi> pois = [];
+  final textEditingController = TextEditingController();
+  Function? callAfterMapviewLoad;
 
   MapViewController? mapViewController;
 
@@ -126,6 +129,7 @@ class _MyTabsState extends State<MyTabs> {
     // POI selections, intercept navigation options, navigate to POIs, etc.).
     // You need to wait until the map is properly loaded to do so.
     mapViewController = controller;
+    _callAfterMapviewLoad();
     controller.onPoiSelected((poiSelectedResult) {
       debugPrint("WYF> Poi SELECTED: ${poiSelectedResult.poi.name}");
     });
@@ -137,6 +141,108 @@ class _MyTabsState extends State<MyTabs> {
       //   navigationRequest.distanceToGoalThreshold = 10.0;
       //   ...
     });
+  }
+
+  Widget _createPoisTab() {
+    return Column(
+      children: [
+        Row(
+          children: [
+            Flexible(
+              child: TextField(
+                controller: textEditingController,
+                decoration: const InputDecoration(
+                  hintText: 'Building identifier',
+                ),
+                keyboardType: TextInputType.number,
+              ),
+            ),
+            TextButton(
+              onPressed: () => _downloadPois(textEditingController.text),
+              child: const Text("Download POIs"),
+            ),
+          ],
+        ),
+        Expanded(
+          child: CustomScrollView(
+            slivers: [
+              SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) => Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          pois[index].name,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () => _selectPoi(
+                          pois[index],
+                        ),
+                        child: const Text("Select"),
+                      ),
+                      TextButton(
+                        onPressed: () => _navigateToPoi(
+                          pois[index],
+                        ),
+                        child: const Text("Navigate"),
+                      ),
+                    ],
+                  ),
+                  childCount: pois.length,
+                ),
+              )
+            ],
+            scrollDirection: Axis.vertical,
+            shrinkWrap: true,
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _selectPoi(Poi poi) {
+    setState(() {
+      _selectedIndex = 1;
+    });
+    callAfterMapviewLoad = () {
+      mapViewController?.selectPoi(poi.identifier);
+    };
+    if (mapViewController != null) {
+      _callAfterMapviewLoad();
+    }
+  }
+
+  void _callAfterMapviewLoad() {
+    callAfterMapviewLoad?.call();
+    callAfterMapviewLoad = null;
+  }
+
+  void _navigateToPoi(Poi poi) {
+    setState(() {
+      _selectedIndex = 1;
+    });
+    callAfterMapviewLoad = () {
+      mapViewController?.navigateToPoi(poi.identifier);
+    };
+    if (mapViewController != null) {
+      _callAfterMapviewLoad();
+    }
+  }
+
+  void _downloadPois(String buildingIdentifier) async {
+    var poiList = await situmSdk.fetchPoisFromBuilding(buildingIdentifier);
+    setState(() {
+      pois = poiList;
+    });
+  }
+
+  @override
+  void dispose() {
+    // Clean up the controller when the widget is disposed.
+    textEditingController.dispose();
+    super.dispose();
   }
 
   @override
@@ -259,7 +365,7 @@ class _MyTabsState extends State<MyTabs> {
       ),
       body: IndexedStack(
         index: _selectedIndex,
-        children: [_createHomeTab(), _createSitumMapTab()],
+        children: [_createHomeTab(), _createSitumMapTab(), _createPoisTab()],
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
@@ -271,6 +377,10 @@ class _MyTabsState extends State<MyTabs> {
             icon: Icon(Icons.map),
             label: 'Wayfinding',
           ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.point_of_sale),
+            label: 'POI list',
+          )
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.amber[800],
