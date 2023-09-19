@@ -114,6 +114,10 @@ class _MyTabsState extends State<MyTabs> {
           situmApiKey: situmApiKey,
           // Set your building identifier:
           buildingIdentifier: buildingIdentifier,
+          // Your remote identifier, if any:
+          remoteIdentifier: remoteIdentifier,
+          // The viewer domain:
+          viewerDomain: viewerDomain,
         ),
         onLoad: _onLoad,
       ),

@@ -9,6 +9,8 @@ parameters:
     type: string
   - name: MAPVIEWURL
     type: string
+  - name: REMOTEIDENTIFIER
+    type: string
 
 steps:
   - checkout: self
@@ -24,6 +26,7 @@ steps:
       echo -e "\n[+] Credentials:"
       echo -e "\t[+] XAPIEMAIL: ${{ parameters.XAPIEMAIL }}"
       echo -e "\t[+] BUILDINGID: ${{ parameters.BUILDINGID }}"
+      echo -e "\t[+] REMOTEIDENTIFIER: ${{ parameters.REMOTEIDENTIFIER }}"
       echo -e "\t[+] Plugin Version: $pluginVersion"
       echo -e "\t[+] WORKING DIR: $(pwd)"
 
@@ -31,8 +34,8 @@ steps:
       echo -n "const situmUser = \"${{ parameters.XAPIEMAIL }}\";" > lib/config.dart
       echo -n "const situmApiKey = \"${{ parameters.XAPIKEY }}\";" >> lib/config.dart
       echo -n "const buildingIdentifier = \"${{ parameters.BUILDINGID }}\";" >> lib/config.dart
-      echo -n "const googleMapsApiKey = \"$(MAPS_APIKEY_EXAMPLE)\";" >> lib/config.dart
-      echo -n "const mapViewUrl = \"$(MAPVIEWURL)\";" >> lib/config.dart
+      echo -n "const remoteIdentifier = \"${{ parameters.REMOTEIDENTIFIER }}\";" >> lib/config.dart
+      echo -n "const viewerDomain = \"$(MAPVIEWURL)\";" >> lib/config.dart
 
       echo -e "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<resources>\n\t<string name=\"google_api_key\">$(MAPS_APIKEY_EXAMPLE)</string>\n</resources>" > android/app/src/main/res/values/google_api_key.xml
 

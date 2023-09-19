@@ -101,13 +101,15 @@ class MapViewConfiguration {
   }
 
   String _getViewerURL() {
-    var query =
-        "apikey=$situmApiKey&domain=$_internalApiDomain&mode=embed&global=true";
-    if (remoteIdentifier != null) {
-      return "$viewerDomain/id/$remoteIdentifier?$query";
-    } else if (buildingIdentifier != null) {
-      query = "$query&buildingid=$buildingIdentifier";
-      return "$viewerDomain/?$query";
+    var base = viewerDomain;
+    var query = "apikey=$situmApiKey&domain=$_internalApiDomain&mode=embed";
+
+    if (remoteIdentifier?.isNotEmpty == true && buildingIdentifier?.isNotEmpty == true) {
+      return "$base/id/$remoteIdentifier?$query&buildingid=$buildingIdentifier";
+    } else if (remoteIdentifier?.isNotEmpty == true) {
+      return "$base/id/$remoteIdentifier?$query";
+    } else if (buildingIdentifier?.isNotEmpty == true) {
+      return "$base/?$query&buildingid=$buildingIdentifier";
     }
     throw ArgumentError(
         'Missing configuration: remoteIdentifier or buildingIdentifier must be provided.');
