@@ -58,7 +58,7 @@ class _MyTabsState extends State<MyTabs> {
           _sdkButton('Buildings', _fetchBuildings),
           _sdkButton('Building Info', _fetchBuildingInfo),
         ]),
-        _poiSelection(),
+        _poiInteraction(),
         Expanded(
             child: SingleChildScrollView(
                 padding: const EdgeInsets.all(30), child: Text(currentOutput)))
@@ -111,7 +111,7 @@ class _MyTabsState extends State<MyTabs> {
     );
   }
 
-  Card _poiSelection() {
+  Card _poiInteraction() {
     return Card(
       child: Column(
         children: [
@@ -124,13 +124,7 @@ class _MyTabsState extends State<MyTabs> {
                   child: DropdownButton<Poi>(
                     isExpanded: true,
                     value: dropdownValue,
-                    icon: const Icon(Icons.arrow_downward),
                     elevation: 16,
-                    style: const TextStyle(color: Colors.deepPurple),
-                    underline: Container(
-                      height: 2,
-                      color: Colors.deepPurpleAccent,
-                    ),
                     onChanged: (Poi? value) {
                       setState(() {
                         dropdownValue = value!;
