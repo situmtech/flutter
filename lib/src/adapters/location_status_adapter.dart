@@ -19,6 +19,7 @@ class _LocationStatusAdapter {
   // Native Android statuses
   String? _handleAndroidStatus(String status) {
     // Directly parse the remaining statuses:
+    // case "STARTING":
     // case "AUTO_ENABLE_BLE_FORBIDDEN":
     // case "COMPASS_CALIBRATION_NEEDED":
     // case "COMPASS_CALIBRATION_NOT_NEEDED":
@@ -34,16 +35,10 @@ class _LocationStatusAdapter {
     String? result = status;
 
     switch (status) {
-      case "STARTING":
       case "USER_NOT_IN_BUILDING":
-        if (_shouldNotifyStatus(status)) {
-          _lastStatus = result;
-        } else {
-          result = null;
+        if (!_shouldNotifyStatus(status)) {
+          return null;
         }
-        break;
-      case "STOPPED":
-        _lastStatus = null;
         break;
       // Ignore these following cases for Android:
       case "PREPARING_POSITIONING_MODEL":
@@ -52,9 +47,10 @@ class _LocationStatusAdapter {
       case "PROCESSING_POSITIONING_MODEL":
       case "STARTING_POSITIONING":
       case "CALCULATING":
-        result = null;
-        break;
+        return null;
     }
+
+    _lastStatus = result;
 
     return result;
   }
@@ -63,6 +59,7 @@ class _LocationStatusAdapter {
   String? _handleIOSStatus(String status) {
     // Directly parse the remaining statuses:
     // case "COMPASS_CALIBRATION_NEEDED":
+    // case "STOPPED":
     String? result = status;
 
     switch (status) {
@@ -70,25 +67,21 @@ class _LocationStatusAdapter {
         result = "STARTING";
         break;
       case "USER_NOT_IN_BUILDING":
-        if (_shouldNotifyStatus(status)) {
-          _lastStatus = result;
-        } else {
-          result = null;
+        if (!_shouldNotifyStatus(status)) {
+          return null;
         }
-        break;
-      case "STOPPED":
-        _lastStatus = null;
         break;
       // Ignore STARTING status (Android does not have a similar status).
       case "STARTING":
-        result = null;
-        break;
+        return null;
     }
+
+    _lastStatus = result;
 
     return result;
   }
 
-  /// Avoid sending USER_NOT_IN_BUILDING or STARTING multiple times.
+  /// Avoid sending USER_NOT_IN_BUILDING multiple times.
   bool _shouldNotifyStatus(String newStatus) {
     return newStatus != _lastStatus || _lastStatus == null;
   }
@@ -96,8 +89,6 @@ class _LocationStatusAdapter {
   // When some location is received
   // the status must not be USER_NOT_IN_BUILDING anymore.
   void resetUserNotInBuilding() {
-    if (_lastStatus == "USER_NOT_IN_BUILDING") {
-      _lastStatus = null;
-    }
+    _lastStatus = null;
   }
 }
