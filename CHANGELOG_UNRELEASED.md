@@ -1,5 +1,8 @@
 ## Unreleased
 
+### Added
+* New options to select and navigate to a POI in the Home screen
+
 ### Changed
 
 * Improved the method use to handle the native LocationStatus from both platforms. Now LocationStatusAdapter will be in charge of sending common LocationStatus between Android & iOS to map-viewer, so now this will be broadly the positioning statuses flow:

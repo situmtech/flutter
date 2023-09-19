@@ -36,7 +36,7 @@ class _MyTabsState extends State<MyTabs> {
   String currentOutput = "---";
   List<Poi> pois = [];
   Poi? dropdownValue;
-  Function? callAfterMapviewLoad;
+  Function? mapViewLoadAction;
 
   MapViewController? mapViewController;
 
@@ -70,22 +70,7 @@ class _MyTabsState extends State<MyTabs> {
     return Card(
       child: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-            child: Row(
-              children: [
-                Icon(iconData, color: Colors.black45),
-                const SizedBox(width: 16.0),
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 18.0,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-          ),
+          _cardTitle(iconData, title),
           GridView.count(
             physics: const NeverScrollableScrollPhysics(),
             crossAxisCount: 3,
@@ -107,62 +92,61 @@ class _MyTabsState extends State<MyTabs> {
         child: Text(buttonText));
   }
 
+  Padding _cardTitle(IconData iconData, String title) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+      child: Row(
+        children: [
+          Icon(iconData, color: Colors.black45),
+          const SizedBox(width: 16.0),
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 18.0,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Card _poiSelection() {
     return Card(
       child: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-            child: Row(
-              children: const [
-                Icon(Icons.interests, color: Colors.black45),
-                SizedBox(width: 16.0),
-                Text(
-                  "POI Selection",
-                  style: TextStyle(
-                    fontSize: 18.0,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-          ),
+          _cardTitle(Icons.interests, "POI Interaction"),
           Row(
             children: <Widget>[
               Flexible(
-                child: DropdownButton<Poi>(
-                  isExpanded: true,
-                  value: dropdownValue,
-                  icon: const Icon(Icons.arrow_downward),
-                  elevation: 16,
-                  style: const TextStyle(color: Colors.deepPurple),
-                  underline: Container(
-                    height: 2,
-                    color: Colors.deepPurpleAccent,
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: DropdownButton<Poi>(
+                    isExpanded: true,
+                    value: dropdownValue,
+                    icon: const Icon(Icons.arrow_downward),
+                    elevation: 16,
+                    style: const TextStyle(color: Colors.deepPurple),
+                    underline: Container(
+                      height: 2,
+                      color: Colors.deepPurpleAccent,
+                    ),
+                    onChanged: (Poi? value) {
+                      setState(() {
+                        dropdownValue = value!;
+                      });
+                    },
+                    items: pois.map((value) {
+                      return DropdownMenuItem<Poi>(
+                        value: value,
+                        child: Text(value.name),
+                      );
+                    }).toList(),
                   ),
-                  onChanged: (Poi? value) {
-                    setState(() {
-                      dropdownValue = value!;
-                    });
-                  },
-                  items: pois.map((value) {
-                    return DropdownMenuItem<Poi>(
-                      value: value,
-                      child: Text(value.name),
-                    );
-                  }).toList(),
                 ),
               ),
-              TextButton(
-                child: const Text('Select'),
-                onPressed: () => _selectPoi(dropdownValue),
-              ),
-              const SizedBox(width: 8),
-              TextButton(
-                child: const Text('Navigate'),
-                onPressed: () => _navigateToPoi(dropdownValue),
-              ),
-              const SizedBox(width: 8),
+              _sdkButton("Select", (() => _selectPoi(dropdownValue))),
+              _sdkButton("Navigate", (() => _navigateToPoi(dropdownValue))),
             ],
           ),
         ],
@@ -193,7 +177,7 @@ class _MyTabsState extends State<MyTabs> {
     // POI selections, intercept navigation options, navigate to POIs, etc.).
     // You need to wait until the map is properly loaded to do so.
     mapViewController = controller;
-    _callAfterMapviewLoad();
+    _callMapviewLoadAction();
     controller.onPoiSelected((poiSelectedResult) {
       debugPrint("WYF> Poi SELECTED: ${poiSelectedResult.poi.name}");
     });
@@ -214,17 +198,17 @@ class _MyTabsState extends State<MyTabs> {
     setState(() {
       _selectedIndex = 1;
     });
-    callAfterMapviewLoad = () {
+    mapViewLoadAction = () {
       mapViewController?.selectPoi(poi.identifier);
     };
     if (mapViewController != null) {
-      _callAfterMapviewLoad();
+      _callMapviewLoadAction();
     }
   }
 
-  void _callAfterMapviewLoad() {
-    callAfterMapviewLoad?.call();
-    callAfterMapviewLoad = null;
+  void _callMapviewLoadAction() {
+    mapViewLoadAction?.call();
+    mapViewLoadAction = null;
   }
 
   void _navigateToPoi(Poi? poi) {
@@ -234,11 +218,11 @@ class _MyTabsState extends State<MyTabs> {
     setState(() {
       _selectedIndex = 1;
     });
-    callAfterMapviewLoad = () {
+    mapViewLoadAction = () {
       mapViewController?.navigateToPoi(poi.identifier);
     };
     if (mapViewController != null) {
-      _callAfterMapviewLoad();
+      _callMapviewLoadAction();
     }
   }
 
