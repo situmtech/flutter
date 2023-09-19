@@ -35,7 +35,7 @@ class _MyTabsState extends State<MyTabs> {
   int _selectedIndex = 0;
   String currentOutput = "---";
   List<Poi> pois = [];
-  final textEditingController = TextEditingController();
+  Poi? dropdownValue;
   Function? callAfterMapviewLoad;
 
   MapViewController? mapViewController;
@@ -58,6 +58,7 @@ class _MyTabsState extends State<MyTabs> {
           _sdkButton('Buildings', _fetchBuildings),
           _sdkButton('Building Info', _fetchBuildingInfo),
         ]),
+        _poiSelection(),
         Expanded(
             child: SingleChildScrollView(
                 padding: const EdgeInsets.all(30), child: Text(currentOutput)))
@@ -106,6 +107,69 @@ class _MyTabsState extends State<MyTabs> {
         child: Text(buttonText));
   }
 
+  Card _poiSelection() {
+    return Card(
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+            child: Row(
+              children: const [
+                Icon(Icons.interests, color: Colors.black45),
+                SizedBox(width: 16.0),
+                Text(
+                  "POI Selection",
+                  style: TextStyle(
+                    fontSize: 18.0,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Row(
+            children: <Widget>[
+              Flexible(
+                child: DropdownButton<Poi>(
+                  isExpanded: true,
+                  value: dropdownValue,
+                  icon: const Icon(Icons.arrow_downward),
+                  elevation: 16,
+                  style: const TextStyle(color: Colors.deepPurple),
+                  underline: Container(
+                    height: 2,
+                    color: Colors.deepPurpleAccent,
+                  ),
+                  onChanged: (Poi? value) {
+                    setState(() {
+                      dropdownValue = value!;
+                    });
+                  },
+                  items: pois.map((value) {
+                    return DropdownMenuItem<Poi>(
+                      value: value,
+                      child: Text(value.name),
+                    );
+                  }).toList(),
+                ),
+              ),
+              TextButton(
+                child: const Text('Select'),
+                onPressed: () => _selectPoi(dropdownValue),
+              ),
+              const SizedBox(width: 8),
+              TextButton(
+                child: const Text('Navigate'),
+                onPressed: () => _navigateToPoi(dropdownValue),
+              ),
+              const SizedBox(width: 8),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
   // Widget that shows the Situm MapView.
   Widget _createSitumMapTab() {
     return Stack(children: [
@@ -143,69 +207,10 @@ class _MyTabsState extends State<MyTabs> {
     });
   }
 
-  Widget _createPoisTab() {
-    return Column(
-      children: [
-        Row(
-          children: [
-            Flexible(
-              child: TextField(
-                controller: textEditingController,
-                decoration: const InputDecoration(
-                  hintText: 'Building identifier',
-                ),
-                keyboardType: TextInputType.number,
-              ),
-            ),
-            TextButton(
-              onPressed: () => _downloadPois(textEditingController.text),
-              child: const Text("Download POIs"),
-            ),
-          ],
-        ),
-        Expanded(
-          child: CustomScrollView(
-            slivers: [
-              SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) => Card(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        ListTile(
-                          title: Text(pois[index].name),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: <Widget>[
-                            TextButton(
-                              child: const Text('Select'),
-                              onPressed: () => _selectPoi(pois[index]),
-                            ),
-                            const SizedBox(width: 8),
-                            TextButton(
-                              child: const Text('Navigate'),
-                              onPressed: () => _navigateToPoi(pois[index]),
-                            ),
-                            const SizedBox(width: 8),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                  childCount: pois.length,
-                ),
-              )
-            ],
-            scrollDirection: Axis.vertical,
-            shrinkWrap: true,
-          ),
-        ),
-      ],
-    );
-  }
-
-  void _selectPoi(Poi poi) {
+  void _selectPoi(Poi? poi) {
+    if (poi == null) {
+      return;
+    }
     setState(() {
       _selectedIndex = 1;
     });
@@ -222,7 +227,10 @@ class _MyTabsState extends State<MyTabs> {
     callAfterMapviewLoad = null;
   }
 
-  void _navigateToPoi(Poi poi) {
+  void _navigateToPoi(Poi? poi) {
+    if (poi == null) {
+      return;
+    }
     setState(() {
       _selectedIndex = 1;
     });
@@ -238,14 +246,8 @@ class _MyTabsState extends State<MyTabs> {
     var poiList = await situmSdk.fetchPoisFromBuilding(buildingIdentifier);
     setState(() {
       pois = poiList;
+      dropdownValue = pois[0];
     });
-  }
-
-  @override
-  void dispose() {
-    // Clean up the controller when the widget is disposed.
-    textEditingController.dispose();
-    super.dispose();
   }
 
   @override
@@ -284,6 +286,7 @@ class _MyTabsState extends State<MyTabs> {
     situmSdk.onExitGeofences((geofencesResult) {
       _echo("Situm> SDK> Exit geofences: ${geofencesResult.geofences}.");
     });
+    _downloadPois(buildingIdentifier);
     super.initState();
   }
 
@@ -368,7 +371,7 @@ class _MyTabsState extends State<MyTabs> {
       ),
       body: IndexedStack(
         index: _selectedIndex,
-        children: [_createHomeTab(), _createSitumMapTab(), _createPoisTab()],
+        children: [_createHomeTab(), _createSitumMapTab()],
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
@@ -380,10 +383,6 @@ class _MyTabsState extends State<MyTabs> {
             icon: Icon(Icons.map),
             label: 'Wayfinding',
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.point_of_sale),
-            label: 'POI list',
-          )
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.amber[800],
