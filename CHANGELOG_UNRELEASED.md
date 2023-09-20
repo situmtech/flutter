@@ -1,9 +1,11 @@
 ## Unreleased
 
 ### Added
+
 * New **type** parameter for Error class that indicates whether the error received from **onLocationError()** will stop positioning or not.
 
 ### Changed
+
 * Unified some native errors from the Android and iOS SDKs. See new [Error] (https://pub.dev/documentation/situm_flutter/latest/sdk/Error-class.html) class documentation.
 * Improved the method use to handle the native LocationStatus from both platforms. Now LocationStatusAdapter will be in charge of sending common LocationStatus between Android & iOS to map-viewer, so now this will be broadly the positioning statuses flow:
     1. **CALCULATING**. This status will be sent once when the SDK starts calculating the user's location.

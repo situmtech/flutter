@@ -34,6 +34,9 @@ class _MyTabsState extends State<MyTabs> {
   late SitumSdk situmSdk;
   int _selectedIndex = 0;
   String currentOutput = "---";
+  List<Poi> pois = [];
+  Poi? dropdownValue;
+  Function? mapViewLoadAction;
 
   MapViewController? mapViewController;
 
@@ -55,6 +58,7 @@ class _MyTabsState extends State<MyTabs> {
           _sdkButton('Buildings', _fetchBuildings),
           _sdkButton('Building Info', _fetchBuildingInfo),
         ]),
+        _poiInteraction(),
         Expanded(
             child: SingleChildScrollView(
                 padding: const EdgeInsets.all(30), child: Text(currentOutput)))
@@ -66,22 +70,7 @@ class _MyTabsState extends State<MyTabs> {
     return Card(
       child: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
-            child: Row(
-              children: [
-                Icon(iconData, color: Colors.black45),
-                const SizedBox(width: 16.0),
-                Text(
-                  title,
-                  style: const TextStyle(
-                    fontSize: 18.0,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-          ),
+          _cardTitle(iconData, title),
           GridView.count(
             physics: const NeverScrollableScrollPhysics(),
             crossAxisCount: 3,
@@ -103,6 +92,62 @@ class _MyTabsState extends State<MyTabs> {
         child: Text(buttonText));
   }
 
+  Padding _cardTitle(IconData iconData, String title) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+      child: Row(
+        children: [
+          Icon(iconData, color: Colors.black45),
+          const SizedBox(width: 16.0),
+          Text(
+            title,
+            style: const TextStyle(
+              fontSize: 18.0,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Card _poiInteraction() {
+    return Card(
+      child: Column(
+        children: [
+          _cardTitle(Icons.interests, "POI Interaction"),
+          Row(
+            children: <Widget>[
+              Flexible(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: DropdownButton<Poi>(
+                    isExpanded: true,
+                    value: dropdownValue,
+                    elevation: 16,
+                    onChanged: (Poi? value) {
+                      setState(() {
+                        dropdownValue = value!;
+                      });
+                    },
+                    items: pois.map((value) {
+                      return DropdownMenuItem<Poi>(
+                        value: value,
+                        child: Text(value.name),
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ),
+              _sdkButton("Select", (() => _selectPoi(dropdownValue))),
+              _sdkButton("Navigate", (() => _navigateToPoi(dropdownValue))),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
   // Widget that shows the Situm MapView.
   Widget _createSitumMapTab() {
     return Stack(children: [
@@ -114,6 +159,10 @@ class _MyTabsState extends State<MyTabs> {
           situmApiKey: situmApiKey,
           // Set your building identifier:
           buildingIdentifier: buildingIdentifier,
+          // Your remote identifier, if any:
+          remoteIdentifier: remoteIdentifier,
+          // The viewer domain:
+          viewerDomain: viewerDomain,
         ),
         onLoad: _onLoad,
       ),
@@ -126,6 +175,7 @@ class _MyTabsState extends State<MyTabs> {
     // POI selections, intercept navigation options, navigate to POIs, etc.).
     // You need to wait until the map is properly loaded to do so.
     mapViewController = controller;
+    _callMapviewLoadAction();
     controller.onPoiSelected((poiSelectedResult) {
       debugPrint("WYF> Poi SELECTED: ${poiSelectedResult.poi.name}");
     });
@@ -136,6 +186,49 @@ class _MyTabsState extends State<MyTabs> {
       debugPrint("WYF> Navigation interceptor: ${navigationRequest.toMap()}");
       //   navigationRequest.distanceToGoalThreshold = 10.0;
       //   ...
+    });
+  }
+
+  void _selectPoi(Poi? poi) {
+    if (poi == null) {
+      return;
+    }
+    setState(() {
+      _selectedIndex = 1;
+    });
+    mapViewLoadAction = () {
+      mapViewController?.selectPoi(poi.identifier);
+    };
+    if (mapViewController != null) {
+      _callMapviewLoadAction();
+    }
+  }
+
+  void _callMapviewLoadAction() {
+    mapViewLoadAction?.call();
+    mapViewLoadAction = null;
+  }
+
+  void _navigateToPoi(Poi? poi) {
+    if (poi == null) {
+      return;
+    }
+    setState(() {
+      _selectedIndex = 1;
+    });
+    mapViewLoadAction = () {
+      mapViewController?.navigateToPoi(poi.identifier);
+    };
+    if (mapViewController != null) {
+      _callMapviewLoadAction();
+    }
+  }
+
+  void _downloadPois(String buildingIdentifier) async {
+    var poiList = await situmSdk.fetchPoisFromBuilding(buildingIdentifier);
+    setState(() {
+      pois = poiList;
+      dropdownValue = pois[0];
     });
   }
 
@@ -175,6 +268,7 @@ class _MyTabsState extends State<MyTabs> {
     situmSdk.onExitGeofences((geofencesResult) {
       _echo("Situm> SDK> Exit geofences: ${geofencesResult.geofences}.");
     });
+    _downloadPois(buildingIdentifier);
     super.initState();
   }
 
