@@ -17,7 +17,7 @@ class _LocationStatusAdapter {
   }
 
   /// Process native Android statuses.
-  /// This method will do the following to match the Android's SDK behaviour:
+  /// This method will do the following to match the iOS's SDK behaviour:
   /// - Ignore these statuses:
   ///   * PREPARING_POSITIONING_MODEL
   ///   * STARTING_DOWNLOADING_POSITIONING_MODEL
