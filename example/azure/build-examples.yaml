@@ -5,6 +5,8 @@ parameters:
     type: string
   - name: BUILDINGID
     type: string
+  - name: REMOTEIDENTIFIER
+    type: string
   - name: DASHBOARD_URL
     type: string
     default: "https://dashboard.situm.com"
@@ -52,7 +54,7 @@ steps:
           gem install fastlane
   
           dashboard=$(echo ${{ parameters.DASHBOARD_URL }} | awk -F"/" '{print $3}')  
-          export WHATS_NEW="Plugin version: $(pluginVersion), USER: ${{parameters.XAPIEMAIL}}, BUILDINGID: ${{ parameters.BUILDINGID }}, DASHBOARD_URL: $dashboard"
+          export WHATS_NEW="Plugin version: $(pluginVersion), USER: ${{parameters.XAPIEMAIL}}, BUILDINGID: ${{ parameters.BUILDINGID }}, REMOTEIDENTIFIER: ${{ parameters.REMOTEIDENTIFIER }}, DASHBOARD_URL: $dashboard"
           export IPHONEOS_DEPLOYMENT_TARGET=$(IPHONEOS_DEPLOYMENT_TARGET)
           echo -e "\n[+] Setting variables to deploy:"
           echo -e "\t[+] Set WHATS_NEW: $WHATS_NEW"
