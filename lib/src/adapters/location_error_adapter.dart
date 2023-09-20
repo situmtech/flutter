@@ -5,6 +5,10 @@ part of sdk;
 class _LocationErrorAdapter {
   // TODO: The error codes might repeat between domains,
   // so check also the domain when differentiating errors.
+
+  // TODO: Fix BLUETOOTH_DISABLED. Fix native behaviour differences:
+  //  - ANDROID: we only send this error once positioning is started
+  //  - iOS: we send this error before and after starting positioning.
   Error handleError(arguments) {
     switch (arguments["code"]) {
       case "8001": // MISSING_LOCATION_PERMISSION
