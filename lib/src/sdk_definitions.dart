@@ -647,7 +647,6 @@ typedef OnExitedGeofencesCallback = void Function(
     OnExitedGeofenceResult onExitGeofenceResult);
 
 // Navigation.
-// TODO: revisar nomes, con startED ou sin ED.
 typedef OnNavigationStartCallback = void Function(SitumRoute route);
 typedef OnNavigationDestinationReachedCallback = void Function();
 typedef OnNavigationCancellationCallback = void Function();
