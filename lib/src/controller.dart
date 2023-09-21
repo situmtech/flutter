@@ -12,7 +12,6 @@ class MapViewController {
   late PlatformWebViewController _webViewController;
 
   Location? _currentLocation;
-  LocationStatus _currentLocationStatus = LocationStatus.STOPPED;
 
   MapViewController({
     String? situmUser,
@@ -29,8 +28,15 @@ class MapViewController {
     situmSdk.internalSetMethodCallDelegate(_methodCallHandler);
   }
 
-  /// Tells the SitumMap where the user is located at.
-  void setCurrentLocation(dynamic locationMap) {
+  /// Tells the [MapView] where the user is located at.
+  void setCurrentLocation(Location location) {
+    _sendMessage(WV_MESSAGE_LOCATION, location.toMap());
+  }
+
+  /// Notifies [MapView] about the new location status received from the SDK.
+  void _setCurrentLocationStatus(Location location, String status) {
+    Map<String, dynamic> locationMap = location.toMap();
+    locationMap["status"] = '"$status"';
     _sendMessage(WV_MESSAGE_LOCATION, locationMap);
   }
 
@@ -243,38 +249,15 @@ class MapViewController {
 
   void _onLocationChanged(arguments) {
     // Send location to the map-viewer.
-    if (_currentLocationStatus == LocationStatus.USER_NOT_IN_BUILDING) {
-      _currentLocationStatus = LocationStatus.CALCULATING;
-    }
-
     _currentLocation = createLocation(arguments);
-    dynamic locationMap = _currentLocation!.toMap();
-    locationMap["status"] = '"${_currentLocationStatus.name}"';
-
-    setCurrentLocation(locationMap);
+    setCurrentLocation(_currentLocation!);
   }
 
   void _onStatusChanged(arguments) {
-    switch (arguments["statusName"]) {
-      case "STARTING":
-        _currentLocationStatus = LocationStatus.STARTING;
-        break;
-      case "USER_NOT_IN_BUILDING":
-        // Send the last location with USER_NOT_IN_BUILDING state so map-viewer paints the grey-dot
-        // TODO: make map-viewer react to only location status, and decouple location from its status.
-        _currentLocationStatus = LocationStatus.USER_NOT_IN_BUILDING;
-        if (_currentLocation != null) {
-          dynamic locationMap = _currentLocation?.toMap();
-          locationMap["status"] = '"${arguments["statusName"]}"';
-          setCurrentLocation(locationMap);
-        }
-        break;
-      case "STOPPED":
-        _currentLocationStatus = LocationStatus.STOPPED;
-        break;
-      default:
-        _currentLocationStatus = LocationStatus.CALCULATING;
-        break;
+    String newStatus = arguments["statusName"];
+    if (_currentLocation != null &&
+        (newStatus == "STOPPED" || newStatus == "USER_NOT_IN_BUILDING")) {
+      _setCurrentLocationStatus(_currentLocation!, newStatus);
     }
   }
 

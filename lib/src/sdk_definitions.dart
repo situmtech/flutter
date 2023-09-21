@@ -10,10 +10,16 @@ class LocationRequest {
     this.useDeadReckoning,
   });
 
-  Map<String, dynamic> toMap() => {
-        "buildingIdentifier": buildingIdentifier,
-        "useDeadReckoning": useDeadReckoning,
-      };
+  Map<String, dynamic> toMap() {
+    Map<String, dynamic> map = {};
+    if (buildingIdentifier != null) {
+      map["buildingIdentifier"] = buildingIdentifier;
+    }
+    if (useDeadReckoning != null) {
+      map["useDeadReckoning"] = useDeadReckoning;
+    }
+    return map;
+  }
 }
 
 /// Available accessibility modes used in the [DirectionsRequest].
@@ -214,13 +220,6 @@ class Location {
         'hasBearing': hasBearing,
         'timestamp': timestamp,
       };
-}
-
-enum LocationStatus {
-  STARTING,
-  CALCULATING,
-  USER_NOT_IN_BUILDING,
-  STOPPED,
 }
 
 class OnEnteredGeofenceResult {
