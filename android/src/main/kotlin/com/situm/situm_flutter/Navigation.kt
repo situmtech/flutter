@@ -1,22 +1,16 @@
 package com.situm.situm_flutter
 
-import android.util.Log
 import es.situm.sdk.SitumSdk
 import es.situm.sdk.directions.DirectionsRequest
 import es.situm.sdk.error.Error
-import es.situm.sdk.location.LocationListener
-import es.situm.sdk.location.LocationStatus
-import es.situm.sdk.model.cartography.Building
 import es.situm.sdk.model.directions.Route
-import es.situm.sdk.model.location.Location
 import es.situm.sdk.model.navigation.NavigationProgress
 import es.situm.sdk.navigation.NavigationListener
 import es.situm.sdk.navigation.NavigationRequest
 import es.situm.sdk.utils.Handler
 import io.flutter.plugin.common.MethodChannel
 
-class Navigation private constructor(
-) : LocationListener, NavigationListener {
+class Navigation private constructor() : NavigationListener {
 
     private lateinit var channel: MethodChannel
     private lateinit var osHandler: android.os.Handler
@@ -38,83 +32,66 @@ class Navigation private constructor(
         }
     }
 
-    fun request(
-        buildingIdentifier: String,
+    fun requestNavigation(
         directionsRequestArgs: Map<String, Any>,
-        navigationRequestArgs: Map<String, Any>?,
+        navigationRequestArgs: Map<String, Any>,
         result: MethodChannel.Result,
     ) {
-        SitumSdk.navigationManager().removeUpdates()
-        // Directions handler: receive the calculated route.
-        val directionsHandler = object : Handler<Route> {
-            override fun onSuccess(route: Route) {
-                if (navigationRequestArgs != null) {
-                    // If requested, start navigation:
-                    val navigationRequest = NavigationRequest.fromMap(navigationRequestArgs)
-                    navigationRequest.route = route
-                    SitumSdk.navigationManager().requestNavigationUpdates(
-                        navigationRequest, this@Navigation
-                    )
-                }
-                // Both requestDirections and requestNavigation methods will return the calculated
-                // route.
-                result.success(route.toMap())
-            }
-
-            override fun onFailure(error: Error) {
-                result.notifySitumSdkError(error)
-            }
-        }
-        // Handler for fetchBuilding: DirectionsRequest mapper requires a Building object to create
-        // indoor points so we start calling fetchBuilding().
-        val buildingHandler = object : Handler<Building> {
-            override fun onSuccess(building: Building) {
-                val directionsRequest = DirectionsRequest.fromMap(directionsRequestArgs)
-                SitumSdk.directionsManager().requestDirections(directionsRequest, directionsHandler)
-            }
-
-            override fun onFailure(error: Error) {
-                result.notifySitumSdkError(error)
-            }
-        }
-        SitumSdk.communicationManager().fetchBuilding(buildingIdentifier, buildingHandler)
-        // Add this class as location listener to keep navigationManager up to date:
-        SitumSdk.locationManager().addLocationListener(this)
+        val navigationRequest = NavigationRequest.fromMap(navigationRequestArgs)
+        val directionsRequest = DirectionsRequest.fromMap(directionsRequestArgs)
+        SitumSdk.navigationManager().addNavigationListener(this)
+        SitumSdk.navigationManager().requestNavigationUpdates(
+            navigationRequest,
+            directionsRequest,
+            CommonHandler(result) { SitumSdk.navigationManager().removeNavigationListener(this) }
+        )
     }
 
-    // Location listener:
+    fun requestDirections(
+        directionsRequestArgs: Map<String, Any>,
+        result: MethodChannel.Result,
+    ) {
+        val directionsRequest = DirectionsRequest.fromMap(directionsRequestArgs)
+        SitumSdk.directionsManager().requestDirections(
+            directionsRequest, CommonHandler(result, null)
+        )
+    }
 
-    override fun onLocationChanged(location: Location) {
-        if (SitumSdk.navigationManager().isRunning) {
-            SitumSdk.navigationManager().updateWithLocation(location)
+    // Common handler:
+
+    private class CommonHandler(
+        private val result: MethodChannel.Result,
+        private val onError: (() -> Unit)?
+    ) : Handler<Route> {
+        override fun onSuccess(route: Route) {
+            result.success(route.toMap())
         }
-    }
 
-    override fun onStatusChanged(status: LocationStatus) {
-        // TODO!
-    }
-
-    override fun onError(error: Error) {
-        SitumSdk.navigationManager().removeUpdates()
+        override fun onFailure(error: Error) {
+            result.notifySitumSdkError(error)
+            onError?.invoke()
+        }
     }
 
     // Navigation listener:
 
+    override fun onStart(route: Route) {
+        channel.invokeMethod("onNavigationStart", route.toMap())
+    }
+
+    override fun onCancellation() {
+        channel.invokeMethod("onNavigationCancellation", null)
+    }
+
     override fun onDestinationReached() {
-        osHandler.post {
-            channel.invokeMethod("onNavigationFinished", null)
-        }
+        channel.invokeMethod("onNavigationDestinationReached", null)
     }
 
     override fun onProgress(progress: NavigationProgress) {
-        osHandler.post {
-            channel.invokeMethod("onNavigationProgress", progress.toMap())
-        }
+        channel.invokeMethod("onNavigationProgress", progress.toMap())
     }
 
     override fun onUserOutsideRoute() {
-        osHandler.post {
-            channel.invokeMethod("onUserOutsideRoute", null)
-        }
+        channel.invokeMethod("onUserOutsideRoute", null)
     }
 }

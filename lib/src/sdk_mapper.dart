@@ -166,11 +166,16 @@ DirectionsRequest createDirectionsRequest(arguments) {
     ),
     minimizeFloorChanges: arguments["minimizeFloorChanges"],
   );
-  if (arguments["accessibilityMode"] != null) {
-    directionsRequest.accessibilityMode = AccessibilityMode.values.firstWhere(
+  directionsRequest.accessibilityMode = createAccessibilityMode(arguments);
+  return directionsRequest;
+}
+
+AccessibilityMode? createAccessibilityMode(arguments) {
+  if (arguments != null && arguments["accessibilityMode"] != null) {
+    return AccessibilityMode.values.firstWhere(
         (element) => element.name == arguments["accessibilityMode"]);
   }
-  return directionsRequest;
+  return null;
 }
 
 NavigationRequest createNavigationRequest(arguments) => NavigationRequest(

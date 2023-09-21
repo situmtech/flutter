@@ -30,9 +30,13 @@ class SitumSdk {
   OnEnteredGeofencesCallback? _onEnteredGeofencesCallback;
   OnExitedGeofencesCallback? _onExitedGeofencesCallback;
 
-  OnNavigationFinishedCallback? _onNavigationFinishedCallback;
+  OnNavigationStartCallback? _onNavigationStartCallback;
+  OnNavigationDestinationReachedCallback? _onNavigationDestReachedCallback;
+  OnNavigationCancellationCallback? _onNavigationCancellationCallback;
   OnNavigationProgressCallback? _onNavigationProgressCallback;
   OnNavigationOutOfRouteCallback? _onNavigationOORCallback;
+
+  OnDirectionsRequestedCallback? _onDirectionsRequestedCallback;
 
   final _LocationStatusAdapter _statusAdapter = _LocationStatusAdapter();
 
@@ -73,8 +77,8 @@ class SitumSdk {
       await methodChannel.invokeMethod<String>(
         'init',
         <String, dynamic>{
-          'situmUser':
-              "---@situm.com", // Underlying sdk expects to have a non empty, non null and valid email. But is not used anymore.
+          'situmUser': "---@situm.com",
+          // Underlying sdk expects to have a non empty, non null and valid email. But is not used anymore.
           'situmApiKey': situmApiKey,
         },
       );
@@ -128,8 +132,8 @@ class SitumSdk {
     await methodChannel.invokeMethod(
       "setApiKey",
       <String, dynamic>{
-        'situmUser':
-            "---@situm.com", // Underlying sdk expects to have a non empty, non null email. But is not used anymore.
+        'situmUser': "---@situm.com",
+        // Underlying sdk expects to have a non empty, non null email. But is not used anymore.
         'situmApiKey': situmApiKey,
       },
     );
@@ -175,6 +179,7 @@ class SitumSdk {
       DirectionsRequest directionsRequest) async {
     Map response = await methodChannel.invokeMethod(
         'requestDirections', directionsRequest.toMap());
+    _onDirectionsRequestedCallback?.call(directionsRequest);
     return createRoute(response);
   }
 
@@ -197,14 +202,28 @@ class SitumSdk {
     await methodChannel.invokeMethod("stopNavigation", {});
   }
 
-  /// Sets a callback that will be notified when the navigation finishes.
-  /// This will happen when the user is close to the destination of the current
-  /// route by less than the distanceToGoalThreshold of [NavigationRequest].
+  /// Sets a callback that will be notified when the navigation starts.
   ///
   /// See [requestNavigation].
-  Future<void> onNavigationFinished(
-      OnNavigationFinishedCallback callback) async {
-    _onNavigationFinishedCallback = callback;
+  Future<void> onNavigationStart(OnNavigationStartCallback callback) async {
+    _onNavigationStartCallback = callback;
+  }
+
+  /// Sets a callback that will be notified when the destination is reached.
+  /// This will happen when the user is close to the destination by less than
+  /// the distanceToGoalThreshold of [NavigationRequest].
+  ///
+  /// See [requestNavigation].
+  Future<void> onNavigationDestinationReached(
+      OnNavigationDestinationReachedCallback callback) async {
+    _onNavigationDestReachedCallback = callback;
+  }
+
+  /// Sets a callback that will be notified when the navigation is cancelled.
+  /// This may happen due to user interaction or a call to [stopNavigation].
+  Future<void> onNavigationCancellation(
+      OnNavigationCancellationCallback callback) async {
+    _onNavigationCancellationCallback = callback;
   }
 
   /// Sets a callback that will be notified on every navigation progress.
@@ -222,6 +241,11 @@ class SitumSdk {
   Future<void> onNavigationOutOfRoute(
       OnNavigationOutOfRouteCallback callback) async {
     _onNavigationOORCallback = callback;
+  }
+
+  /// Get notified when the user requests a route to any destination.
+  void onDirectionsRequested(OnDirectionsRequestedCallback callback) {
+    _onDirectionsRequestedCallback = callback;
   }
 
   Future<void> clearCache() async {
@@ -347,8 +371,14 @@ class SitumSdk {
       case 'onExitedGeofences':
         _onExitGeofences(call.arguments);
         break;
-      case 'onNavigationFinished':
-        _onNavigationFinished();
+      case 'onNavigationDestinationReached':
+        _onNavigationDestinationReached();
+        break;
+      case 'onNavigationStart':
+        _onNavigationStart(call.arguments);
+        break;
+      case 'onNavigationCancellation':
+        _onNavigationCancellation();
         break;
       case 'onNavigationProgress':
         _onNavigationProgress(call.arguments);
@@ -404,12 +434,20 @@ class SitumSdk {
 
   // NAVIGATION UPDATES:
 
-  void _onNavigationFinished() {
-    _onNavigationFinishedCallback?.call();
+  void _onNavigationStart(arguments) {
+    _onNavigationStartCallback?.call(SitumRoute(rawContent: arguments));
   }
 
   void _onNavigationProgress(arguments) {
     _onNavigationProgressCallback?.call(RouteProgress(rawContent: arguments));
+  }
+
+  void _onNavigationDestinationReached() {
+    _onNavigationDestReachedCallback?.call();
+  }
+
+  void _onNavigationCancellation() {
+    _onNavigationCancellationCallback?.call();
   }
 
   void _onNavigationOutOfRoute() {
