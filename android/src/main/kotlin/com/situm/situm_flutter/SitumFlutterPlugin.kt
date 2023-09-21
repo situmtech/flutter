@@ -110,7 +110,7 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
         startListeningLocationUpdates()
         result.success("DONE")
     }
-    
+
     private fun initSdk(result: MethodChannel.Result) {
         SitumSdk.init(context)
         startListeningLocationUpdates()
@@ -203,18 +203,14 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
     }
 
     private fun requestDirections(arguments: Map<String, Any>, result: MethodChannel.Result) {
-        val buildingIdentifier = arguments["buildingIdentifier"] as String
-        navigation.request(
-            buildingIdentifier, arguments, null, result
-        )
+        navigation.requestDirections(arguments, result)
     }
 
     private fun requestNavigation(arguments: Map<String, Any>, result: MethodChannel.Result) {
-        val buildingIdentifier = arguments["buildingIdentifier"] as String
         val directionsRequestArgs = arguments["directionsRequest"] as Map<String, Any>
         val navigationRequestArgs = arguments["navigationRequest"] as Map<String, Any>
-        navigation.request(
-            buildingIdentifier, directionsRequestArgs, navigationRequestArgs, result
+        navigation.requestNavigation(
+            directionsRequestArgs, navigationRequestArgs, result
         )
     }
 

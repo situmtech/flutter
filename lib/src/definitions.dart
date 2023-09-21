@@ -117,8 +117,6 @@ class MapViewConfiguration {
 }
 
 class DirectionsMessage {
-  static const CATEGORY_POI = "POI";
-  static const CATEGORY_LOCATION = "LOCATION";
   static const EMPTY_ID = "-1";
 
   // Identifier used by the map-viewer on the pre-route UI, where multiple
@@ -129,14 +127,17 @@ class DirectionsMessage {
   final String originIdentifier;
   final String destinationCategory;
   final String destinationIdentifier;
+  final AccessibilityMode? accessibilityMode;
 
-  DirectionsMessage(
-      {required this.buildingIdentifier,
-      required this.originCategory,
-      this.originIdentifier = EMPTY_ID,
-      required this.destinationCategory,
-      this.destinationIdentifier = EMPTY_ID,
-      this.identifier});
+  DirectionsMessage({
+    required this.buildingIdentifier,
+    required this.originCategory,
+    this.originIdentifier = EMPTY_ID,
+    required this.destinationCategory,
+    this.destinationIdentifier = EMPTY_ID,
+    this.identifier,
+    this.accessibilityMode,
+  });
 }
 
 class OnPoiSelectedResult {
