@@ -7,8 +7,14 @@ class _LocationErrorAdapter {
   // so check also the domain when differentiating errors.
 
   // TODO: Fix BLUETOOTH_DISABLED. Fix native behaviour differences:
-  //  - ANDROID: we only send this error once positioning is started
-  //  - iOS: we send this error before and after starting positioning.
+  //  - ANDROID: we only send this error once positioning is started. In case we start positioning with this sensor OFF, we would not notify it.
+  //  - ANDROID: we only send this error in building mode, global mode not supported.
+  //  - ANDROID keeps positioning after this status, iOS stops the positioning.
+  //  - Should we stop positioning when useBle=true or a nonCritical error is enough?
+
+  // TODO: Fix LOCATION_DISABLED. Fix native behaviour differences:
+  //  - ANDROID: we only send this error before starting positioning.
+
   Error handleError(arguments) {
     switch (arguments["code"]) {
       case "8001": // MISSING_LOCATION_PERMISSION
