@@ -18,13 +18,7 @@ class _LocationStatusAdapter {
 
   /// Process native Android statuses.
   /// This method will do the following to match the iOS's SDK behaviour:
-  /// - Ignore these statuses:
-  ///   * PREPARING_POSITIONING_MODEL
-  ///   * START_DOWNLOADING_POSITIONING_MODEL
-  ///   * RETRY_DOWNLOAD_POSITIONING_MODEL
-  ///   * PROCESSING_POSITIONING_MODEL
-  ///   * STARTING_POSITIONING
-  ///   * CALCULATING
+  /// - Ignore CALCULATING and some other verbose statuses when fetching the building model.
   /// - Only send USER_NOT_IN_BUILDING once.
   String? _handleAndroidStatus(String status) {
     // Directly parse these statuses:
