@@ -42,6 +42,8 @@ class SitumSdk {
 
   static final SitumSdk _controller = SitumSdk._internal();
 
+  final _LocationErrorAdapter _errorAdapter = _LocationErrorAdapter();
+
   /// Main entry point for the Situm Flutter SDK. Use [SitumSdk] to start
   /// positioning, calculate routes and fetch resources.
   factory SitumSdk() {
@@ -353,17 +355,32 @@ class SitumSdk {
         _onLocationChanged(call.arguments);
         break;
       case 'onStatusChanged':
-        String? processedStatus =
-            _statusAdapter.handleStatus(call.arguments["statusName"]);
-        // statusName will be null when some native status should be ignored,
-        // so do not delegate this call to MapViewController in these cases.
-        if (processedStatus == null) return;
+        if (call.arguments["statusName"] == "BLE_SENSOR_DISABLED_BY_USER") {
+          // Send Android BLE_SENSOR_DISABLED_BY_USER as nonCritical error
+          // to the _onLocationErrorCallback.
+          // NOTE: MapViewController will keep receiving a the status, not the processed error
+          _sendBleDisabledStatusAsError();
+        } else {
+          String? processedStatus =
+              _statusAdapter.handleStatus(call.arguments["statusName"]);
+          // statusName will be null when some native status should be ignored,
+          // so do not forward this call in these cases.
+          if (processedStatus == null) return;
 
-        call.arguments["statusName"] = processedStatus;
-        _onStatusChanged(call.arguments);
+          call.arguments["statusName"] = processedStatus;
+          _onStatusChanged(call.arguments);
+        }
         break;
       case 'onError':
-        _onError(call.arguments);
+        // TODO: We are currently processing only positioning errors,
+        // in some future we might need to differentiate between
+        // navigation errors, communication errors, ...
+        Error proccessedError = _errorAdapter.handleError(call.arguments);
+        // Modify the method call arguments with the processed error
+        // before sending it to the _onLocationErrorCallback and the MapViewController.
+        call.arguments["code"] = proccessedError.code;
+        call.arguments["type"] = proccessedError.type;
+        _onError(proccessedError);
         break;
       case 'onEnteredGeofences':
         _onEnterGeofences(call.arguments);
@@ -405,11 +422,12 @@ class SitumSdk {
     _onLocationStatusCallback?.call(arguments["statusName"]);
   }
 
-  void _onError(arguments) {
-    _onLocationErrorCallback?.call(Error(
-      code: "${arguments['code']}", // Ensure code is a string!
-      message: arguments['message'],
-    ));
+  void _onError(Error proccessedError) {
+    _onLocationErrorCallback?.call(proccessedError);
+  }
+
+  void _sendBleDisabledStatusAsError() {
+    _onLocationErrorCallback?.call(Error.bleDisabledError());
   }
 
   // GEOFENCES:
