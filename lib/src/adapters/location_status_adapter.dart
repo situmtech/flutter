@@ -18,13 +18,7 @@ class _LocationStatusAdapter {
 
   /// Process native Android statuses.
   /// This method will do the following to match the iOS's SDK behaviour:
-  /// - Ignore these statuses:
-  ///   * PREPARING_POSITIONING_MODEL
-  ///   * STARTING_DOWNLOADING_POSITIONING_MODEL
-  ///   * RETRY_DOWNLOAD_POSITIONING_MODEL
-  ///   * PROCESSING_POSITIONING_MODEL
-  ///   * STARTING_POSITIONING
-  ///   * CALCULATING
+  /// - Ignore CALCULATING and some other verbose statuses when fetching the building model.
   /// - Only send USER_NOT_IN_BUILDING once.
   String? _handleAndroidStatus(String status) {
     // Directly parse these statuses:
@@ -35,7 +29,6 @@ class _LocationStatusAdapter {
     //  - WIFI_SCAN_THROTTLED
     //  - TIME_SETTINGS_MANUAL
     //  - LOCATION_DISABLED
-    //  - BLE_SENSOR_DISABLED_BY_USER
     //  - BLE_NOT_AVAILABLE
     //  - ALARM_PERMISSIONS_NEEDED_TO_AVOID_DOZE
     //  - GEOFENCES_NOT_AVAILABLE
@@ -50,7 +43,7 @@ class _LocationStatusAdapter {
         }
         break;
       case "PREPARING_POSITIONING_MODEL":
-      case "STARTING_DOWNLOADING_POSITIONING_MODEL":
+      case "START_DOWNLOADING_POSITIONING_MODEL":
       case "RETRY_DOWNLOAD_POSITIONING_MODEL":
       case "PROCESSING_POSITIONING_MODEL":
       case "STARTING_POSITIONING":
