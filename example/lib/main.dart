@@ -187,6 +187,7 @@ class _MyTabsState extends State<MyTabs> {
       //   navigationRequest.distanceToGoalThreshold = 10.0;
       //   ...
     });
+    controller.followUser();
   }
 
   void _selectPoi(Poi? poi) {
