@@ -89,11 +89,9 @@ class _MapViewState extends State<MapView> {
         },
       ))
       ..addJavaScriptChannel(JavaScriptChannelParams(
-        name: "Flutter",
+        name: OFFLINE_CHANNEL,
         onMessageReceived: (JavaScriptMessage message) {
-          debugPrint("message received: ${message.message}");
-          controller.loadRequest(LoadRequestParams(
-              uri: Uri.parse(mapViewConfiguration._getViewerURL())));
+          _loadWithConfig(widget.configuration);
         },
       ))
       ..setOnPlatformPermissionRequest(
