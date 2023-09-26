@@ -33,7 +33,6 @@ part 'src/situm_map_view.dart';
 
 const WV_CHANNEL = "ReactNativeWebView";
 const OFFLINE_CHANNEL = "OfflineChannel";
-const NO_CONNECTION = -2;
 
 // Events from map-viewer:
 const WV_MESSAGE_DIRECTIONS_REQUESTED = "directions.requested";

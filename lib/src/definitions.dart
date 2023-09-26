@@ -104,7 +104,8 @@ class MapViewConfiguration {
     var base = viewerDomain;
     var query = "apikey=$situmApiKey&domain=$_internalApiDomain&mode=embed";
 
-    if (remoteIdentifier?.isNotEmpty == true && buildingIdentifier?.isNotEmpty == true) {
+    if (remoteIdentifier?.isNotEmpty == true &&
+        buildingIdentifier?.isNotEmpty == true) {
       return "$base/id/$remoteIdentifier?$query&buildingid=$buildingIdentifier";
     } else if (remoteIdentifier?.isNotEmpty == true) {
       return "$base/id/$remoteIdentifier?$query";
@@ -171,3 +172,18 @@ typedef OnDirectionsRequestInterceptor = void Function(
     DirectionsRequest directionsRequest);
 typedef OnNavigationRequestInterceptor = void Function(
     NavigationRequest navigationRequest);
+
+// Connection errors
+class ConnectionErrors {
+  static const ANDROID_NO_CONNECTION = -2;
+  static const ANDROID_SOCKET_NOT_CONNECTED = -6;
+  static const IOS_NO_CONNECTION = -1009;
+  static const IOS_HOSTNAME_NOT_RESOLVED = -1003;
+
+  static const List<int> values = [
+    ANDROID_NO_CONNECTION,
+    ANDROID_SOCKET_NOT_CONNECTED,
+    IOS_NO_CONNECTION,
+    IOS_HOSTNAME_NOT_RESOLVED
+  ];
+}
