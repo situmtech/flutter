@@ -66,7 +66,7 @@ class _MapViewState extends State<MapView> {
                 errorType: ${error.errorType}
                 isForMainFrame: ${error.isForMainFrame}
             ''');
-            if (error.errorCode == -2) {
+            if (error.errorCode == NO_CONNECTION) {
               controller.loadFlutterAsset(
                   "packages/situm_flutter/html/retry_screen.html");
             }
