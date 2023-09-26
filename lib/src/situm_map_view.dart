@@ -66,6 +66,10 @@ class _MapViewState extends State<MapView> {
                 errorType: ${error.errorType}
                 isForMainFrame: ${error.isForMainFrame}
             ''');
+            if (error.errorCode == -2) {
+              controller.loadFlutterAsset(
+                  "packages/situm_flutter/html/retry_screen.html");
+            }
           })
           ..setOnNavigationRequest((dynamic request) {
             if (request.url.startsWith(mapViewConfiguration.viewerDomain)) {
@@ -82,6 +86,14 @@ class _MapViewState extends State<MapView> {
         onMessageReceived: (JavaScriptMessage message) {
           Map<String, dynamic> map = jsonDecode(message.message);
           wyfController?.onMapViewerMessage(map["type"], map["payload"] ?? {});
+        },
+      ))
+      ..addJavaScriptChannel(JavaScriptChannelParams(
+        name: "Flutter",
+        onMessageReceived: (JavaScriptMessage message) {
+          debugPrint("message received: ${message.message}");
+          controller.loadRequest(LoadRequestParams(
+              uri: Uri.parse(mapViewConfiguration._getViewerURL())));
         },
       ))
       ..setOnPlatformPermissionRequest(
@@ -122,8 +134,8 @@ class _MapViewState extends State<MapView> {
 
   void _onMapPageLoaded(String url) {
     wyfController ??= MapViewController(
-        situmApiKey: mapViewConfiguration.situmApiKey,
-      );
+      situmApiKey: mapViewConfiguration.situmApiKey,
+    );
     wyfController!._widgetUpdater = _loadWithConfig;
     wyfController!._widgetLoadCallback = widget.onLoad;
     wyfController!._webViewController = webViewController;
