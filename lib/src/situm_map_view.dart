@@ -65,8 +65,13 @@ class _MapViewState extends State<MapView> {
                 description: ${error.description}
                 errorType: ${error.errorType}
                 isForMainFrame: ${error.isForMainFrame}
+                url: ${error.url}
             ''');
-            if (ConnectionErrors.values.contains(error.errorCode)) {
+            bool shouldDisplayRetryScreen =
+                error.isForMainFrame != null && error.isForMainFrame!;
+
+            if (shouldDisplayRetryScreen &&
+                ConnectionErrors.values.contains(error.errorCode)) {
               controller.loadFlutterAsset(
                   "packages/situm_flutter/html/retry_screen.html");
             }
