@@ -7,6 +7,8 @@ class MapView extends StatefulWidget {
   final MapViewConfiguration configuration;
   final MapViewCallback onLoad;
   final MapViewCallback? didUpdateCallback;
+  final String _retryScreenURL =
+      "packages/situm_flutter/html/retry_screen.html";
 
   /// MapView is the main component and entry point for Situm Flutter Wayfinding.
   /// This widget will load your Situm building on a map, based on the given
@@ -65,10 +67,19 @@ class _MapViewState extends State<MapView> {
                 description: ${error.description}
                 errorType: ${error.errorType}
                 isForMainFrame: ${error.isForMainFrame}
+                url: ${error.url}
             ''');
+            bool shouldDisplayRetryScreen =
+                error.isForMainFrame != null && error.isForMainFrame!;
+
+            if (shouldDisplayRetryScreen &&
+                ConnectionErrors.values.contains(error.errorCode)) {
+              controller.loadFlutterAsset(widget._retryScreenURL);
+            }
           })
           ..setOnNavigationRequest((dynamic request) {
-            if (request.url.startsWith(mapViewConfiguration.viewerDomain)) {
+            if (request.url.startsWith(mapViewConfiguration.viewerDomain) ||
+                request.url.endsWith(widget._retryScreenURL)) {
               return NavigationDecision.navigate;
             }
             return NavigationDecision.prevent;
@@ -82,6 +93,12 @@ class _MapViewState extends State<MapView> {
         onMessageReceived: (JavaScriptMessage message) {
           Map<String, dynamic> map = jsonDecode(message.message);
           wyfController?.onMapViewerMessage(map["type"], map["payload"] ?? {});
+        },
+      ))
+      ..addJavaScriptChannel(JavaScriptChannelParams(
+        name: OFFLINE_CHANNEL,
+        onMessageReceived: (JavaScriptMessage message) {
+          _loadWithConfig(widget.configuration);
         },
       ))
       ..setOnPlatformPermissionRequest(
@@ -122,8 +139,8 @@ class _MapViewState extends State<MapView> {
 
   void _onMapPageLoaded(String url) {
     wyfController ??= MapViewController(
-        situmApiKey: mapViewConfiguration.situmApiKey,
-      );
+      situmApiKey: mapViewConfiguration.situmApiKey,
+    );
     wyfController!._widgetUpdater = _loadWithConfig;
     wyfController!._widgetLoadCallback = widget.onLoad;
     wyfController!._webViewController = webViewController;
