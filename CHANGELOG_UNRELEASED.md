@@ -2,4 +2,4 @@
 
 ### Added
 
-* New screen that is displayed in case the user enters for the first time without internet connection.
+* New screen displayed when there is no network connection and the map-viewer wasn't cached yet.
