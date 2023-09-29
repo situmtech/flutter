@@ -418,7 +418,6 @@ class _MyTabsState extends State<MyTabs> {
       ]);
     }
     Map<Permission, PermissionStatus> statuses = await permissions.request();
-
     return statuses.values.every((status) => status.isGranted);
   }
 }
