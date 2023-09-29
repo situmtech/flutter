@@ -117,12 +117,12 @@ class MapViewController {
 
   /// Tells the map to keep the camera centered on the user position.
   void followUser() async {
-    _sendMessage(WV_MESSAGE_CAMERA_FOLLOW_USER, true);
+    _sendMessage(WV_MESSAGE_CAMERA_FOLLOW_USER, {"value": true});
   }
 
   /// Stops following the user (see [followUser]).
   void unfollowUser() async {
-    _sendMessage(WV_MESSAGE_CAMERA_FOLLOW_USER, false);
+    _sendMessage(WV_MESSAGE_CAMERA_FOLLOW_USER, {"value": false});
   }
 
   // WYF internal utils:
