@@ -160,7 +160,7 @@ class _MyTabsState extends State<MyTabs> {
           // Set your building identifier:
           buildingIdentifier: buildingIdentifier,
           // Your remote identifier, if any:
-          remoteIdentifier: remoteIdentifier,
+          // remoteIdentifier: remoteIdentifier,
           // The viewer domain:
           viewerDomain: viewerDomain,
         ),
@@ -176,6 +176,7 @@ class _MyTabsState extends State<MyTabs> {
     // You need to wait until the map is properly loaded to do so.
     mapViewController = controller;
     _callMapviewLoadAction();
+    controller.followUser();
     controller.onPoiSelected((poiSelectedResult) {
       debugPrint("WYF> Poi SELECTED: ${poiSelectedResult.poi.name}");
     });
