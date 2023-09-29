@@ -7,6 +7,8 @@ import 'package:situm_flutter/wayfinding.dart';
 
 import './config.dart';
 
+ValueNotifier<String> currentOutputNotifier = ValueNotifier<String>('---');
+
 void main() => runApp(const MyApp());
 
 const _title = "Situm Flutter";
@@ -33,7 +35,6 @@ class MyTabs extends StatefulWidget {
 class _MyTabsState extends State<MyTabs> {
   late SitumSdk situmSdk;
   int _selectedIndex = 0;
-  String currentOutput = "---";
   List<Poi> pois = [];
   Poi? dropdownValue;
   Function? mapViewLoadAction;
@@ -60,8 +61,15 @@ class _MyTabsState extends State<MyTabs> {
         ]),
         _poiInteraction(),
         Expanded(
-            child: SingleChildScrollView(
-                padding: const EdgeInsets.all(30), child: Text(currentOutput)))
+            child: ValueListenableBuilder<String>(
+          valueListenable: currentOutputNotifier,
+          builder: (context, value, child) {
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(30),
+              child: Text(value),
+            );
+          },
+        ))
       ],
     );
   }
@@ -169,21 +177,41 @@ class _MyTabsState extends State<MyTabs> {
     ]);
   }
 
+  void printWarning(String text) {
+    debugPrint('\x1B[33m$text\x1B[0m');
+  }
+
+  void printError(String text) {
+    debugPrint('\x1B[31m$text\x1B[0m');
+  }
+
   void _onLoad(MapViewController controller) {
     // Use MapViewController to communicate with the map: methods and callbacks
     // are available to perform actions and listen to events (e.g., listen to
     // POI selections, intercept navigation options, navigate to POIs, etc.).
     // You need to wait until the map is properly loaded to do so.
     mapViewController = controller;
+
+    //Example on how to automatically launch positioning when opening the map.
+    // situmSdk.requestLocationUpdates(LocationRequest(
+    //   buildingIdentifier: buildingIdentifier, //"-1"
+    //   useDeadReckoning: false,
+    // ));
+
     _callMapviewLoadAction();
+
+    //Example on how to automatically center the map on the user location when
+    // it become available
+    //controller.followUser();
+
     controller.onPoiSelected((poiSelectedResult) {
-      debugPrint("WYF> Poi SELECTED: ${poiSelectedResult.poi.name}");
+      printWarning("WYF> Poi SELECTED: ${poiSelectedResult.poi.name}");
     });
     controller.onPoiDeselected((poiDeselectedResult) {
-      debugPrint("WYF> Poi DESELECTED: ${poiDeselectedResult.poi.name}");
+      printWarning("WYF> Poi DESELECTED: ${poiDeselectedResult.poi.name}");
     });
     controller.onNavigationRequestInterceptor((navigationRequest) {
-      debugPrint("WYF> Navigation interceptor: ${navigationRequest.toMap()}");
+      printWarning("WYF> Navigation interceptor: ${navigationRequest.toMap()}");
       //   navigationRequest.distanceToGoalThreshold = 10.0;
       //   ...
     });
@@ -250,6 +278,7 @@ class _MyTabsState extends State<MyTabs> {
     // Set up location listeners:
     situmSdk.onLocationUpdate((location) {
       _echo("""SDK> Location changed:
+        Time diff: ${location.timestamp - DateTime.now().millisecondsSinceEpoch}
         B=${location.buildingIdentifier},
         F=${location.floorIdentifier},
         C=${location.coordinate.latitude.toStringAsFixed(5)}, ${location.coordinate.longitude.toStringAsFixed(5)}
@@ -273,10 +302,8 @@ class _MyTabsState extends State<MyTabs> {
   }
 
   void _echo(String output) {
-    setState(() {
-      currentOutput = output;
-      debugPrint(currentOutput);
-    });
+    currentOutputNotifier.value = output;
+    printWarning(output);
   }
 
   // SDK auxiliary functions
@@ -391,6 +418,7 @@ class _MyTabsState extends State<MyTabs> {
       ]);
     }
     Map<Permission, PermissionStatus> statuses = await permissions.request();
+
     return statuses.values.every((status) => status.isGranted);
   }
 }
