@@ -351,6 +351,7 @@ class SitumSdk {
         // Reset last status stored in case it was USER_NOT_IN_BUILDING
         // and a new location is received.
         _statusAdapter.resetUserNotInBuilding();
+        if (Platform.isAndroid) _onLocationStatusCallback?.call("POSITIONING");
 
         _onLocationChanged(call.arguments);
         break;

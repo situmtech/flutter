@@ -68,6 +68,9 @@ class _LocationStatusAdapter {
     String? result = status;
 
     switch (status) {
+      case "STARTING":
+        result = "POSITIONING";
+        break;
       case "CALCULATING":
         result = "STARTING";
         break;
@@ -75,9 +78,6 @@ class _LocationStatusAdapter {
         if (!_shouldNotifyStatus(status)) {
           return null;
         }
-        break;
-      case "STARTING":
-        return null;
     }
 
     _lastStatus = result;

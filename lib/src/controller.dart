@@ -33,13 +33,6 @@ class MapViewController {
     _sendMessage(WV_MESSAGE_LOCATION, location.toMap());
   }
 
-  /// Notifies [MapView] about the new location status received from the SDK.
-  void _setCurrentLocationStatus(Location location, String status) {
-    Map<String, dynamic> locationMap = location.toMap();
-    locationMap["status"] = '"$status"';
-    _sendMessage(WV_MESSAGE_LOCATION, locationMap);
-  }
-
   void onMapViewerMessage(String type, Map<String, dynamic> payload) {
     MessageHandler(type).handleMessage(this, payload);
   }
@@ -248,17 +241,28 @@ class MapViewController {
   }
 
   void _onLocationChanged(arguments) {
+    if (_currentLocation == null) {
+      _sendMessage(WV_MESSAGE_LOCATION_STATUS, '"POSITIONING"');
+    }
+
     // Send location to the map-viewer.
     _currentLocation = createLocation(arguments);
     setCurrentLocation(_currentLocation!);
   }
 
   void _onStatusChanged(arguments) {
-    String newStatus = arguments["statusName"];
-    if (_currentLocation != null &&
-        (newStatus == "STOPPED" || newStatus == "USER_NOT_IN_BUILDING")) {
-      _setCurrentLocationStatus(_currentLocation!, newStatus);
-    }
+    var filter = [
+      "STARTING",
+      "POSITIONING",
+      "USER_NOT_IN_BUILDING",
+      "STOPPED",
+    ];
+
+    if (!filter.contains(arguments["statusName"])) return;
+
+    _sendMessage(WV_MESSAGE_LOCATION_STATUS, '"${arguments["statusName"]}"');
+
+    if (arguments["statusName"] == "STOPPED") _currentLocation = null;
   }
 
   void _onError(arguments) {
