@@ -59,6 +59,15 @@ class _MyTabsState extends State<MyTabs> {
           _sdkButton('Building Info', _fetchBuildingInfo),
         ]),
         _poiInteraction(),
+        _buttonsGroup(Icons.settings_applications_outlined, "Validation", [
+          _sdkButton('Follow', _actionFollow),
+          _sdkButton('Unfollow', _actionUnfollow),
+          _sdkButton('Start Nav', _actionStartNav),
+          _sdkButton('Cancel Nav', _actionCancelNav),
+          _sdkButton('Select Poi', _actionSelectPoi),
+          _sdkButton('Lang', _actionSwitchLang),
+          _sdkButton('Navigate to location', _actiontNavToLoc),
+        ]),
         Expanded(
             child: SingleChildScrollView(
                 padding: const EdgeInsets.all(30), child: Text(currentOutput)))
@@ -160,7 +169,7 @@ class _MyTabsState extends State<MyTabs> {
           // Set your building identifier:
           buildingIdentifier: buildingIdentifier,
           // Your remote identifier, if any:
-          remoteIdentifier: remoteIdentifier,
+          //remoteIdentifier: remoteIdentifier,
           // The viewer domain:
           viewerDomain: viewerDomain,
         ),
@@ -175,7 +184,8 @@ class _MyTabsState extends State<MyTabs> {
     // POI selections, intercept navigation options, navigate to POIs, etc.).
     // You need to wait until the map is properly loaded to do so.
     mapViewController = controller;
-    _callMapviewLoadAction();
+    // controller?.selectPoi("148751"); // parking
+    // controller?.selectPoi("411732"); // abudhabi
     controller.onPoiSelected((poiSelectedResult) {
       debugPrint("WYF> Poi SELECTED: ${poiSelectedResult.poi.name}");
     });
@@ -393,4 +403,34 @@ class _MyTabsState extends State<MyTabs> {
     Map<Permission, PermissionStatus> statuses = await permissions.request();
     return statuses.values.every((status) => status.isGranted);
   }
+
+  void _actionFollow() {
+    mapViewController?.followUser();
+  }
+
+  void _actionUnfollow() {
+    mapViewController?.unfollowUser();
+  }
+
+  void _actionStartNav() {
+    mapViewController?.navigateToPoi("119388"); // mrmqa HQ
+  }
+
+  void _actiontNavToLoc() {
+    mapViewController?.navigateToPoint(2.84438553895524, -8.578970199543985, "41003" );
+    
+  }
+
+  void _actionCancelNav() {
+    mapViewController?.cancelNavigation();
+  }
+
+  void _actionSelectPoi() {
+    mapViewController?.selectPoi("119388"); // mrmqa
+  }
+
+  void _actionSwitchLang() {
+    mapViewController?.setLanguage("es");
+  }
 }
+ 
