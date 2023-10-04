@@ -194,6 +194,8 @@ class _MyTabsState extends State<MyTabs> {
               _setCamera(
                 zoom: zoomFieldController.text,
                 bearing: bearingFieldController.text,
+                pitch: pitchFieldController.text,
+                transitionDuration: durationFieldController.text,
                 latitude: latitudeFieldController.text,
                 longitude: longitudeFieldController.text,
               );
@@ -358,7 +360,7 @@ class _MyTabsState extends State<MyTabs> {
       {String? zoom,
       String? bearing,
       String? pitch,
-      String? duration,
+      String? transitionDuration,
       String? latitude,
       String? longitude}) {
     Camera newCamera = Camera();
@@ -368,7 +370,7 @@ class _MyTabsState extends State<MyTabs> {
         zoom: double.tryParse(zoom ?? "0.0"),
         bearing: double.tryParse(bearing ?? "0.0"),
         pitch: double.tryParse(pitch ?? "0.0"),
-        duration: int.tryParse(duration ?? "0.0"),
+        transitionDuration: int.tryParse(transitionDuration ?? "0"),
         center: LatLng(
           latitude: double.tryParse(latitude ?? "0.0"),
           longitude: double.tryParse(longitude ?? "0.0"),

@@ -142,13 +142,36 @@ class DirectionsMessage {
 }
 
 class Camera {
+  /// Set the [zoom] to the desired value. In case [zoom] is out of the range of values we calculate internally,
+  /// a fallback minimum or maximum value will be set.
+  ///
+  /// Value defaults to and internally calculated intermediate.
   double? zoom;
+
+  /// Set the [bearing] to a determined degree.
+  ///
+  /// value defaults to 0°.
   double? bearing;
+
+  /// Set the [pitch] to a determined degree between 0° and 60°.
+  ///
+  /// Value defaults to 0°.
   double? pitch;
-  int? duration;
+
+  /// Set the [transitionDuration] to determined value in milliseconds.
+  ///
+  /// Value defaults to 1000 milliseconds.
+  int? transitionDuration;
+
+  /// Move the [center] of the camera to a [LatLng] coordinate on the map.
   LatLng? center;
 
-  Camera({this.zoom, this.bearing, this.pitch, this.duration, this.center});
+  Camera(
+      {this.zoom,
+      this.bearing,
+      this.pitch,
+      this.transitionDuration,
+      this.center});
 
   toMap() {
     Map<String, Object> result = {};
@@ -161,8 +184,8 @@ class Camera {
     if (pitch != null) {
       result["pitch"] = pitch!;
     }
-    if (pitch != null) {
-      result["duration"] = pitch!;
+    if (transitionDuration != null) {
+      result["transitionDuration"] = transitionDuration!;
     }
     if (center?.latitude != null && center?.longitude != null) {
       result["center"] = {
