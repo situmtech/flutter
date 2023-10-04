@@ -125,6 +125,25 @@ class MapViewController {
     _sendMessage(WV_MESSAGE_CAMERA_FOLLOW_USER, {"value": false});
   }
 
+  /// Set the current camera zoom to the specified float value.
+  void updateCameraView(CameraViewState cameraViewState) async {
+    Map<String, Object> cameraView = {};
+    if (cameraViewState.zoom != null) {
+      cameraView["zoom"] = cameraViewState.zoom!;
+    }
+    if (cameraViewState.bearing != null) {
+      cameraView["bearing"] = cameraViewState.bearing!;
+    }
+    if (cameraViewState.latitude != null && cameraViewState.longitude != null) {
+      cameraView["centerCoordinate"] = {
+        "latitude": cameraViewState.latitude,
+        "longitude": cameraViewState.longitude,
+      };
+    }
+
+    _sendMessage(WV_MESSAGE_CAMERA_SET_VIEW, cameraView);
+  }
+
   // WYF internal utils:
 
   void _notifyMapIsReady() {

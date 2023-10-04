@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:situm_flutter/sdk.dart';
 import 'package:situm_flutter/wayfinding.dart';
@@ -36,6 +37,16 @@ class _MyTabsState extends State<MyTabs> {
   String currentOutput = "---";
   List<Poi> pois = [];
   Poi? dropdownValue;
+
+  // Camera section
+  TextEditingController zoomFieldController = TextEditingController(text: "20");
+  TextEditingController bearingFieldController =
+      TextEditingController(text: "180");
+  TextEditingController latitudeFieldController =
+      TextEditingController(text: "42.842248");
+  TextEditingController longitudeFieldController =
+      TextEditingController(text: "-8.580576");
+
   Function? mapViewLoadAction;
 
   MapViewController? mapViewController;
@@ -46,20 +57,29 @@ class _MyTabsState extends State<MyTabs> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _buttonsGroup(Icons.my_location, "Positioning", [
-          _sdkButton('Start', _requestLocationUpdates),
-          _sdkButton('Stop', _removeUpdates),
-        ]),
-        _buttonsGroup(Icons.cloud_download, "Fetch resources", [
-          _sdkButton('Prefetch', _prefetch),
-          _sdkButton('Clear cache', _clearCache),
-          _sdkButton('Pois', _fetchPois),
-          _sdkButton('Categories', _fetchCategories),
-          _sdkButton('Buildings', _fetchBuildings),
-          _sdkButton('Building Info', _fetchBuildingInfo),
-        ]),
-        _poiInteraction(),
-        Expanded(
+        Flexible(
+            flex: 3,
+            child: SingleChildScrollView(
+                child: Column(
+              children: [
+                _buttonsGroup(Icons.my_location, "Positioning", [
+                  _sdkButton('Start', _requestLocationUpdates),
+                  _sdkButton('Stop', _removeUpdates),
+                ]),
+                _buttonsGroup(Icons.cloud_download, "Fetch resources", [
+                  _sdkButton('Prefetch', _prefetch),
+                  _sdkButton('Clear cache', _clearCache),
+                  _sdkButton('Pois', _fetchPois),
+                  _sdkButton('Categories', _fetchCategories),
+                  _sdkButton('Buildings', _fetchBuildings),
+                  _sdkButton('Building Info', _fetchBuildingInfo),
+                ]),
+                _poiInteraction(),
+                _cameraInteractions(),
+              ],
+            ))),
+        Flexible(
+            flex: 1,
             child: SingleChildScrollView(
                 padding: const EdgeInsets.all(30), child: Text(currentOutput)))
       ],
@@ -148,6 +168,127 @@ class _MyTabsState extends State<MyTabs> {
     );
   }
 
+  Card _cameraInteractions() {
+    return Card(
+      child: Column(
+        children: [
+          _cardTitle(Icons.camera_alt, "Camera Interactions"),
+          _cameraInteractionRow(
+              _sdkButton("setZoom to",
+                  (() => _updateCameraView(zoom: zoomFieldController.text))),
+              "Zoom",
+              "14 - 21",
+              zoomFieldController),
+          _cameraInteractionRow(
+              _sdkButton(
+                  "setBearing to",
+                  (() =>
+                      _updateCameraView(bearing: bearingFieldController.text))),
+              "Bearing",
+              "0 - 180",
+              bearingFieldController),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              Expanded(
+                child: _sdkButton(
+                    "center camera at",
+                    (() => _updateCameraView(
+                        latitude: latitudeFieldController.text,
+                        longitude: longitudeFieldController.text))),
+              ),
+              Expanded(
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: latitudeFieldController,
+                        keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true, signed: true),
+                        inputFormatters: <TextInputFormatter>[
+                          FilteringTextInputFormatter.allow(
+                              RegExp(r'^-?\d+\.?\d*')),
+                        ],
+                        decoration: InputDecoration(
+                          labelText: 'Lat',
+                          contentPadding: const EdgeInsets.all(0),
+                          constraints:
+                              BoxConstraints.loose(const Size.square(40)),
+                          border: const OutlineInputBorder(),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: TextField(
+                        controller: longitudeFieldController,
+                        keyboardType: const TextInputType.numberWithOptions(
+                            decimal: true, signed: true),
+                        inputFormatters: <TextInputFormatter>[
+                          FilteringTextInputFormatter.allow(
+                              RegExp(r'^-?\d+\.?\d*')),
+                        ],
+                        decoration: InputDecoration(
+                            labelText: 'Long',
+                            contentPadding: const EdgeInsets.all(0),
+                            constraints:
+                                BoxConstraints.loose(const Size.square(40)),
+                            border: const OutlineInputBorder()),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Expanded(
+                  child: Center(
+                child: _sdkButton("updateCameraView", () {
+                  _updateCameraView(
+                    zoom: zoomFieldController.text,
+                    bearing: bearingFieldController.text,
+                    latitude: latitudeFieldController.text,
+                    longitude: longitudeFieldController.text,
+                  );
+                }),
+              )),
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _cameraInteractionRow(Widget sdkButton, String tfLabel,
+      String tfHintText, TextEditingController controller) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        Expanded(
+          child: sdkButton,
+        ),
+        Expanded(
+          child: TextField(
+            controller: controller,
+            keyboardType: const TextInputType.numberWithOptions(
+                decimal: true, signed: true),
+            inputFormatters: <TextInputFormatter>[
+              FilteringTextInputFormatter.allow(RegExp(r'^-?\d+\.?\d*')),
+            ],
+            decoration: InputDecoration(
+                labelText: tfLabel,
+                border: const OutlineInputBorder(),
+                contentPadding: const EdgeInsets.all(0),
+                constraints: BoxConstraints.loose(const Size.square(40)),
+                hintText: tfHintText),
+          ),
+        ),
+      ],
+    );
+  }
+
   // Widget that shows the Situm MapView.
   Widget _createSitumMapTab() {
     return Stack(children: [
@@ -163,6 +304,7 @@ class _MyTabsState extends State<MyTabs> {
           remoteIdentifier: remoteIdentifier,
           // The viewer domain:
           viewerDomain: viewerDomain,
+          enableDebugging: true,
         ),
         onLoad: _onLoad,
       ),
@@ -219,6 +361,31 @@ class _MyTabsState extends State<MyTabs> {
     mapViewLoadAction = () {
       mapViewController?.navigateToPoi(poi.identifier);
     };
+    if (mapViewController != null) {
+      _callMapviewLoadAction();
+    }
+  }
+
+  void _updateCameraView(
+      {String? zoom, String? bearing, String? latitude, String? longitude}) {
+    debugPrint("FLUTTER> zoom: $zoom");
+    debugPrint("FLUTTER> bearing: $bearing");
+    debugPrint("FLUTTER> latitude: $latitude");
+    debugPrint("FLUTTER> longitude: $longitude");
+
+    mapViewLoadAction = () {
+      try {
+        mapViewController?.updateCameraView(CameraViewState(
+          zoom: zoom != null ? double.parse(zoom) : null,
+          bearing: bearing != null ? double.parse(bearing) : null,
+          latitude: latitude != null ? double.parse(latitude) : null,
+          longitude: longitude != null ? double.parse(longitude) : null,
+        ));
+      } catch (e) {
+        debugPrint("$e");
+      }
+    };
+
     if (mapViewController != null) {
       _callMapviewLoadAction();
     }

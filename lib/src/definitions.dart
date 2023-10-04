@@ -141,6 +141,20 @@ class DirectionsMessage {
   });
 }
 
+class CameraViewState {
+  double? zoom;
+  double? bearing;
+  double? latitude;
+  double? longitude;
+
+  CameraViewState({
+    this.zoom,
+    this.bearing,
+    this.latitude,
+    this.longitude,
+  });
+}
+
 class OnPoiSelectedResult {
   final Poi poi;
 
