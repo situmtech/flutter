@@ -144,9 +144,9 @@ class DirectionsMessage {
 class CameraView {
   double? zoom;
   double? bearing;
-  LatLng? centerCoordinate;
+  LatLng? center;
 
-  CameraView({this.zoom, this.bearing, this.centerCoordinate});
+  CameraView({this.zoom, this.bearing, this.center});
 
   toMap() {
     Map<String, Object> result = {};
@@ -156,11 +156,10 @@ class CameraView {
     if (bearing != null) {
       result["bearing"] = bearing!;
     }
-    if (centerCoordinate?.latitude != null &&
-        centerCoordinate?.longitude != null) {
-      result["centerCoordinate"] = {
-        "latitude": centerCoordinate!.latitude,
-        "longitude": centerCoordinate!.longitude,
+    if (center?.latitude != null && center?.longitude != null) {
+      result["center"] = {
+        "lat": center!.latitude,
+        "lng": center!.longitude,
       };
     }
 
