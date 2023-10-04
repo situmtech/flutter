@@ -141,12 +141,14 @@ class DirectionsMessage {
   });
 }
 
-class CameraView {
+class Camera {
   double? zoom;
   double? bearing;
+  double? pitch;
+  int? duration;
   LatLng? center;
 
-  CameraView({this.zoom, this.bearing, this.center});
+  Camera({this.zoom, this.bearing, this.pitch, this.duration, this.center});
 
   toMap() {
     Map<String, Object> result = {};
@@ -155,6 +157,12 @@ class CameraView {
     }
     if (bearing != null) {
       result["bearing"] = bearing!;
+    }
+    if (pitch != null) {
+      result["pitch"] = pitch!;
+    }
+    if (pitch != null) {
+      result["duration"] = pitch!;
     }
     if (center?.latitude != null && center?.longitude != null) {
       result["center"] = {

@@ -2,4 +2,4 @@
 
 ### Added
 
-* New [MapViewController.setCameraView()] (https://pub.dev/documentation/situm_flutter/latest/wayfinding/MapViewController/setCameraView.html) to set camera zoom, bearing and center coordinate.
+* New [MapViewController.setCamera()] (https://pub.dev/documentation/situm_flutter/latest/wayfinding/MapViewController/setCamera.html) to set the camera zoom, bearing, pitch, duration and center parameters.

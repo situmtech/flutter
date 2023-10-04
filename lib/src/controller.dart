@@ -125,9 +125,14 @@ class MapViewController {
     _sendMessage(WV_MESSAGE_CAMERA_FOLLOW_USER, {"value": false});
   }
 
-  /// Modify the [cameraViewState.zoom], [cameraViewState.bearing] and the latitude and logitude of the [cameraViewState.centerCoordinate]
-  void setCameraView(CameraView cameraViewState) async {
-    _sendMessage(WV_MESSAGE_CAMERA_SET_VIEW, cameraViewState.toMap());
+  /// Modify the [camera.zoom], [camera.bearing], [camera.pitch], [camera.duration] and the latitude and logitude of the [camera.center]
+  void setCamera(Camera camera) async {
+    _sendMessage(WV_MESSAGE_CAMERA_SET, camera.toMap());
+  }
+
+  /// Select new floor by its level
+  void selectLevel(int level) async {
+    _sendMessage(WV_MESSAGE_CARTOGRAPHY_SELECT_LEVEL, {"level": level});
   }
 
   // WYF internal utils:

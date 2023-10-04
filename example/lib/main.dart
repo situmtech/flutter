@@ -42,10 +42,17 @@ class _MyTabsState extends State<MyTabs> {
   TextEditingController zoomFieldController = TextEditingController(text: "20");
   TextEditingController bearingFieldController =
       TextEditingController(text: "180");
+  TextEditingController pitchFieldController =
+      TextEditingController(text: "180");
+  TextEditingController durationFieldController =
+      TextEditingController(text: "1");
   TextEditingController latitudeFieldController =
-      TextEditingController(text: "42.842248");
+      TextEditingController(text: "42.86380171196485");
   TextEditingController longitudeFieldController =
-      TextEditingController(text: "-8.580576");
+      TextEditingController(text: "-8.543060641214014");
+
+  // Cartography section
+  TextEditingController levelFieldController = TextEditingController(text: "0");
 
   Function? mapViewLoadAction;
 
@@ -74,7 +81,7 @@ class _MyTabsState extends State<MyTabs> {
                   _sdkButton('Buildings', _fetchBuildings),
                   _sdkButton('Building Info', _fetchBuildingInfo),
                 ]),
-                _poiInteraction(),
+                _cartographyInteractions(),
                 _cameraInteractions(),
               ],
             ))),
@@ -131,11 +138,11 @@ class _MyTabsState extends State<MyTabs> {
     );
   }
 
-  Card _poiInteraction() {
+  Card _cartographyInteractions() {
     return Card(
       child: Column(
         children: [
-          _cardTitle(Icons.interests, "POI Interaction"),
+          _cardTitle(Icons.map, "Cartography Interaction"),
           Row(
             children: <Widget>[
               Flexible(
@@ -159,10 +166,19 @@ class _MyTabsState extends State<MyTabs> {
                   ),
                 ),
               ),
-              _sdkButton("Select", (() => _selectPoi(dropdownValue))),
-              _sdkButton("Navigate", (() => _navigateToPoi(dropdownValue))),
+              _sdkButton("selectPoi", (() => _selectPoi(dropdownValue))),
+              _sdkButton(
+                  "navigateToPoi", (() => _navigateToPoi(dropdownValue))),
             ],
           ),
+          _rowWithPadding(3.0, [
+            Expanded(
+              child: _sdkButton("selectLevel", () {
+                _selectLevel(levelFieldController.text);
+              }),
+            ),
+            _expandedTextField("level", "0", levelFieldController),
+          ]),
         ],
       ),
     );
@@ -170,120 +186,77 @@ class _MyTabsState extends State<MyTabs> {
 
   Card _cameraInteractions() {
     return Card(
-      child: Column(
-        children: [
-          _cardTitle(Icons.camera_alt, "Camera Interactions"),
-          _cameraInteractionRow(
-              _sdkButton("setZoom to",
-                  (() => _setCameraView(zoom: zoomFieldController.text))),
-              "Zoom",
-              "14 - 21",
-              zoomFieldController),
-          _cameraInteractionRow(
-              _sdkButton("setBearing to",
-                  (() => _setCameraView(bearing: bearingFieldController.text))),
-              "Bearing",
-              "0 - 180",
-              bearingFieldController),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Expanded(
-                child: _sdkButton(
-                    "center camera at",
-                    (() => _setCameraView(
-                        latitude: latitudeFieldController.text,
-                        longitude: longitudeFieldController.text))),
-              ),
-              Expanded(
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: latitudeFieldController,
-                        keyboardType: const TextInputType.numberWithOptions(
-                            decimal: true, signed: true),
-                        inputFormatters: <TextInputFormatter>[
-                          FilteringTextInputFormatter.allow(
-                              RegExp(r'^-?\d+\.?\d*')),
-                        ],
-                        decoration: InputDecoration(
-                          labelText: 'Lat',
-                          contentPadding: const EdgeInsets.all(0),
-                          constraints:
-                              BoxConstraints.loose(const Size.square(40)),
-                          border: const OutlineInputBorder(),
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: TextField(
-                        controller: longitudeFieldController,
-                        keyboardType: const TextInputType.numberWithOptions(
-                            decimal: true, signed: true),
-                        inputFormatters: <TextInputFormatter>[
-                          FilteringTextInputFormatter.allow(
-                              RegExp(r'^-?\d+\.?\d*')),
-                        ],
-                        decoration: InputDecoration(
-                            labelText: 'Long',
-                            contentPadding: const EdgeInsets.all(0),
-                            constraints:
-                                BoxConstraints.loose(const Size.square(40)),
-                            border: const OutlineInputBorder()),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+      child: Column(children: [
+        _cardTitle(Icons.camera_alt, "Camera Interactions"),
+        _rowWithPadding(10.0, [
+          Expanded(
+            child: _sdkButton("setCamera", () {
+              _setCamera(
+                zoom: zoomFieldController.text,
+                bearing: bearingFieldController.text,
+                latitude: latitudeFieldController.text,
+                longitude: longitudeFieldController.text,
+              );
+            }),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Expanded(
-                  child: Center(
-                child: _sdkButton("setCameraView", () {
-                  _setCameraView(
-                    zoom: zoomFieldController.text,
-                    bearing: bearingFieldController.text,
-                    latitude: latitudeFieldController.text,
-                    longitude: longitudeFieldController.text,
-                  );
-                }),
-              )),
-            ],
-          )
-        ],
+          Expanded(
+            child: Column(
+              children: [
+                _rowWithPadding(3.0, [
+                  _expandedTextField("Zoom", "14 - 21", zoomFieldController)
+                ]),
+                _rowWithPadding(3.0, [
+                  _expandedTextField(
+                      "Bearing", "0 - 180", bearingFieldController)
+                ]),
+                _rowWithPadding(3.0, [
+                  _expandedTextField("Pitch", "0 - 180", pitchFieldController)
+                ]),
+                _rowWithPadding(3.0, [
+                  _expandedTextField(
+                      "Duration", "1 second", durationFieldController)
+                ]),
+                _rowWithPadding(
+                  3.0,
+                  [
+                    _expandedTextField("Lat", "", latitudeFieldController),
+                    _expandedTextField("Lng", "", longitudeFieldController),
+                  ],
+                )
+              ],
+            ),
+          ),
+        ]),
+      ]),
+    );
+  }
+
+  Widget _rowWithPadding(double padding, List<Widget> children) {
+    return Padding(
+      padding: EdgeInsets.all(padding),
+      child: Row(
+        children: children,
       ),
     );
   }
 
-  Widget _cameraInteractionRow(Widget sdkButton, String tfLabel,
-      String tfHintText, TextEditingController controller) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: <Widget>[
-        Expanded(
-          child: sdkButton,
-        ),
-        Expanded(
-          child: TextField(
-            controller: controller,
-            keyboardType: const TextInputType.numberWithOptions(
-                decimal: true, signed: true),
-            inputFormatters: <TextInputFormatter>[
-              FilteringTextInputFormatter.allow(RegExp(r'^-?\d+\.?\d*')),
-            ],
-            decoration: InputDecoration(
-                labelText: tfLabel,
-                border: const OutlineInputBorder(),
-                contentPadding: const EdgeInsets.all(0),
-                constraints: BoxConstraints.loose(const Size.square(40)),
-                hintText: tfHintText),
-          ),
-        ),
-      ],
+  Widget _expandedTextField(
+      String label, String hintText, TextEditingController controller) {
+    return Expanded(
+      child: TextField(
+        controller: controller,
+        keyboardType:
+            const TextInputType.numberWithOptions(decimal: true, signed: true),
+        inputFormatters: <TextInputFormatter>[
+          FilteringTextInputFormatter.allow(RegExp(r'^-?\d+\.?\d*')),
+        ],
+        decoration: InputDecoration(
+            labelText: label,
+            border: const OutlineInputBorder(),
+            contentPadding: const EdgeInsets.all(8.0),
+            constraints: BoxConstraints.loose(const Size.square(40)),
+            hintText: hintText),
+      ),
     );
   }
 
@@ -329,6 +302,11 @@ class _MyTabsState extends State<MyTabs> {
     });
   }
 
+  void _callMapviewLoadAction() {
+    mapViewLoadAction?.call();
+    mapViewLoadAction = null;
+  }
+
   void _selectPoi(Poi? poi) {
     if (poi == null) {
       return;
@@ -344,9 +322,21 @@ class _MyTabsState extends State<MyTabs> {
     }
   }
 
-  void _callMapviewLoadAction() {
-    mapViewLoadAction?.call();
-    mapViewLoadAction = null;
+  void _selectLevel(String? level) {
+    int newLevel = 0;
+    try {
+      newLevel = int.tryParse(level ?? "0") ?? 0;
+    } catch (e) {
+      debugPrint("$e");
+    }
+
+    mapViewLoadAction = () {
+      mapViewController?.selectLevel(newLevel);
+    };
+
+    if (mapViewController != null) {
+      _callMapviewLoadAction();
+    }
   }
 
   void _navigateToPoi(Poi? poi) {
@@ -364,21 +354,32 @@ class _MyTabsState extends State<MyTabs> {
     }
   }
 
-  void _setCameraView(
-      {String? zoom, String? bearing, String? latitude, String? longitude}) {
+  void _setCamera(
+      {String? zoom,
+      String? bearing,
+      String? pitch,
+      String? duration,
+      String? latitude,
+      String? longitude}) {
+    Camera newCamera = Camera();
+
+    try {
+      newCamera = Camera(
+        zoom: double.tryParse(zoom ?? "0.0"),
+        bearing: double.tryParse(bearing ?? "0.0"),
+        pitch: double.tryParse(pitch ?? "0.0"),
+        duration: int.tryParse(duration ?? "0.0"),
+        center: LatLng(
+          latitude: double.tryParse(latitude ?? "0.0"),
+          longitude: double.tryParse(longitude ?? "0.0"),
+        ),
+      );
+    } catch (e) {
+      debugPrint("$e");
+    }
+
     mapViewLoadAction = () {
-      try {
-        mapViewController?.setCameraView(CameraView(
-          zoom: double.tryParse(zoom ?? "0.0"),
-          bearing: double.parse(bearing ?? "0.0"),
-          center: LatLng(
-            latitude: double.parse(latitude ?? "0.0"),
-            longitude: double.parse(longitude ?? "0.0"),
-          ),
-        ));
-      } catch (e) {
-        debugPrint("$e");
-      }
+      mapViewController?.setCamera(newCamera);
     };
 
     if (mapViewController != null) {
