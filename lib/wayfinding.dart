@@ -61,4 +61,4 @@ const WV_MESSAGE_UI_SET_LANGUAGE = "ui.set_language";
 
 // Camera actions
 const WV_MESSAGE_CAMERA_FOLLOW_USER = "camera.follow_user";
-const WV_MESSAGE_CAMERA_SET_VIEW = "camera_view.update";
+const WV_MESSAGE_CAMERA_SET_VIEW = "camera.set_view";
