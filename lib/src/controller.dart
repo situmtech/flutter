@@ -126,7 +126,7 @@ class MapViewController {
   }
 
   /// Modify the [cameraViewState.zoom], [cameraViewState.bearing] and the latitude and logitude of the [cameraViewState.centerCoordinate]
-  void setCameraView(CameraViewState cameraViewState) async {
+  void setCameraView(CameraView cameraViewState) async {
     _sendMessage(WV_MESSAGE_CAMERA_SET_VIEW, cameraViewState.toMap());
   }
 

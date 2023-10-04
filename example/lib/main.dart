@@ -368,7 +368,7 @@ class _MyTabsState extends State<MyTabs> {
       {String? zoom, String? bearing, String? latitude, String? longitude}) {
     mapViewLoadAction = () {
       try {
-        mapViewController?.setCameraView(CameraViewState(
+        mapViewController?.setCameraView(CameraView(
           zoom: double.tryParse(zoom ?? "0.0"),
           bearing: double.parse(bearing ?? "0.0"),
           centerCoordinate: LatLng(

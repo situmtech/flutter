@@ -141,12 +141,12 @@ class DirectionsMessage {
   });
 }
 
-class CameraViewState {
+class CameraView {
   double? zoom;
   double? bearing;
   LatLng? centerCoordinate;
 
-  CameraViewState({this.zoom, this.bearing, this.centerCoordinate});
+  CameraView({this.zoom, this.bearing, this.centerCoordinate});
 
   toMap() {
     Map<String, Object> result = {};
