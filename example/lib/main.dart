@@ -175,15 +175,13 @@ class _MyTabsState extends State<MyTabs> {
           _cardTitle(Icons.camera_alt, "Camera Interactions"),
           _cameraInteractionRow(
               _sdkButton("setZoom to",
-                  (() => _updateCameraView(zoom: zoomFieldController.text))),
+                  (() => _setCameraView(zoom: zoomFieldController.text))),
               "Zoom",
               "14 - 21",
               zoomFieldController),
           _cameraInteractionRow(
-              _sdkButton(
-                  "setBearing to",
-                  (() =>
-                      _updateCameraView(bearing: bearingFieldController.text))),
+              _sdkButton("setBearing to",
+                  (() => _setCameraView(bearing: bearingFieldController.text))),
               "Bearing",
               "0 - 180",
               bearingFieldController),
@@ -193,7 +191,7 @@ class _MyTabsState extends State<MyTabs> {
               Expanded(
                 child: _sdkButton(
                     "center camera at",
-                    (() => _updateCameraView(
+                    (() => _setCameraView(
                         latitude: latitudeFieldController.text,
                         longitude: longitudeFieldController.text))),
               ),
@@ -245,8 +243,8 @@ class _MyTabsState extends State<MyTabs> {
             children: [
               Expanded(
                   child: Center(
-                child: _sdkButton("updateCameraView", () {
-                  _updateCameraView(
+                child: _sdkButton("setCameraView", () {
+                  _setCameraView(
                     zoom: zoomFieldController.text,
                     bearing: bearingFieldController.text,
                     latitude: latitudeFieldController.text,
@@ -366,15 +364,17 @@ class _MyTabsState extends State<MyTabs> {
     }
   }
 
-  void _updateCameraView(
+  void _setCameraView(
       {String? zoom, String? bearing, String? latitude, String? longitude}) {
     mapViewLoadAction = () {
       try {
-        mapViewController?.updateCameraView(CameraViewState(
+        mapViewController?.setCameraView(CameraViewState(
           zoom: double.tryParse(zoom ?? "0.0"),
           bearing: double.parse(bearing ?? "0.0"),
-          latitude: double.parse(latitude ?? "0.0"),
-          longitude: double.parse(longitude ?? "0.0"),
+          centerCoordinate: LatLng(
+            latitude: double.parse(latitude ?? "0.0"),
+            longitude: double.parse(longitude ?? "0.0"),
+          ),
         ));
       } catch (e) {
         debugPrint("$e");

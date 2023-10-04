@@ -144,15 +144,35 @@ class DirectionsMessage {
 class CameraViewState {
   double? zoom;
   double? bearing;
+  LatLng? centerCoordinate;
+
+  CameraViewState({this.zoom, this.bearing, this.centerCoordinate});
+
+  toMap() {
+    Map<String, Object> result = {};
+    if (zoom != null) {
+      result["zoom"] = zoom!;
+    }
+    if (bearing != null) {
+      result["bearing"] = bearing!;
+    }
+    if (centerCoordinate?.latitude != null &&
+        centerCoordinate?.longitude != null) {
+      result["centerCoordinate"] = {
+        "latitude": centerCoordinate!.latitude,
+        "longitude": centerCoordinate!.longitude,
+      };
+    }
+
+    return result;
+  }
+}
+
+class LatLng {
   double? latitude;
   double? longitude;
 
-  CameraViewState({
-    this.zoom,
-    this.bearing,
-    this.latitude,
-    this.longitude,
-  });
+  LatLng({this.latitude, this.longitude});
 }
 
 class OnPoiSelectedResult {
