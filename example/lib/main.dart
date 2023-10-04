@@ -368,18 +368,13 @@ class _MyTabsState extends State<MyTabs> {
 
   void _updateCameraView(
       {String? zoom, String? bearing, String? latitude, String? longitude}) {
-    debugPrint("FLUTTER> zoom: $zoom");
-    debugPrint("FLUTTER> bearing: $bearing");
-    debugPrint("FLUTTER> latitude: $latitude");
-    debugPrint("FLUTTER> longitude: $longitude");
-
     mapViewLoadAction = () {
       try {
         mapViewController?.updateCameraView(CameraViewState(
-          zoom: zoom != null ? double.parse(zoom) : null,
-          bearing: bearing != null ? double.parse(bearing) : null,
-          latitude: latitude != null ? double.parse(latitude) : null,
-          longitude: longitude != null ? double.parse(longitude) : null,
+          zoom: double.tryParse(zoom ?? "0.0"),
+          bearing: double.parse(bearing ?? "0.0"),
+          latitude: double.parse(latitude ?? "0.0"),
+          longitude: double.parse(longitude ?? "0.0"),
         ));
       } catch (e) {
         debugPrint("$e");
