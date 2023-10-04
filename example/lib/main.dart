@@ -43,9 +43,9 @@ class _MyTabsState extends State<MyTabs> {
   TextEditingController bearingFieldController =
       TextEditingController(text: "180");
   TextEditingController pitchFieldController =
-      TextEditingController(text: "180");
+      TextEditingController(text: "60");
   TextEditingController durationFieldController =
-      TextEditingController(text: "1");
+      TextEditingController(text: "1000");
   TextEditingController latitudeFieldController =
       TextEditingController(text: "42.86380171196485");
   TextEditingController longitudeFieldController =
@@ -209,14 +209,14 @@ class _MyTabsState extends State<MyTabs> {
                 ]),
                 _rowWithPadding(3.0, [
                   _expandedTextField(
-                      "Bearing", "0 - 180", bearingFieldController)
+                      "Bearing", "0° - 180°", bearingFieldController)
                 ]),
                 _rowWithPadding(3.0, [
-                  _expandedTextField("Pitch", "0 - 180", pitchFieldController)
+                  _expandedTextField("Pitch", "0° - 60°", pitchFieldController)
                 ]),
                 _rowWithPadding(3.0, [
                   _expandedTextField(
-                      "Duration", "1 second", durationFieldController)
+                      "Duration", "1000 ms", durationFieldController)
                 ]),
                 _rowWithPadding(
                   3.0,
