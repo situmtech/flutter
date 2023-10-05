@@ -164,6 +164,9 @@ class Camera {
   int? transitionDuration;
 
   /// Move the [center] of the camera to a [Coordinate] on the map.
+  ///
+  /// **NOTE**: with lockToBuilding set to true, introducing a coordinate outside far away from the building
+  /// will result in the camera hitting this building bounds adn not reaching the specified coordinate.
   Coordinate? center;
 
   Camera(
