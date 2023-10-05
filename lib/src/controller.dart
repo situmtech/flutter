@@ -125,7 +125,7 @@ class MapViewController {
     _sendMessage(WV_MESSAGE_CAMERA_FOLLOW_USER, {"value": false});
   }
 
-  /// Modify the [camera.zoom], [camera.bearing], [camera.pitch], [camera.duration] and the latitude and logitude of the [camera.center]
+  /// Animate the map's [Camera].
   void setCamera(Camera camera) async {
     _sendMessage(WV_MESSAGE_CAMERA_SET, camera.toMap());
   }
