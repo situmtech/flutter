@@ -297,6 +297,8 @@ class Angle {
   final double degrees;
   final double degreesClockwise;
 
+  static const double _pi = 3.1415926535897932;
+
   Angle({
     required this.radians,
     required this.radiansMinusPiPi,
@@ -312,17 +314,17 @@ class Angle {
       };
 
   static Angle fromRadians(double radians) {
-    double degrees = radians * (180 / pi);
+    double degrees = radians * (180 / _pi);
 
     return Angle(
         radians: radians,
-        radiansMinusPiPi: radians > pi ? radians - 2 * pi : radians,
+        radiansMinusPiPi: radians > _pi ? radians - 2 * _pi : radians,
         degrees: degrees,
         degreesClockwise: 360 - degrees);
   }
 
   static Angle fromDegrees(double degrees) {
-    return Angle.fromRadians(degrees * (pi / 180));
+    return Angle.fromRadians(degrees * (_pi / 180));
   }
 }
 

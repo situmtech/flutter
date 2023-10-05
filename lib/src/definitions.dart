@@ -148,14 +148,14 @@ class Camera {
   /// Value defaults to an internally calculated intermediate value.
   double? zoom;
 
-  /// Set the [bearing] to a determined degree.
+  /// Set the [bearing] to a determined value in degrees.
   ///
-  /// value defaults to 0°.
+  /// value defaults to 0° (north direction).
   Angle? bearing;
 
   /// Set the [pitch] to a determined degree between 0° and 60°.
   ///
-  /// Value defaults to 0°.
+  /// Value defaults to 30°.
   Angle? pitch;
 
   /// Set the [transitionDuration] to determined value in milliseconds.
