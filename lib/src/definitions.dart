@@ -107,12 +107,10 @@ class MapViewConfiguration {
 
   String _getViewerURL() {
     var base = viewerDomain;
-    var lockCameraToBuildingQuery = "";
+    var query = "apikey=$situmApiKey&domain=$_internalApiDomain&mode=embed";
     if (lockCameraToBuilding != null) {
-      lockCameraToBuildingQuery = "&lockCameraToBuilding=$lockCameraToBuilding";
+      query = "$query&lockCameraToBuilding=$lockCameraToBuilding";
     }
-    var query =
-        "apikey=$situmApiKey&domain=$_internalApiDomain&mode=embed$lockCameraToBuildingQuery";
 
     if (remoteIdentifier?.isNotEmpty == true &&
         buildingIdentifier?.isNotEmpty == true) {
