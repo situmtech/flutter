@@ -127,7 +127,7 @@ class MapViewController {
 
   /// Animate the map's [Camera].
   void setCamera(Camera camera) async {
-    _sendMessage(WV_MESSAGE_CAMERA_SET, camera.toMap());
+    _sendMessage(WV_MESSAGE_CAMERA_SET, jsonEncode(camera.toMap()));
   }
 
   /// Select a floor of the current building by its [Floor.identifier].
