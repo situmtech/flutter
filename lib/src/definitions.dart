@@ -145,7 +145,7 @@ class Camera {
   /// Set the [zoom] to the desired value. In case [zoom] is out of the range of values we calculate internally,
   /// a fallback minimum or maximum value will be set.
   ///
-  /// Value defaults to and internally calculated intermediate.
+  /// Value defaults to an internally calculated intermediate value.
   double? zoom;
 
   /// Set the [bearing] to a determined degree.
@@ -163,7 +163,7 @@ class Camera {
   /// Value defaults to 1000 milliseconds.
   int? transitionDuration;
 
-  /// Move the [center] of the camera to a [Coordinate] coordinate on the map.
+  /// Move the [center] of the camera to a [Coordinate] on the map.
   Coordinate? center;
 
   Camera(
