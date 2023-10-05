@@ -1,7 +1,6 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:situm_flutter/sdk.dart';
 import 'package:situm_flutter/wayfinding.dart';
@@ -37,23 +36,6 @@ class _MyTabsState extends State<MyTabs> {
   String currentOutput = "---";
   List<Poi> pois = [];
   Poi? dropdownValue;
-
-  // Camera section
-  TextEditingController zoomFieldController = TextEditingController(text: "20");
-  TextEditingController bearingFieldController =
-      TextEditingController(text: "180");
-  TextEditingController pitchFieldController =
-      TextEditingController(text: "60");
-  TextEditingController durationFieldController =
-      TextEditingController(text: "1000");
-  TextEditingController latitudeFieldController =
-      TextEditingController(text: "42.86380171196485");
-  TextEditingController longitudeFieldController =
-      TextEditingController(text: "-8.543060641214014");
-
-  // Cartography section
-  TextEditingController levelFieldController = TextEditingController(text: "0");
-
   Function? mapViewLoadAction;
 
   MapViewController? mapViewController;
@@ -64,29 +46,20 @@ class _MyTabsState extends State<MyTabs> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Flexible(
-            flex: 3,
-            child: SingleChildScrollView(
-                child: Column(
-              children: [
-                _buttonsGroup(Icons.my_location, "Positioning", [
-                  _sdkButton('Start', _requestLocationUpdates),
-                  _sdkButton('Stop', _removeUpdates),
-                ]),
-                _buttonsGroup(Icons.cloud_download, "Fetch resources", [
-                  _sdkButton('Prefetch', _prefetch),
-                  _sdkButton('Clear cache', _clearCache),
-                  _sdkButton('Pois', _fetchPois),
-                  _sdkButton('Categories', _fetchCategories),
-                  _sdkButton('Buildings', _fetchBuildings),
-                  _sdkButton('Building Info', _fetchBuildingInfo),
-                ]),
-                _cartographyInteractions(),
-                _cameraInteractions(),
-              ],
-            ))),
-        Flexible(
-            flex: 1,
+        _buttonsGroup(Icons.my_location, "Positioning", [
+          _sdkButton('Start', _requestLocationUpdates),
+          _sdkButton('Stop', _removeUpdates),
+        ]),
+        _buttonsGroup(Icons.cloud_download, "Fetch resources", [
+          _sdkButton('Prefetch', _prefetch),
+          _sdkButton('Clear cache', _clearCache),
+          _sdkButton('Pois', _fetchPois),
+          _sdkButton('Categories', _fetchCategories),
+          _sdkButton('Buildings', _fetchBuildings),
+          _sdkButton('Building Info', _fetchBuildingInfo),
+        ]),
+        _poiInteraction(),
+        Expanded(
             child: SingleChildScrollView(
                 padding: const EdgeInsets.all(30), child: Text(currentOutput)))
       ],
@@ -138,11 +111,11 @@ class _MyTabsState extends State<MyTabs> {
     );
   }
 
-  Card _cartographyInteractions() {
+  Card _poiInteraction() {
     return Card(
       child: Column(
         children: [
-          _cardTitle(Icons.map, "Cartography Interaction"),
+          _cardTitle(Icons.interests, "POI Interaction"),
           Row(
             children: <Widget>[
               Flexible(
@@ -166,98 +139,11 @@ class _MyTabsState extends State<MyTabs> {
                   ),
                 ),
               ),
-              _sdkButton("selectPoi", (() => _selectPoi(dropdownValue))),
-              _sdkButton(
-                  "navigateToPoi", (() => _navigateToPoi(dropdownValue))),
+              _sdkButton("Select", (() => _selectPoi(dropdownValue))),
+              _sdkButton("Navigate", (() => _navigateToPoi(dropdownValue))),
             ],
           ),
-          _rowWithPadding(3.0, [
-            Expanded(
-              child: _sdkButton("selectLevel", () {
-                _selectLevel(levelFieldController.text);
-              }),
-            ),
-            _expandedTextField("level", "0", levelFieldController),
-          ]),
         ],
-      ),
-    );
-  }
-
-  Card _cameraInteractions() {
-    return Card(
-      child: Column(children: [
-        _cardTitle(Icons.camera_alt, "Camera Interactions"),
-        _rowWithPadding(10.0, [
-          Expanded(
-            child: _sdkButton("setCamera", () {
-              _setCamera(
-                zoom: zoomFieldController.text,
-                bearing: bearingFieldController.text,
-                pitch: pitchFieldController.text,
-                transitionDuration: durationFieldController.text,
-                latitude: latitudeFieldController.text,
-                longitude: longitudeFieldController.text,
-              );
-            }),
-          ),
-          Expanded(
-            child: Column(
-              children: [
-                _rowWithPadding(3.0, [
-                  _expandedTextField("Zoom", "14 - 21", zoomFieldController)
-                ]),
-                _rowWithPadding(3.0, [
-                  _expandedTextField(
-                      "Bearing", "0° - 180°", bearingFieldController)
-                ]),
-                _rowWithPadding(3.0, [
-                  _expandedTextField("Pitch", "0° - 60°", pitchFieldController)
-                ]),
-                _rowWithPadding(3.0, [
-                  _expandedTextField(
-                      "Duration", "1000 ms", durationFieldController)
-                ]),
-                _rowWithPadding(
-                  3.0,
-                  [
-                    _expandedTextField("Lat", "", latitudeFieldController),
-                    _expandedTextField("Lng", "", longitudeFieldController),
-                  ],
-                )
-              ],
-            ),
-          ),
-        ]),
-      ]),
-    );
-  }
-
-  Widget _rowWithPadding(double padding, List<Widget> children) {
-    return Padding(
-      padding: EdgeInsets.all(padding),
-      child: Row(
-        children: children,
-      ),
-    );
-  }
-
-  Widget _expandedTextField(
-      String label, String hintText, TextEditingController controller) {
-    return Expanded(
-      child: TextField(
-        controller: controller,
-        keyboardType:
-            const TextInputType.numberWithOptions(decimal: true, signed: true),
-        inputFormatters: <TextInputFormatter>[
-          FilteringTextInputFormatter.allow(RegExp(r'^-?\d+\.?\d*')),
-        ],
-        decoration: InputDecoration(
-            labelText: label,
-            border: const OutlineInputBorder(),
-            contentPadding: const EdgeInsets.all(8.0),
-            constraints: BoxConstraints.loose(const Size.square(40)),
-            hintText: hintText),
       ),
     );
   }
@@ -277,7 +163,6 @@ class _MyTabsState extends State<MyTabs> {
           remoteIdentifier: remoteIdentifier,
           // The viewer domain:
           viewerDomain: viewerDomain,
-          enableDebugging: true,
         ),
         onLoad: _onLoad,
       ),
@@ -304,11 +189,6 @@ class _MyTabsState extends State<MyTabs> {
     });
   }
 
-  void _callMapviewLoadAction() {
-    mapViewLoadAction?.call();
-    mapViewLoadAction = null;
-  }
-
   void _selectPoi(Poi? poi) {
     if (poi == null) {
       return;
@@ -324,21 +204,9 @@ class _MyTabsState extends State<MyTabs> {
     }
   }
 
-  void _selectLevel(String? level) {
-    int newLevel = 0;
-    try {
-      newLevel = int.tryParse(level ?? "0") ?? 0;
-    } catch (e) {
-      debugPrint("$e");
-    }
-
-    mapViewLoadAction = () {
-      mapViewController?.selectLevel(newLevel);
-    };
-
-    if (mapViewController != null) {
-      _callMapviewLoadAction();
-    }
+  void _callMapviewLoadAction() {
+    mapViewLoadAction?.call();
+    mapViewLoadAction = null;
   }
 
   void _navigateToPoi(Poi? poi) {
@@ -351,39 +219,6 @@ class _MyTabsState extends State<MyTabs> {
     mapViewLoadAction = () {
       mapViewController?.navigateToPoi(poi.identifier);
     };
-    if (mapViewController != null) {
-      _callMapviewLoadAction();
-    }
-  }
-
-  void _setCamera(
-      {String? zoom,
-      String? bearing,
-      String? pitch,
-      String? transitionDuration,
-      String? latitude,
-      String? longitude}) {
-    Camera newCamera = Camera();
-
-    try {
-      newCamera = Camera(
-        zoom: double.tryParse(zoom ?? "0.0"),
-        bearing: double.tryParse(bearing ?? "0.0"),
-        pitch: double.tryParse(pitch ?? "0.0"),
-        transitionDuration: int.tryParse(transitionDuration ?? "0"),
-        center: LatLng(
-          latitude: double.tryParse(latitude ?? "0.0"),
-          longitude: double.tryParse(longitude ?? "0.0"),
-        ),
-      );
-    } catch (e) {
-      debugPrint("$e");
-    }
-
-    mapViewLoadAction = () {
-      mapViewController?.setCamera(newCamera);
-    };
-
     if (mapViewController != null) {
       _callMapviewLoadAction();
     }
