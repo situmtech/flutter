@@ -57,7 +57,7 @@ const WV_MESSAGE_NAVIGATION_CANCEL = "navigation.cancel";
 
 // Cartogaphy actions
 const WV_MESSAGE_CARTOGRAPHY_SELECT_POI = "cartography.select_poi";
-const WV_MESSAGE_CARTOGRAPHY_SELECT_LEVEL = "cartography.select_level";
+const WV_MESSAGE_CARTOGRAPHY_SELECT_FLOOR = "cartography.select_floor";
 const WV_MESSAGE_UI_SET_LANGUAGE = "ui.set_language";
 
 // Camera actions

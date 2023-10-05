@@ -130,9 +130,10 @@ class MapViewController {
     _sendMessage(WV_MESSAGE_CAMERA_SET, camera.toMap());
   }
 
-  /// Select new floor by its level
-  void selectLevel(int level) async {
-    _sendMessage(WV_MESSAGE_CARTOGRAPHY_SELECT_LEVEL, {"level": level});
+  /// Select a floor of the current building by its [Floor.identifier].
+  void selectFloor(int identifier) async {
+    _sendMessage(
+        WV_MESSAGE_CARTOGRAPHY_SELECT_FLOOR, {"identifier": identifier});
   }
 
   // WYF internal utils:
