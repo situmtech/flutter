@@ -158,8 +158,8 @@ DirectionsRequest createDirectionsRequest(arguments) {
   var directionsRequest = DirectionsRequest(
     from: createPoint(arguments["from"]),
     to: createPoint(arguments["to"]),
-    bearingFrom: Angle(
-      radians: (arguments["bearingFrom"] != null
+    bearingFrom: Angle.fromRadians(
+      (arguments["bearingFrom"] != null
               ? arguments["bearingFrom"]["radians"]
               : 0)
           .toDouble(),

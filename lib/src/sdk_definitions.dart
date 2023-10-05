@@ -293,14 +293,25 @@ class CartesianCoordinate {
 /// An structure that contains an angle in radians.
 class Angle {
   final double radians;
+  final double degrees;
 
   Angle({
     required this.radians,
+    required this.degrees,
   });
 
   Map<String, dynamic> toMap() => {
         "radians": radians,
+        "degrees": degrees,
       };
+
+  static Angle fromRadians(double radians) {
+    return Angle(radians: radians, degrees: radians * (180 / pi));
+  }
+
+  static Angle fromDegrees(double degrees) {
+    return Angle(radians: degrees * (pi / 180), degrees: degrees);
+  }
 }
 
 /// Represents a rectangle bounds in a greographic 2D space.

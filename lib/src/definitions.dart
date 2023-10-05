@@ -151,20 +151,20 @@ class Camera {
   /// Set the [bearing] to a determined degree.
   ///
   /// value defaults to 0°.
-  double? bearing;
+  Angle? bearing;
 
   /// Set the [pitch] to a determined degree between 0° and 60°.
   ///
   /// Value defaults to 0°.
-  double? pitch;
+  Angle? pitch;
 
   /// Set the [transitionDuration] to determined value in milliseconds.
   ///
   /// Value defaults to 1000 milliseconds.
   int? transitionDuration;
 
-  /// Move the [center] of the camera to a [LatLng] coordinate on the map.
-  LatLng? center;
+  /// Move the [center] of the camera to a [Coordinate] coordinate on the map.
+  Coordinate? center;
 
   Camera(
       {this.zoom,
@@ -179,10 +179,10 @@ class Camera {
       result["zoom"] = zoom!;
     }
     if (bearing != null) {
-      result["bearing"] = bearing!;
+      result["bearing"] = bearing!.degrees;
     }
     if (pitch != null) {
-      result["pitch"] = pitch!;
+      result["pitch"] = pitch!.degrees;
     }
     if (transitionDuration != null) {
       result["transitionDuration"] = transitionDuration!;
@@ -196,13 +196,6 @@ class Camera {
 
     return result;
   }
-}
-
-class LatLng {
-  double? latitude;
-  double? longitude;
-
-  LatLng({this.latitude, this.longitude});
 }
 
 class OnPoiSelectedResult {
