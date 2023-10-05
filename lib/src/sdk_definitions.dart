@@ -318,17 +318,11 @@ class Angle {
         radians: radians,
         radiansMinusPiPi: radians > pi ? radians - 2 * pi : radians,
         degrees: degrees,
-        degreesClockwise: degrees - 360);
+        degreesClockwise: 360 - degrees);
   }
 
   static Angle fromDegrees(double degrees) {
-    double radians = degrees * (pi / 180);
-
-    return Angle(
-        radians: radians,
-        radiansMinusPiPi: radians > pi ? radians - 2 * pi : radians,
-        degrees: degrees,
-        degreesClockwise: degrees - 360);
+    return Angle.fromRadians(degrees * (pi / 180));
   }
 }
 
