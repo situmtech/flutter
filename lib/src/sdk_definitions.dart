@@ -182,7 +182,7 @@ class Location {
   final CartesianCoordinate cartesianCoordinate;
   final String buildingIdentifier;
   final String floorIdentifier;
-  final Bearing? bearing;
+  final Angle? bearing;
   final double accuracy;
   final bool isIndoor;
   final bool isOutdoor;
@@ -290,27 +290,45 @@ class CartesianCoordinate {
       };
 }
 
-/// An structure that contains an angle in radians.
+/// An structure that contains an angles in radians and in degrees.
 class Angle {
   final double radians;
+  final double radiansMinusPiPi;
   final double degrees;
+  final double degreesClockwise;
 
   Angle({
     required this.radians,
+    required this.radiansMinusPiPi,
     required this.degrees,
+    required this.degreesClockwise,
   });
 
   Map<String, dynamic> toMap() => {
+        "radiansMinusPiPi": radiansMinusPiPi,
         "radians": radians,
+        "degreesClockwise": degreesClockwise,
         "degrees": degrees,
       };
 
   static Angle fromRadians(double radians) {
-    return Angle(radians: radians, degrees: radians * (180 / pi));
+    double degrees = radians * (180 / pi);
+
+    return Angle(
+        radians: radians,
+        radiansMinusPiPi: radians > pi ? radians - 2 * pi : radians,
+        degrees: degrees,
+        degreesClockwise: degrees - 360);
   }
 
   static Angle fromDegrees(double degrees) {
-    return Angle(radians: degrees * (pi / 180), degrees: degrees);
+    double radians = degrees * (pi / 180);
+
+    return Angle(
+        radians: radians,
+        radiansMinusPiPi: radians > pi ? radians - 2 * pi : radians,
+        degrees: degrees,
+        degreesClockwise: degrees - 360);
   }
 }
 
@@ -333,29 +351,6 @@ class Bounds {
         "northWest": northWest.toMap(),
         "southEast": southEast.toMap(),
         "southWest": southWest.toMap()
-      };
-}
-
-/// Given a [Location], represents the bearing (in degrees) with respect to the
-/// Earth North.
-class Bearing {
-  final double radiansMinusPiPi;
-  final double radians;
-  final double degreesClockwise;
-  final double degrees;
-
-  const Bearing({
-    required this.radiansMinusPiPi,
-    required this.radians,
-    required this.degreesClockwise,
-    required this.degrees,
-  });
-
-  Map<String, dynamic> toMap() => {
-        "radiansMinusPiPi": radiansMinusPiPi,
-        "radians": radians,
-        "degreesClockwise": degreesClockwise,
-        "degrees": degrees,
       };
 }
 

@@ -134,7 +134,7 @@ Location createLocation(dynamic args) {
       x: args["cartesianCoordinate"]["x"] ?? 0,
       y: args["cartesianCoordinate"]["y"] ?? 0,
     ),
-    bearing: Bearing(
+    bearing: Angle(
       degrees: args["bearing"]["degrees"],
       degreesClockwise: args["bearing"]["degreesClockwise"],
       radians: args["bearing"]["radians"],
