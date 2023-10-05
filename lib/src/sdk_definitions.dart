@@ -290,7 +290,7 @@ class CartesianCoordinate {
       };
 }
 
-/// An structure that contains an angles in radians and in degrees.
+/// An structure that contains an angle in radians and in degrees.
 class Angle {
   final double radians;
   final double radiansMinusPiPi;
