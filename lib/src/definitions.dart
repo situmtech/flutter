@@ -71,16 +71,17 @@ class MapViewConfiguration {
 
   /// The [MapView] settings. Required fields are your Situm user and API key,
   /// but also a buildingIdentifier or remoteIdentifier.
-  MapViewConfiguration(
-      {this.situmUser,
-      required this.situmApiKey,
-      this.buildingIdentifier,
-      this.remoteIdentifier,
-      String? viewerDomain,
-      this.apiDomain = "dashboard.situm.com",
-      this.directionality = TextDirection.ltr,
-      this.enableDebugging = false,
-      this.lockCameraToBuilding}) {
+  MapViewConfiguration({
+    this.situmUser,
+    required this.situmApiKey,
+    this.buildingIdentifier,
+    this.remoteIdentifier,
+    String? viewerDomain,
+    this.apiDomain = "dashboard.situm.com",
+    this.directionality = TextDirection.ltr,
+    this.enableDebugging = false,
+    this.lockCameraToBuilding,
+  }) {
     if (viewerDomain != null) {
       if (!viewerDomain.startsWith("https://") &&
           !viewerDomain.startsWith("http://")) {
