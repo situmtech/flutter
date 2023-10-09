@@ -53,6 +53,21 @@
     [self.channel invokeMethod:@"onUserOutsideRoute" arguments: nil];
 }
 
+- (void)navigationManager:(id<SITNavigationInterface>)navigationManager
+          didStartOnRoute:(SITRoute *)route
+{
+    NSLog(@"Navigation-> Started route");
+    [self.channel invokeMethod:@"onNavigationStart"
+                     arguments:route.toDictionary];
+}
+
+- (void)navigationManager:(id<SITNavigationInterface>)navigationManager
+         didCancelOnRoute:(SITRoute *)route
+{
+    NSLog(@"Navigation-> Canceled route");
+    [self.channel invokeMethod:@"onNavigationCancellation"
+                     arguments:nil];
+}
 
 
 #pragma mark - SITLocationDelegate methods
