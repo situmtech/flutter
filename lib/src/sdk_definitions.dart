@@ -182,7 +182,7 @@ class Location {
   final CartesianCoordinate cartesianCoordinate;
   final String buildingIdentifier;
   final String floorIdentifier;
-  final Bearing? bearing;
+  final Angle? bearing;
   final double accuracy;
   final bool isIndoor;
   final bool isOutdoor;
@@ -290,17 +290,42 @@ class CartesianCoordinate {
       };
 }
 
-/// An structure that contains an angle in radians.
+/// An structure that contains an angle in radians and in degrees.
 class Angle {
   final double radians;
+  final double radiansMinusPiPi;
+  final double degrees;
+  final double degreesClockwise;
+
+  static const double _pi = 3.1415926535897932;
 
   Angle({
     required this.radians,
+    required this.radiansMinusPiPi,
+    required this.degrees,
+    required this.degreesClockwise,
   });
 
   Map<String, dynamic> toMap() => {
+        "radiansMinusPiPi": radiansMinusPiPi,
         "radians": radians,
+        "degreesClockwise": degreesClockwise,
+        "degrees": degrees,
       };
+
+  static Angle fromRadians(double radians) {
+    double degrees = radians * (180 / _pi);
+
+    return Angle(
+        radians: radians,
+        radiansMinusPiPi: radians > _pi ? radians - 2 * _pi : radians,
+        degrees: degrees,
+        degreesClockwise: 360 - degrees);
+  }
+
+  static Angle fromDegrees(double degrees) {
+    return Angle.fromRadians(degrees * (_pi / 180));
+  }
 }
 
 /// Represents a rectangle bounds in a greographic 2D space.
@@ -322,29 +347,6 @@ class Bounds {
         "northWest": northWest.toMap(),
         "southEast": southEast.toMap(),
         "southWest": southWest.toMap()
-      };
-}
-
-/// Given a [Location], represents the bearing (in degrees) with respect to the
-/// Earth North.
-class Bearing {
-  final double radiansMinusPiPi;
-  final double radians;
-  final double degreesClockwise;
-  final double degrees;
-
-  const Bearing({
-    required this.radiansMinusPiPi,
-    required this.radians,
-    required this.degreesClockwise,
-    required this.degrees,
-  });
-
-  Map<String, dynamic> toMap() => {
-        "radiansMinusPiPi": radiansMinusPiPi,
-        "radians": radians,
-        "degreesClockwise": degreesClockwise,
-        "degrees": degrees,
       };
 }
 

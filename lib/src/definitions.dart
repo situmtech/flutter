@@ -64,7 +64,7 @@ class MapViewConfiguration {
   /// Default is false.
   final bool enableDebugging;
 
-  ///Set if you want to lock the camera to the building and stop the user from moving away
+  /// Set if you want to lock the camera to the building and stop the user from moving away
   ///
   /// Default is false.
   final bool? lockCameraToBuilding;
@@ -148,6 +148,66 @@ class DirectionsMessage {
     this.identifier,
     this.accessibilityMode,
   });
+}
+
+class Camera {
+  /// Set the [zoom] to the desired value. In case [zoom] is out of the range of values we calculate internally,
+  /// a fallback minimum or maximum value will be set.
+  ///
+  /// Value defaults to an internally calculated intermediate value.
+  double? zoom;
+
+  /// Set the [bearing] to a determined value in degrees.
+  ///
+  /// value defaults to 0° (north direction).
+  Angle? bearing;
+
+  /// Set the [pitch] to a determined degree between 0° and 60°.
+  ///
+  /// Value defaults to 30°.
+  Angle? pitch;
+
+  /// Set the [transitionDuration] to determined value in milliseconds.
+  ///
+  /// Value defaults to 1000 milliseconds.
+  int? transitionDuration;
+
+  /// Move the [center] of the camera to a [Coordinate] on the map.
+  ///
+  /// **NOTE**: with lockToBuilding set to true, introducing a coordinate outside far away from the building
+  /// will result in the camera hitting this building bounds adn not reaching the specified coordinate.
+  Coordinate? center;
+
+  Camera(
+      {this.zoom,
+      this.bearing,
+      this.pitch,
+      this.transitionDuration,
+      this.center});
+
+  toMap() {
+    Map<String, Object> result = {};
+    if (zoom != null) {
+      result["zoom"] = zoom!;
+    }
+    if (bearing != null) {
+      result["bearing"] = bearing!.degrees;
+    }
+    if (pitch != null) {
+      result["pitch"] = pitch!.degrees;
+    }
+    if (transitionDuration != null) {
+      result["transitionDuration"] = transitionDuration!;
+    }
+    if (center?.latitude != null && center?.longitude != null) {
+      result["center"] = {
+        "lat": center!.latitude,
+        "lng": center!.longitude,
+      };
+    }
+
+    return result;
+  }
 }
 
 class OnPoiSelectedResult {
