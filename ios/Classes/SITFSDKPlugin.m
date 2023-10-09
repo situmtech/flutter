@@ -32,7 +32,7 @@ const NSString* RESULTS_KEY = @"results";
     instance.locManager = [SITLocationManager sharedInstance];
     instance.navigationHandler = [SITNavigationHandler sharedInstance];
     instance.navigationHandler.channel = channel;
-    SITNavigationManager.sharedManager.delegate = instance.navigationHandler;
+    [SITNavigationManager.sharedManager addDelegate:instance.navigationHandler];
     instance.channel = channel;
     [registrar addMethodCallDelegate:instance channel:channel];
 }

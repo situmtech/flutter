@@ -134,7 +134,7 @@ Location createLocation(dynamic args) {
       x: args["cartesianCoordinate"]["x"] ?? 0,
       y: args["cartesianCoordinate"]["y"] ?? 0,
     ),
-    bearing: Bearing(
+    bearing: Angle(
       degrees: args["bearing"]["degrees"],
       degreesClockwise: args["bearing"]["degreesClockwise"],
       radians: args["bearing"]["radians"],
@@ -158,8 +158,8 @@ DirectionsRequest createDirectionsRequest(arguments) {
   var directionsRequest = DirectionsRequest(
     from: createPoint(arguments["from"]),
     to: createPoint(arguments["to"]),
-    bearingFrom: Angle(
-      radians: (arguments["bearingFrom"] != null
+    bearingFrom: Angle.fromRadians(
+      (arguments["bearingFrom"] != null
               ? arguments["bearingFrom"]["radians"]
               : 0)
           .toDouble(),

@@ -125,6 +125,19 @@ class MapViewController {
     _sendMessage(WV_MESSAGE_CAMERA_FOLLOW_USER, {"value": false});
   }
 
+  /// Animate the map's [Camera].
+  void setCamera(Camera camera) async {
+    _sendMessage(WV_MESSAGE_CAMERA_SET, jsonEncode(camera.toMap()));
+  }
+
+  /// Select a floor of the current building by its [Floor.identifier].
+  ///
+  /// **NOTE**: introducing an invalid identifer may result in unexpected behaviours.
+  void selectFloor(int identifier) async {
+    _sendMessage(
+        WV_MESSAGE_CARTOGRAPHY_SELECT_FLOOR, {"identifier": identifier});
+  }
+
   // WYF internal utils:
 
   void _notifyMapIsReady() {
