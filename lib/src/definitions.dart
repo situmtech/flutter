@@ -64,6 +64,11 @@ class MapViewConfiguration {
   /// Default is false.
   final bool enableDebugging;
 
+  ///Set if you want to lock the camera to the building and stop the user from moving away
+  ///
+  /// Default is false.
+  final bool? lockCameraToBuilding;
+
   /// The [MapView] settings. Required fields are your Situm user and API key,
   /// but also a buildingIdentifier or remoteIdentifier.
   MapViewConfiguration({
@@ -75,6 +80,7 @@ class MapViewConfiguration {
     this.apiDomain = "dashboard.situm.com",
     this.directionality = TextDirection.ltr,
     this.enableDebugging = false,
+    this.lockCameraToBuilding,
   }) {
     if (viewerDomain != null) {
       if (!viewerDomain.startsWith("https://") &&
@@ -103,6 +109,9 @@ class MapViewConfiguration {
   String _getViewerURL() {
     var base = viewerDomain;
     var query = "apikey=$situmApiKey&domain=$_internalApiDomain&mode=embed";
+    if (lockCameraToBuilding != null) {
+      query = "$query&lockCameraToBuilding=$lockCameraToBuilding";
+    }
 
     if (remoteIdentifier?.isNotEmpty == true &&
         buildingIdentifier?.isNotEmpty == true) {
