@@ -126,6 +126,9 @@ class MapViewController {
   }
 
   /// Animate the map's [Camera].
+  ///
+  /// * **NOTE**: Calling this method repeatedly within a short period of time might result in unexpected behaviours with the camera animations,
+  /// so make sure you leave at least 1000 ms between multiple calls to this method.
   void setCamera(Camera camera) async {
     _sendMessage(WV_MESSAGE_CAMERA_SET, jsonEncode(camera.toMap()));
   }
