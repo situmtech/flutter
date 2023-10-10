@@ -40,6 +40,10 @@ class MapViewController {
     _sendMessage(WV_MESSAGE_LOCATION, locationMap);
   }
 
+  void sendStatus(String status) {
+    _sendMessage(WV_MESSAGE_LOCATION_STATUS, {"status": '\"${status}\"'});
+  }
+
   void onMapViewerMessage(String type, Map<String, dynamic> payload) {
     MessageHandler(type).handleMessage(this, payload);
   }

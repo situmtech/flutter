@@ -16,6 +16,8 @@ abstract class MessageHandler {
         return PoiSelectedMessageHandler();
       case WV_MESSAGE_CARTOGRAPHY_POI_DESELECTED:
         return PoiDeselectedMessageHandler();
+      case WV_MESSAGE_LOCATION_START:
+        return LocationStartMessageHandler();
       default:
         debugPrint("EmptyMessageHandler handles message of type: $type");
         return EmptyMessageHandler();
@@ -160,5 +162,17 @@ class PoiDeselectedMessageHandler extends PoiSelectionMessageHandler {
   void handlePoiInteraction(MapViewController mapViewController, Poi poi) {
     mapViewController._onPoiDeselectedCallback
         ?.call(OnPoiDeselectedResult(poi: poi));
+  }
+}
+
+class LocationStartMessageHandler implements MessageHandler {
+  @override
+  void handleMessage(
+      MapViewController mapViewController, Map<String, dynamic> payload) {
+    var sdk = SitumSdk();
+    sdk.requestLocationUpdates(LocationRequest(
+      buildingIdentifier: payload["buildingIdentifier"],
+      useDeadReckoning: false,
+    ));
   }
 }

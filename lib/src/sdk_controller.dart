@@ -203,6 +203,11 @@ class SitumSdk {
   Future<void> stopNavigation() async {
     await methodChannel.invokeMethod("stopNavigation", {});
   }
+  
+  /// Start location
+  Future<void> startLocation() async {
+    await methodChannel.invokeMethod("startLocation", {});
+  }
 
   /// Sets a callback that will be notified when the navigation starts.
   ///
