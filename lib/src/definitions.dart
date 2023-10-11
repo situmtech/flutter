@@ -64,7 +64,7 @@ class MapViewConfiguration {
   /// Default is false.
   final bool enableDebugging;
 
-  /// Set if you want to lock the camera to the building and stop the user from moving away
+  /// When set to true, the camera will be locked to the building so the user can't move it away
   ///
   /// Default is false.
   final bool? lockCameraToBuilding;
@@ -157,25 +157,28 @@ class Camera {
   /// Value defaults to an internally calculated intermediate value.
   double? zoom;
 
-  /// Set the [bearing] to a determined value in degrees.
+  /// Set the [bearing] to a determined value in [Angle].
   ///
-  /// value defaults to 0° (north direction).
+  /// Value defaults to 0° (north direction).
   Angle? bearing;
 
-  /// Set the [pitch] to a determined degree between 0° and 60°.
+  /// Set the [pitch] to a determined [Angle] between 0° and 60°.
   ///
   /// Value defaults to 30°.
   Angle? pitch;
 
   /// Set the [transitionDuration] to determined value in milliseconds.
   ///
+  /// * **NOTE**: We prioritize user interactions with the map, so setting a high value for this parameter
+  /// might result in your animation getting cut by the user.
+  ///
   /// Value defaults to 1000 milliseconds.
   int? transitionDuration;
 
   /// Move the [center] of the camera to a [Coordinate] on the map.
   ///
-  /// **NOTE**: with lockToBuilding set to true, introducing a coordinate outside far away from the building
-  /// will result in the camera hitting this building bounds adn not reaching the specified coordinate.
+  /// * **NOTE**: With [MapViewConfiguration.lockCameraToBuilding] set to true, introducing a coordinate far away from the building
+  /// will result in the camera hitting the building bounds and not reaching the specified coordinate.
   Coordinate? center;
 
   Camera(
