@@ -64,7 +64,7 @@ class MapViewConfiguration {
   /// Default is false.
   final bool enableDebugging;
 
-  /// Set if you want to lock the camera to the building and stop the user from moving away
+  /// When set to true, the camera will be locked to the building so the user can't move it away
   ///
   /// Default is false.
   final bool? lockCameraToBuilding;
