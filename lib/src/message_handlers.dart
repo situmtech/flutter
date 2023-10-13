@@ -170,8 +170,9 @@ class LocationStartMessageHandler implements MessageHandler {
   void handleMessage(
       MapViewController mapViewController, Map<String, dynamic> payload) {
     var sdk = SitumSdk();
+    String? id = payload["buildingIdentifier"].toString();
     sdk.requestLocationUpdates(LocationRequest(
-      buildingIdentifier: payload["buildingIdentifier"],
+      buildingIdentifier: id,
       useDeadReckoning: false,
     ));
   }
