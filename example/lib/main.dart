@@ -205,10 +205,10 @@ class _MyTabsState extends State<MyTabs> {
     //controller.followUser();
 
     controller.onPoiSelected((poiSelectedResult) {
-      printWarning("WYF> Poi SELECTED: ${poiSelectedResult.poi.name}");
+      printWarning("WYF> Poi SELECTED: $poiSelectedResult");
     });
     controller.onPoiDeselected((poiDeselectedResult) {
-      printWarning("WYF> Poi DESELECTED: ${poiDeselectedResult.poi.name}");
+      printWarning("WYF> Poi DESELECTED: $poiDeselectedResult");
     });
     controller.onNavigationRequestInterceptor((navigationRequest) {
       printWarning("WYF> Navigation interceptor: ${navigationRequest.toMap()}");

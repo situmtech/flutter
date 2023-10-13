@@ -137,29 +137,35 @@ abstract class PoiSelectionMessageHandler implements MessageHandler {
     }
     var poiId = "${payload["identifier"]}";
     var buildingId = "${payload["buildingIdentifier"]}";
-    var sdk = SitumSdk();
-    // TODO: fix fetchPoiFromBuilding is consuming unnecessary resources.
-    // var poi = await sdk.fetchPoiFromBuilding(buildingId, poiId);
-    // if (poi != null) {
-    //   handlePoiInteraction(mapViewController, poi);
-    // }
+    // TODO: added name as a workaround. fetchPoiFromBuilding must be optimized.
+    var poiName = payload["name"]?.toString() ?? "";
+    handlePoiInteraction(mapViewController, poiId, poiName, buildingId);
   }
 
-  void handlePoiInteraction(MapViewController mapViewController, Poi poi);
+  void handlePoiInteraction(MapViewController mapViewController, String poiId,
+      String poiName, String buildingId);
 }
 
 class PoiSelectedMessageHandler extends PoiSelectionMessageHandler {
   @override
-  void handlePoiInteraction(MapViewController mapViewController, Poi poi) {
-    mapViewController._onPoiSelectedCallback
-        ?.call(OnPoiSelectedResult(poi: poi));
+  void handlePoiInteraction(MapViewController mapViewController, String poiId,
+      String poiName, String buildingId) {
+    mapViewController._onPoiSelectedCallback?.call(OnPoiSelectedResult(
+      identifier: poiId,
+      name: poiName,
+      buildingIdentifier: buildingId,
+    ));
   }
 }
 
 class PoiDeselectedMessageHandler extends PoiSelectionMessageHandler {
   @override
-  void handlePoiInteraction(MapViewController mapViewController, Poi poi) {
-    mapViewController._onPoiDeselectedCallback
-        ?.call(OnPoiDeselectedResult(poi: poi));
+  void handlePoiInteraction(MapViewController mapViewController, String poiId,
+      String poiName, String buildingId) {
+    mapViewController._onPoiDeselectedCallback?.call(OnPoiDeselectedResult(
+      identifier: poiId,
+      name: poiName,
+      buildingIdentifier: buildingId,
+    ));
   }
 }

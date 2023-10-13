@@ -213,20 +213,34 @@ class Camera {
   }
 }
 
-class OnPoiSelectedResult {
-  final Poi poi;
+class OnPoiSelectedResult extends NamedResource {
+  final String buildingIdentifier;
 
   const OnPoiSelectedResult({
-    required this.poi,
+    required super.identifier,
+    required super.name,
+    required this.buildingIdentifier,
   });
+
+  @override
+  String toString() {
+    return "$identifier($name)@$buildingIdentifier";
+  }
 }
 
-class OnPoiDeselectedResult {
-  final Poi poi;
+class OnPoiDeselectedResult extends NamedResource {
+  final String buildingIdentifier;
 
   const OnPoiDeselectedResult({
-    required this.poi,
+    required super.identifier,
+    required super.name,
+    required this.buildingIdentifier,
   });
+
+  @override
+  String toString() {
+    return "$identifier($name)@$buildingIdentifier";
+  }
 }
 
 // Result callbacks.
