@@ -267,6 +267,8 @@ class MapViewController {
   }
 
   void _onError(arguments) {
-    // TODO: send errors to map viewer?
+    if (arguments == "LOCATION_PERMISSION_DENIED" ||
+        arguments == "BLUETOOTH_PERMISSION_DENIED")
+      _setCurrentLocationStatus("NO_PERMISSIONS");
   }
 }
