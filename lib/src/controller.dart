@@ -11,7 +11,18 @@ class MapViewController {
   late MapViewCallback _widgetLoadCallback;
   late PlatformWebViewController _webViewController;
 
-  Location? _currentLocation;
+  List<String> mapViewerStatusesFilter = [
+    'STARTING',
+    'USER_NOT_IN_BUILDING',
+    'BLE_DISABLED',
+    'STOPPED',
+  ];
+  List<String> mapViewerErrorsFilter = [
+    'LOCATION_PERMISSION_DENIED',
+    'BLUETOOTH_PERMISSION_DENIED',
+    'LOCATION_DISABLED',
+    'BLUETOOTH_DISABLED',
+  ];
 
   MapViewController({
     String? situmUser,
@@ -249,18 +260,12 @@ class MapViewController {
 
   void _onLocationChanged(arguments) {
     // Send location to the map-viewer.
-    _currentLocation = createLocation(arguments);
-    setCurrentLocation(_currentLocation!);
+    setCurrentLocation(createLocation(arguments));
   }
 
   void _onStatusChanged(arguments) {
     String newStatus = arguments["statusName"];
-    List<String> mapViewerStatusesFilter = [
-      'STARTING',
-      'USER_NOT_IN_BUILDING',
-      'BLE_DISABLED',
-      'STOPPED',
-    ];
+
     if (mapViewerStatusesFilter.contains(newStatus)) {
       _setCurrentLocationStatus(newStatus);
     }
@@ -268,10 +273,8 @@ class MapViewController {
 
   void _onError(arguments) {
     var code = arguments["code"];
-    if (code == "LOCATION_PERMISSION_DENIED" ||
-        code == "BLUETOOTH_PERMISSION_DENIED" ||
-        code == "LOCATION_DISABLED" ||
-        code == "BLUETOOTH_DISABLED")
+    if (mapViewerErrorsFilter.contains(code)) {
       _setCurrentLocationStatus("NO_PERMISSIONS");
+    }
   }
 }

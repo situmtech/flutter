@@ -41,7 +41,6 @@ const WV_MESSAGE_NAVIGATION_STOP = "navigation.stopped";
 const WV_MESSAGE_CARTOGRAPHY_POI_SELECTED = "cartography.poi_selected";
 const WV_MESSAGE_CARTOGRAPHY_POI_DESELECTED = "cartography.poi_deselected";
 const WV_MESSAGE_MAP_IS_READY = "app.map_is_ready";
-const WV_MESSAGE_LOCATION_START= "location.start";
 
 // Actions sent to map-viewer:
 const WV_MESSAGE_LOCATION = "location.update";
