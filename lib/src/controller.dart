@@ -267,8 +267,11 @@ class MapViewController {
   }
 
   void _onError(arguments) {
-    if (arguments == "LOCATION_PERMISSION_DENIED" ||
-        arguments == "BLUETOOTH_PERMISSION_DENIED")
+    var code = arguments["code"];
+    if (code == "LOCATION_PERMISSION_DENIED" ||
+        code == "BLUETOOTH_PERMISSION_DENIED" ||
+        code == "LOCATION_DISABLED" ||
+        code == "BLUETOOTH_DISABLED")
       _setCurrentLocationStatus("NO_PERMISSIONS");
   }
 }
