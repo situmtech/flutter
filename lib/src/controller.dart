@@ -17,12 +17,6 @@ class MapViewController {
     'BLE_DISABLED',
     'STOPPED',
   ];
-  List<String> mapViewerErrorsFilter = [
-    'LOCATION_PERMISSION_DENIED',
-    'BLUETOOTH_PERMISSION_DENIED',
-    'LOCATION_DISABLED',
-    'BLUETOOTH_DISABLED',
-  ];
 
   MapViewController({
     String? situmUser,
@@ -272,9 +266,6 @@ class MapViewController {
   }
 
   void _onError(arguments) {
-    var code = arguments["code"];
-    if (mapViewerErrorsFilter.contains(code)) {
-      _setCurrentLocationStatus("NO_PERMISSIONS");
-    }
+    _setCurrentLocationStatus(arguments["code"]);
   }
 }
