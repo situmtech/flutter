@@ -61,10 +61,12 @@ steps:
           echo -e "\t[+] IPHONEOS_DEPLOYMENT_TARGET: $IPHONEOS_DEPLOYMENT_TARGET"
   
 
-          echo -e "\n[+] Pod install"
+          echo -e "\n[+] Pod deintegrate command \n"
           cd ..
-          rm -rf Podfile.lock
-          pod install
+          pod deintegrate 
+
+          echo -e "\n[+] Pod install with --repo-update option \n"
+          pod install --repo-update
   
           echo -e "\n[+] Build example with fastlane \n"
           fastlane ios beta
