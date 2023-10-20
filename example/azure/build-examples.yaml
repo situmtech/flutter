@@ -63,6 +63,7 @@ steps:
 
           echo -e "\n[+] Pod deintegrate command \n"
           cd ..
+          rm -rf Podfile.lock
           pod deintegrate 
 
           echo -e "\n[+] Pod install with --repo-update option \n"
