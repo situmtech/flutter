@@ -64,7 +64,8 @@ class MapViewConfiguration {
   /// Default is false.
   final bool enableDebugging;
 
-  /// When set to true, the camera will be locked to the building so the user can't move it away
+  /// When set to true, the camera will be locked to the building so the user can't move it away. Also the minimum zoom will be set 
+  /// to an internally calculated value so the building remains visible when the user does zoom out.
   ///
   /// Default is false.
   final bool? lockCameraToBuilding;
@@ -151,9 +152,12 @@ class DirectionsMessage {
 }
 
 class Camera {
-  /// Set the [zoom] to the desired value. In case [zoom] is out of the range of values we calculate internally,
-  /// a fallback minimum or maximum value will be set.
-  ///
+  /// Set the [zoom] to some value between 0 and 24.
+  /// 
+  /// The value 0 shows a global view of the map and 24 offers a more detailed view. Take a look at [mapbox-gl](https://docs.mapbox.com/mapbox-gl-js/api/map/#map) documentation for further information.
+  /// 
+  /// * **NOTE**: [MapViewConfiguration.lockCameraToBuilding] will set a new minimum value to make sure the building is still visible when zooming out.
+  /// 
   /// Value defaults to an internally calculated intermediate value.
   double? zoom;
 
@@ -167,7 +171,7 @@ class Camera {
   /// Value defaults to 30°.
   Angle? pitch;
 
-  /// Set the [transitionDuration] to determined value in milliseconds.
+  /// Set the [transitionDuration] to a determined value in milliseconds. The value specified must be >= 0 and defining it to 0 will execute an instant camera animation.
   ///
   /// * **NOTE**: We prioritize user interactions with the map, so setting a high value for this parameter
   /// might result in your animation getting cut by the user.
