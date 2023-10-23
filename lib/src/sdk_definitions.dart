@@ -258,7 +258,7 @@ class NamedResource {
   }
 }
 
-/// An structure that contains geographical coordinate that follows the [WGS 84](https://es.wikipedia.org/wiki/WGS84#:~:text=El%20WGS%2084%20(World%20Geodetic,x%2Cy%2Cz)) coordinate system standart.
+/// An structure that contains geographical coordinate that follows the [WGS 84](https://es.wikipedia.org/wiki/WGS84#:~:text=El%20WGS%2084%20(World%20Geodetic,x%2Cy%2Cz)) coordinate system standard.
 class Coordinate {
   final double latitude;
   final double longitude;
