@@ -37,8 +37,6 @@ class _MyTabsState extends State<MyTabs> {
   int _selectedIndex = 0;
   List<Poi> pois = [];
   Poi? dropdownValue;
-  List<PoiCategory> poiCategories = [];
-  PoiCategory? categoryDropdownValue;
   Function? mapViewLoadAction;
 
   MapViewController? mapViewController;
@@ -62,7 +60,6 @@ class _MyTabsState extends State<MyTabs> {
           _sdkButton('Building Info', _fetchBuildingInfo),
         ]),
         _poiInteraction(),
-        _poiCategoryInteraction(),
         Expanded(
             child: ValueListenableBuilder<String>(
           valueListenable: currentOutputNotifier,
@@ -159,43 +156,6 @@ class _MyTabsState extends State<MyTabs> {
     );
   }
 
-  Card _poiCategoryInteraction() {
-    return Card(
-      child: Column(
-        children: [
-          _cardTitle(Icons.interests, "POI Category Interaction"),
-          Row(
-            children: <Widget>[
-              Flexible(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: DropdownButton<PoiCategory>(
-                    isExpanded: true,
-                    value: categoryDropdownValue,
-                    elevation: 16,
-                    onChanged: (PoiCategory? value) {
-                      setState(() {
-                        categoryDropdownValue = value!;
-                      });
-                    },
-                    items: poiCategories.map((value) {
-                      return DropdownMenuItem<PoiCategory>(
-                        value: value,
-                        child: Text(value.name),
-                      );
-                    }).toList(),
-                  ),
-                ),
-              ),
-              _sdkButton(
-                  "Select", (() => _selectPoiCategory(categoryDropdownValue))),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
   // Widget that shows the Situm MapView.
   Widget _createSitumMapTab() {
     return Stack(children: [
@@ -272,21 +232,6 @@ class _MyTabsState extends State<MyTabs> {
     }
   }
 
-  void _selectPoiCategory(PoiCategory? category) {
-    if (category == null) {
-      return;
-    }
-    setState(() {
-      _selectedIndex = 1;
-    });
-    mapViewLoadAction = () {
-      mapViewController?.selectPoiCategory(category.identifier);
-    };
-    if (mapViewController != null) {
-      _callMapviewLoadAction();
-    }
-  }
-
   void _callMapviewLoadAction() {
     mapViewLoadAction?.call();
     mapViewLoadAction = null;
@@ -309,12 +254,9 @@ class _MyTabsState extends State<MyTabs> {
 
   void _downloadPois(String buildingIdentifier) async {
     var poiList = await situmSdk.fetchPoisFromBuilding(buildingIdentifier);
-    var poiCategoriesList = await situmSdk.fetchPoiCategories();
     setState(() {
       pois = poiList;
       dropdownValue = pois[0];
-      poiCategories = poiCategoriesList;
-      categoryDropdownValue = poiCategories[0];
     });
   }
 
