@@ -138,10 +138,11 @@ abstract class PoiSelectionMessageHandler implements MessageHandler {
     var poiId = "${payload["identifier"]}";
     var buildingId = "${payload["buildingIdentifier"]}";
     var sdk = SitumSdk();
-    var poi = await sdk.fetchPoiFromBuilding(buildingId, poiId);
-    if (poi != null) {
-      handlePoiInteraction(mapViewController, poi);
-    }
+    // TODO: fix fetchPoiFromBuilding is consuming unnecessary resources.
+    // var poi = await sdk.fetchPoiFromBuilding(buildingId, poiId);
+    // if (poi != null) {
+    //   handlePoiInteraction(mapViewController, poi);
+    // }
   }
 
   void handlePoiInteraction(MapViewController mapViewController, Poi poi);

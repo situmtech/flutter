@@ -34,7 +34,7 @@ part 'src/situm_map_view.dart';
 const WV_CHANNEL = "ReactNativeWebView";
 const OFFLINE_CHANNEL = "OfflineChannel";
 
-// Events from map-viewer:
+// EVENTS from map-viewer:
 const WV_MESSAGE_DIRECTIONS_REQUESTED = "directions.requested";
 const WV_MESSAGE_NAVIGATION_REQUESTED = "navigation.requested";
 const WV_MESSAGE_NAVIGATION_STOP = "navigation.stopped";
@@ -42,13 +42,25 @@ const WV_MESSAGE_CARTOGRAPHY_POI_SELECTED = "cartography.poi_selected";
 const WV_MESSAGE_CARTOGRAPHY_POI_DESELECTED = "cartography.poi_deselected";
 const WV_MESSAGE_MAP_IS_READY = "app.map_is_ready";
 
-// Actions sent to map-viewer:
+// ACTIONS sent to map-viewer:
+
+// Location actions
 const WV_MESSAGE_LOCATION = "location.update";
 const WV_MESSAGE_LOCATION_STATUS = "location.update_status";
+
+// Directions actions
 const WV_MESSAGE_DIRECTIONS_UPDATE = "directions.update";
+
+// Navigation actions
 const WV_MESSAGE_NAVIGATION_START = "navigation.start";
 const WV_MESSAGE_NAVIGATION_UPDATE = "navigation.update";
 const WV_MESSAGE_NAVIGATION_CANCEL = "navigation.cancel";
+
+// Cartogaphy actions
 const WV_MESSAGE_CARTOGRAPHY_SELECT_POI = "cartography.select_poi";
+const WV_MESSAGE_CARTOGRAPHY_SELECT_FLOOR = "cartography.select_floor";
 const WV_MESSAGE_UI_SET_LANGUAGE = "ui.set_language";
+
+// Camera actions
 const WV_MESSAGE_CAMERA_FOLLOW_USER = "camera.follow_user";
+const WV_MESSAGE_CAMERA_SET = "camera.set";

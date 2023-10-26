@@ -64,6 +64,12 @@ class MapViewConfiguration {
   /// Default is false.
   final bool enableDebugging;
 
+  /// When set to true, the camera will be locked to the building so the user can't move it away. Also the minimum zoom will be set 
+  /// to an internally calculated value so the building remains visible when the user does zoom out.
+  ///
+  /// Default is false.
+  final bool? lockCameraToBuilding;
+
   /// The [MapView] settings. Required fields are your Situm user and API key,
   /// but also a buildingIdentifier or remoteIdentifier.
   MapViewConfiguration({
@@ -75,6 +81,7 @@ class MapViewConfiguration {
     this.apiDomain = "dashboard.situm.com",
     this.directionality = TextDirection.ltr,
     this.enableDebugging = false,
+    this.lockCameraToBuilding,
   }) {
     if (viewerDomain != null) {
       if (!viewerDomain.startsWith("https://") &&
@@ -103,6 +110,9 @@ class MapViewConfiguration {
   String _getViewerURL() {
     var base = viewerDomain;
     var query = "apikey=$situmApiKey&domain=$_internalApiDomain&mode=embed";
+    if (lockCameraToBuilding != null) {
+      query = "$query&lockCameraToBuilding=$lockCameraToBuilding";
+    }
 
     if (remoteIdentifier?.isNotEmpty == true &&
         buildingIdentifier?.isNotEmpty == true) {
@@ -139,6 +149,72 @@ class DirectionsMessage {
     this.identifier,
     this.accessibilityMode,
   });
+}
+
+class Camera {
+  /// Set the [zoom] to some value between 0 and 24.
+  /// 
+  /// The value 0 shows a global view of the map and 24 offers a more detailed view. Take a look at [mapbox-gl](https://docs.mapbox.com/mapbox-gl-js/api/map/#map) documentation for further information.
+  /// 
+  /// * **NOTE**: [MapViewConfiguration.lockCameraToBuilding] will set a new minimum value to make sure the building is still visible when zooming out.
+  /// 
+  /// Value defaults to an internally calculated intermediate value.
+  double? zoom;
+
+  /// Set the [bearing] to a determined value in [Angle].
+  ///
+  /// Value defaults to 0° (north direction).
+  Angle? bearing;
+
+  /// Set the [pitch] to a determined [Angle] between 0° and 60°.
+  ///
+  /// Value defaults to 30°.
+  Angle? pitch;
+
+  /// Set the [transitionDuration] to a determined value in milliseconds. The value specified must be >= 0 and defining it to 0 will execute an instant camera animation.
+  ///
+  /// * **NOTE**: We prioritize user interactions with the map, so setting a high value for this parameter
+  /// might result in your animation getting cut by the user.
+  ///
+  /// Value defaults to 1000 milliseconds.
+  int? transitionDuration;
+
+  /// Move the [center] of the camera to a [Coordinate] on the map.
+  ///
+  /// * **NOTE**: With [MapViewConfiguration.lockCameraToBuilding] set to true, introducing a coordinate far away from the building
+  /// will result in the camera hitting the building bounds and not reaching the specified coordinate.
+  Coordinate? center;
+
+  Camera(
+      {this.zoom,
+      this.bearing,
+      this.pitch,
+      this.transitionDuration,
+      this.center});
+
+  toMap() {
+    Map<String, Object> result = {};
+    if (zoom != null) {
+      result["zoom"] = zoom!;
+    }
+    if (bearing != null) {
+      result["bearing"] = bearing!.degrees;
+    }
+    if (pitch != null) {
+      result["pitch"] = pitch!.degrees;
+    }
+    if (transitionDuration != null) {
+      result["transitionDuration"] = transitionDuration!;
+    }
+    if (center?.latitude != null && center?.longitude != null) {
+      result["center"] = {
+        "lat": center!.latitude,
+        "lng": center!.longitude,
+      };
+    }
+
+    return result;
+  }
 }
 
 class OnPoiSelectedResult {
