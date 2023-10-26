@@ -312,7 +312,6 @@ class _MyTabsState extends State<MyTabs> {
     var hasPermissions = await _requestPermissions();
     if (!hasPermissions) {
       _echo("You need to accept permissions to start positioning.");
-      return;
     }
     // Start positioning using the native SDK. You will receive location and
     // status updates (as well as possible errors) in the defined callbacks.
