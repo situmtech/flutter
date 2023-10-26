@@ -11,7 +11,12 @@ class MapViewController {
   late MapViewCallback _widgetLoadCallback;
   late PlatformWebViewController _webViewController;
 
-  Location? _currentLocation;
+  List<String> mapViewerStatusesFilter = [
+    'STARTING',
+    'USER_NOT_IN_BUILDING',
+    'BLE_DISABLED',
+    'STOPPED',
+  ];
 
   MapViewController({
     String? situmUser,
@@ -34,10 +39,10 @@ class MapViewController {
   }
 
   /// Notifies [MapView] about the new location status received from the SDK.
-  void _setCurrentLocationStatus(Location location, String status) {
-    Map<String, dynamic> locationMap = location.toMap();
-    locationMap["status"] = '"$status"';
-    _sendMessage(WV_MESSAGE_LOCATION, locationMap);
+  void _setCurrentLocationStatus(String status) {
+    Map<String, dynamic> statusMap = {};
+    statusMap["status"] = '"$status"';
+    _sendMessage(WV_MESSAGE_LOCATION_STATUS, statusMap);
   }
 
   void onMapViewerMessage(String type, Map<String, dynamic> payload) {
@@ -265,19 +270,18 @@ class MapViewController {
 
   void _onLocationChanged(arguments) {
     // Send location to the map-viewer.
-    _currentLocation = createLocation(arguments);
-    setCurrentLocation(_currentLocation!);
+    setCurrentLocation(createLocation(arguments));
   }
 
   void _onStatusChanged(arguments) {
     String newStatus = arguments["statusName"];
-    if (_currentLocation != null &&
-        (newStatus == "STOPPED" || newStatus == "USER_NOT_IN_BUILDING")) {
-      _setCurrentLocationStatus(_currentLocation!, newStatus);
+
+    if (mapViewerStatusesFilter.contains(newStatus)) {
+      _setCurrentLocationStatus(newStatus);
     }
   }
 
   void _onError(arguments) {
-    // TODO: send errors to map viewer?
+    _setCurrentLocationStatus(arguments["code"]);
   }
 }

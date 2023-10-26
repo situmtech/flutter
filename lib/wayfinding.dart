@@ -46,6 +46,7 @@ const WV_MESSAGE_MAP_IS_READY = "app.map_is_ready";
 
 // Location actions
 const WV_MESSAGE_LOCATION = "location.update";
+const WV_MESSAGE_LOCATION_STATUS = "location.update_status";
 
 // Directions actions
 const WV_MESSAGE_DIRECTIONS_UPDATE = "directions.update";

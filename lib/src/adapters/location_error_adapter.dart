@@ -18,12 +18,12 @@ class _LocationErrorAdapter {
   Error handleError(arguments) {
     switch (arguments["code"]) {
       case "8001": // MISSING_LOCATION_PERMISSION
+      case "8": // kSITLocationErrorLocationDisabled
       case "9": // kSITLocationErrorLocationRestricted
       case "10": // kSITLocationErrorLocationAuthStatusNotDetermined
         arguments["code"] = "LOCATION_PERMISSION_DENIED";
         break;
       case "8002": // LOCATION_DISABLED
-      case "8": // kSITLocationErrorLocationDisabled
         arguments["code"] = "LOCATION_DISABLED";
         break;
       case "8012": // MISSING_BLUETOOTH_PERMISSION
