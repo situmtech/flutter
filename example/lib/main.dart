@@ -225,7 +225,7 @@ class _MyTabsState extends State<MyTabs> {
       _selectedIndex = 1;
     });
     mapViewLoadAction = () {
-      mapViewController?.selectPoi(poi.identifier);
+      mapViewController?.selectPoiBy(PoiFilter.identifier(poi.identifier));
     };
     if (mapViewController != null) {
       _callMapviewLoadAction();

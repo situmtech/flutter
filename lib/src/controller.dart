@@ -1,5 +1,27 @@
 part of wayfinding;
 
+class PoiFilter {
+  String? identifier;
+  String? customFieldKey;
+  String? customFieldValue;
+
+  PoiFilter.identifier(this.identifier);
+  PoiFilter.customField(this.customFieldKey, this.customFieldValue);
+
+  Map<String, dynamic> toJson() {
+    if (identifier != null) {
+      return {"type": "identifier", "data": identifier};
+    } else if (customFieldKey != null) {
+      return {
+        "type": "customField",
+        "data": {"key": customFieldKey, "value": customFieldValue}
+      };
+    } else {
+      return {};
+    }
+  }
+}
+
 /// Controller for [MapView]. This class exposes methods and callbacks.
 class MapViewController {
   OnPoiSelectedCallback? _onPoiSelectedCallback;
@@ -68,6 +90,13 @@ class MapViewController {
   /// Selects the given POI in the map.
   void selectPoi(String identifier) async {
     _sendMessage(WV_MESSAGE_CARTOGRAPHY_SELECT_POI, {"identifier": identifier});
+  }
+
+  void selectPoiBy(PoiFilter filter) async {
+    _sendMessage(
+      WV_MESSAGE_CARTOGRAPHY_SELECT_POI,
+      jsonEncode(filter.toJson()),
+    );
   }
 
   /// Starts navigating to the given POI. You can optionally choose the desired
