@@ -31,10 +31,16 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
     private var handler = android.os.Handler(Looper.getMainLooper())
 
     companion object {
+        private var initialized = false
         const val CHANNEL_ID_SDK = "situm.com/flutter_sdk"
     }
 
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
+        // Firebase remote message issue:
+        if (initialized) {
+            return
+        }
+        initialized = true
         channel = MethodChannel(flutterPluginBinding.binaryMessenger, CHANNEL_ID_SDK)
         channel.setMethodCallHandler(this)
         navigation = Navigation.init(channel, handler)
