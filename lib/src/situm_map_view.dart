@@ -34,6 +34,9 @@ class _MapViewState extends State<MapView> {
   void initState() {
     super.initState();
     mapViewConfiguration = widget.configuration;
+
+    // Avoid re-initializations of the underlying WebView (PlatformView) if
+    // persistUnderlyingWidget is set to true.
     if (webViewWidget != null &&
         mapViewConfiguration.persistUnderlyingWidget == true) {
       return;
