@@ -64,11 +64,23 @@ class MapViewConfiguration {
   /// Default is false.
   final bool enableDebugging;
 
-  /// When set to true, the camera will be locked to the building so the user can't move it away. Also the minimum zoom will be set 
+  /// When set to true, the camera will be locked to the building so the user can't move it away. Also the minimum zoom will be set
   /// to an internally calculated value so the building remains visible when the user does zoom out.
   ///
   /// Default is false.
   final bool? lockCameraToBuilding;
+
+  /// When set to true, the underlying WebView will persist over MapView disposals.
+  ///
+  /// As a consequence, the WebView widget will not be reloaded even when the
+  /// MapView widget is disposed or rebuilt. This can lead to improved
+  /// performance in cases where the WebView's content remains consistent
+  /// between widget rebuilds. However, it also means that the WebView may
+  /// persist in memory until the entire Flutter application is removed
+  /// from memory.
+  ///
+  /// Default is true.
+  final bool? persistUnderlyingWidget;
 
   /// The [MapView] settings. Required fields are your Situm user and API key,
   /// but also a buildingIdentifier or remoteIdentifier.
@@ -82,6 +94,7 @@ class MapViewConfiguration {
     this.directionality = TextDirection.ltr,
     this.enableDebugging = false,
     this.lockCameraToBuilding,
+    this.persistUnderlyingWidget = true,
   }) {
     if (viewerDomain != null) {
       if (!viewerDomain.startsWith("https://") &&
@@ -153,11 +166,11 @@ class DirectionsMessage {
 
 class Camera {
   /// Set the [zoom] to some value between 0 and 24.
-  /// 
+  ///
   /// The value 0 shows a global view of the map and 24 offers a more detailed view. Take a look at [mapbox-gl](https://docs.mapbox.com/mapbox-gl-js/api/map/#map) documentation for further information.
-  /// 
+  ///
   /// * **NOTE**: [MapViewConfiguration.lockCameraToBuilding] will set a new minimum value to make sure the building is still visible when zooming out.
-  /// 
+  ///
   /// Value defaults to an internally calculated intermediate value.
   double? zoom;
 
