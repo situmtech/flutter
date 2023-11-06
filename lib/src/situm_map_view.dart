@@ -49,9 +49,8 @@ class _MapViewState extends State<MapView> {
                 limitsNavigationsToAppBoundDomains: true,
               );
 
-    PlatformWebViewController controller = PlatformWebViewController(params);
-
-    controller
+    webViewController = PlatformWebViewController(params);
+    webViewController!
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setBackgroundColor(const Color(0x00000000))
       ..setPlatformNavigationDelegate(
@@ -81,7 +80,7 @@ class _MapViewState extends State<MapView> {
 
             if (shouldDisplayRetryScreen &&
                 ConnectionErrors.values.contains(error.errorCode)) {
-              controller.loadFlutterAsset(widget._retryScreenURL);
+              webViewController!.loadFlutterAsset(widget._retryScreenURL);
             }
           })
           ..setOnNavigationRequest((dynamic request) {
@@ -116,23 +115,22 @@ class _MapViewState extends State<MapView> {
           request.grant();
         },
       );
-    webViewController = controller;
     wyfController ??= MapViewController(
       situmApiKey: mapViewConfiguration.situmApiKey,
     );
     wyfController!._widgetUpdater = _loadWithConfig;
     wyfController!._widgetLoadCallback = widget.onLoad;
-    wyfController!._webViewController = controller;
+    wyfController!._webViewController = webViewController!;
 
     PlatformWebViewWidgetCreationParams webViewParams =
         defaultTargetPlatform == TargetPlatform.android
             ? AndroidWebViewWidgetCreationParams(
-                controller: controller,
+                controller: webViewController!,
                 displayWithHybridComposition: true,
                 layoutDirection: widget.configuration.directionality,
               )
             : PlatformWebViewWidgetCreationParams(
-                controller: controller,
+                controller: webViewController!,
                 layoutDirection: widget.configuration.directionality,
               );
     webViewWidget = PlatformWebViewWidget(webViewParams);
