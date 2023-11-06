@@ -79,7 +79,7 @@ class MapViewConfiguration {
   /// persist in memory until the entire Flutter application is removed
   /// from memory.
   ///
-  /// Default is true.
+  /// Default is false.
   final bool? persistUnderlyingWidget;
 
   /// The [MapView] settings. Required fields are your Situm user and API key,
@@ -94,7 +94,7 @@ class MapViewConfiguration {
     this.directionality = TextDirection.ltr,
     this.enableDebugging = false,
     this.lockCameraToBuilding,
-    this.persistUnderlyingWidget = true,
+    this.persistUnderlyingWidget = false,
   }) {
     if (viewerDomain != null) {
       if (!viewerDomain.startsWith("https://") &&
