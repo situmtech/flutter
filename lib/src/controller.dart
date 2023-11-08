@@ -70,6 +70,11 @@ class MapViewController {
     _sendMessage(WV_MESSAGE_CARTOGRAPHY_SELECT_POI, {"identifier": identifier});
   }
 
+  /// Selects the given POI category in the map.
+  void selectPoiCategory(String identifier) async {
+    _sendMessage(WV_MESSAGE_CARTOGRAPHY_SELECT_POI_CATEGORY, {"identifier": identifier});
+  }
+
   /// Starts navigating to the given POI. You can optionally choose the desired
   /// [AccessibilityMode] used to calculate the route.
   void navigateToPoi(
