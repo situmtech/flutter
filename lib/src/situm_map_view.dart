@@ -25,14 +25,22 @@ class MapView extends StatefulWidget {
 }
 
 class _MapViewState extends State<MapView> {
-  MapViewController? wyfController;
-  late final PlatformWebViewController webViewController;
-  late final PlatformWebViewWidget webViewWidget;
+  static MapViewController? wyfController;
+  static PlatformWebViewController? webViewController;
+  static PlatformWebViewWidget? webViewWidget;
   late MapViewConfiguration mapViewConfiguration;
 
   @override
   void initState() {
     super.initState();
+    mapViewConfiguration = widget.configuration;
+
+    // Avoid re-initializations of the underlying WebView (PlatformView) if
+    // persistUnderlyingWidget is set to true.
+    if (webViewWidget != null &&
+        mapViewConfiguration.persistUnderlyingWidget == true) {
+      return;
+    }
 
     PlatformWebViewControllerCreationParams params =
         defaultTargetPlatform == TargetPlatform.android
@@ -41,9 +49,8 @@ class _MapViewState extends State<MapView> {
                 limitsNavigationsToAppBoundDomains: true,
               );
 
-    PlatformWebViewController controller = PlatformWebViewController(params);
-
-    controller
+    webViewController = PlatformWebViewController(params);
+    webViewController!
       ..setJavaScriptMode(JavaScriptMode.unrestricted)
       ..setBackgroundColor(const Color(0x00000000))
       ..setPlatformNavigationDelegate(
@@ -57,7 +64,6 @@ class _MapViewState extends State<MapView> {
             // Do nothing.
           })
           ..setOnPageFinished((String url) {
-            _onMapPageLoaded(url);
             debugPrint("Situm> WYF> Page loaded.");
           })
           ..setOnWebResourceError((WebResourceError error) {
@@ -74,7 +80,7 @@ class _MapViewState extends State<MapView> {
 
             if (shouldDisplayRetryScreen &&
                 ConnectionErrors.values.contains(error.errorCode)) {
-              controller.loadFlutterAsset(widget._retryScreenURL);
+              webViewController!.loadFlutterAsset(widget._retryScreenURL);
             }
           })
           ..setOnNavigationRequest((dynamic request) {
@@ -109,41 +115,36 @@ class _MapViewState extends State<MapView> {
           request.grant();
         },
       );
-    webViewController = controller;
+    wyfController ??= MapViewController(
+      situmApiKey: mapViewConfiguration.situmApiKey,
+    );
+    wyfController!._widgetUpdater = _loadWithConfig;
+    wyfController!._widgetLoadCallback = widget.onLoad;
+    wyfController!._webViewController = webViewController!;
+
     PlatformWebViewWidgetCreationParams webViewParams =
         defaultTargetPlatform == TargetPlatform.android
             ? AndroidWebViewWidgetCreationParams(
-                controller: webViewController,
+                controller: webViewController!,
                 displayWithHybridComposition: true,
                 layoutDirection: widget.configuration.directionality,
               )
             : PlatformWebViewWidgetCreationParams(
-                controller: webViewController,
+                controller: webViewController!,
                 layoutDirection: widget.configuration.directionality,
               );
     webViewWidget = PlatformWebViewWidget(webViewParams);
-    _loadWithConfig(widget.configuration);
+    _loadWithConfig(mapViewConfiguration);
   }
 
   void _loadWithConfig(MapViewConfiguration configuration) {
-    // Keep configuration.
-    mapViewConfiguration = configuration;
     if (webViewController is AndroidWebViewController) {
       AndroidWebViewController.enableDebugging(configuration.enableDebugging);
     }
     final String mapViewUrl = mapViewConfiguration._getViewerURL();
     // Load the composed URL in the WebView.
     webViewController
-        .loadRequest(LoadRequestParams(uri: Uri.parse(mapViewUrl)));
-  }
-
-  void _onMapPageLoaded(String url) {
-    wyfController ??= MapViewController(
-      situmApiKey: mapViewConfiguration.situmApiKey,
-    );
-    wyfController!._widgetUpdater = _loadWithConfig;
-    wyfController!._widgetLoadCallback = widget.onLoad;
-    wyfController!._webViewController = webViewController;
+        ?.loadRequest(LoadRequestParams(uri: Uri.parse(mapViewUrl)));
   }
 
   @override
@@ -154,7 +155,7 @@ class _MapViewState extends State<MapView> {
     // generated with each 'build' call, resulting in flashes and even crashes.
     // To solve this, we store a reference to the PlatformWebViewWidget and
     // invoke its 'build' method.
-    return webViewWidget.build(context);
+    return webViewWidget!.build(context);
   }
 
   @override
