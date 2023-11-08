@@ -55,8 +55,7 @@ class DirectionsMessageHandler implements MessageHandler {
   ) async {
     var sdk = SitumSdk();
     var directionsMessage = createDirectionsMessage(payload);
-    var directionsRequest =
-        createDirectionsRequest(payload["directionsRequest"]);
+    var directionsRequest = createDirectionsRequest(payload);
     // Send DirectionsOptions so it can be intercepted.
     mapViewController._interceptDirectionsRequest(directionsRequest);
     // Populate directionsRequest with information useful for the directions callback:
@@ -94,8 +93,7 @@ class NavigationMessageHandler implements MessageHandler {
     // for native callbacks to get up to date with the navigation status, using
     // the internal _methodCallHandler.
     var directionsMessage = createDirectionsMessage(payload);
-    var directionsRequest =
-        createDirectionsRequest(payload["directionsRequest"]);
+    var directionsRequest = createDirectionsRequest(payload);
     mapViewController._interceptDirectionsRequest(directionsRequest);
     var navigationRequest =
         createNavigationRequest(payload["navigationRequest"]);
