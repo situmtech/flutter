@@ -2,6 +2,7 @@ package com.situm.situm_flutter
 
 import android.content.Context
 import android.os.Looper
+import android.util.Log
 import androidx.annotation.NonNull
 import es.situm.sdk.SitumSdk
 import es.situm.sdk.communication.CommunicationConfigImpl
@@ -36,6 +37,7 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
     }
 
     override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
+        Log.d("Situm", "Situm> SitumFlutterPlugin> onAttachedToEngine initialized=$initialized")
         // Firebase remote message issue:
         if (initialized) {
             return
@@ -47,7 +49,13 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
     }
 
     override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
-        channel.setMethodCallHandler(null)
+        Log.d("Situm", "Situm> SitumFlutterPlugin> onDetachedFromEngine - initialized=$initialized")
+        // onDetachedFromEngine should be called only when the app using this plugin is finalized,
+        // but should not be related to the Firebase issue.
+        if (initialized) {
+            channel.setMethodCallHandler(null)
+            initialized = false
+        }
         // Avoid leaking this listener:
         locationListener?.let {
             SitumSdk.locationManager().removeLocationListener(it)
