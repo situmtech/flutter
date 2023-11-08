@@ -155,18 +155,23 @@ SitumRoute createRoute(arguments) {
 }
 
 DirectionsRequest createDirectionsRequest(arguments) {
+  var directionsRequestArgs = arguments["directionsRequest"];
   var directionsRequest = DirectionsRequest(
-    from: createPoint(arguments["from"]),
-    to: createPoint(arguments["to"]),
+    from: createPoint(directionsRequestArgs["from"]),
+    to: createPoint(directionsRequestArgs["to"]),
     bearingFrom: Angle.fromRadians(
-      (arguments["bearingFrom"] != null
-              ? arguments["bearingFrom"]["radians"]
+      (directionsRequestArgs["bearingFrom"] != null
+              ? directionsRequestArgs["bearingFrom"]["radians"]
               : 0)
           .toDouble(),
     ),
-    minimizeFloorChanges: arguments["minimizeFloorChanges"],
+    minimizeFloorChanges: directionsRequestArgs["minimizeFloorChanges"],
+    originIdentifier: stringFromArgsOrEmptyId(arguments, "originIdentifier"),
+    originCategory: arguments["originCategory"],
+    destinationIdentifier: stringFromArgsOrEmptyId(arguments, "destinationIdentifier"),
+    destinationCategory: arguments["destinationCategory"],
   );
-  directionsRequest.accessibilityMode = createAccessibilityMode(arguments);
+  directionsRequest.accessibilityMode = createAccessibilityMode(directionsRequestArgs);
   return directionsRequest;
 }
 
@@ -194,3 +199,8 @@ NavigationRequest createNavigationRequest(arguments) => NavigationRequest(
           arguments['timeToIgnoreUnexpectedFloorChanges'],
       ignoreLowQualityLocations: arguments['ignoreLowQualityLocations'],
     );
+
+/// Returns the value of arguments[key] or "-1" if the value is null.
+String stringFromArgsOrEmptyId(arguments, String key) {
+  return (arguments[key] ?? -1).toString();
+}

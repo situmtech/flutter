@@ -2,10 +2,9 @@ part of wayfinding;
 
 DirectionsMessage createDirectionsMessage(arguments) => DirectionsMessage(
       buildingIdentifier: arguments["buildingIdentifier"],
-      originIdentifier: (arguments["originIdentifier"] ?? -1).toString(),
+      originIdentifier: stringFromArgsOrEmptyId(arguments, "originIdentifier"),
       originCategory: arguments["originCategory"],
-      destinationIdentifier:
-          (arguments["destinationIdentifier"] ?? -1).toString(),
+      destinationIdentifier: stringFromArgsOrEmptyId(arguments, "destinationIdentifier"),
       destinationCategory: arguments["destinationCategory"],
       identifier: (arguments["identifier"] ?? "").toString(),
       accessibilityMode:
