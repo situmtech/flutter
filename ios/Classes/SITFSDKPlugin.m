@@ -65,6 +65,9 @@ const NSString* RESULTS_KEY = @"results";
     } else if ([@"fetchPoisFromBuilding" isEqualToString:call.method]) {
         [self handleFetchPoisFromBuilding:call
                                    result:result];
+    } else if ([@"fetchPoiFromBuilding" isEqualToString:call.method]) {
+        [self handleFetchPoiFromBuilding:call
+                                  result:result];
     } else if ([@"fetchCategories" isEqualToString:call.method]) {
         [self handleFetchCategories:call
                              result:result];
@@ -213,7 +216,7 @@ const NSString* RESULTS_KEY = @"results";
     NSString *buildingId = call.arguments[@"buildingIdentifier"];
     
     if (!buildingId) {
-        FlutterError *error = [FlutterError errorWithCode:@"errorFetchPois"
+        FlutterError *error = [FlutterError errorWithCode:@"errorFetchPoisFromBuilding"
                                                   message:@"Unable to retrieve buildingId string on arguments"
                                                   details:nil];
         
@@ -227,7 +230,48 @@ const NSString* RESULTS_KEY = @"results";
         result([SITFSDKUtils toArrayDict: mapping[RESULTS_KEY]]);
         
     } failure:^(NSError * _Nullable error) {
-        FlutterError *ferror = [FlutterError errorWithCode:@"errorPrefetch"
+        FlutterError *ferror = [FlutterError errorWithCode:@"errorFetchPoisFromBuilding"
+                                                   message:[NSString stringWithFormat:@"Failed with error: %@", error]
+                                                   details:nil];
+        result(ferror); // Send error
+    }];
+}
+
+- (void)handleFetchPoiFromBuilding:(FlutterMethodCall*)call result:(FlutterResult)result {
+    
+    NSString *buildingId = call.arguments[@"buildingIdentifier"];
+    NSString *poiId = call.arguments[@"poiIdentifier"];
+    
+    if (!buildingId || !poiId) {
+        FlutterError *error = [FlutterError errorWithCode:@"errorFetchPoiFromBuilding"
+                                                  message:@"Unable to retrieve buildingIdentifier or poiIdentifier string on arguments"
+                                                  details:nil];
+        
+        result(error); // Send error
+        return;
+    }
+    
+    [self.comManager fetchPoisOfBuilding:buildingId
+                             withOptions:nil
+                                 success:^(NSDictionary * _Nullable mapping) {
+        NSArray *poisArray = [SITFSDKUtils toArrayDict: mapping[RESULTS_KEY]];
+        // TODO: implement comManager#fetchPoiOfBuilding.
+        for (NSDictionary *poiDict in poisArray) {
+            NSString *currentPoiId = poiDict[@"identifier"];
+            
+            if ([currentPoiId isEqualToString:poiId]) {
+                result(poiDict);
+                return;
+            }
+        }
+
+        FlutterError *ferror = [FlutterError errorWithCode:@"errorFetchPoiFromBuilding"
+                                                   message:[NSString stringWithFormat:@"Resource not found, identifier is: %@", poiId]
+                                                   details:nil];
+        result(ferror);
+
+    } failure:^(NSError * _Nullable error) {
+        FlutterError *ferror = [FlutterError errorWithCode:@"errorFetchPoiFromBuilding"
                                                    message:[NSString stringWithFormat:@"Failed with error: %@", error]
                                                    details:nil];
         result(ferror); // Send error
