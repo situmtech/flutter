@@ -47,7 +47,8 @@ class _MapViewState extends State<MapView> {
             ? AndroidWebViewControllerCreationParams()
             : WebKitWebViewControllerCreationParams(
                 limitsNavigationsToAppBoundDomains: true,
-              );
+                allowsInlineMediaPlayback: true,
+                mediaTypesRequiringUserAction: {});
 
     webViewController = PlatformWebViewController(params);
     webViewController!
