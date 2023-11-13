@@ -188,19 +188,20 @@ class Location {
   final bool isOutdoor;
   final bool hasBearing;
   final int timestamp;
+  final List<double>? rotationMatrix;
 
-  Location({
-    required this.coordinate,
-    required this.cartesianCoordinate,
-    required this.buildingIdentifier,
-    required this.floorIdentifier,
-    required this.accuracy,
-    required this.isIndoor,
-    required this.isOutdoor,
-    required this.hasBearing,
-    this.bearing,
-    required this.timestamp,
-  });
+  Location(
+      {required this.coordinate,
+      required this.cartesianCoordinate,
+      required this.buildingIdentifier,
+      required this.floorIdentifier,
+      required this.accuracy,
+      required this.isIndoor,
+      required this.isOutdoor,
+      required this.hasBearing,
+      this.bearing,
+      required this.timestamp,
+      this.rotationMatrix});
 
   Map<String, dynamic> toMap() => {
         'coordinate': {
@@ -219,6 +220,7 @@ class Location {
         'isOutdoor': isOutdoor,
         'hasBearing': hasBearing,
         'timestamp': timestamp,
+        'rotationMatrix': rotationMatrix
       };
 }
 

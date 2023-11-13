@@ -126,28 +126,28 @@ List<T> createList<T>(List maps, Function mapper) {
 
 Location createLocation(dynamic args) {
   return Location(
-    coordinate: Coordinate(
-      latitude: args["coordinate"]["latitude"],
-      longitude: args["coordinate"]["longitude"],
-    ),
-    cartesianCoordinate: CartesianCoordinate(
-      x: args["cartesianCoordinate"]["x"] ?? 0,
-      y: args["cartesianCoordinate"]["y"] ?? 0,
-    ),
-    bearing: Angle(
-      degrees: args["bearing"]["degrees"],
-      degreesClockwise: args["bearing"]["degreesClockwise"],
-      radians: args["bearing"]["radians"],
-      radiansMinusPiPi: args["bearing"]["radiansMinusPiPi"],
-    ),
-    accuracy: args["accuracy"],
-    buildingIdentifier: args["buildingIdentifier"],
-    floorIdentifier: args["floorIdentifier"],
-    hasBearing: args["hasBearing"],
-    isIndoor: args["isIndoor"],
-    isOutdoor: args["isOutdoor"],
-    timestamp: args["timestamp"].toInt(),
-  );
+      coordinate: Coordinate(
+        latitude: args["coordinate"]["latitude"],
+        longitude: args["coordinate"]["longitude"],
+      ),
+      cartesianCoordinate: CartesianCoordinate(
+        x: args["cartesianCoordinate"]["x"] ?? 0,
+        y: args["cartesianCoordinate"]["y"] ?? 0,
+      ),
+      bearing: Angle(
+        degrees: args["bearing"]["degrees"],
+        degreesClockwise: args["bearing"]["degreesClockwise"],
+        radians: args["bearing"]["radians"],
+        radiansMinusPiPi: args["bearing"]["radiansMinusPiPi"],
+      ),
+      accuracy: args["accuracy"],
+      buildingIdentifier: args["buildingIdentifier"],
+      floorIdentifier: args["floorIdentifier"],
+      hasBearing: args["hasBearing"],
+      isIndoor: args["isIndoor"],
+      isOutdoor: args["isOutdoor"],
+      timestamp: args["timestamp"].toInt(),
+      rotationMatrix: args["rotationMatrix"]);
 }
 
 SitumRoute createRoute(arguments) {
@@ -168,10 +168,12 @@ DirectionsRequest createDirectionsRequest(arguments) {
     minimizeFloorChanges: directionsRequestArgs["minimizeFloorChanges"],
     originIdentifier: stringFromArgsOrEmptyId(arguments, "originIdentifier"),
     originCategory: arguments["originCategory"],
-    destinationIdentifier: stringFromArgsOrEmptyId(arguments, "destinationIdentifier"),
+    destinationIdentifier:
+        stringFromArgsOrEmptyId(arguments, "destinationIdentifier"),
     destinationCategory: arguments["destinationCategory"],
   );
-  directionsRequest.accessibilityMode = createAccessibilityMode(directionsRequestArgs);
+  directionsRequest.accessibilityMode =
+      createAccessibilityMode(directionsRequestArgs);
   return directionsRequest;
 }
 

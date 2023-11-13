@@ -97,7 +97,11 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
 
         locationListener = object : LocationListener {
             override fun onLocationChanged(location: Location) {
-                handler.post { channel.invokeMethod("onLocationChanged", location.toMap()) }
+                var locationMap = location.toMap()
+                if (location.hasRotationMatrix()) {
+                    locationMap["rotationMatrix"] = location.getRotationMatrix()
+                }
+                handler.post { channel.invokeMethod("onLocationChanged", locationMap) }
             }
 
             override fun onStatusChanged(status: LocationStatus) {

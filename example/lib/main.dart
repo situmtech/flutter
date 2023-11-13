@@ -319,7 +319,7 @@ class _MyTabsState extends State<MyTabs> {
     // library handles it all internally for you.
     situmSdk.requestLocationUpdates(LocationRequest(
       buildingIdentifier: buildingIdentifier, //"-1"
-      useDeadReckoning: false,
+      useDeadReckoning: true,
     ));
   }
 
