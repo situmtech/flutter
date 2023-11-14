@@ -351,7 +351,10 @@ const NSString* RESULTS_KEY = @"results";
 - (void)locationManager:(id<SITLocationInterface> _Nonnull)locationManager
       didUpdateLocation:(SITLocation * _Nonnull)location {
     NSLog(@"location Manager on location: %@", location);
-    NSDictionary *args = location.toDictionary;
+    NSMutableDictionary *args = [location.toDictionary mutableCopy];
+    if (location.hasRotationMatrix) {
+        args[@"rotationMatrix"] = location.rotationMatrix;
+    }
     [self.channel invokeMethod:@"onLocationChanged" arguments:args];
 }
 
