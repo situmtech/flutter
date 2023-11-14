@@ -251,31 +251,7 @@ const NSString* RESULTS_KEY = @"results";
         return;
     }
     
-    [self.comManager fetchPoisOfBuilding:buildingId
-                             withOptions:nil
-                                 success:^(NSDictionary * _Nullable mapping) {
-        NSArray *poisArray = [SITFSDKUtils toArrayDict: mapping[RESULTS_KEY]];
-        // TODO: implement comManager#fetchPoiOfBuilding.
-        for (NSDictionary *poiDict in poisArray) {
-            NSString *currentPoiId = poiDict[@"identifier"];
-            
-            if ([currentPoiId isEqualToString:poiId]) {
-                result(poiDict);
-                return;
-            }
-        }
-
-        FlutterError *ferror = [FlutterError errorWithCode:@"errorFetchPoiFromBuilding"
-                                                   message:[NSString stringWithFormat:@"Resource not found, identifier is: %@", poiId]
-                                                   details:nil];
-        result(ferror);
-
-    } failure:^(NSError * _Nullable error) {
-        FlutterError *ferror = [FlutterError errorWithCode:@"errorFetchPoiFromBuilding"
-                                                   message:[NSString stringWithFormat:@"Failed with error: %@", error]
-                                                   details:nil];
-        result(ferror); // Send error
-    }];
+    // TODO: implement comManager#fetchPoiOfBuilding(poiId, buildingId...)
 }
 
 - (void)handleFetchBuildings:(FlutterMethodCall*)call result:(FlutterResult)result {
