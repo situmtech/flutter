@@ -293,6 +293,7 @@ class SitumSdk {
     });
   }
 
+  /// Returns the complete list of indoor POIs of the given building.
   Future<List<Poi>> fetchPoisFromBuilding(String buildingIdentifier) async {
     List response = await methodChannel.invokeMethod("fetchPoisFromBuilding", {
       "buildingIdentifier": buildingIdentifier,
@@ -300,12 +301,22 @@ class SitumSdk {
     return createList<Poi>(response, createPoi);
   }
 
+  /// Returns the given indoor POI for the given building.
   Future<Poi?> fetchPoiFromBuilding(
       String buildingIdentifier, String poiIdentifier) async {
-    List<Poi> buildingPois = await fetchPoisFromBuilding(buildingIdentifier);
-    return buildingPois.cast<Poi?>().firstWhere(
-        (poi) => poi?.identifier == poiIdentifier,
-        orElse: () => null);
+    if (Platform.isAndroid) {
+      var response = await methodChannel.invokeMethod("fetchPoiFromBuilding", {
+        "buildingIdentifier": buildingIdentifier,
+        "poiIdentifier": poiIdentifier
+      });
+      return createPoi(response);
+    } else if (Platform.isIOS) {
+      // TODO: implement improved (native) fetch-poi.
+      List<Poi> buildingPois = await fetchPoisFromBuilding(buildingIdentifier);
+      return buildingPois.cast<Poi?>().firstWhere(
+          (poi) => poi?.identifier == poiIdentifier,
+          orElse: () => null);
+    }
   }
 
   Future<List<PoiCategory>> fetchPoiCategories() async {
