@@ -1,9 +1,16 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:situm_flutter/sdk.dart';
 import 'package:situm_flutter/wayfinding.dart';
+import 'package:ar_flutter_plugin/managers/ar_location_manager.dart';
+import 'package:ar_flutter_plugin/managers/ar_session_manager.dart';
+import 'package:ar_flutter_plugin/managers/ar_object_manager.dart';
+import 'package:ar_flutter_plugin/managers/ar_anchor_manager.dart';
+import 'package:ar_flutter_plugin/ar_flutter_plugin.dart';
+import 'package:ar_flutter_plugin/datatypes/config_planedetection.dart';
 
 import './config.dart';
 
@@ -40,6 +47,11 @@ class _MyTabsState extends State<MyTabs> {
   Function? mapViewLoadAction;
 
   MapViewController? mapViewController;
+
+  late ARSessionManager arSessionManager;
+  late ARObjectManager arObjectManager;
+  late ARAnchorManager arAnchorManager;
+  late Location currentLocation;
 
   // Widget to showcase some SDK API functions
   Widget _createHomeTab() {
@@ -177,6 +189,54 @@ class _MyTabsState extends State<MyTabs> {
     ]);
   }
 
+  // Widget that shows ARView.
+  Widget _createARTab() {
+    return Scaffold(
+        appBar: AppBar(
+          title: const Text('Anchors & Objects on Planes'),
+        ),
+        body: Stack(children: [
+          ARView(
+            onARViewCreated: onARViewCreated,
+            planeDetectionConfig: PlaneDetectionConfig.horizontalAndVertical,
+          ),
+        ]));
+  }
+
+  void onARViewCreated(
+      ARSessionManager arSessionManager,
+      ARObjectManager arObjectManager,
+      ARAnchorManager arAnchorManager,
+      ARLocationManager arLocationManager) {
+    this.arSessionManager = arSessionManager;
+    this.arObjectManager = arObjectManager;
+    this.arAnchorManager = arAnchorManager;
+
+    this.arSessionManager!.onInitialize(
+          showFeaturePoints: false,
+          showPlanes: true,
+          customPlaneTexturePath: "Images/triangle.png",
+          showWorldOrigin: true,
+        );
+    this.arObjectManager!.onInitialize();
+
+    Timer.periodic(const Duration(milliseconds: 15), (Timer t) async {
+      Matrix4? camera = await arSessionManager.getCameraPose();
+
+      if (camera != null) {
+        var cameraRotation = camera.getRotation();
+        currentLocation?.rotationMatrix = cameraRotation.storage;
+
+        debugPrint("**************** TIMER ALBA: ");
+        debugPrint("Camera rotation: $cameraRotation");
+        debugPrint("Location: ${currentLocation.toMap()}");
+
+        mapViewController?.sendMessage(
+            WV_MESSAGE_LOCATION, currentLocation.toMap());
+      }
+    });
+  }
+
   void printWarning(String text) {
     debugPrint('\x1B[33m$text\x1B[0m');
   }
@@ -277,6 +337,9 @@ class _MyTabsState extends State<MyTabs> {
         useRemoteConfig: true));
     // Set up location listeners:
     situmSdk.onLocationUpdate((location) {
+      setState(() {
+        currentLocation = location;
+      });
       _echo("""SDK> Location changed:
         Time diff: ${location.timestamp - DateTime.now().millisecondsSinceEpoch}
         B=${location.buildingIdentifier},
@@ -379,7 +442,7 @@ class _MyTabsState extends State<MyTabs> {
       ),
       body: IndexedStack(
         index: _selectedIndex,
-        children: [_createHomeTab(), _createSitumMapTab()],
+        children: [_createHomeTab(), _createSitumMapTab(), _createARTab()],
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
@@ -391,6 +454,10 @@ class _MyTabsState extends State<MyTabs> {
             icon: Icon(Icons.map),
             label: 'Wayfinding',
           ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.toys),
+            label: 'AR',
+          )
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: Colors.amber[800],

@@ -188,7 +188,7 @@ class Location {
   final bool isOutdoor;
   final bool hasBearing;
   final int timestamp;
-  final List<double>? rotationMatrix;
+  late List<double>? rotationMatrix;
 
   Location(
       {required this.coordinate,

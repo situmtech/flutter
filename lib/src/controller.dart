@@ -35,7 +35,7 @@ class MapViewController {
 
   /// Tells the [MapView] where the user is located at.
   void setCurrentLocation(Location location) {
-    _sendMessage(WV_MESSAGE_LOCATION, location.toMap());
+    // _sendMessage(WV_MESSAGE_LOCATION, location.toMap());
   }
 
   /// Notifies [MapView] about the new location status received from the SDK.
@@ -47,6 +47,14 @@ class MapViewController {
 
   void onMapViewerMessage(String type, Map<String, dynamic> payload) {
     MessageHandler(type).handleMessage(this, payload);
+  }
+
+  void sendMessage(String type, dynamic payload) {
+    // Do not quote payload keys!
+    var message = "{type: '$type', payload: $payload}";
+    _webViewController.runJavaScript("""
+      window.postMessage($message)
+    """);
   }
 
   // Private utils:
@@ -72,7 +80,8 @@ class MapViewController {
 
   /// Selects the given POI category in the map.
   void selectPoiCategory(String identifier) async {
-    _sendMessage(WV_MESSAGE_CARTOGRAPHY_SELECT_POI_CATEGORY, {"identifier": identifier});
+    _sendMessage(
+        WV_MESSAGE_CARTOGRAPHY_SELECT_POI_CATEGORY, {"identifier": identifier});
   }
 
   /// Starts navigating to the given POI. You can optionally choose the desired

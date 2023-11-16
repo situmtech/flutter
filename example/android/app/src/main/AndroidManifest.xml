@@ -2,6 +2,8 @@
     package="com.situm.flutterWayfindingPlugin">
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:name="${applicationName}"
