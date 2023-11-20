@@ -567,6 +567,11 @@ class Poi extends NamedResource {
         "position": position.toMap(),
         "customFields": customFields,
       };
+
+  @override
+  String toString() {
+    return 'Poi{identifier: $identifier, name: $name, buildingIdentifier: $buildingIdentifier, poiCategory: ${poiCategory.toMap()}, position: ${position.toMap()}, customFields: $customFields}';
+  }
 }
 
 /// Associate geographical coordinate ([Location]) with [Building] and [Floor]
@@ -704,3 +709,14 @@ typedef OnNavigationOutOfRouteCallback = void Function();
 // Directions callback.
 typedef OnDirectionsRequestedCallback = Function(
     DirectionsRequest directionsRequest);
+
+class RelativePosition {
+  final double relativeX;
+  final double relativeY;
+
+  RelativePosition({required this.relativeX, required this.relativeY});
+    @override
+  String toString() {
+    return 'RelativePosition{relativeX: $relativeX, relativeY: $relativeY}';
+  }
+}

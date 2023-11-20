@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -11,6 +12,11 @@ import 'package:ar_flutter_plugin/managers/ar_object_manager.dart';
 import 'package:ar_flutter_plugin/managers/ar_anchor_manager.dart';
 import 'package:ar_flutter_plugin/ar_flutter_plugin.dart';
 import 'package:ar_flutter_plugin/datatypes/config_planedetection.dart';
+import 'package:ar_flutter_plugin/datatypes/node_types.dart';
+import 'package:ar_flutter_plugin/models/ar_anchor.dart';
+import 'package:ar_flutter_plugin/models/ar_node.dart';
+import 'package:vector_math/vector_math_64.dart' show Vector3, Vector4;
+
 
 import './config.dart';
 
@@ -52,6 +58,11 @@ class _MyTabsState extends State<MyTabs> {
   late ARObjectManager arObjectManager;
   late ARAnchorManager arAnchorManager;
   late Location currentLocation;
+  List<Poi> nearPois = [];
+  List<RelativePosition> relativePositions = [];
+  //List<Vector3>  arCorePositions = [];  
+  List<ARNode> nodes = [];
+  List<ARAnchor> anchors = [];
 
   // Widget to showcase some SDK API functions
   Widget _createHomeTab() {
@@ -220,22 +231,181 @@ class _MyTabsState extends State<MyTabs> {
         );
     this.arObjectManager!.onInitialize();
 
-    Timer.periodic(const Duration(milliseconds: 15), (Timer t) async {
+   Timer.periodic(const Duration(milliseconds: 5000), (Timer t) async {
+    debugPrint("*************************************************************************************************************************************** START NEAR POIS:}");
+    
+    debugPrint("**************** currentLocation: ${currentLocation.toString()}");
+      this.nearPois = filterPoisByDistanceAndFloor(pois, currentLocation, 120);
+           debugPrint("**************** TIME NEAR POIS: ${nearPois.toString()}");
+      this.relativePositions = calculateRelativePositions(currentLocation, nearPois);
+            debugPrint("**************** TIME RELATIVE POSITIONS: ${relativePositions.toString()}");
+
+      List<Vector3> arcorePositions = await generateARCorePositions(relativePositions,currentLocation );
+            debugPrint("**************** TIME arcorePositions POSITIONS: ${arcorePositions.toString()}");
+
+      addPoisToScene(arcorePositions);
+ 
+
+    });
+
+
+    Timer.periodic(const Duration(milliseconds: 1000), (Timer t) async {
       Matrix4? camera = await arSessionManager.getCameraPose();
 
       if (camera != null) {
         var cameraRotation = camera.getRotation();
         currentLocation?.rotationMatrix = cameraRotation.storage;
 
-        debugPrint("**************** TIMER ALBA: ");
-        debugPrint("Camera rotation: $cameraRotation");
-        debugPrint("Location: ${currentLocation.toMap()}");
+        // debugPrint("******* TIMER ALBA: ");
+        // debugPrint("Camera rotation: $cameraRotation");
+        // debugPrint("Location: ${currentLocation.toMap()}");
 
         mapViewController?.sendMessage(
             WV_MESSAGE_LOCATION, currentLocation.toMap());
       }
     });
   }
+
+  Future<void> removeEverything() async {
+    /*nodes.forEach((node) {
+      this.arObjectManager.removeNode(node);
+    });*/
+    anchors.forEach((anchor) {
+      this.arAnchorManager!.removeAnchor(anchor);
+    });
+    anchors = [];
+  }
+
+  List<Poi> filterPoisByDistanceAndFloor(List<Poi> pois, Location location, double maxDistance) {
+  return pois.where((poi) {
+    // Verificar si el Poi está en la misma planta
+    bool sameFloor = poi.buildingIdentifier == location.buildingIdentifier &&
+        poi.position.floorIdentifier == location.floorIdentifier;
+
+    if (sameFloor) {
+      // Calcular la distancia entre la ubicación y el Poi
+      double distance = calculateDistance(location, poi.position);
+
+      // Verificar si la distancia es menor que la distancia máxima
+      return distance < maxDistance;
+    }
+
+    return false;
+  }).toList();
+}
+
+
+void addPoisToScene(List<Vector3> arcorePositions ) async{
+
+    removeEverything();
+    for (int i = 0; i < nearPois.length; i++) {
+      Poi poi = nearPois[i];
+      RelativePosition relativePosition = relativePositions[i];
+      Vector3 arcorePosition = arcorePositions[i];
+      // Crea un anchor utilizando las coordenadas relativas
+      // ARPose anchorPose = ARPose(
+      //   translation: ARVector3(relativePosition.relativeX, relativePosition.relativeY, 0.0),
+      //   rotation: ARQuaternion.axisAngle(ARVector3.up(), relativePosition.relativeBearing),
+      // );
+       Matrix4 anchorPose = Matrix4.identity()
+        ..translate(arcorePosition[0], 0.0, arcorePosition[2]);
+        //..rotateZ(relativePosition.relativeBearing);
+     
+    var newAnchor = ARPlaneAnchor(transformation: anchorPose);
+
+    bool? didAddAnchor = await this.arAnchorManager!.addAnchor(newAnchor);
+
+      if (didAddAnchor!) {
+        this.anchors.add(newAnchor);
+        ARNode objectNode = ARNode(
+          
+              type: NodeType.webGLB,
+              uri: "https://github.com/KhronosGroup/glTF-Sample-Models/raw/master/2.0/Duck/glTF-Binary/Duck.glb",
+              scale: Vector3(1, 1, 1),
+              position: Vector3(0.0, 0.0, 0.0),
+              rotation: Vector4(1.0, 0.0, 0.0, 0.0),
+              data: {"onTapText": poi.name}
+        );
+        // ARText textNode = ARText(
+        //   text: poi.name,
+        //   position: Vector3(0.0, 2.0, 0.0),  // Posiciona el texto debajo del objeto
+        //   scale: Vector3(2.0, 5.0, 5.0),  // Ajusta la escala según tus necesidades
+        // );
+
+        bool? didAddNodeToAnchor =
+            await this.arObjectManager!.addNode(objectNode, planeAnchor: newAnchor);
+
+      }
+    }
+
+}
+
+
+double calculateDistance(Location location1, Point point) {
+  double x1 = location1.cartesianCoordinate.x;
+  double y1 = location1.cartesianCoordinate.y;
+  double x2 = point.cartesianCoordinate.x;
+  double y2 = point.cartesianCoordinate.y;
+
+  // Fórmula para calcular la distancia euclidiana entre dos puntos
+  return sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2));
+}
+
+
+
+RelativePosition calculateRelativePosition(Location currentLocation, Poi poi) {
+  
+  double relativeX = poi.position.cartesianCoordinate.x - currentLocation.cartesianCoordinate.x;
+  double relativeY = poi.position.cartesianCoordinate.y - currentLocation.cartesianCoordinate.y;
+
+//TODO: Calculate bearing
+
+  return RelativePosition(relativeX: relativeX, relativeY: relativeY);
+}
+
+List<RelativePosition> calculateRelativePositions(Location currentLocation, List<Poi> nearPois) {
+  return nearPois.map((poi) {
+    return calculateRelativePosition(currentLocation, poi);
+  }).toList();
+}
+
+Future<List<Vector3>> generateARCorePositions(List<RelativePosition> relativePositions, Location currentLocation) async {
+  // Obtén la transformación de la cámara
+  debugPrint("**************** to get cameraTransform:}");
+
+  Matrix4? cameraTransform = await arSessionManager.getCameraPose();
+if (cameraTransform != null) {
+  debugPrint("**************** camera pose:");
+  debugPrint("****************  ${cameraTransform.storage[0]} ${cameraTransform.storage[1]} ${cameraTransform.storage[2]} ${cameraTransform.storage[3]}");
+  debugPrint("****************  ${cameraTransform.storage[4]} ${cameraTransform.storage[5]} ${cameraTransform.storage[6]} ${cameraTransform.storage[7]}");
+  debugPrint("****************  ${cameraTransform.storage[8]} ${cameraTransform.storage[9]} ${cameraTransform.storage[10]} ${cameraTransform.storage[11]}");
+  debugPrint("****************  ${cameraTransform.storage[12]} ${cameraTransform.storage[13]} ${cameraTransform.storage[14]} ${cameraTransform.storage[15]}");
+  // x,y ,z
+  //  ${cameraTransform.storage[12]} ${cameraTransform.storage[13]} ${cameraTransform.storage[14]
+} else {
+  debugPrint("Camera transform is null");
+}
+  if (cameraTransform != null) {
+    return relativePositions.map((relativePosition) {
+      // Calcula la posición ajustada en el sistema de referencia de ARCore (en el plano x,z)
+      Vector3 adjustedRelativePosition = Vector3(relativePosition.relativeX, 0.0, relativePosition.relativeY);
+      Vector3 arcoreTranslation = cameraTransform.getTranslation();
+        debugPrint("****************arcoreTranslation  ${arcoreTranslation.storage[0]} ${arcoreTranslation.storage[1]} ${arcoreTranslation.storage[2]}");
+
+      // Vector3 arCorePosition = cameraTransform.transform3(adjustedRelativePosition);
+      Vector3 arCorePosition = adjustedRelativePosition + arcoreTranslation;
+      // Ajusta la posición según la posición actual
+      // arCorePosition.x += currentLocation.cartesianCoordinate.x;
+      // arCorePosition.z += currentLocation.cartesianCoordinate.y;  // Usamos 'z' en lugar de 'y' en el plano x,z de ARCore
+
+      return arCorePosition;
+    }).toList();
+  } else {
+    // Maneja el caso en el que no se pudo obtener la transformación de la cámara
+    return [];
+  }
+}
+
 
   void printWarning(String text) {
     debugPrint('\x1B[33m$text\x1B[0m');
