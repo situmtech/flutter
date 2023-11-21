@@ -187,6 +187,7 @@ class Location {
   final bool isIndoor;
   final bool isOutdoor;
   final bool hasBearing;
+  final Angle? cartesianBearing;
   final int timestamp;
   late List<double>? rotationMatrix;
 
@@ -200,6 +201,7 @@ class Location {
       required this.isOutdoor,
       required this.hasBearing,
       this.bearing,
+      this.cartesianBearing,
       required this.timestamp,
       this.rotationMatrix});
 
@@ -215,6 +217,7 @@ class Location {
         'buildingIdentifier': buildingIdentifier,
         'floorIdentifier': floorIdentifier,
         'bearing': bearing?.toMap(),
+        'cartesianBearing': cartesianBearing?.toMap(),
         'accuracy': accuracy,
         'isIndoor': isIndoor,
         'isOutdoor': isOutdoor,
