@@ -15,8 +15,7 @@ import 'package:ar_flutter_plugin/datatypes/config_planedetection.dart';
 import 'package:ar_flutter_plugin/datatypes/node_types.dart';
 import 'package:ar_flutter_plugin/models/ar_anchor.dart';
 import 'package:ar_flutter_plugin/models/ar_node.dart';
-import 'package:vector_math/vector_math_64.dart' show Vector3, Vector4, Quaternion;
-
+import 'package:vector_math/vector_math_64.dart' show Matrix3, Vector3, Vector4;
 
 import './config.dart';
 
@@ -51,18 +50,30 @@ class _MyTabsState extends State<MyTabs> {
   List<Poi> pois = [];
   Poi? dropdownValue;
   Function? mapViewLoadAction;
-
   MapViewController? mapViewController;
 
+  // More AR Core vars
   late ARSessionManager arSessionManager;
   late ARObjectManager arObjectManager;
   late ARAnchorManager arAnchorManager;
-  late Location currentLocation;
-  List<Poi> nearPois = [];
-  List<RelativePosition> relativePositions = [];
-  //List<Vector3>  arCorePositions = [];  
+
+  // AR Core vars
   List<ARNode> nodes = [];
   List<ARAnchor> anchors = [];
+  double rotationY = 0;
+  double rotationX = 0;
+  double rotationZ = 0;
+  bool useSitumOrientation = true;
+
+  // Transformation vars
+  double dx = 0;
+  double dy = 0;
+  double angle = 0;
+  Matrix3 transformationMatrix = Matrix3.identity();
+
+  // Situm vars
+  Location? currentLocation;
+  Building? currentBuilding;
 
   // Widget to showcase some SDK API functions
   Widget _createHomeTab() {
@@ -200,18 +211,90 @@ class _MyTabsState extends State<MyTabs> {
     ]);
   }
 
+  void toggleOrientation() {
+    setState(() {
+      useSitumOrientation = !useSitumOrientation;
+    });
+  }
+
   // Widget that shows ARView.
   Widget _createARTab() {
-    return Scaffold(
-        appBar: AppBar(
-          title: const Text('Anchors & Objects on Planes'),
-        ),
-        body: Stack(children: [
-          ARView(
-            onARViewCreated: onARViewCreated,
-            planeDetectionConfig: PlaneDetectionConfig.horizontal,
+    return Stack(children: [
+      ARView(
+        onARViewCreated: onARViewCreated,
+        planeDetectionConfig: PlaneDetectionConfig.horizontal,
+      ),
+      Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text(
+              'Location cartesian coords (${currentLocation?.cartesianCoordinate.x}, ${currentLocation?.cartesianCoordinate.y})'),
+          Text('Dx ${dx.toStringAsFixed(3)}'),
+          Text('Dy ${dy.toStringAsFixed(3)}'),
+          Text('Angle ${angle.toStringAsFixed(3)}'),
+          Text('Rotation X ${rotationX.toStringAsFixed(3)}'),
+          Text('Rotation Y ${rotationY.toStringAsFixed(3)}'),
+          Text('Rotation Z ${rotationZ.toStringAsFixed(3)}'),
+          Text(
+              'Situm Cartesian Rotation Y ${currentLocation?.cartesianBearing?.radians.toStringAsFixed(3)}'),
+          Text(
+              'Situm Rotation Y ${currentLocation?.bearing?.radians.toStringAsFixed(3)}'),
+          ElevatedButton(
+            onPressed: toggleOrientation,
+            child: const Text('Toggle orientation'),
           ),
-        ]));
+          ElevatedButton(
+            onPressed: updatePois,
+            child: const Text('Update poi positions'),
+          ),
+        ],
+      ),
+    ]);
+  }
+
+  Widget _createSplitScreen() {
+    return Column(
+      children: [
+        Expanded(
+          flex: 1,
+          child: _createARTab(),
+        ),
+        Expanded(
+          flex: 1,
+          child: _createSitumMapTab(),
+        ),
+      ],
+    );
+  }
+
+  void updatePois() {
+    if (currentLocation == null) return;
+    List<Poi> nearPois =
+        filterPoisByDistanceAndFloor(pois, currentLocation!, 10000);
+    List<Vector3> arcorePositions =
+        generateARCorePositions(nearPois, currentLocation!);
+    List<List<double>> filteredPoisPositions = nearPois
+        .map((e) => [
+              e.position.cartesianCoordinate.x,
+              e.position.cartesianCoordinate.y
+            ])
+        .toList();
+
+    printALBA("Diff Angle: $angle");
+    printALBA("Dx: $dx");
+    printALBA("Dy: $dy");
+    printALBA("Current position: ${[
+      currentLocation?.cartesianCoordinate.x,
+      currentLocation?.cartesianCoordinate.y
+    ]}");
+    printALBA("Camera bearing $rotationY");
+    printALBA("Location bearing ${currentLocation?.bearing?.radians}");
+    printALBA(
+        "Location cartesian bearing ${currentLocation?.cartesianBearing?.radians}");
+    printALBA("Building rotation ${currentBuilding?.rotation}");
+    printALBA("Filtered pois: $filteredPoisPositions");
+    printALBA("Transformed filtered pois: $arcorePositions");
+    addPoisToScene(nearPois, arcorePositions);
   }
 
   void onARViewCreated(
@@ -231,254 +314,106 @@ class _MyTabsState extends State<MyTabs> {
         );
     this.arObjectManager!.onInitialize();
 
-   Timer.periodic(const Duration(milliseconds: 20000), (Timer t) async {
-    debugPrint("*************************************************************************************************************************************** START NEAR POIS:}");
-    
-    debugPrint("**************** currentLocation: ${currentLocation.toString()}");
-      this.nearPois = filterPoisByDistanceAndFloor(pois, currentLocation, 50);
-           debugPrint("**************** TIME NEAR POIS: ${nearPois.toString()}");
-      //this.relativePositions = calculateRelativePositions(currentLocation, nearPois);
-        //    debugPrint("**************** TIME RELATIVE POSITIONS: ${relativePositions.toString()}");
-
-      //List<Vector3> arcorePositions = await generateARCorePositions(relativePositions,currentLocation );
-      List<Vector3> arcorePositions = await generateARCorePositions(nearPois,currentLocation);
-            debugPrint("**************** TIME arcorePositions POSITIONS: ${arcorePositions.toString()}");
-
-      addPoisToScene(arcorePositions);
- 
-
+    Timer.periodic(const Duration(milliseconds: 100), (Timer t) async {
+      Vector3 rotation = await obtainRotationFromMatrix();
+      setState(() {
+        rotationX = rotation.x;
+        rotationY = rotation.y;
+        rotationZ = rotation.z;
+      });
     });
 
-
-    Timer.periodic(const Duration(milliseconds: 1000), (Timer t) async {
-      Matrix4? camera = await arSessionManager.getCameraPose();
-
-      if (camera != null) {
-        var cameraRotation = camera.getRotation();
-        currentLocation?.rotationMatrix = cameraRotation.storage;
-
-        // debugPrint("******* TIMER ALBA: ");
-        // debugPrint("Camera rotation: $cameraRotation");
-        // debugPrint("Location: ${currentLocation.toMap()}");
-
-        mapViewController?.sendMessage(
-            WV_MESSAGE_LOCATION, currentLocation.toMap());
-      }
-    });
+    Timer.periodic(const Duration(milliseconds: 20000), (Timer t) async {});
   }
 
   Future<void> removeEverything() async {
-    nodes.forEach((node) {
-      this.arObjectManager!.removeNode(node);
-    });
-    anchors.forEach((anchor) {
-      this.arAnchorManager!.removeAnchor(anchor);
-    });
+    for (var node in nodes) {
+      arObjectManager.removeNode(node);
+    }
+    for (var anchor in anchors) {
+      arAnchorManager.removeAnchor(anchor);
+    }
     nodes = [];
     anchors = [];
   }
 
-  List<Poi> filterPoisByDistanceAndFloor(List<Poi> pois, Location location, double maxDistance) {
-  return pois.where((poi) {
-    // Verificar si el Poi está en la misma planta
-    bool sameFloor = poi.buildingIdentifier == location.buildingIdentifier &&
-        poi.position.floorIdentifier == location.floorIdentifier;
+  List<Poi> filterPoisByDistanceAndFloor(
+      List<Poi> pois, Location location, double maxDistance) {
+    return pois.where((poi) {
+      // Verificar si el Poi está en la misma planta
+      bool sameFloor = poi.buildingIdentifier == location.buildingIdentifier &&
+          poi.position.floorIdentifier == location.floorIdentifier;
 
-    if (sameFloor) {
-      // Calcular la distancia entre la ubicación y el Poi
-      double distance = calculateDistance(location, poi.position);
+      if (sameFloor) {
+        // Calcular la distancia entre la ubicación y el Poi
+        double distance = calculateDistance(location, poi.position);
+        // Verificar si la distancia es menor que la distancia máxima
+        return distance < maxDistance;
+      }
 
-      // Verificar si la distancia es menor que la distancia máxima
-      return distance < maxDistance;
-    }
+      return false;
+    }).toList();
+  }
 
-    return false;
-  }).toList();
-}
-
-
-void addPoisToScene(List<Vector3> arcorePositions ) async{
-debugPrint("**************** TO ADD pois to scene}");
+  void addPoisToScene(List<Poi> nearPois, List<Vector3> arcorePositions) async {
     removeEverything();
     for (int i = 0; i < nearPois.length; i++) {
       Poi poi = nearPois[i];
-    //  RelativePosition relativePosition = relativePositions[i];
       Vector3 arcorePosition = arcorePositions[i];
-      // Crea un anchor utilizando las coordenadas relativas
-      // ARPose anchorPose = ARPose(
-      //   translation: ARVector3(relativePosition.relativeX, relativePosition.relativeY, 0.0),
-      //   rotation: ARQuaternion.axisAngle(ARVector3.up(), relativePosition.relativeBearing),
-      // );
-       Matrix4 anchorPose = Matrix4.identity()
+      Matrix4 anchorPose = Matrix4.identity()
         ..translate(arcorePosition[0], 0.0, arcorePosition[2]);
-        //..rotateZ(relativePosition.relativeBearing);
-     
-    var newAnchor = ARPlaneAnchor(transformation: anchorPose);
+      var newAnchor = ARPlaneAnchor(transformation: anchorPose);
 
-    bool? didAddAnchor = await this.arAnchorManager!.addAnchor(newAnchor);
+      bool? didAddAnchor = await arAnchorManager.addAnchor(newAnchor);
 
       if (didAddAnchor!) {
-                    debugPrint("**************** ADDED ANCHOR}");
-
-        this.anchors.add(newAnchor);
+        anchors.add(newAnchor);
         ARNode objectNode = ARNode(
-          
-              type: NodeType.webGLB,
-              uri: "https://github.com/KhronosGroup/glTF-Sample-Models/raw/master/2.0/Duck/glTF-Binary/Duck.glb",
-              scale: Vector3(1, 1, 1),
-              position: Vector3(0.0, 0.0, 0.0),
-              rotation: Vector4(1.0, 0.0, 0.0, 0.0),
-              data: {"onTapText": poi.name}
-        );
-        // ARText textNode = ARText(
-        //   text: poi.name,
-        //   position: Vector3(0.0, 2.0, 0.0),  // Posiciona el texto debajo del objeto
-        //   scale: Vector3(2.0, 5.0, 5.0),  // Ajusta la escala según tus necesidades
-        // );
-
-        bool? didAddNodeToAnchor =
-            await this.arObjectManager!.addNode(objectNode, planeAnchor: newAnchor);
-
+            type: NodeType.webGLB,
+            uri:
+                "https://github.com/KhronosGroup/glTF-Sample-Models/raw/master/2.0/Duck/glTF-Binary/Duck.glb",
+            scale: Vector3(1, 1, 1),
+            position: Vector3(0.0, -1.0, 0.0),
+            rotation: Vector4(1.0, 0.0, 0.0, 0.0),
+            data: {"onTapText": poi.name});
+        arObjectManager.addNode(objectNode, planeAnchor: newAnchor);
       }
     }
-
-}
-
-
-double calculateDistance(Location location1, Point point) {
-  double x1 = location1.cartesianCoordinate.x;
-  double y1 = location1.cartesianCoordinate.y;
-  double x2 = point.cartesianCoordinate.x;
-  double y2 = point.cartesianCoordinate.y;
-
-  // Fórmula para calcular la distancia euclidiana entre dos puntos
-  return sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2));
-}
-
-
-
-RelativePosition calculateRelativePosition(Location currentLocation, Poi poi) {
-  
-  double relativeX = poi.position.cartesianCoordinate.x - currentLocation.cartesianCoordinate.x;
-  double relativeY = poi.position.cartesianCoordinate.y - currentLocation.cartesianCoordinate.y;
-
-//TODO: Calculate bearing
-
-  return RelativePosition(relativeX: relativeX, relativeY: relativeY);
-}
-
-List<RelativePosition> calculateRelativePositions(Location currentLocation, List<Poi> nearPois) {
-  return nearPois.map((poi) {
-    return calculateRelativePosition(currentLocation, poi);
-  }).toList();
-}
-
-
-
-
-double getBearingFromMatrix(Matrix4 cameraTransform) {
-  // Obtener los elementos relevantes de la matriz de rotación
-  double m00 = cameraTransform.storage[0];
-  double m02 = cameraTransform.storage[2];
-  double m20 = cameraTransform.storage[8];
-  double m22 = cameraTransform.storage[10];
-
-  // Calcular el ángulo de bearing en el plano x-z
-  double bearing = atan2(m02, m00);
-
-  // Asegurarse de que el ángulo esté en el rango [0, 2*pi]
-  if (bearing < 0) {
-    bearing += 2 * pi;
   }
 
-  return bearing;
-}
+  double calculateDistance(Location location1, Point point) {
+    double x1 = location1.cartesianCoordinate.x;
+    double y1 = location1.cartesianCoordinate.y;
+    double x2 = point.cartesianCoordinate.x;
+    double y2 = point.cartesianCoordinate.y;
 
-
-
-Future<List<Vector3>> generateARCorePositions(List<Poi> pois, Location currentLocation) async {
-  // Obtiene la transformación de la cámara
-  Matrix4? cameraTransform = await arSessionManager.getCameraPose();
-
-  if (cameraTransform == null) {
-    // Manejar el caso en que no se pueda obtener la transformación de la cámara
-    return [];
+    // Fórmula para calcular la distancia euclidiana entre dos puntos
+    return sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2));
   }
 
-  List<Vector3> arCorePositions = [];
+  List<Vector3> generateARCorePositions(
+      List<Poi> pois, Location currentLocation) {
+    List<Vector3> arCorePositions = [];
 
-  // Extraer la rotación de la cámara como Quaternion
-  Quaternion cameraRotation =  Quaternion.fromRotation(cameraTransform.getRotation());
+    // Iterar sobre la lista de POIs
+    for (var poi in pois) {
+      List<double> poiPosition = [
+        poi.position.cartesianCoordinate.x,
+        poi.position.cartesianCoordinate.y
+      ];
+      Vector3 transformedPosition =
+          applyTransformationMatrix(poiPosition, transformationMatrix);
 
-  // Ajustar la rotación para mantener solo la componente horizontal
-  // Esto puede implicar normalizar el Quaternion y ajustar su componente Y
-  Quaternion horizontalRotation = Quaternion.axisAngle(Vector3(0, 1, 0), cameraRotation.y);
+      // Should probably fix this in the transformation matrix
+      transformedPosition.z = transformedPosition.y;
+      transformedPosition.y = 1;
 
-  double bearingRadians = currentLocation.cartesianBearing != null ? currentLocation.cartesianBearing!.radians : 0;
-  double adjustedBearing = (2 * pi - (bearingRadians + pi / 2)) % (2 * pi); // ?
-  
+      // Agregar la posición transformada a la lista
+      arCorePositions.add(transformedPosition);
+    }
 
-  // Iterar sobre la lista de POIs
-  for (var poi in pois) {
-    // Extraer la posición x, y del POI en el sistema de coordenadas A
-    double xA = poi.position.cartesianCoordinate.x;
-    double yA = poi.position.cartesianCoordinate.y;
-
-    // Calcular la posición relativa del POI respecto a la posición actual
-    Vector3 relativePoiPosition = Vector3(xA - currentLocation.cartesianCoordinate.x, 0, yA - currentLocation.cartesianCoordinate.y);
-
-    // Rotar la posición relativa basándose en el bearing
-    Quaternion bearingRotation = Quaternion.axisAngle(Vector3(0, 1, 0), adjustedBearing);
-    Vector3 bearingAdjustedPosition = bearingRotation.rotated(relativePoiPosition);
-
-    // Aplicar la rotación horizontal de la cámara a la posición ajustada por el bearing
-    Vector3 transformedPosition = horizontalRotation.rotated(bearingAdjustedPosition);
-
-    // Mantener la altura constante (ajustar si es necesario)
-    transformedPosition.y = 0;
-
-    // Agregar la posición transformada a la lista
-    arCorePositions.add(transformedPosition);
+    return arCorePositions;
   }
-
-  return arCorePositions;
-}
-
-
-
-
-
-
-Future<List<Vector3>> generateARCorePositions3(List<Poi> pois, Location currentLocation) async {
-  Matrix4? cameraTransform = await arSessionManager.getCameraPose();
-
-  if (cameraTransform != null) {
-    double currentCameraPosex =  cameraTransform.storage[12];
-    double currentCameraPosey =  cameraTransform.storage[14];
-    double cameraBearing = getBearingFromMatrix(cameraTransform);
-    double dx = currentLocation.cartesianCoordinate.x - currentCameraPosex;
-    double dy = currentLocation.cartesianCoordinate.y - currentCameraPosey;
-debugPrint("**************** currentCameraPosex: ${currentCameraPosex}, ${currentCameraPosey} /  cameraBearing: ${cameraBearing}" );
-    return pois.map((poi) {
-      double dx_p = poi.position.cartesianCoordinate.x - currentLocation.cartesianCoordinate.x;
-      double dy_p = poi.position.cartesianCoordinate.y - currentLocation.cartesianCoordinate.y;
-
-      // Rotar las coordenadas del poi en relación con el ángulo de bearing de la cámara
-      double p_b_x_rotado = cos(cameraBearing) * dx_p - sin(cameraBearing) * dy_p; //+ currentLocation.cartesianCoordinate.x;
-      double p_b_y_rotado = sin(cameraBearing) * dx_p + cos(cameraBearing) * dy_p; //+ currentLocation.cartesianCoordinate.y;
-
-      // Sumar las coordenadas de currentCameraPose a las coordenadas rotadas
-      double p_transformado_x = p_b_x_rotado;// + dx;
-      double p_transformado_y = p_b_y_rotado;// + dy;
-debugPrint("**************** poi: ${poi.position.cartesianCoordinate.x}, ${poi.position.cartesianCoordinate.y} /  dx_p: ${dx_p}, ${dy_p}" );
-debugPrint("****************         p_b_x_rotado: ${p_b_x_rotado}, ${p_b_y_rotado}" );
-debugPrint("****************         p_transformado_y: ${p_transformado_x}, ${p_transformado_y}" );
-      return Vector3(p_transformado_x, 0.0, p_transformado_y);
-    }).toList();
-  } else {
-    return [];
-  }
-}
 
   void printWarning(String text) {
     debugPrint('\x1B[33m$text\x1B[0m');
@@ -563,6 +498,152 @@ debugPrint("****************         p_transformado_y: ${p_transformado_x}, ${p_
     });
   }
 
+  void _downloadBuilding(String buildingIdentifier) async {
+    BuildingInfo buildingInfo =
+        await situmSdk.fetchBuildingInfo(buildingIdentifier);
+    setState(() {
+      currentBuilding = buildingInfo.building;
+    });
+  }
+
+  ///////////////////////////////////////////////////////////
+
+  void printALBA(String msg) {
+    debugPrint('***** ALBA $msg');
+  }
+
+  Future<Vector3> obtainRotationFromMatrix() async {
+    Matrix4? cameraTransform = await arSessionManager.getCameraPose();
+    if (cameraTransform == null) return Vector3.zero();
+
+    Matrix3 rotation = cameraTransform.getRotation();
+
+    double r11 = rotation.storage[0];
+    double r12 = rotation.storage[1];
+    double r13 = rotation.storage[2];
+
+    // ignore: unused_local_variable
+    double r21 = rotation.storage[3];
+    double r22 = rotation.storage[4];
+    double r23 = rotation.storage[5];
+
+    // ignore: unused_local_variable
+    double r31 = rotation.storage[6];
+    // ignore: unused_local_variable
+    double r32 = rotation.storage[7];
+    // ignore: unused_local_variable
+    double r33 = rotation.storage[8];
+
+    double rotationX = normalizeRotation(atan2(-r23, r22));
+    double rotationY = normalizeRotation(atan2(r13, r11));
+    double rotationZ = normalizeRotation(atan2(-r12, r11));
+
+    return Vector3(rotationX, rotationY, rotationZ);
+  }
+
+  ///////////////////////////////////////////////////////////
+
+  void testTransformationMatrix() {
+    // Example usage
+    List<List<double>> originalPoints = [
+      [168.8528742425964, 76.4548991879338],
+      [78.730527802388, 160.87210985994304],
+      [80.13393555615409, 78.49627594609343],
+      [169.74518848088155, 22.34082514745507],
+      [157.28252052874447, 161.5045273399072],
+      [159.88739144573634, 21.861734484514734],
+      [157.15683273141008, 115.96345180564369],
+      [157.1216547878905, 101.48728722094953],
+      [157.25300262616094, 131.4016039510251],
+      [122.52218472813405, 29.33997495469535],
+      [168.92065862799637, 92.9446501289153],
+      [158.49094214302454, 76.85321391871193],
+      [158.69225388409563, 92.97760437525864],
+      [78.84604036531914, 23.77124993977146],
+      [157.1678318663741, 146.817184075046]
+    ];
+
+    List<List<double>> transformedPoints = [];
+    List<double> rotationOrigin = [20, 20];
+    Matrix3 transformationMatrix =
+        computeTransformationMatrix(pi / 4, 120, 34, rotationOrigin);
+
+    for (List<double> point in originalPoints) {
+      Vector3 transformedPoint =
+          applyTransformationMatrix(point, transformationMatrix);
+      transformedPoints.add([transformedPoint.x, transformedPoint.y]);
+    }
+
+    // Print the transformed points
+    printALBA(transformedPoints.toString());
+  }
+
+  ///////////////////////////////////////////////////////////
+
+  double normalizeRotation(double angle) {
+    return angle % (2 * pi);
+  }
+
+  void udpateWorldView(Location location) async {
+    Matrix4? cameraTransform = await arSessionManager.getCameraPose();
+
+    if (cameraTransform == null) return;
+
+    Vector3 cameraPosition = cameraTransform.getTranslation();
+    double diffX = cameraPosition.x - location.cartesianCoordinate.x;
+    double diffY = cameraPosition.y - location.cartesianCoordinate.y;
+
+    double diffAngle = angle;
+    if (location.hasBearing && location.bearing != null) {
+      diffAngle = ((2 * pi - location.cartesianBearing!.radians) - rotationY);
+    }
+
+    List<double> rotationOrigin = [
+      location.cartesianCoordinate.x,
+      location.cartesianCoordinate.y
+    ];
+
+    setState(() {
+      dx = diffX;
+      dy = diffY;
+      angle = diffAngle;
+      transformationMatrix =
+          computeTransformationMatrix(diffAngle, diffX, diffY, rotationOrigin);
+    });
+  }
+
+  ///////////////////////////////////////////////////////////
+
+  Matrix3 computeTransformationMatrix(
+      double angle, double dx, double dy, List<double> rotationOrigin) {
+    // Create a translation matrix to rotate with respect to a given origin
+    Matrix3 translationMatrix = Matrix3.columns(Vector3(1, 0, 0),
+        Vector3(0, 1, 0), Vector3(-rotationOrigin[0], -rotationOrigin[1], 1));
+
+    // Applies both (dx, dy) offset as well as rotation on Y
+    Matrix3 transformationMatrix = Matrix3.columns(
+        Vector3(cos(angle), sin(angle), 0),
+        Vector3(-sin(angle), cos(angle), 0),
+        Vector3(dx, dy, 1));
+
+    // Create a translation back matrix to undo initial translation
+    Matrix3 translationBackMatrix = Matrix3.columns(Vector3(1, 0, 0),
+        Vector3(0, 1, 0), Vector3(rotationOrigin[0], rotationOrigin[1], 1));
+
+    // Combine transformation matrices into a single transformation matrix
+    Matrix3 relativeTransformationMatrix =
+        translationBackMatrix * transformationMatrix * translationMatrix;
+
+    return relativeTransformationMatrix;
+  }
+
+  Vector3 applyTransformationMatrix(
+      List<double> point, Matrix3 transformationMatrix) {
+    return transformationMatrix * Vector3(point[0], point[1], 1);
+  }
+
+  ///////////////////////////////////////////////////////////
+
   @override
   void initState() {
     situmSdk = SitumSdk();
@@ -580,9 +661,26 @@ debugPrint("****************         p_transformado_y: ${p_transformado_x}, ${p_
         useRemoteConfig: true));
     // Set up location listeners:
     situmSdk.onLocationUpdate((location) {
+      Location modifiedLocation = location;
+      modifiedLocation.cartesianCoordinate.x = 122;
+      modifiedLocation.cartesianCoordinate.y = 40;
+      // modifiedLocation.cartesianBearing?.radians = 0;
+      // modifiedLocation.bearing?.radians = normalizeRotation(
+      //     (modifiedLocation.cartesianBearing?.radians ?? 0) +
+      //         currentBuilding!.rotation);
+
       setState(() {
-        currentLocation = location;
+        currentLocation = modifiedLocation;
       });
+      if (!useSitumOrientation) {
+        modifiedLocation.bearing?.radians = rotationY;
+      }
+
+      udpateWorldView(modifiedLocation);
+      // testTransformationMatrix();
+
+      mapViewController?.sendMessage(
+          WV_MESSAGE_LOCATION, modifiedLocation.toMap());
       _echo("""SDK> Location changed:
         Time diff: ${location.timestamp - DateTime.now().millisecondsSinceEpoch}
         cartesianBearing : ${location?.cartesianBearing?.radians}, bearing: ${location?.bearing?.radians}
@@ -605,6 +703,7 @@ debugPrint("****************         p_transformado_y: ${p_transformado_x}, ${p_
       _echo("Situm> SDK> Exit geofences: ${geofencesResult.geofences}.");
     });
     _downloadPois(buildingIdentifier);
+    _downloadBuilding(buildingIdentifier);
     super.initState();
   }
 
@@ -686,17 +785,13 @@ debugPrint("****************         p_transformado_y: ${p_transformado_x}, ${p_
       ),
       body: IndexedStack(
         index: _selectedIndex,
-        children: [_createHomeTab(), _createSitumMapTab(), _createARTab()],
+        children: [_createHomeTab(), _createSplitScreen()],
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.map),
-            label: 'Wayfinding',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.toys),

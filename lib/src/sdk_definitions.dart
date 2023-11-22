@@ -178,18 +178,18 @@ class NavigationRequest {
 /// A location. It can be indoor or outdoor, check isIndoor and isOutdoor.
 /// A valid indoor location has floorIdentifier and cartesianCoordinate.
 class Location {
-  final Coordinate coordinate;
-  final CartesianCoordinate cartesianCoordinate;
-  final String buildingIdentifier;
-  final String floorIdentifier;
-  final Angle? bearing;
-  final double accuracy;
-  final bool isIndoor;
-  final bool isOutdoor;
-  final bool hasBearing;
-  final Angle? cartesianBearing;
-  final int timestamp;
-  late List<double>? rotationMatrix;
+  Coordinate coordinate;
+  CartesianCoordinate cartesianCoordinate;
+  String buildingIdentifier;
+  String floorIdentifier;
+  Angle? bearing;
+  double accuracy;
+  bool isIndoor;
+  bool isOutdoor;
+  bool hasBearing;
+  Angle? cartesianBearing;
+  int timestamp;
+  List<double>? rotationMatrix;
 
   Location(
       {required this.coordinate,
@@ -281,8 +281,8 @@ class Coordinate {
 
 /// An structure that contains cartesian coordinate.
 class CartesianCoordinate {
-  final double x;
-  final double y;
+  double x;
+  double y;
 
   CartesianCoordinate({
     required this.x,
@@ -297,10 +297,10 @@ class CartesianCoordinate {
 
 /// An structure that contains an angle in radians and in degrees.
 class Angle {
-  final double radians;
-  final double radiansMinusPiPi;
-  final double degrees;
-  final double degreesClockwise;
+  double radians;
+  double radiansMinusPiPi;
+  double degrees;
+  double degreesClockwise;
 
   static const double _pi = 3.1415926535897932;
 
@@ -718,7 +718,7 @@ class RelativePosition {
   final double relativeY;
 
   RelativePosition({required this.relativeX, required this.relativeY});
-    @override
+  @override
   String toString() {
     return 'RelativePosition{relativeX: $relativeX, relativeY: $relativeY}';
   }
