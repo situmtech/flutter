@@ -1,6 +1,6 @@
 name: situm_flutter
 description: Integrate plug&play navigation experience with floorplans, POIs, routes and turn-by-turn directions in no time. With the power of Situm.
-version: 3.8.2
+version: 3.9.0
 homepage: https://github.com/situmtech/flutter
 
 environment:
