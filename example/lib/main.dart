@@ -405,7 +405,12 @@ class _MyTabsState extends State<MyTabs> {
           applyTransformationMatrix(poiPosition, transformationMatrix);
 
       // Should probably fix this in the transformation matrix
-      transformedPosition.z = transformedPosition.y;
+      // Inverse y component to fit camera coordinate system
+      // -z
+      // |
+      // |___ x
+      transformedPosition.z = -transformedPosition.y;
+      // Keep height constant
       transformedPosition.y = 1;
 
       // Agregar la posición transformada a la lista
@@ -534,9 +539,9 @@ class _MyTabsState extends State<MyTabs> {
     // ignore: unused_local_variable
     double r33 = rotation.storage[8];
 
-    double rotationX = normalizeRotation(atan2(-r23, r22));
-    double rotationY = normalizeRotation(atan2(r13, r11));
-    double rotationZ = normalizeRotation(atan2(-r12, r11));
+    double rotationX = atan2(-r23, r22);
+    double rotationY = atan2(r13, r11);
+    double rotationZ = atan2(-r12, r11);
 
     return Vector3(rotationX, rotationY, rotationZ);
   }
@@ -590,12 +595,16 @@ class _MyTabsState extends State<MyTabs> {
     if (cameraTransform == null) return;
 
     Vector3 cameraPosition = cameraTransform.getTranslation();
+    // Compute relative situm position with respect to camera
     double diffX = cameraPosition.x - location.cartesianCoordinate.x;
     double diffY = cameraPosition.y - location.cartesianCoordinate.y;
 
     double diffAngle = angle;
     if (location.hasBearing && location.bearing != null) {
-      diffAngle = ((2 * pi - location.cartesianBearing!.radians) - rotationY);
+      // First inverse situm rotation and compute relative rotation with respect to camera
+      // idk why i need a 90 degree rotation
+      diffAngle = ((2 * pi - location.cartesianBearing!.radians) - rotationY) +
+          (pi / 2);
     }
 
     List<double> rotationOrigin = [
@@ -661,9 +670,10 @@ class _MyTabsState extends State<MyTabs> {
         useRemoteConfig: true));
     // Set up location listeners:
     situmSdk.onLocationUpdate((location) {
+      // Modify location for test purposes
       Location modifiedLocation = location;
-      modifiedLocation.cartesianCoordinate.x = 122;
-      modifiedLocation.cartesianCoordinate.y = 40;
+      // modifiedLocation.cartesianCoordinate.x = 122;
+      // modifiedLocation.cartesianCoordinate.y = 40;
       // modifiedLocation.cartesianBearing?.radians = 0;
       // modifiedLocation.bearing?.radians = normalizeRotation(
       //     (modifiedLocation.cartesianBearing?.radians ?? 0) +
@@ -672,6 +682,8 @@ class _MyTabsState extends State<MyTabs> {
       setState(() {
         currentLocation = modifiedLocation;
       });
+
+      // Set orientation to camera orientation
       if (!useSitumOrientation) {
         modifiedLocation.bearing?.radians = rotationY;
       }
