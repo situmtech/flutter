@@ -63,7 +63,6 @@ class _MyTabsState extends State<MyTabs> {
   double rotationY = 0;
   double rotationX = 0;
   double rotationZ = 0;
-  bool useSitumOrientation = true;
 
   // Transformation vars
   double dx = 0;
@@ -211,12 +210,6 @@ class _MyTabsState extends State<MyTabs> {
     ]);
   }
 
-  void toggleOrientation() {
-    setState(() {
-      useSitumOrientation = !useSitumOrientation;
-    });
-  }
-
   // Widget that shows ARView.
   Widget _createARTab() {
     return Stack(children: [
@@ -239,10 +232,6 @@ class _MyTabsState extends State<MyTabs> {
               'Situm Cartesian Rotation Y ${currentLocation?.cartesianBearing?.radians.toStringAsFixed(3)}'),
           Text(
               'Situm Rotation Y ${currentLocation?.bearing?.radians.toStringAsFixed(3)}'),
-          ElevatedButton(
-            onPressed: toggleOrientation,
-            child: const Text('Toggle orientation'),
-          ),
           ElevatedButton(
             onPressed: updatePois,
             child: const Text('Update poi positions'),
@@ -267,12 +256,15 @@ class _MyTabsState extends State<MyTabs> {
     );
   }
 
-  void updatePois() {
+  void updatePois() async {
     if (currentLocation == null) return;
     List<Poi> nearPois =
         filterPoisByDistanceAndFloor(pois, currentLocation!, 10000);
-    List<Vector3> arcorePositions =
-        generateARCorePositions(nearPois, currentLocation!);
+    List<Vector3>? arcorePositions =
+        await generateARCorePositions(nearPois, currentLocation!);
+
+    if (arcorePositions == null) return;
+
     List<List<double>> filteredPoisPositions = nearPois
         .map((e) => [
               e.position.cartesianCoordinate.x,
@@ -391,9 +383,14 @@ class _MyTabsState extends State<MyTabs> {
     return sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2));
   }
 
-  List<Vector3> generateARCorePositions(
-      List<Poi> pois, Location currentLocation) {
+  Future<List<Vector3>?> generateARCorePositions(
+      List<Poi> pois, Location location) async {
     List<Vector3> arCorePositions = [];
+    // Define transformation matrix based on camera pose and situm pose
+    Matrix3? transformationMatrix = await udpateWorldView(location);
+    // testTransformationMatrix();
+
+    if (transformationMatrix == null) return null;
 
     // Iterar sobre la lista de POIs
     for (var poi in pois) {
@@ -585,27 +582,20 @@ class _MyTabsState extends State<MyTabs> {
 
   ///////////////////////////////////////////////////////////
 
-  double normalizeRotation(double angle) {
-    return angle % (2 * pi);
-  }
-
-  void udpateWorldView(Location location) async {
+  Future<Matrix3?> udpateWorldView(Location location) async {
     Matrix4? cameraTransform = await arSessionManager.getCameraPose();
 
-    if (cameraTransform == null) return;
+    if (cameraTransform == null) return null;
 
     Vector3 cameraPosition = cameraTransform.getTranslation();
     // Compute relative situm position with respect to camera
     double diffX = cameraPosition.x - location.cartesianCoordinate.x;
     double diffY = cameraPosition.y - location.cartesianCoordinate.y;
 
-    double diffAngle = angle;
-    if (location.hasBearing && location.bearing != null) {
-      // First inverse situm rotation and compute relative rotation with respect to camera
-      // idk why i need a 90 degree rotation
-      diffAngle = ((2 * pi - location.cartesianBearing!.radians) - rotationY) +
-          (pi / 2);
-    }
+    // First inverse situm rotation and compute relative rotation with respect to camera
+    // idk why i need a 90 degree rotation
+    double diffAngle =
+        ((2 * pi - location.cartesianBearing!.radians) - rotationY) + (pi / 2);
 
     List<double> rotationOrigin = [
       location.cartesianCoordinate.x,
@@ -616,9 +606,9 @@ class _MyTabsState extends State<MyTabs> {
       dx = diffX;
       dy = diffY;
       angle = diffAngle;
-      transformationMatrix =
-          computeTransformationMatrix(diffAngle, diffX, diffY, rotationOrigin);
     });
+
+    return computeTransformationMatrix(diffAngle, diffX, diffY, rotationOrigin);
   }
 
   ///////////////////////////////////////////////////////////
@@ -674,22 +664,10 @@ class _MyTabsState extends State<MyTabs> {
       Location modifiedLocation = location;
       // modifiedLocation.cartesianCoordinate.x = 122;
       // modifiedLocation.cartesianCoordinate.y = 40;
-      // modifiedLocation.cartesianBearing?.radians = 0;
-      // modifiedLocation.bearing?.radians = normalizeRotation(
-      //     (modifiedLocation.cartesianBearing?.radians ?? 0) +
-      //         currentBuilding!.rotation);
 
       setState(() {
         currentLocation = modifiedLocation;
       });
-
-      // Set orientation to camera orientation
-      if (!useSitumOrientation) {
-        modifiedLocation.bearing?.radians = rotationY;
-      }
-
-      udpateWorldView(modifiedLocation);
-      // testTransformationMatrix();
 
       mapViewController?.sendMessage(
           WV_MESSAGE_LOCATION, modifiedLocation.toMap());
