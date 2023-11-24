@@ -4,20 +4,52 @@ part of sdk;
 class LocationRequest {
   final String? buildingIdentifier;
   final bool? useDeadReckoning;
+  final bool? useForegroundService;
+  final ForegroundServiceNotificationOptions?
+      foregroundServiceNotificationOptions;
 
   LocationRequest({
     this.buildingIdentifier,
     this.useDeadReckoning,
+    this.useForegroundService,
+    this.foregroundServiceNotificationOptions,
   });
 
   Map<String, dynamic> toMap() {
     Map<String, dynamic> map = {};
-    if (buildingIdentifier != null) {
-      map["buildingIdentifier"] = buildingIdentifier;
-    }
-    if (useDeadReckoning != null) {
-      map["useDeadReckoning"] = useDeadReckoning;
-    }
+    _addToMapIfNotNull("buildingIdentifier", buildingIdentifier, map);
+    _addToMapIfNotNull("useDeadReckoning", useDeadReckoning, map);
+    _addToMapIfNotNull("useForegroundService", useForegroundService, map);
+    _addToMapIfNotNull("foregroundServiceNotificationOptions",
+        foregroundServiceNotificationOptions?.toMap(), map);
+    return map;
+  }
+}
+
+/// A data object that let you customize the Foreground Service Notification
+/// that will be shown in the system's tray when the app is running as a
+/// Foreground Service.
+/// To be used with [LocationRequest].
+/// Only applies for Android.
+class ForegroundServiceNotificationOptions {
+  late String? title;
+  late String? message;
+  late bool? showStopAction;
+  late String? stopActionText;
+
+  ForegroundServiceNotificationOptions({
+    this.title,
+    this.message,
+    this.showStopAction = false,
+    this.stopActionText,
+  });
+
+  Map<String, dynamic> toMap() {
+    Map<String, dynamic> map = {};
+    _addToMapIfNotNull("title", title, map);
+    _addToMapIfNotNull("message", message, map);
+    _addToMapIfNotNull("showStopAction", showStopAction, map);
+    _addToMapIfNotNull("stopActionText", stopActionText, map);
     return map;
   }
 }
@@ -592,10 +624,23 @@ class Point {
 
 /// Category of Point of Interest.
 class PoiCategory extends NamedResource {
+  final String? iconSelected;
+  final String? iconUnselected;
+
   PoiCategory({
     required super.identifier,
     required super.name,
+    required this.iconSelected,
+    required this.iconUnselected,
   });
+
+  @override
+  Map<String, dynamic> toMap() => {
+        "identifier": identifier,
+        "name": name,
+        "iconSelected": iconSelected,
+        "iconUnselected": iconUnselected,
+      };
 }
 
 class ConfigurationOptions {
@@ -678,6 +723,12 @@ class RouteProgress {
   const RouteProgress({
     required this.rawContent,
   });
+}
+
+void _addToMapIfNotNull(String key, dynamic value, Map<String, dynamic> map) {
+  if (value != null) {
+    map[key] = value;
+  }
 }
 
 // Result callbacks.
