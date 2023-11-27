@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'situm_flutter'
-  s.version          = '3.9.0'
+  s.version          = '3.9.1'
   s.summary          = 'Situm Flutter plugin.'
   s.description      = <<-DESC
   Situm Flutter plugin.

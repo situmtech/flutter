@@ -82,6 +82,9 @@ PoiCategory createCategory(Map map) {
   return PoiCategory(
     identifier: map["identifier"].toString(),
     name: map["poiCategoryName"],
+    iconSelected: map["icon_selected"],
+    // Android icon_unselected vs iOS icon_deselected:
+    iconUnselected: map["icon_unselected"] ?? map["icon_deselected"],
   );
 }
 
@@ -168,10 +171,12 @@ DirectionsRequest createDirectionsRequest(arguments) {
     minimizeFloorChanges: directionsRequestArgs["minimizeFloorChanges"],
     originIdentifier: stringFromArgsOrEmptyId(arguments, "originIdentifier"),
     originCategory: arguments["originCategory"],
-    destinationIdentifier: stringFromArgsOrEmptyId(arguments, "destinationIdentifier"),
+    destinationIdentifier:
+        stringFromArgsOrEmptyId(arguments, "destinationIdentifier"),
     destinationCategory: arguments["destinationCategory"],
   );
-  directionsRequest.accessibilityMode = createAccessibilityMode(directionsRequestArgs);
+  directionsRequest.accessibilityMode =
+      createAccessibilityMode(directionsRequestArgs);
   return directionsRequest;
 }
 

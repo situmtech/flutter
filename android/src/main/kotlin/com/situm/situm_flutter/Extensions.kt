@@ -3,6 +3,7 @@ package com.situm.situm_flutter
 import android.util.Log
 import es.situm.sdk.communication.CommunicationManager
 import es.situm.sdk.error.Error
+import es.situm.sdk.location.ForegroundServiceNotificationOptions
 import es.situm.sdk.location.LocationRequest
 import es.situm.sdk.model.MapperInterface
 import es.situm.sdk.model.cartography.Building
@@ -39,6 +40,21 @@ fun LocationRequest.Builder.fromArguments(args: Map<String, Any>): LocationReque
         if (useDeadReckoning != null) {
             Log.d("SDK>", "Set useDeadReckoning: ${args["useDeadReckoning"]}")
             useDeadReckoning(useDeadReckoning)
+        }
+    }
+    if (args.containsKey("useForegroundService")) {
+        val useForegroundService = args["useForegroundService"] as Boolean?
+        if (useForegroundService != null) {
+            Log.d("SDK>", "Set useForegroundService: ${args["useForegroundService"]}")
+            useForegroundService(useForegroundService)
+        }
+    }
+    if (args.containsKey("foregroundServiceNotificationOptions")) {
+        val fgsNotificationOptionsMap = args["foregroundServiceNotificationOptions"] as Map<String, Any>
+        if (fgsNotificationOptionsMap != null) {
+            val fgsNotificationOptions = ForegroundServiceNotificationOptions.fromMap(fgsNotificationOptionsMap)
+            Log.d("SDK>", "Set foregroundServiceNotificationOptions: $fgsNotificationOptions")
+            foregroundServiceNotificationOptions(fgsNotificationOptions)
         }
     }
     return this
