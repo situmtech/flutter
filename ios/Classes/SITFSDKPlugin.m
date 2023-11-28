@@ -115,7 +115,6 @@ const NSString* RESULTS_KEY = @"results";
     // Start listening location updates as soon as the SDK gets initialized:
     [self.locManager addDelegate:self];
 
-    
     result(@"DONE");
 }
 
