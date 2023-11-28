@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'situm_flutter'
-  s.version          = '3.9.0'
+  s.version          = '3.9.2'
   s.summary          = 'Situm Flutter plugin.'
   s.description      = <<-DESC
   Situm Flutter plugin.
@@ -15,7 +15,7 @@ Pod::Spec.new do |s|
   s.source           = { :path => '.' }
   s.source_files = 'Classes/**/*'
   s.dependency 'Flutter'
-  s.dependency 'SitumSDK', '~> 3.3.0'
+  s.dependency 'SitumSDK', '~> 3.4.0'
   s.platform = :ios, '9.0'
 
   # Flutter.framework does not contain a i386 slice.
