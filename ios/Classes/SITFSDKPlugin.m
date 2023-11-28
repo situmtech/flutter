@@ -229,7 +229,8 @@ const NSString* RESULTS_KEY = @"results";
                              withOptions:nil
                                  success:^(NSDictionary * _Nullable mapping) {
                                     result([SITFSDKUtils toArrayDict: mapping[RESULTS_KEY]]);
-    } failure:^(NSError * _Nullable error) {
+                                 } 
+                                 failure:^(NSError * _Nullable error) {
         FlutterError *ferror = [FlutterError errorWithCode:@"errorFetchPoisFromBuilding"
                                                    message:[NSString stringWithFormat:@"Failed with error: %@", error]
                                                    details:nil];

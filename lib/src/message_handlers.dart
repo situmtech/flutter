@@ -136,13 +136,10 @@ abstract class PoiSelectionMessageHandler implements MessageHandler {
     var poiId = "${payload["identifier"]}";
     var buildingId = "${payload["buildingIdentifier"]}";
     var sdk = SitumSdk();
-    // TODO: remove this check improving iOS fetch-poi. Also remove dart.io import.
-    //if (Platform.isAndroid) {
       var poi = await sdk.fetchPoiFromBuilding(buildingId, poiId);
       if (poi != null) {
         handlePoiInteraction(mapViewController, poi);
       }
-    // }
   }
 
   void handlePoiInteraction(MapViewController mapViewController, Poi poi);
