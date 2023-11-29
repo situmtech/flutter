@@ -49,6 +49,7 @@ class _MyTabsState extends State<MyTabs> {
   late SitumSdk situmSdk;
   int _selectedIndex = 0;
   List<Poi> pois = [];
+  Building? currentBuilding;
   Poi? dropdownValue;
   Function? mapViewLoadAction;
 
@@ -200,19 +201,65 @@ class _MyTabsState extends State<MyTabs> {
     ]);
   }
 
-  // Widget that shows ARView.
-  Widget _createARTab() {
-    return Scaffold(
-        appBar: AppBar(
-          title: const Text('Anchors & Objects on Planes'),
+Widget _createSplitScreen() {
+    return Column(
+      children: [
+        Expanded(
+          flex: 1,
+          child: _createARTab(),
         ),
-        body: Stack(children: [
-          ARView(
-            onARViewCreated: onARViewCreated,
-            planeDetectionConfig: PlaneDetectionConfig.horizontal,
-          ),
-        ]));
+        Expanded(
+          flex: 1,
+          child: _createSitumMapTab(),
+        ),
+      ],
+    );
   }
+
+
+
+Widget _createARTab() {
+    return Stack(children: [
+      ARView(
+        onARViewCreated: onARViewCreated,
+        planeDetectionConfig: PlaneDetectionConfig.horizontal,
+      ),
+      Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // Text(
+          //     'Location cartesian coords (${currentLocation?.cartesianCoordinate.x}, ${currentLocation?.cartesianCoordinate.y})'),
+          // Text(
+          //     'Situm Cartesian Rotation Y ${currentLocation?.cartesianBearing?.radians.toStringAsFixed(3)}'),
+          // Text(
+          //     'Situm Rotation Y ${currentLocation?.bearing?.radians.toStringAsFixed(3)}'),
+          ElevatedButton(
+            onPressed:  calculateAndGeneratePois,
+            child: const Text('Update poi positions'),
+          ),
+        ],
+      ),
+    ]);
+  }
+
+void calculateAndGeneratePois() async {
+ debugPrint("*************************************************************************************************************************************** START NEAR POIS:}");
+    
+    debugPrint("**************** currentLocation: ${currentLocation.toString()}");
+      this.nearPois = filterPoisByDistanceAndFloor(pois, currentLocation, 1000);
+           debugPrint("**************** TIME NEAR POIS: ${nearPois.toString()}");
+      //this.relativePositions = calculateRelativePositions(currentLocation, nearPois);
+        //    debugPrint("**************** TIME RELATIVE POSITIONS: ${relativePositions.toString()}");
+
+      //List<Vector3> arcorePositions = await generateARCorePositions(relativePositions,currentLocation );
+      List<Vector3> arcorePositions = await generateARCorePositions(nearPois,currentLocation);
+            debugPrint("**************** TIME arcorePositions POSITIONS: ${arcorePositions.toString()}");
+      
+
+
+      // TODO: Check if tracking
+      addPoisToScene(arcorePositions);
+}
 
   void onARViewCreated(
       ARSessionManager arSessionManager,
@@ -230,24 +277,13 @@ class _MyTabsState extends State<MyTabs> {
           showWorldOrigin: true,
         );
     this.arObjectManager!.onInitialize();
-
-   Timer.periodic(const Duration(milliseconds: 20000), (Timer t) async {
-    debugPrint("*************************************************************************************************************************************** START NEAR POIS:}");
-    
-    debugPrint("**************** currentLocation: ${currentLocation.toString()}");
-      this.nearPois = filterPoisByDistanceAndFloor(pois, currentLocation, 50);
-           debugPrint("**************** TIME NEAR POIS: ${nearPois.toString()}");
-      //this.relativePositions = calculateRelativePositions(currentLocation, nearPois);
-        //    debugPrint("**************** TIME RELATIVE POSITIONS: ${relativePositions.toString()}");
-
-      //List<Vector3> arcorePositions = await generateARCorePositions(relativePositions,currentLocation );
-      List<Vector3> arcorePositions = await generateARCorePositions(nearPois,currentLocation);
-            debugPrint("**************** TIME arcorePositions POSITIONS: ${arcorePositions.toString()}");
-
-      addPoisToScene(arcorePositions);
  
+//  calculateAndGeneratePois();
+//    Timer.periodic(const Duration(milliseconds: 20000), (Timer t) async {
+   
+//       calculateAndGeneratePois();
 
-    });
+//     });
 
 
     Timer.periodic(const Duration(milliseconds: 1000), (Timer t) async {
@@ -256,10 +292,6 @@ class _MyTabsState extends State<MyTabs> {
       if (camera != null) {
         var cameraRotation = camera.getRotation();
         currentLocation?.rotationMatrix = cameraRotation.storage;
-
-        // debugPrint("******* TIMER ALBA: ");
-        // debugPrint("Camera rotation: $cameraRotation");
-        // debugPrint("Location: ${currentLocation.toMap()}");
 
         mapViewController?.sendMessage(
             WV_MESSAGE_LOCATION, currentLocation.toMap());
@@ -299,6 +331,7 @@ class _MyTabsState extends State<MyTabs> {
 
 void addPoisToScene(List<Vector3> arcorePositions ) async{
 debugPrint("**************** TO ADD pois to scene}");
+
     removeEverything();
     for (int i = 0; i < nearPois.length; i++) {
       Poi poi = nearPois[i];
@@ -310,7 +343,7 @@ debugPrint("**************** TO ADD pois to scene}");
       //   rotation: ARQuaternion.axisAngle(ARVector3.up(), relativePosition.relativeBearing),
       // );
        Matrix4 anchorPose = Matrix4.identity()
-        ..translate(arcorePosition[0], 0.0, arcorePosition[2]);
+        ..translate(arcorePosition[0], -1.0, arcorePosition[2]);
         //..rotateZ(relativePosition.relativeBearing);
      
     var newAnchor = ARPlaneAnchor(transformation: anchorPose);
@@ -321,7 +354,55 @@ debugPrint("**************** TO ADD pois to scene}");
                     debugPrint("**************** ADDED ANCHOR}");
 
         this.anchors.add(newAnchor);
-        ARNode objectNode = ARNode(
+        ARNode objectNode;
+        // if (poi.name=="Test_2"){
+        //   objectNode = ARNode(
+          
+        //       type: NodeType.webGLB,
+        //       uri: "https://github.com/KhronosGroup/glTF-Sample-Models/raw/master/2.0/Avocado/glTF-Binary/Avocado.glb",
+        //       scale: Vector3(2, 2,2),
+        //       position: Vector3(0.0, 0.0, 0.0),
+        //       rotation: Vector4(1.0, 0.0, 0.0, 0.0),
+        //       data: {"onTapText": poi.name}
+        // );
+        // }
+        // else
+         if(poi.name=="TestAAAAA"){
+            objectNode = ARNode(
+              type: NodeType.webGLB,
+              uri: "https://github.com/KhronosGroup/glTF-Sample-Models/raw/master/2.0/BarramundiFish/glTF-Binary/BarramundiFish.glb",
+              scale: Vector3(1, 1, 1),
+              position: Vector3(0.0, 0.0, 0.0),
+              rotation: Vector4(1.0, 0.0, 0.0, 0.0),
+              data: {"onTapText": poi.name}
+        );
+       
+        }
+        else if(poi.name=="finish"){
+            objectNode = ARNode(
+              type: NodeType.webGLB,
+              uri: "https://github.com/KhronosGroup/glTF-Sample-Models/raw/master/2.0/Fox/glTF-Binary/Fox.glb",
+              scale: Vector3(1, 1, 1),
+              position: Vector3(0.0, 0.0, 0.0),
+              rotation: Vector4(1.0, 0.0, 0.0, 0.0),
+              data: {"onTapText": poi.name}
+        );
+       
+        }
+               else if(poi.name=="ascensor"){
+            objectNode = ARNode(
+              type: NodeType.webGLB,
+              uri: "https://github.com/KhronosGroup/glTF-Sample-Models/raw/master/2.0/Lantern/glTF-Binary/Lantern.glb",
+              scale: Vector3(1, 1, 1),
+              position: Vector3(0.0, 0.0, 0.0),
+              rotation: Vector4(1.0, 0.0, 0.0, 0.0),
+              data: {"onTapText": poi.name}
+        );
+       
+        }
+       
+        else{
+           objectNode = ARNode(
           
               type: NodeType.webGLB,
               uri: "https://github.com/KhronosGroup/glTF-Sample-Models/raw/master/2.0/Duck/glTF-Binary/Duck.glb",
@@ -335,7 +416,7 @@ debugPrint("**************** TO ADD pois to scene}");
         //   position: Vector3(0.0, 2.0, 0.0),  // Posiciona el texto debajo del objeto
         //   scale: Vector3(2.0, 5.0, 5.0),  // Ajusta la escala según tus necesidades
         // );
-
+        }
         bool? didAddNodeToAnchor =
             await this.arObjectManager!.addNode(objectNode, planeAnchor: newAnchor);
 
@@ -395,7 +476,6 @@ double getBearingFromMatrix(Matrix4 cameraTransform) {
 }
 
 
-
 Future<List<Vector3>> generateARCorePositions(List<Poi> pois, Location currentLocation) async {
   // Obtiene la transformación de la cámara
   Matrix4? cameraTransform = await arSessionManager.getCameraPose();
@@ -406,37 +486,49 @@ Future<List<Vector3>> generateARCorePositions(List<Poi> pois, Location currentLo
   }
 
   List<Vector3> arCorePositions = [];
-
+    double currentCameraPosex =  cameraTransform.storage[12];
+    double currentCameraPosey =  cameraTransform.storage[14];
   // Extraer la rotación de la cámara como Quaternion
   Quaternion cameraRotation =  Quaternion.fromRotation(cameraTransform.getRotation());
-
+  double cameraBearing = -getBearingFromMatrix(cameraTransform);
   // Ajustar la rotación para mantener solo la componente horizontal
   // Esto puede implicar normalizar el Quaternion y ajustar su componente Y
-  Quaternion horizontalRotation = Quaternion.axisAngle(Vector3(0, 1, 0), cameraRotation.y);
-
+  //Quaternion horizontalRotation = Quaternion.axisAngle(Vector3(0, 1, 0), cameraRotation.y);
+  Quaternion horizontalRotation = Quaternion.axisAngle(Vector3(0, 1, 0), cameraBearing);
+  _echo(" generateARCorePositions > cameraBearing: $cameraBearing");
   double bearingRadians = currentLocation.cartesianBearing != null ? currentLocation.cartesianBearing!.radians : 0;
-  double adjustedBearing = (2 * pi - (bearingRadians + pi / 2)) % (2 * pi); // ?
-  
+  double adjustedBearing = (2 * pi - (bearingRadians )) % (2 * pi); // ?
+  _echo(" generateARCorePositions > bearingRadians: $bearingRadians  /  adjustedBearing: $adjustedBearing ");
 
   // Iterar sobre la lista de POIs
   for (var poi in pois) {
     // Extraer la posición x, y del POI en el sistema de coordenadas A
     double xA = poi.position.cartesianCoordinate.x;
-    double yA = poi.position.cartesianCoordinate.y;
+    
+    double yA = currentBuilding!.height - poi.position.cartesianCoordinate.y;
+    _echo(" generateARCorePositions > currentBuilding!.height: ${currentBuilding!.height}  /  yA: $yA ");
 
     // Calcular la posición relativa del POI respecto a la posición actual
-    Vector3 relativePoiPosition = Vector3(xA - currentLocation.cartesianCoordinate.x, 0, yA - currentLocation.cartesianCoordinate.y);
+    Vector3 relativePoiPosition = Vector3(xA - currentLocation.cartesianCoordinate.x, 0, yA -(currentBuilding!.height -currentLocation.cartesianCoordinate.y));
 
     // Rotar la posición relativa basándose en el bearing
-    Quaternion bearingRotation = Quaternion.axisAngle(Vector3(0, 1, 0), adjustedBearing);
+    Quaternion bearingRotation = Quaternion.axisAngle(Vector3(0, -1, 0), bearingRadians-(pi/2));
     Vector3 bearingAdjustedPosition = bearingRotation.rotated(relativePoiPosition);
 
     // Aplicar la rotación horizontal de la cámara a la posición ajustada por el bearing
     Vector3 transformedPosition = horizontalRotation.rotated(bearingAdjustedPosition);
+    //Vector3 transformedPosition = bearingAdjustedPosition;
+    transformedPosition.x = currentCameraPosex + transformedPosition.x;// * cos(cameraBearing);
+    transformedPosition.y = currentCameraPosey - transformedPosition.y;// * sin(cameraBearing);
 
     // Mantener la altura constante (ajustar si es necesario)
     transformedPosition.y = 0;
-
+    _echo(" generateARCorePositions>  > poi.position: $xA , $yA  /  relativePoiPosition: ${relativePoiPosition.x} ,  ${relativePoiPosition.z}" 
+    "bearingAdjustedPosition: ${bearingAdjustedPosition.x} , ${bearingAdjustedPosition.z}"
+    "transformedPosition: ${transformedPosition.x} , ${transformedPosition.z}");
+  _echo(" generateARCorePositions > $xA , $yA ,${relativePoiPosition.x} ,  ${relativePoiPosition.z}, " 
+    "${bearingAdjustedPosition.x} , ${bearingAdjustedPosition.z}, "
+    "${transformedPosition.x} , ${transformedPosition.z}");
     // Agregar la posición transformada a la lista
     arCorePositions.add(transformedPosition);
   }
@@ -447,38 +539,6 @@ Future<List<Vector3>> generateARCorePositions(List<Poi> pois, Location currentLo
 
 
 
-
-
-Future<List<Vector3>> generateARCorePositions3(List<Poi> pois, Location currentLocation) async {
-  Matrix4? cameraTransform = await arSessionManager.getCameraPose();
-
-  if (cameraTransform != null) {
-    double currentCameraPosex =  cameraTransform.storage[12];
-    double currentCameraPosey =  cameraTransform.storage[14];
-    double cameraBearing = getBearingFromMatrix(cameraTransform);
-    double dx = currentLocation.cartesianCoordinate.x - currentCameraPosex;
-    double dy = currentLocation.cartesianCoordinate.y - currentCameraPosey;
-debugPrint("**************** currentCameraPosex: ${currentCameraPosex}, ${currentCameraPosey} /  cameraBearing: ${cameraBearing}" );
-    return pois.map((poi) {
-      double dx_p = poi.position.cartesianCoordinate.x - currentLocation.cartesianCoordinate.x;
-      double dy_p = poi.position.cartesianCoordinate.y - currentLocation.cartesianCoordinate.y;
-
-      // Rotar las coordenadas del poi en relación con el ángulo de bearing de la cámara
-      double p_b_x_rotado = cos(cameraBearing) * dx_p - sin(cameraBearing) * dy_p; //+ currentLocation.cartesianCoordinate.x;
-      double p_b_y_rotado = sin(cameraBearing) * dx_p + cos(cameraBearing) * dy_p; //+ currentLocation.cartesianCoordinate.y;
-
-      // Sumar las coordenadas de currentCameraPose a las coordenadas rotadas
-      double p_transformado_x = p_b_x_rotado;// + dx;
-      double p_transformado_y = p_b_y_rotado;// + dy;
-debugPrint("**************** poi: ${poi.position.cartesianCoordinate.x}, ${poi.position.cartesianCoordinate.y} /  dx_p: ${dx_p}, ${dy_p}" );
-debugPrint("****************         p_b_x_rotado: ${p_b_x_rotado}, ${p_b_y_rotado}" );
-debugPrint("****************         p_transformado_y: ${p_transformado_x}, ${p_transformado_y}" );
-      return Vector3(p_transformado_x, 0.0, p_transformado_y);
-    }).toList();
-  } else {
-    return [];
-  }
-}
 
   void printWarning(String text) {
     debugPrint('\x1B[33m$text\x1B[0m');
@@ -555,6 +615,14 @@ debugPrint("****************         p_transformado_y: ${p_transformado_x}, ${p_
     }
   }
 
+  void _downloadBuilding(String buildingIdentifier) async {
+    BuildingInfo buildingInfo =
+        await situmSdk.fetchBuildingInfo(buildingIdentifier);
+    setState(() {
+      currentBuilding = buildingInfo.building;
+    });
+  }
+
   void _downloadPois(String buildingIdentifier) async {
     var poiList = await situmSdk.fetchPoisFromBuilding(buildingIdentifier);
     setState(() {
@@ -581,7 +649,28 @@ debugPrint("****************         p_transformado_y: ${p_transformado_x}, ${p_
     // Set up location listeners:
     situmSdk.onLocationUpdate((location) {
       setState(() {
+
+         CartesianCoordinate myCoordinate = CartesianCoordinate(
+            x: 135.6, // Sustituye con el valor deseado
+            y:  29.5, // Sustituye con el valor deseado
+          );
+        //currentLocation = location;
+          Location myLocation = Location(
+            coordinate: location.coordinate,
+            cartesianCoordinate: myCoordinate,
+            buildingIdentifier: location.buildingIdentifier,
+            floorIdentifier: location.floorIdentifier,
+            accuracy: 5.0,
+            isIndoor: true,
+            isOutdoor: false,
+            hasBearing: true,
+            bearing: Angle(radians: 0.0, radiansMinusPiPi: 0.0, degrees: 0, degreesClockwise: 0),
+            cartesianBearing:  Angle(radians: 0.0, radiansMinusPiPi: 0.0, degrees: 0, degreesClockwise: 0),
+            timestamp: DateTime.now().millisecondsSinceEpoch,
+            rotationMatrix: [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0],
+          );
         currentLocation = location;
+
       });
       _echo("""SDK> Location changed:
         Time diff: ${location.timestamp - DateTime.now().millisecondsSinceEpoch}
@@ -605,6 +694,7 @@ debugPrint("****************         p_transformado_y: ${p_transformado_x}, ${p_
       _echo("Situm> SDK> Exit geofences: ${geofencesResult.geofences}.");
     });
     _downloadPois(buildingIdentifier);
+    _downloadBuilding(buildingIdentifier);
     super.initState();
   }
 
@@ -626,7 +716,7 @@ debugPrint("****************         p_transformado_y: ${p_transformado_x}, ${p_
     // library handles it all internally for you.
     situmSdk.requestLocationUpdates(LocationRequest(
       buildingIdentifier: buildingIdentifier, //"-1"
-      useDeadReckoning: true,
+      useDeadReckoning: false,
     ));
   }
 
@@ -686,17 +776,13 @@ debugPrint("****************         p_transformado_y: ${p_transformado_x}, ${p_
       ),
       body: IndexedStack(
         index: _selectedIndex,
-        children: [_createHomeTab(), _createSitumMapTab(), _createARTab()],
+        children: [_createHomeTab(),_createSplitScreen()],
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.map),
-            label: 'Wayfinding',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.toys),
