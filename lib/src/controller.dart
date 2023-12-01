@@ -2,6 +2,7 @@ part of wayfinding;
 
 /// Controller for [MapView]. This class exposes methods and callbacks.
 class MapViewController {
+  late final MethodChannel methodChannel;
   OnPoiSelectedCallback? _onPoiSelectedCallback;
   OnPoiDeselectedCallback? _onPoiDeselectedCallback;
   OnDirectionsRequestInterceptor? _onDirectionsRequestInterceptor;
@@ -23,6 +24,10 @@ class MapViewController {
     String? situmUser,
     required String situmApiKey,
   }) {
+    // Open SDK channel to call native (private) methods if necessary.
+    // WARNING: don't set the method call handler here as it will overwrite the
+    // one provided by the SDK controller.
+    methodChannel = const MethodChannel(situmSdkChannelId);
     var situmSdk = SitumSdk();
     // Be sure to initialize, configure and authenticate in our SDK
     // so it can be used in callbacks, etc.
@@ -257,9 +262,11 @@ class MapViewController {
 
   void _onExternalLinkClicked(String url) {
     if (_onExternalLinkClickedCallback != null) {
-      _onExternalLinkClickedCallback!.call(OnExternalLinkClickedResult(url: url));
+      _onExternalLinkClickedCallback!
+          .call(OnExternalLinkClickedResult(url: url));
     } else {
-      SitumSdk().openUrlInDefaultBrowser(url);
+      // Invoke native method directly:
+      methodChannel.invokeMethod('openUrlInDefaultBrowser', {"url": url});
     }
   }
 
