@@ -590,7 +590,7 @@ class _MyTabsState extends State<MyTabs> {
     Vector3 cameraPosition = cameraTransform.getTranslation();
     // Compute relative situm position with respect to camera
     double diffX = cameraPosition.x - location.cartesianCoordinate.x;
-    double diffY = cameraPosition.y - location.cartesianCoordinate.y;
+    double diffY = -cameraPosition.z - location.cartesianCoordinate.y;
 
     // First inverse situm rotation and compute relative rotation with respect to camera
     // idk why i need a 90 degree rotation
