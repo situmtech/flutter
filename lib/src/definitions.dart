@@ -255,6 +255,14 @@ class OnPoiDeselectedResult {
   });
 }
 
+class OnExternalLinkClickedResult {
+  final String url;
+
+  const OnExternalLinkClickedResult({
+    required this.url,
+  });
+}
+
 // Result callbacks.
 
 // WYF load callback.
@@ -270,6 +278,9 @@ typedef OnDirectionsRequestInterceptor = void Function(
     DirectionsRequest directionsRequest);
 typedef OnNavigationRequestInterceptor = void Function(
     NavigationRequest navigationRequest);
+// External link click.
+typedef OnExternalLinkClickedCallback = void Function(
+    OnExternalLinkClickedResult data);
 
 // Connection errors
 class ConnectionErrors {

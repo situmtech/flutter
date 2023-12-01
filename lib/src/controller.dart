@@ -6,6 +6,7 @@ class MapViewController {
   OnPoiDeselectedCallback? _onPoiDeselectedCallback;
   OnDirectionsRequestInterceptor? _onDirectionsRequestInterceptor;
   OnNavigationRequestInterceptor? _onNavigationRequestInterceptor;
+  OnExternalLinkClickedCallback? _onExternalLinkClickedCallback;
 
   late Function(MapViewConfiguration) _widgetUpdater;
   late MapViewCallback _widgetLoadCallback;
@@ -72,7 +73,8 @@ class MapViewController {
 
   /// Selects the given POI category in the map.
   void selectPoiCategory(String identifier) async {
-    _sendMessage(WV_MESSAGE_CARTOGRAPHY_SELECT_POI_CATEGORY, {"identifier": identifier});
+    _sendMessage(
+        WV_MESSAGE_CARTOGRAPHY_SELECT_POI_CATEGORY, {"identifier": identifier});
   }
 
   /// Starts navigating to the given POI. You can optionally choose the desired
@@ -225,6 +227,14 @@ class MapViewController {
     _onPoiDeselectedCallback = callback;
   }
 
+  /// Callback invoked when the user clicks on a link in the MapView that leads
+  /// to a website different from the MapView's domain.
+  /// If this callback is not set, the link will be opened in the system's
+  /// default browser by default.
+  void onExternalLinkClicked(OnExternalLinkClickedCallback callback) {
+    _onExternalLinkClickedCallback = callback;
+  }
+
   // Directions & Navigation Interceptors:
 
   void _interceptDirectionsRequest(DirectionsRequest directionsRequest) {
@@ -241,6 +251,16 @@ class MapViewController {
 
   void onNavigationRequestInterceptor(OnNavigationRequestInterceptor callback) {
     _onNavigationRequestInterceptor = callback;
+  }
+
+  // External links navigation:
+
+  void _onExternalLinkClicked(String url) {
+    if (_onExternalLinkClickedCallback != null) {
+      _onExternalLinkClickedCallback!.call(OnExternalLinkClickedResult(url: url));
+    } else {
+      SitumSdk().openUrlInDefaultBrowser(url);
+    }
   }
 
   // Native SDK callbacks:

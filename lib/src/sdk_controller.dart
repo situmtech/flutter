@@ -354,6 +354,13 @@ class SitumSdk {
     internalMethodCallDelegate = delegate;
   }
 
+  /// Opens the given URL in the system's default browser, when possible.
+  /// Returns false if (for some reason) the action could not be performed.
+  Future<bool> openUrlInDefaultBrowser(String url) async {
+    return await methodChannel
+        .invokeMethod('openUrlInDefaultBrowser', {"url": url});
+  }
+
   // Callbacks:
 
   Future<void> _methodCallHandler(MethodCall call) async {
