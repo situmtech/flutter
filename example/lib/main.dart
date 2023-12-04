@@ -76,6 +76,7 @@ class _MyTabsState extends State<MyTabs> {
 
   // Aux vars
   bool debug = false;
+  int gtOrientation = 0;
 
   // Widget to showcase some SDK API functions
   Widget _createHomeTab() {
@@ -226,7 +227,10 @@ class _MyTabsState extends State<MyTabs> {
       Text(
           'Situm Cartesian Rotation Y ${currentLocation?.cartesianBearing?.radians.toStringAsFixed(3)}'),
       Text(
+          'Situm Cartesian Rotation Y in [-pi, pi] ${currentLocation?.cartesianBearing?.radiansMinusPiPi.toStringAsFixed(3)}'),
+      Text(
           'Situm Rotation Y ${currentLocation?.bearing?.radians.toStringAsFixed(3)}'),
+      Text('Gt orientation $gtOrientation')
     ];
   }
 
@@ -285,20 +289,26 @@ class _MyTabsState extends State<MyTabs> {
             ])
         .toList();
 
-    printALBA("Diff Angle: $angle");
-    printALBA("Dx: $dx");
-    printALBA("Dy: $dy");
-    printALBA("Current position: ${[
-      currentLocation?.cartesianCoordinate.x,
-      currentLocation?.cartesianCoordinate.y
-    ]}");
+    // printALBA("Diff Angle: $angle");
+    // printALBA("Dx: $dx");
+    // printALBA("Dy: $dy");
+    // printALBA("Current position: ${[
+    //   currentLocation?.cartesianCoordinate.x,
+    //   currentLocation?.cartesianCoordinate.y
+    // ]}");
+    printALBA("GT orientation $gtOrientation");
     printALBA("Camera bearing $rotationY");
-    printALBA("Location bearing ${currentLocation?.bearing?.radians}");
+    // printALBA("Location bearing ${currentLocation?.bearing?.radians}");
     printALBA(
         "Location cartesian bearing ${currentLocation?.cartesianBearing?.radians}");
-    printALBA("Building rotation ${currentBuilding?.rotation}");
-    printALBA("Filtered pois: $filteredPoisPositions");
-    printALBA("Transformed filtered pois: $arcorePositions");
+    printALBA(
+        "Location cartesian bearing in [-pi, pi] ${currentLocation?.cartesianBearing?.radiansMinusPiPi}");
+    // printALBA("Building rotation ${currentBuilding?.rotation}");
+    // printALBA("Filtered pois: $filteredPoisPositions");
+    // printALBA("Transformed filtered pois: $arcorePositions");
+    setState(() {
+      gtOrientation += 90;
+    });
     addPoisToScene(nearPois, arcorePositions);
   }
 
@@ -627,10 +637,13 @@ class _MyTabsState extends State<MyTabs> {
     double diffX = cameraPosition.x - location.cartesianCoordinate.x;
     double diffY = -cameraPosition.z - location.cartesianCoordinate.y;
 
-    // First inverse situm rotation and compute relative rotation with respect to camera
+    // First inverse situm rotation (range -pi, pi to match camera range)
+    // and compute relative rotation with respect to camera
     // idk why i need a 90 degree rotation
     double diffAngle =
-        ((2 * pi - location.cartesianBearing!.radians) - rotationY) + (pi / 2);
+        (-location.cartesianBearing!.radiansMinusPiPi - rotationY) + (pi / 2);
+    // double diffAngle =
+    //     ((2 * pi - location.cartesianBearing!.radians) - rotationY) + (pi / 2);
 
     List<double> rotationOrigin = [
       location.cartesianCoordinate.x,
@@ -810,7 +823,7 @@ class _MyTabsState extends State<MyTabs> {
       ),
       body: IndexedStack(
         index: _selectedIndex,
-        children: [_createHomeTab(), _createSplitScreen()],
+        children: [_createHomeTab(), _createARTab()],
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
