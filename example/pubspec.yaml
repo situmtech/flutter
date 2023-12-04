@@ -59,6 +59,11 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - resources/
+    - resources/models/BasePoi/
+    - resources/models/BigIconPoi/
+    - resources/models/HelloPoi/
+    - resources/models/TestPoi/
+    - resources/models/TestSubcatPoi/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

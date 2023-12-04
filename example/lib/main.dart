@@ -74,6 +74,9 @@ class _MyTabsState extends State<MyTabs> {
   Location? currentLocation;
   Building? currentBuilding;
 
+  // Aux vars
+  bool debug = false;
+
   // Widget to showcase some SDK API functions
   Widget _createHomeTab() {
     // Home:
@@ -210,6 +213,23 @@ class _MyTabsState extends State<MyTabs> {
     ]);
   }
 
+  List<Widget> _buildDebugTexts() {
+    return [
+      Text(
+          'Location cartesian coords (${currentLocation?.cartesianCoordinate.x}, ${currentLocation?.cartesianCoordinate.y})'),
+      Text('Dx ${dx.toStringAsFixed(3)}'),
+      Text('Dy ${dy.toStringAsFixed(3)}'),
+      Text('Angle ${angle.toStringAsFixed(3)}'),
+      Text('Rotation X ${rotationX.toStringAsFixed(3)}'),
+      Text('Rotation Y ${rotationY.toStringAsFixed(3)}'),
+      Text('Rotation Z ${rotationZ.toStringAsFixed(3)}'),
+      Text(
+          'Situm Cartesian Rotation Y ${currentLocation?.cartesianBearing?.radians.toStringAsFixed(3)}'),
+      Text(
+          'Situm Rotation Y ${currentLocation?.bearing?.radians.toStringAsFixed(3)}'),
+    ];
+  }
+
   // Widget that shows ARView.
   Widget _createARTab() {
     return Stack(children: [
@@ -218,20 +238,13 @@ class _MyTabsState extends State<MyTabs> {
         planeDetectionConfig: PlaneDetectionConfig.horizontal,
       ),
       Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Text(
-              'Location cartesian coords (${currentLocation?.cartesianCoordinate.x}, ${currentLocation?.cartesianCoordinate.y})'),
-          Text('Dx ${dx.toStringAsFixed(3)}'),
-          Text('Dy ${dy.toStringAsFixed(3)}'),
-          Text('Angle ${angle.toStringAsFixed(3)}'),
-          Text('Rotation X ${rotationX.toStringAsFixed(3)}'),
-          Text('Rotation Y ${rotationY.toStringAsFixed(3)}'),
-          Text('Rotation Z ${rotationZ.toStringAsFixed(3)}'),
-          Text(
-              'Situm Cartesian Rotation Y ${currentLocation?.cartesianBearing?.radians.toStringAsFixed(3)}'),
-          Text(
-              'Situm Rotation Y ${currentLocation?.bearing?.radians.toStringAsFixed(3)}'),
+          if (debug) ..._buildDebugTexts(),
+          ElevatedButton(
+            onPressed: toggleDebug,
+            child: const Text('Debug'),
+          ),
           ElevatedButton(
             onPressed: updatePois,
             child: const Text('Update poi positions'),
@@ -287,6 +300,12 @@ class _MyTabsState extends State<MyTabs> {
     printALBA("Filtered pois: $filteredPoisPositions");
     printALBA("Transformed filtered pois: $arcorePositions");
     addPoisToScene(nearPois, arcorePositions);
+  }
+
+  void toggleDebug() {
+    setState(() {
+      debug = !debug;
+    });
   }
 
   void onARViewCreated(
@@ -347,6 +366,23 @@ class _MyTabsState extends State<MyTabs> {
     }).toList();
   }
 
+  String getNodeURIBasedOnCategory(PoiCategory category) {
+    switch (category.name) {
+      case "Big icon category":
+        return "resources/models/BigIconPoi/BigIconPoi.gltf";
+      case "Test Category":
+        return "resources/models/TestPoi/TestPoi.gltf";
+      case "Hello Categories":
+        return "resources/models/HelloPoi/HelloPoi.gltf";
+      case "No category":
+        return "resources/models/BasePoi/BasePoi.gltf";
+      case "Test subcategory":
+        return "resources/models/TestSubcatPoi/TestSubcatPoi.gltf";
+      default:
+        return "resources/models/BasePoi/BasePoi.gltf";
+    }
+  }
+
   void addPoisToScene(List<Poi> nearPois, List<Vector3> arcorePositions) async {
     removeEverything();
     for (int i = 0; i < nearPois.length; i++) {
@@ -361,9 +397,8 @@ class _MyTabsState extends State<MyTabs> {
       if (didAddAnchor!) {
         anchors.add(newAnchor);
         ARNode objectNode = ARNode(
-            type: NodeType.webGLB,
-            uri:
-                "https://github.com/KhronosGroup/glTF-Sample-Models/raw/master/2.0/Duck/glTF-Binary/Duck.glb",
+            type: NodeType.localGLTF2,
+            uri: getNodeURIBasedOnCategory(poi.poiCategory),
             scale: Vector3(1, 1, 1),
             position: Vector3(0.0, -1.0, 0.0),
             rotation: Vector4(1.0, 0.0, 0.0, 0.0),
@@ -715,7 +750,7 @@ class _MyTabsState extends State<MyTabs> {
     // library handles it all internally for you.
     situmSdk.requestLocationUpdates(LocationRequest(
       buildingIdentifier: buildingIdentifier, //"-1"
-      useDeadReckoning: true,
+      useDeadReckoning: false,
     ));
   }
 
