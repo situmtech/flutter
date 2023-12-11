@@ -251,15 +251,15 @@ const NSString* RESULTS_KEY = @"results";
         return;
     }
     
-    [self.comManager  fetchPoi:poiId 
-                  fromBuilding:buildingId
-                             withOptions:nil
-                                 success:^(NSDictionary * _Nullable mapping) {
+    [self.comManager  fetchIndoorPoi:poiId 
+                        fromBuilding:buildingId
+                         withOptions:nil
+                             success:^(NSDictionary * _Nullable mapping) {
                                     SITPOI *poi = mapping[RESULTS_KEY];
         
                                     result(poi.toDictionary);
                                  }
-                                 failure:^(NSError * _Nullable error) {
+                             failure:^(NSError * _Nullable error) {
         FlutterError *ferror = [FlutterError errorWithCode:@"errorFetchPoisFromBuilding"
                                                    message:[NSString stringWithFormat:@"Failed with error: %@", error]
                                                    details:nil];
