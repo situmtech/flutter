@@ -252,7 +252,7 @@ const NSString* RESULTS_KEY = @"results";
     }
     
     [self.comManager  fetchIndoorPoi:poiId 
-                        fromBuilding:buildingId
+                          ofBuilding:buildingId
                          withOptions:nil
                              success:^(NSDictionary * _Nullable mapping) {
                                     SITPOI *poi = mapping[RESULTS_KEY];
