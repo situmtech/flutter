@@ -227,9 +227,9 @@ const NSString* RESULTS_KEY = @"results";
     [self.comManager fetchPoisOfBuilding:buildingId
                              withOptions:nil
                                  success:^(NSDictionary * _Nullable mapping) {
-        result([SITFSDKUtils toArrayDict: mapping[RESULTS_KEY]]);
-        
-    } failure:^(NSError * _Nullable error) {
+                                    result([SITFSDKUtils toArrayDict: mapping[RESULTS_KEY]]);
+                                 } 
+                                 failure:^(NSError * _Nullable error) {
         FlutterError *ferror = [FlutterError errorWithCode:@"errorFetchPoisFromBuilding"
                                                    message:[NSString stringWithFormat:@"Failed with error: %@", error]
                                                    details:nil];
@@ -251,7 +251,22 @@ const NSString* RESULTS_KEY = @"results";
         return;
     }
     
-    // TODO: implement comManager#fetchPoiOfBuilding(poiId, buildingId...)
+    [self.comManager  fetchIndoorPoi:poiId 
+                          ofBuilding:buildingId
+                         withOptions:nil
+                             success:^(NSDictionary * _Nullable mapping) {
+                                    SITPOI *poi = mapping[RESULTS_KEY];
+        
+                                    result(poi.toDictionary);
+                                 }
+                             failure:^(NSError * _Nullable error) {
+        FlutterError *ferror = [FlutterError errorWithCode:@"errorFetchPoisFromBuilding"
+                                                   message:[NSString stringWithFormat:@"Failed with error: %@", error]
+                                                   details:nil];
+        result(ferror); // Send error
+    }];
+
+
 }
 
 - (void)handleFetchBuildings:(FlutterMethodCall*)call result:(FlutterResult)result {
