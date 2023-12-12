@@ -1,4 +1,3 @@
 ## Unreleased
 ## Changed
-* Improve implementation of poi selection and deselection on iOS platform.
-* Update iOS SDK to version 3.5.0
+* The callbacks for POI selection and deselection have been restored for iOS.
