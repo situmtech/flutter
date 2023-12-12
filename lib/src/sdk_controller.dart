@@ -468,6 +468,7 @@ class SitumSdk {
   }
 
   void _onNavigationProgress(arguments) {
+    debugPrint("*** ALBA Updated navigation");
     _onNavigationProgressCallback?.call(RouteProgress(rawContent: arguments));
   }
 
