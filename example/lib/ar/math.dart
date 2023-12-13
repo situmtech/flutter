@@ -14,6 +14,30 @@ double calculateDistance(Location location1, Point point) {
   return sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2));
 }
 
+Vector3 obtainRotationFromMatrix(Matrix3 rotationMatrix) {
+  double r11 = rotationMatrix.storage[0];
+  double r12 = rotationMatrix.storage[1];
+  double r13 = rotationMatrix.storage[2];
+
+  // ignore: unused_local_variable
+  double r21 = rotationMatrix.storage[3];
+  double r22 = rotationMatrix.storage[4];
+  double r23 = rotationMatrix.storage[5];
+
+  // ignore: unused_local_variable
+  double r31 = rotationMatrix.storage[6];
+  // ignore: unused_local_variable
+  double r32 = rotationMatrix.storage[7];
+  // ignore: unused_local_variable
+  double r33 = rotationMatrix.storage[8];
+
+  double rotationX = atan2(-r23, r22);
+  double rotationY = atan2(r13, r11);
+  double rotationZ = atan2(-r12, r11);
+
+  return Vector3(rotationX, rotationY, rotationZ);
+}
+
 Vector3 applyTransformationMatrix(
     List<double> point, Matrix3 transformationMatrix) {
   return transformationMatrix * Vector3(point[0], point[1], 1);
