@@ -18,6 +18,7 @@ import 'package:ar_flutter_plugin/models/ar_node.dart';
 import 'package:vector_math/vector_math_64.dart' show Matrix3, Vector3, Vector4;
 
 import './config.dart';
+import 'ar/math.dart';
 
 ValueNotifier<String> currentOutputNotifier = ValueNotifier<String>('---');
 
@@ -58,8 +59,10 @@ class _MyTabsState extends State<MyTabs> {
   late ARAnchorManager arAnchorManager;
 
   // AR Core vars
-  List<ARNode> nodes = [];
-  List<ARAnchor> anchors = [];
+  List<ARNode> poiNodes = [];
+  List<ARAnchor> poiAnchors = [];
+  List<ARNode> routeNodes = [];
+  List<ARAnchor> routeAnchors = [];
   double rotationY = 0;
   double rotationX = 0;
   double rotationZ = 0;
@@ -68,15 +71,15 @@ class _MyTabsState extends State<MyTabs> {
   double dx = 0;
   double dy = 0;
   double angle = 0;
-  Matrix3 transformationMatrix = Matrix3.identity();
+  Matrix3? transformationMatrix = Matrix3.identity();
 
   // Situm vars
   Location? currentLocation;
   Building? currentBuilding;
+  dynamic navigationSegments;
 
   // Aux vars
   bool debug = false;
-  int gtOrientation = 0;
 
   // Widget to showcase some SDK API functions
   Widget _createHomeTab() {
@@ -230,7 +233,6 @@ class _MyTabsState extends State<MyTabs> {
           'Situm Cartesian Rotation Y in [-pi, pi] ${currentLocation?.cartesianBearing?.radiansMinusPiPi.toStringAsFixed(3)}'),
       Text(
           'Situm Rotation Y ${currentLocation?.bearing?.radians.toStringAsFixed(3)}'),
-      Text('Gt orientation $gtOrientation')
     ];
   }
 
@@ -250,8 +252,8 @@ class _MyTabsState extends State<MyTabs> {
             child: const Text('Debug'),
           ),
           ElevatedButton(
-            onPressed: updatePois,
-            child: const Text('Update poi positions'),
+            onPressed: updateScene,
+            child: const Text('Update object positions'),
           ),
         ],
       ),
@@ -273,19 +275,43 @@ class _MyTabsState extends State<MyTabs> {
     );
   }
 
-  void updatePois() async {
+  void updateScene() async {
     if (currentLocation == null) return;
+
+    // Define transformation matrix based on camera pose and situm pose
+    transformationMatrix = await syncWorldView(currentLocation!);
+    // testTransformationMatrix();
+    if (transformationMatrix == null) return;
+
+    // Add pois
     List<Poi> nearPois =
         filterPoisByDistanceAndFloor(pois, currentLocation!, 10000);
-    List<Vector3>? arcorePositions =
-        await generateARCorePositions(nearPois, currentLocation!);
+    List<Vector3>? transformedPoiPositions = await generateTransformedPositions(
+        nearPois.map((poi) => poi.position).toList(), transformationMatrix!);
 
-    if (arcorePositions == null) return;
+    if (transformedPoiPositions != null) {
+      addPoisToScene(nearPois, transformedPoiPositions);
+    }
+
+    // Add navigation
+    if (navigationSegments != null) {
+      List<Point> routePoints =
+          getRouteByFloor(navigationSegments!, currentLocation!);
+      List<Vector3>? transformedRoutePoints =
+          await generateTransformedPositions(
+              routePoints, transformationMatrix!);
+
+      if (transformedRoutePoints != null) {
+        List<Vector3> interpolatedRoutePoints =
+            generateInterpolatedPoints(transformedRoutePoints, 5);
+        addNavigationRouteToScene(interpolatedRoutePoints);
+      }
+    }
 
     List<List<double>> filteredPoisPositions = nearPois
-        .map((e) => [
-              e.position.cartesianCoordinate.x,
-              e.position.cartesianCoordinate.y
+        .map((poi) => [
+              poi.position.cartesianCoordinate.x,
+              poi.position.cartesianCoordinate.y
             ])
         .toList();
 
@@ -296,7 +322,6 @@ class _MyTabsState extends State<MyTabs> {
     //   currentLocation?.cartesianCoordinate.x,
     //   currentLocation?.cartesianCoordinate.y
     // ]}");
-    printALBA("GT orientation $gtOrientation");
     printALBA("Camera bearing $rotationY");
     // printALBA("Location bearing ${currentLocation?.bearing?.radians}");
     printALBA(
@@ -306,10 +331,6 @@ class _MyTabsState extends State<MyTabs> {
     // printALBA("Building rotation ${currentBuilding?.rotation}");
     // printALBA("Filtered pois: $filteredPoisPositions");
     // printALBA("Transformed filtered pois: $arcorePositions");
-    setState(() {
-      gtOrientation += 90;
-    });
-    addPoisToScene(nearPois, arcorePositions);
   }
 
   void toggleDebug() {
@@ -347,15 +368,26 @@ class _MyTabsState extends State<MyTabs> {
     Timer.periodic(const Duration(milliseconds: 20000), (Timer t) async {});
   }
 
-  Future<void> removeEverything() async {
-    for (var node in nodes) {
+  Future<void> cleanPoisFromScene() async {
+    for (var node in poiNodes) {
       arObjectManager.removeNode(node);
     }
-    for (var anchor in anchors) {
+    for (var anchor in poiAnchors) {
       arAnchorManager.removeAnchor(anchor);
     }
-    nodes = [];
-    anchors = [];
+    poiNodes = [];
+    poiAnchors = [];
+  }
+
+  Future<void> cleanNavigationFromScene() async {
+    for (var node in routeNodes) {
+      arObjectManager.removeNode(node);
+    }
+    for (var anchor in routeAnchors) {
+      arAnchorManager.removeAnchor(anchor);
+    }
+    routeNodes = [];
+    routeAnchors = [];
   }
 
   List<Poi> filterPoisByDistanceAndFloor(
@@ -376,6 +408,25 @@ class _MyTabsState extends State<MyTabs> {
     }).toList();
   }
 
+  List<Point> getRouteByFloor(dynamic navigationSegments, Location location) {
+    var filteredRouteByFloor = (navigationSegments as List)
+        .where(
+            (segment) => segment["floorIdentifier"] == location.floorIdentifier)
+        .toList();
+
+    List<Point> routePoints = filteredRouteByFloor
+        .map<List<Point>>((segment) {
+          var points = segment["points"] as List;
+          return points.map<Point>((point) {
+            return createPoint(point);
+          }).toList();
+        })
+        .expand((pointsList) => pointsList)
+        .toList();
+
+    return routePoints;
+  }
+
   String getNodeURIBasedOnCategory(PoiCategory category) {
     switch (category.name) {
       case "Big icon category":
@@ -394,7 +445,7 @@ class _MyTabsState extends State<MyTabs> {
   }
 
   void addPoisToScene(List<Poi> nearPois, List<Vector3> arcorePositions) async {
-    removeEverything();
+    cleanPoisFromScene();
     for (int i = 0; i < nearPois.length; i++) {
       Poi poi = nearPois[i];
       Vector3 arcorePosition = arcorePositions[i];
@@ -405,7 +456,7 @@ class _MyTabsState extends State<MyTabs> {
       bool? didAddAnchor = await arAnchorManager.addAnchor(newAnchor);
 
       if (didAddAnchor!) {
-        anchors.add(newAnchor);
+        poiAnchors.add(newAnchor);
         ARNode objectNode = ARNode(
             type: NodeType.localGLTF2,
             uri: getNodeURIBasedOnCategory(poi.poiCategory),
@@ -413,53 +464,33 @@ class _MyTabsState extends State<MyTabs> {
             position: Vector3(0.0, -1.0, 0.0),
             rotation: Vector4(1.0, 0.0, 0.0, 0.0),
             data: {"onTapText": poi.name});
+        poiNodes.add(objectNode);
         arObjectManager.addNode(objectNode, planeAnchor: newAnchor);
       }
     }
   }
 
-  double calculateDistance(Location location1, Point point) {
-    double x1 = location1.cartesianCoordinate.x;
-    double y1 = location1.cartesianCoordinate.y;
-    double x2 = point.cartesianCoordinate.x;
-    double y2 = point.cartesianCoordinate.y;
+  void addNavigationRouteToScene(List<Vector3> navigationRoutePoints) async {
+    cleanNavigationFromScene();
+    for (var point in navigationRoutePoints) {
+      Matrix4 anchorPose = Matrix4.identity()
+        ..translate(point[0], 0.0, point[2]);
+      var newAnchor = ARPlaneAnchor(transformation: anchorPose);
 
-    // Fórmula para calcular la distancia euclidiana entre dos puntos
-    return sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2));
-  }
+      bool? didAddAnchor = await arAnchorManager.addAnchor(newAnchor);
 
-  Future<List<Vector3>?> generateARCorePositions(
-      List<Poi> pois, Location location) async {
-    List<Vector3> arCorePositions = [];
-    // Define transformation matrix based on camera pose and situm pose
-    Matrix3? transformationMatrix = await udpateWorldView(location);
-    // testTransformationMatrix();
-
-    if (transformationMatrix == null) return null;
-
-    // Iterar sobre la lista de POIs
-    for (var poi in pois) {
-      List<double> poiPosition = [
-        poi.position.cartesianCoordinate.x,
-        poi.position.cartesianCoordinate.y
-      ];
-      Vector3 transformedPosition =
-          applyTransformationMatrix(poiPosition, transformationMatrix);
-
-      // Should probably fix this in the transformation matrix
-      // Inverse y component to fit camera coordinate system
-      // -z
-      // |
-      // |___ x
-      transformedPosition.z = -transformedPosition.y;
-      // Keep height constant
-      transformedPosition.y = 1;
-
-      // Agregar la posición transformada a la lista
-      arCorePositions.add(transformedPosition);
+      if (didAddAnchor!) {
+        routeAnchors.add(newAnchor);
+        ARNode objectNode = ARNode(
+            type: NodeType.localGLTF2,
+            uri: "resources/models/TestSubcatPoi/TestSubcatPoi.gltf",
+            scale: Vector3(0.5, 0.5, 0.5),
+            position: Vector3(0.0, -1.0, 0.0),
+            rotation: Vector4(1.0, 0.0, 0.0, 0.0));
+        routeNodes.add(objectNode);
+        arObjectManager.addNode(objectNode, planeAnchor: newAnchor);
+      }
     }
-
-    return arCorePositions;
   }
 
   void printWarning(String text) {
@@ -555,10 +586,6 @@ class _MyTabsState extends State<MyTabs> {
 
   ///////////////////////////////////////////////////////////
 
-  void printALBA(String msg) {
-    debugPrint('***** ALBA $msg');
-  }
-
   Future<Vector3> obtainRotationFromMatrix() async {
     Matrix4? cameraTransform = await arSessionManager.getCameraPose();
     if (cameraTransform == null) return Vector3.zero();
@@ -590,44 +617,7 @@ class _MyTabsState extends State<MyTabs> {
 
   ///////////////////////////////////////////////////////////
 
-  void testTransformationMatrix() {
-    // Example usage
-    List<List<double>> originalPoints = [
-      [168.8528742425964, 76.4548991879338],
-      [78.730527802388, 160.87210985994304],
-      [80.13393555615409, 78.49627594609343],
-      [169.74518848088155, 22.34082514745507],
-      [157.28252052874447, 161.5045273399072],
-      [159.88739144573634, 21.861734484514734],
-      [157.15683273141008, 115.96345180564369],
-      [157.1216547878905, 101.48728722094953],
-      [157.25300262616094, 131.4016039510251],
-      [122.52218472813405, 29.33997495469535],
-      [168.92065862799637, 92.9446501289153],
-      [158.49094214302454, 76.85321391871193],
-      [158.69225388409563, 92.97760437525864],
-      [78.84604036531914, 23.77124993977146],
-      [157.1678318663741, 146.817184075046]
-    ];
-
-    List<List<double>> transformedPoints = [];
-    List<double> rotationOrigin = [20, 20];
-    Matrix3 transformationMatrix =
-        computeTransformationMatrix(pi / 4, 120, 34, rotationOrigin);
-
-    for (List<double> point in originalPoints) {
-      Vector3 transformedPoint =
-          applyTransformationMatrix(point, transformationMatrix);
-      transformedPoints.add([transformedPoint.x, transformedPoint.y]);
-    }
-
-    // Print the transformed points
-    printALBA(transformedPoints.toString());
-  }
-
-  ///////////////////////////////////////////////////////////
-
-  Future<Matrix3?> udpateWorldView(Location location) async {
+  Future<Matrix3?> syncWorldView(Location location) async {
     Matrix4? cameraTransform = await arSessionManager.getCameraPose();
 
     if (cameraTransform == null) return null;
@@ -657,36 +647,6 @@ class _MyTabsState extends State<MyTabs> {
     });
 
     return computeTransformationMatrix(diffAngle, diffX, diffY, rotationOrigin);
-  }
-
-  ///////////////////////////////////////////////////////////
-
-  Matrix3 computeTransformationMatrix(
-      double angle, double dx, double dy, List<double> rotationOrigin) {
-    // Create a translation matrix to rotate with respect to a given origin
-    Matrix3 translationMatrix = Matrix3.columns(Vector3(1, 0, 0),
-        Vector3(0, 1, 0), Vector3(-rotationOrigin[0], -rotationOrigin[1], 1));
-
-    // Applies both (dx, dy) offset as well as rotation on Y
-    Matrix3 transformationMatrix = Matrix3.columns(
-        Vector3(cos(angle), sin(angle), 0),
-        Vector3(-sin(angle), cos(angle), 0),
-        Vector3(dx, dy, 1));
-
-    // Create a translation back matrix to undo initial translation
-    Matrix3 translationBackMatrix = Matrix3.columns(Vector3(1, 0, 0),
-        Vector3(0, 1, 0), Vector3(rotationOrigin[0], rotationOrigin[1], 1));
-
-    // Combine transformation matrices into a single transformation matrix
-    Matrix3 relativeTransformationMatrix =
-        translationBackMatrix * transformationMatrix * translationMatrix;
-
-    return relativeTransformationMatrix;
-  }
-
-  Vector3 applyTransformationMatrix(
-      List<double> point, Matrix3 transformationMatrix) {
-    return transformationMatrix * Vector3(point[0], point[1], 1);
   }
 
   ///////////////////////////////////////////////////////////
@@ -739,6 +699,26 @@ class _MyTabsState extends State<MyTabs> {
     });
     situmSdk.onExitGeofences((geofencesResult) {
       _echo("Situm> SDK> Exit geofences: ${geofencesResult.geofences}.");
+    });
+    situmSdk.onNavigationStart((route) {
+      setState(() {
+        navigationSegments = route.rawContent["segments"];
+      });
+    });
+    situmSdk.onNavigationProgress((progress) {
+      setState(() {
+        navigationSegments = progress.rawContent["segments"];
+      });
+    });
+    situmSdk.onNavigationCancellation(() {
+      setState(() {
+        navigationSegments = null;
+      });
+    });
+    situmSdk.onNavigationDestinationReached(() {
+      setState(() {
+        navigationSegments = null;
+      });
     });
     _downloadPois(buildingIdentifier);
     _downloadBuilding(buildingIdentifier);
@@ -823,7 +803,7 @@ class _MyTabsState extends State<MyTabs> {
       ),
       body: IndexedStack(
         index: _selectedIndex,
-        children: [_createHomeTab(), _createARTab()],
+        children: [_createHomeTab(), _createSplitScreen()],
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
