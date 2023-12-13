@@ -297,15 +297,6 @@ class _MyTabsState extends State<MyTabs> {
     situmSdk.onExitGeofences((geofencesResult) {
       _echo("Situm> SDK> Exit geofences: ${geofencesResult.geofences}.");
     });
-    situmSdk.onNavigationProgress((progress) {
-      _echo("Situm> SDK> Navigation update (PROGRESS).");
-    });
-    situmSdk.onNavigationOutOfRoute(() {
-      _echo("Situm> SDK> Navigation update (OUT OF ROUTE).");
-    });
-    situmSdk.onNavigationDestinationReached(() {
-      _echo("Situm> SDK> Navigation update (DESTINATION REACHED).");
-    });
     _downloadPois(buildingIdentifier);
     super.initState();
   }
@@ -328,7 +319,7 @@ class _MyTabsState extends State<MyTabs> {
     // library handles it all internally for you.
     situmSdk.requestLocationUpdates(LocationRequest(
       buildingIdentifier: buildingIdentifier, //"-1"
-      useDeadReckoning: true,
+      useDeadReckoning: false,
     ));
   }
 
