@@ -56,7 +56,7 @@ class SitumSdk {
   }
 
   _initializeMethodChannel() {
-    methodChannel = const MethodChannel(_CHANNEL_SDK_ID);
+    methodChannel = const MethodChannel(situmSdkChannelId);
     methodChannel.setMethodCallHandler(_methodCallHandler);
   }
 

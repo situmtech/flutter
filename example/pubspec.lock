@@ -177,7 +177,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "3.9.5"
+    version: "3.10.0"
   sky_engine:
     dependency: transitive
     description: flutter
