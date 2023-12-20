@@ -91,8 +91,10 @@ const NSString* RESULTS_KEY = @"results";
     } else if ([@"stopNavigation" isEqualToString:call.method]){
         [self stopNavigation:call
                       result:result];
-    }
-    else {
+    } else if ([@"openUrlInDefaultBrowser" isEqualToString:call.method]) {
+        [self openUrlInDefaultBrowser:call
+                               result:result];
+    } else {
         result(FlutterMethodNotImplemented);
     }
 }
@@ -366,6 +368,22 @@ const NSString* RESULTS_KEY = @"results";
                    result:(FlutterResult)result{
     [SITNavigationManager.sharedManager removeUpdates];
     result(@"DONE");
+}
+
+- (void)openUrlInDefaultBrowser:(FlutterMethodCall*)call
+                         result:(FlutterResult)result{
+    NSString *urlString = call.arguments[@"url"];
+    if (urlString == nil) {
+        result(@(NO));
+        return;
+    }
+    NSURL *url = [NSURL URLWithString:urlString];
+    if (![[UIApplication sharedApplication] canOpenURL:url]) {
+        result(@(NO));
+        return;
+    }
+    [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
+    result(@(YES));
 }
 
 

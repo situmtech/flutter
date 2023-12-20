@@ -88,6 +88,7 @@ class _MapViewState extends State<MapView> {
                 request.url.endsWith(widget._retryScreenURL)) {
               return NavigationDecision.navigate;
             }
+            wyfController?._onExternalLinkClicked(request.url);
             return NavigationDecision.prevent;
           })
           ..setOnUrlChange((UrlChange change) {

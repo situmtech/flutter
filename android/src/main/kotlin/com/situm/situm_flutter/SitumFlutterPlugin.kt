@@ -1,6 +1,10 @@
 package com.situm.situm_flutter
 
+import android.app.Activity
+import android.content.ActivityNotFoundException
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Looper
 import android.util.Log
 import androidx.annotation.NonNull
@@ -90,6 +94,7 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
             "requestDirections" -> requestDirections(arguments, result)
             "requestNavigation" -> requestNavigation(arguments, result)
             "stopNavigation" -> stopNavigation(result)
+            "openUrlInDefaultBrowser" -> openUrlInDefaultBrowser(arguments, result)
             else -> result.notImplemented()
         }
     }
@@ -301,6 +306,27 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
     private fun getDeviceId(result: MethodChannel.Result) {
         val deivceId = SitumSdk.getDeviceID()
         result.success(deivceId.toString())
+    }
+
+    private fun openUrlInDefaultBrowser(arguments: Map<String, Any>, result: MethodChannel.Result) {
+        if (!arguments.containsKey("url")) {
+            result.success(false)
+            return
+        }
+        if (context == null || context !is Activity) {
+            result.success(false)
+            return
+        }
+        val url = arguments["url"] as String
+        val activity = context as Activity
+        val launchIntent: Intent = Intent(Intent.ACTION_VIEW)
+            .setData(Uri.parse(url))
+        try {
+            activity.startActivity(launchIntent)
+        } catch (e: ActivityNotFoundException) {
+            result.success(false)
+        }
+        result.success(true)
     }
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
