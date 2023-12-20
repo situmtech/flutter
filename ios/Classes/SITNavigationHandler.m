@@ -8,7 +8,10 @@
 #import "SITNavigationHandler.h"
 #import <SitumSDK/SitumSDK.h>
 
+static const NSTimeInterval kMinNavigationUpdateInterval = 1.0;
+
 @interface SITNavigationHandler()
+@property (nonatomic, strong) NSDate *lastLocationUpdateTime;
 @end
 
 @implementation SITNavigationHandler
@@ -27,6 +30,7 @@
     if (self) {
         //We use a shared manager to ensure that the location delegate of the NavigationManager will be always de same
         [SITLocationManager.sharedInstance addDelegate:self];
+        self.lastLocationUpdateTime = [NSDate date];
     }
     return self;
 }
@@ -80,7 +84,13 @@
 
 - (void)locationManager:(id<SITLocationInterface> _Nonnull)locationManager didUpdateLocation:(SITLocation * _Nonnull)location {
     if ([SITNavigationManager sharedManager].isRunning){
-        [SITNavigationManager.sharedManager updateWithLocation:location];
+        NSDate *currentTime = [NSDate date];
+        NSTimeInterval elapsedTime = [currentTime timeIntervalSinceDate:self.lastLocationUpdateTime];
+    
+        if (elapsedTime >= kMinNavigationUpdateInterval) {
+            [SITNavigationManager.sharedManager updateWithLocation:location];
+            self.lastLocationUpdateTime = currentTime;
+        }
     }
 }
 
