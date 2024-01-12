@@ -255,7 +255,7 @@ class MapViewController {
 
   /// Set a callback that will receive internal messages from the [MapView].
   /// Do not use this method as it is intended for internal use.
-  void internalMessageDelegate(
+  void internalARMessageDelegate(
       Function(String type, dynamic payload) callback) {
     _internalMessageDelegate = callback;
   }
