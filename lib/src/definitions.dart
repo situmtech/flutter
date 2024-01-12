@@ -263,6 +263,12 @@ class OnExternalLinkClickedResult {
   });
 }
 
+enum ARStatus {
+  success,
+  error,
+  finished,
+}
+
 // Result callbacks.
 
 // WYF load callback.

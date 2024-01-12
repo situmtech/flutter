@@ -13,6 +13,12 @@ class MapViewController {
   late MapViewCallback _widgetLoadCallback;
   late PlatformWebViewController _webViewController;
 
+  // Internal callback that will receive every MapView message. This callback
+  // has been introduced to enable communication between MapView and the new AR
+  // module, serving as a direct and extensible mode that avoids the
+  // intermediation of this plugin.
+  Function(String, dynamic payload)? _internalMessageDelegate;
+
   List<String> mapViewerStatusesFilter = [
     'STARTING',
     'USER_NOT_IN_BUILDING',
@@ -53,6 +59,7 @@ class MapViewController {
 
   void onMapViewerMessage(String type, Map<String, dynamic> payload) {
     MessageHandler(type).handleMessage(this, payload);
+    _internalMessageDelegate?.call(type, payload);
   }
 
   // Private utils:
@@ -152,10 +159,16 @@ class MapViewController {
 
   /// Select a floor of the current building by its [Floor.identifier].
   ///
-  /// **NOTE**: introducing an invalid identifer may result in unexpected behaviours.
+  /// **NOTE**: introducing an invalid identifier may result in unexpected behaviours.
   void selectFloor(int identifier) async {
     _sendMessage(
         WV_MESSAGE_CARTOGRAPHY_SELECT_FLOOR, {"identifier": identifier});
+  }
+
+  /// Communicates the state of the AR module to the [MapView].
+  void updateAugmentedRealityStatus(ARStatus status) async {
+    _sendMessage(
+        WV_MESSAGE_AR_UPDATE_STATUS, jsonEncode({"type": status.name}));
   }
 
   // WYF internal utils:
@@ -238,6 +251,13 @@ class MapViewController {
   /// default browser by default.
   void onExternalLinkClicked(OnExternalLinkClickedCallback callback) {
     _onExternalLinkClickedCallback = callback;
+  }
+
+  /// Set a callback that will receive internal messages from the [MapView].
+  /// Do not use this method as it is intended for internal use.
+  void internalMessageDelegate(
+      Function(String, dynamic payload) callback) {
+    _internalMessageDelegate = callback;
   }
 
   // Directions & Navigation Interceptors:
