@@ -263,6 +263,15 @@ class OnExternalLinkClickedResult {
   });
 }
 
+enum ARStatus {
+  /// The AR module has been presented successfully.
+  success,
+  /// There was an error while trying to present the AR module.
+  error,
+  /// The AR module has been hidden and finished working.
+  finished,
+}
+
 // Result callbacks.
 
 // WYF load callback.
