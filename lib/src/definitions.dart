@@ -87,6 +87,10 @@ class MapViewConfiguration {
   /// supported languages.
   final String? language;
 
+  /// When set to low the webview will only render a subset of features available for
+  /// less performant devices.
+  PerformanceMode? performanceMode;
+
   /// The [MapView] settings. Required fields are your Situm user and API key,
   /// but also a buildingIdentifier or remoteIdentifier.
   MapViewConfiguration({
@@ -100,6 +104,7 @@ class MapViewConfiguration {
     this.enableDebugging = false,
     this.lockCameraToBuilding,
     this.persistUnderlyingWidget = false,
+    this.performanceMode,
     this.language,
   }) {
     if (viewerDomain != null) {
@@ -134,6 +139,17 @@ class MapViewConfiguration {
     }
     if (language != null) {
       query = "$query&lng=$language";
+    }
+
+    switch (performanceMode) {
+      case PerformanceMode.HIGH:
+        query = "$query&pm=high";
+        break;
+      case PerformanceMode.LOW:
+        query = "$query&pm=low";
+        break;
+      default:
+        break;
     }
 
     if (remoteIdentifier?.isNotEmpty == true &&
@@ -295,4 +311,16 @@ class ConnectionErrors {
     IOS_NO_CONNECTION,
     IOS_HOSTNAME_NOT_RESOLVED
   ];
+}
+
+/// Enum representing the performance modes.
+///
+/// - [HIGH]: Indicates a high performance mode where the application
+///   or uses maximum resources available.
+///
+/// - [LOW]: Represents a low performance mode optimized devices
+///   with less computing power.
+enum PerformanceMode {
+  HIGH,
+  LOW,
 }

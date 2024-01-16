@@ -138,10 +138,16 @@ class _MapViewState extends State<MapView> {
     _loadWithConfig(mapViewConfiguration);
   }
 
-  void _loadWithConfig(MapViewConfiguration configuration) {
+  void _loadWithConfig(MapViewConfiguration configuration) async {
     if (webViewController is AndroidWebViewController) {
       AndroidWebViewController.enableDebugging(configuration.enableDebugging);
     }
+
+    bool? isDeviceLowPeformant = await wyfController?.isLowPerformantDevice();
+    if (isDeviceLowPeformant != null && isDeviceLowPeformant) {
+      mapViewConfiguration.performanceMode = PerformanceMode.LOW;
+    }
+
     final String mapViewUrl = mapViewConfiguration._getViewerURL();
     // Load the composed URL in the WebView.
     webViewController

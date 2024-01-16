@@ -321,6 +321,16 @@ class SitumSdk {
     return response;
   }
 
+  Future<List<String>> getCPUVendors() async {
+    List response = await methodChannel.invokeMethod("getCPUVendors");
+    return response.cast<String>();
+  }
+
+  Future<List<String>> getCPUModels() async {
+    List response = await methodChannel.invokeMethod("getCPUModels");
+    return response.cast<String>();
+  }
+
   /// Get notified when the user enters a [Geofence]. Call this method before
   /// the positioning is started.
   Future<void> onEnterGeofences(OnEnteredGeofencesCallback callback) async {

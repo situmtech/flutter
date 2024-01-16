@@ -3,6 +3,7 @@ part of wayfinding;
 /// Controller for [MapView]. This class exposes methods and callbacks.
 class MapViewController {
   late final MethodChannel methodChannel;
+  late final SitumSdk situmSdk;
   OnPoiSelectedCallback? _onPoiSelectedCallback;
   OnPoiDeselectedCallback? _onPoiDeselectedCallback;
   OnDirectionsRequestInterceptor? _onDirectionsRequestInterceptor;
@@ -20,6 +21,9 @@ class MapViewController {
     'STOPPED',
   ];
 
+  String LOW_PERFOMANCE_VENDOR = "0x51";
+  List<String> LOW_PERFOMANCE_MODELS = ["0x801", "0x800"];
+
   MapViewController({
     String? situmUser,
     required String situmApiKey,
@@ -28,7 +32,7 @@ class MapViewController {
     // WARNING: don't set the method call handler here as it will overwrite the
     // one provided by the SDK controller.
     methodChannel = const MethodChannel(situmSdkChannelId);
-    var situmSdk = SitumSdk();
+    situmSdk = SitumSdk();
     // Be sure to initialize, configure and authenticate in our SDK
     // so it can be used in callbacks, etc.
     situmSdk.init();
@@ -37,6 +41,16 @@ class MapViewController {
     // Subscribe to native SDK messages so the location updates can be directly
     // forwarded to the map viewer.
     situmSdk.internalSetMethodCallDelegate(_methodCallHandler);
+  }
+
+  /// Determines if a device has low performance capabilities. This is based on
+  /// identifying specific chip models known to have issues with rendering
+  /// certain features in the viewer.
+  Future<bool> isLowPerformantDevice() async {
+    var vendors = await situmSdk.getCPUVendors();
+    var models = await situmSdk.getCPUModels();
+    return vendors.any((item) => item == LOW_PERFOMANCE_VENDOR) &&
+        models.any((item) => LOW_PERFOMANCE_MODELS.contains(item));
   }
 
   /// Tells the [MapView] where the user is located at.

@@ -91,6 +91,8 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
             "fetchBuildingInfo" -> fetchBuildingInfo(arguments, result)
             "fetchBuildings" -> fetchBuildings(result)
             "getDeviceId" -> getDeviceId(result)
+            "getCPUVendors" -> getCPUVendors(result)
+            "getCPUModels" -> getCPUModels(result)
             "requestDirections" -> requestDirections(arguments, result)
             "requestNavigation" -> requestNavigation(arguments, result)
             "stopNavigation" -> stopNavigation(result)
@@ -306,6 +308,16 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
     private fun getDeviceId(result: MethodChannel.Result) {
         val deivceId = SitumSdk.getDeviceID()
         result.success(deivceId.toString())
+    }
+
+    private fun getCPUVendors(result: MethodChannel.Result) {
+        val vendor = CPUInfo.getVendors()
+        result.success(vendor)
+    }
+
+    private fun getCPUModels(result: MethodChannel.Result) {
+        val model = CPUInfo.getModels()
+        result.success(model)
     }
 
     private fun openUrlInDefaultBrowser(arguments: Map<String, Any>, result: MethodChannel.Result) {
