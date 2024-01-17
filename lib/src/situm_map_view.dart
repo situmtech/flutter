@@ -9,6 +9,7 @@ class MapView extends StatefulWidget {
   final MapViewCallback? didUpdateCallback;
   final String _retryScreenURL =
       "packages/situm_flutter/html/retry_screen.html";
+  final String _iframeHTMLURL = "about:srcdoc";
 
   /// MapView is the main component and entry point for Situm Flutter Wayfinding.
   /// This widget will load your Situm building on a map, based on the given
@@ -85,7 +86,8 @@ class _MapViewState extends State<MapView> {
           })
           ..setOnNavigationRequest((dynamic request) {
             if (request.url.startsWith(mapViewConfiguration.viewerDomain) ||
-                request.url.endsWith(widget._retryScreenURL)) {
+                request.url.endsWith(widget._retryScreenURL) ||
+                request.url == widget._iframeHTMLURL) {
               return NavigationDecision.navigate;
             }
             wyfController?._onExternalLinkClicked(request.url);
@@ -141,6 +143,9 @@ class _MapViewState extends State<MapView> {
   void _loadWithConfig(MapViewConfiguration configuration) {
     if (webViewController is AndroidWebViewController) {
       AndroidWebViewController.enableDebugging(configuration.enableDebugging);
+    }
+    if (webViewController is WebKitWebViewController) {
+      (webViewController as WebKitWebViewController).setInspectable(true);
     }
     final String mapViewUrl = mapViewConfiguration._getViewerURL();
     // Load the composed URL in the WebView.
