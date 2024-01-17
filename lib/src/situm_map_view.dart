@@ -144,9 +144,9 @@ class _MapViewState extends State<MapView> {
     if (webViewController is AndroidWebViewController) {
       AndroidWebViewController.enableDebugging(configuration.enableDebugging);
     }
-    if (webViewController is WebKitWebViewController) {
-      (webViewController as WebKitWebViewController).setInspectable(true);
-    }
+    // if (webViewController is WebKitWebViewController) {
+    //   (webViewController as WebKitWebViewController).setInspectable(true);
+    // }
     final String mapViewUrl = mapViewConfiguration._getViewerURL();
     // Load the composed URL in the WebView.
     webViewController
