@@ -7,8 +7,13 @@ class MapView extends StatefulWidget {
   final MapViewConfiguration configuration;
   final MapViewCallback onLoad;
   final MapViewCallback? didUpdateCallback;
-  final String _retryScreenURL =
+  static const String _retryScreenURL =
       "packages/situm_flutter/html/retry_screen.html";
+
+  /// On Webkit rendering engine, when there is some iframe whith the content
+  /// embedded in a srcdoc tag, the webViewController ask for a navigation request.
+  /// We need to allow this url in order to show the content of such iframes.
+  static const String _iframeHTMLURL = "about:srcdoc";
 
   /// MapView is the main component and entry point for Situm Flutter Wayfinding.
   /// This widget will load your Situm building on a map, based on the given
@@ -80,12 +85,13 @@ class _MapViewState extends State<MapView> {
 
             if (shouldDisplayRetryScreen &&
                 ConnectionErrors.values.contains(error.errorCode)) {
-              webViewController!.loadFlutterAsset(widget._retryScreenURL);
+              webViewController!.loadFlutterAsset(MapView._retryScreenURL);
             }
           })
           ..setOnNavigationRequest((dynamic request) {
             if (request.url.startsWith(mapViewConfiguration.viewerDomain) ||
-                request.url.endsWith(widget._retryScreenURL)) {
+                request.url.endsWith(MapView._retryScreenURL) ||
+                request.url == MapView._iframeHTMLURL) {
               return NavigationDecision.navigate;
             }
             wyfController?._onExternalLinkClicked(request.url);
@@ -142,6 +148,9 @@ class _MapViewState extends State<MapView> {
     if (webViewController is AndroidWebViewController) {
       AndroidWebViewController.enableDebugging(configuration.enableDebugging);
     }
+    // if (webViewController is WebKitWebViewController) {
+    //   (webViewController as WebKitWebViewController).setInspectable(true);
+    // }
     final String mapViewUrl = mapViewConfiguration._getViewerURL();
     // Load the composed URL in the WebView.
     webViewController
