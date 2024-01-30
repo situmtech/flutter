@@ -374,7 +374,6 @@ class SitumSdk {
 
     // Forward call to internal delegate (send locations and status to MapViewController).
     if (internalCall != null) {
-      debugPrint("Situm> SDK> Forwarding $internalCall");
       _internalMethodCallDelegates.call(internalCall);
     }
   }
