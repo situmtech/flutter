@@ -352,6 +352,16 @@ class SitumSdk {
     _internalMethodCallDelegates.arDelegate = delegate;
   }
 
+  /// Enables internal calls to native Geofence listeners. Receiving Geofence
+  /// callbacks involves the execution of certain processes with a computational
+  /// cost that we have chosen to avoid by default. This method activates those
+  /// processes while preventing collisions with [onEnterGeofences] and
+  /// [onExitGeofences].
+  /// Do not use this method as it is intended for internal use by the AR module.
+  void internalEnableGeofenceListening() async {
+    await methodChannel.invokeMethod('geofenceCallbacksRequested');
+  }
+
   // Callbacks:
 
   Future<void> _methodCallHandler(MethodCall call) async {
