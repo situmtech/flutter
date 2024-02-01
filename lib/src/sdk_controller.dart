@@ -347,7 +347,8 @@ class SitumSdk {
   }
 
   /// Set a native [MethodCall] delegate.
-  /// Do not use this method as it is intended for internal use by the AR module.
+  /// Do not use this method as it is intended for internal use by the Situm AR
+  /// module (that you will find on the situm_flutter_ar package).
   void internalSetMethodCallARDelegate(Function(InternalCall call) delegate) {
     _internalMethodCallDelegates.arDelegate = delegate;
   }
@@ -357,7 +358,8 @@ class SitumSdk {
   /// cost that we have chosen to avoid by default. This method activates those
   /// processes while preventing collisions with [onEnterGeofences] and
   /// [onExitGeofences].
-  /// Do not use this method as it is intended for internal use by the AR module.
+  /// Do not use this method as it is intended for internal use by the Situm AR
+  /// module (that you will find on the situm_flutter_ar package).
   void internalEnableGeofenceListening() async {
     await methodChannel.invokeMethod('geofenceCallbacksRequested');
   }
