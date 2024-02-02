@@ -42,7 +42,7 @@ class MapViewController {
     situmSdk.setConfiguration(ConfigurationOptions(useRemoteConfig: true));
     // Subscribe to native SDK messages so the location updates can be directly
     // forwarded to the map viewer.
-    situmSdk.internalSetMethodCallDelegate(_methodCallHandler);
+    situmSdk.internalSetMethodCallMapDelegate(_methodCallHandler);
   }
 
   /// Tells the [MapView] where the user is located at.
@@ -294,42 +294,40 @@ class MapViewController {
   // This component needs to listen the native SDK callbacks so it can send
   // location (and status/errors) to the map-viewer automatically.
 
-  Future<void> _methodCallHandler(MethodCall call) async {
-    switch (call.method) {
-      case 'onLocationChanged':
-        _onLocationChanged(call.arguments);
+  Future<void> _methodCallHandler(InternalCall call) async {
+    switch (call.type) {
+      case InternalCallType.location:
+        _onLocationChanged(call.get());
         break;
-      case 'onStatusChanged':
-        _onStatusChanged(call.arguments);
+      case InternalCallType.locationStatus:
+        _onStatusChanged(call.get());
         break;
-      case 'onError':
-        _onError(call.arguments);
+      case InternalCallType.locationError:
+        _onError(call.get());
         break;
       // Navigation callbacks are used by both WYF and the integrator. If WYF
       // uses them, they will be overwritten. To avoid that problem, we listen
       // for native calls here.
-      case 'onNavigationDestinationReached':
+      case InternalCallType.navigationDestinationReached:
         _setNavigationDestinationReached();
         break;
-      case 'onNavigationProgress':
-        _setNavigationProgress(RouteProgress(rawContent: call.arguments));
+      case InternalCallType.navigationProgress:
+        _setNavigationProgress(call.get());
         break;
-      case 'onUserOutsideRoute':
+      case InternalCallType.navigationOutOfRoute:
         _setNavigationOutOfRoute();
         break;
     }
   }
 
-  void _onLocationChanged(arguments) {
+  void _onLocationChanged(Location location) {
     // Send location to the map-viewer.
-    setCurrentLocation(createLocation(arguments));
+    setCurrentLocation(location);
   }
 
-  void _onStatusChanged(arguments) {
-    String newStatus = arguments["statusName"];
-
-    if (mapViewerStatusesFilter.contains(newStatus)) {
-      _setCurrentLocationStatus(newStatus);
+  void _onStatusChanged(String status) {
+    if (mapViewerStatusesFilter.contains(status)) {
+      _setCurrentLocationStatus(status);
     }
   }
 
