@@ -753,3 +753,51 @@ typedef OnNavigationOutOfRouteCallback = void Function();
 // Directions callback.
 typedef OnDirectionsRequestedCallback = Function(
     DirectionsRequest directionsRequest);
+
+// Internal definitions:
+
+/// Set of method calls that are being delegated by the SDK.
+/// For internal use only.
+enum InternalCallType {
+  location,
+  locationStatus,
+  locationError,
+  navigationStart,
+  navigationDestinationReached,
+  navigationProgress,
+  navigationOutOfRoute,
+  navigationCancellation,
+  geofencesEnter,
+  geofencesExit,
+}
+
+/// Represents an internal method call and encapsulates the type of call and
+/// associated data, previously processed by the SDK.
+/// For internal use only.
+class InternalCall {
+  final InternalCallType type;
+  final dynamic data;
+
+  InternalCall(this.type, this.data);
+
+  T get<T>() {
+    return data as T;
+  }
+
+  @override
+  String toString() {
+    return "$type - ${data.runtimeType}";
+  }
+}
+
+class _InternalDelegates {
+  Function(InternalCall call)? mapViewDelegate;
+  Function(InternalCall call)? arDelegate;
+
+  Future<void> call(InternalCall internalCall) async {
+    await Future.forEach({mapViewDelegate, arDelegate},
+        (Function(InternalCall internalCall)? delegate) async {
+      await delegate?.call(internalCall);
+    });
+  }
+}
