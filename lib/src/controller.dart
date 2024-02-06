@@ -331,7 +331,8 @@ class MapViewController {
     }
   }
 
-  void _onError(arguments) {
-    _setCurrentLocationStatus(arguments["code"]);
+  void _onError(Error error) {
+    // Right now the MapView will show a generic error.
+    _setCurrentLocationStatus(error.code);
   }
 }

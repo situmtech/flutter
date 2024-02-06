@@ -427,12 +427,13 @@ class SitumSdk {
     // TODO: We are currently processing only positioning errors,
     // in some future we might need to differentiate between
     // navigation errors, communication errors, ...
-    Error proccessedError = _errorAdapter.handleError(call.arguments);
+    Error processedError = _errorAdapter.handleError(call.arguments);
     // Modify the method call arguments with the processed error
     // before sending it to the _onLocationErrorCallback and the MapViewController.
-    call.arguments["code"] = proccessedError.code;
-    call.arguments["type"] = proccessedError.type;
-    return InternalCall(InternalCallType.locationError, proccessedError);
+    call.arguments["code"] = processedError.code;
+    call.arguments["type"] = processedError.type;
+    _onLocationErrorCallback?.call(processedError);
+    return InternalCall(InternalCallType.locationError, processedError);
   }
 
   InternalCall _sendBleDisabledStatusAsError() {
