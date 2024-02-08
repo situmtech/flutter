@@ -79,6 +79,7 @@ class _MyTabsState extends State<MyTabs> {
     return Card(
       child: Column(children: [
         ExpansionTile(
+          shape: const Border(),
           title: _cardTitle(iconData, title),
           children: <Widget>[
             GridView.count(
@@ -124,9 +125,10 @@ class _MyTabsState extends State<MyTabs> {
 
   Card _setCamera() {
     return Card(
-      child: Column(
+      child: ExpansionTile(
+        shape: const Border(),
+        title: _cardTitle(Icons.video_camera_front_rounded, "Set Camera"),
         children: [
-          _cardTitle(Icons.video_camera_front_rounded, "Set Camera"),
           Row(
             children: <Widget>[
               Flexible(
@@ -160,40 +162,37 @@ class _MyTabsState extends State<MyTabs> {
 
   Card _poiInteraction() {
     return Card(
-      child: Column(
-        children: [
-          ExpansionTile(
-            title: _cardTitle(Icons.interests, "POI Interaction"),
+      child: ExpansionTile(
+        shape: const Border(),
+        title: _cardTitle(Icons.interests, "POI Interaction"),
+        children: <Widget>[
+          Row(
             children: <Widget>[
-              Row(
-                children: <Widget>[
-                  Flexible(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: DropdownButton<Poi>(
-                        isExpanded: true,
-                        value: dropdownValue,
-                        elevation: 16,
-                        onChanged: (Poi? value) {
-                          setState(() {
-                            dropdownValue = value!;
-                          });
-                        },
-                        items: pois.map((value) {
-                          return DropdownMenuItem<Poi>(
-                            value: value,
-                            child: Text(value.name),
-                          );
-                        }).toList(),
-                      ),
-                    ),
+              Flexible(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: DropdownButton<Poi>(
+                    isExpanded: true,
+                    value: dropdownValue,
+                    elevation: 16,
+                    onChanged: (Poi? value) {
+                      setState(() {
+                        dropdownValue = value!;
+                      });
+                    },
+                    items: pois.map((value) {
+                      return DropdownMenuItem<Poi>(
+                        value: value,
+                        child: Text(value.name),
+                      );
+                    }).toList(),
                   ),
-                  _sdkButton("Select", (() => _selectPoi(dropdownValue))),
-                  _sdkButton("Navigate", (() => _navigateToPoi(dropdownValue))),
-                ],
-              )
+                ),
+              ),
+              _sdkButton("Select", (() => _selectPoi(dropdownValue))),
+              _sdkButton("Navigate", (() => _navigateToPoi(dropdownValue))),
             ],
-          ),
+          )
         ],
       ),
     );
