@@ -2,6 +2,7 @@ library wayfinding;
 // ignore_for_file: constant_identifier_names
 
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +11,7 @@ import 'package:situm_flutter/sdk.dart';
 
 // Import for Android features.
 import 'package:webview_flutter_android/webview_flutter_android.dart';
+import 'package:file_picker/file_picker.dart';
 
 // WebView:
 // Not necessary, also included with webview_flutter_platform_interface:
@@ -42,6 +44,9 @@ const WV_MESSAGE_CARTOGRAPHY_POI_SELECTED = "cartography.poi_selected";
 const WV_MESSAGE_CARTOGRAPHY_POI_DESELECTED = "cartography.poi_deselected";
 const WV_MESSAGE_MAP_IS_READY = "app.map_is_ready";
 const WV_MESSAGE_LOCATION_START = "location.start";
+const WV_MESSAGE_LOCATION_STOP = "location.stop";
+const WV_MESSAGE_START_EXTERNAL_LOCATION = "location.external_start";
+const WV_MESSAGE_ADD_EXTERNAL_LOCATION = "location.external_add";
 const WV_MESSAGE_AR_REQUESTED = "augmented_reality.requested";
 
 // ACTIONS sent to map-viewer:

@@ -144,9 +144,22 @@ class _MapViewState extends State<MapView> {
     _loadWithConfig(mapViewConfiguration);
   }
 
+  Future<List<String>> _androidFilePicker(
+      final FileSelectorParams params) async {
+    final result = await FilePicker.platform.pickFiles();
+
+    if (result != null && result.files.single.path != null) {
+      final file = File(result.files.single.path!);
+      return [file.uri.toString()];
+    }
+    return [];
+  }
+
   void _loadWithConfig(MapViewConfiguration configuration) {
     if (webViewController is AndroidWebViewController) {
       AndroidWebViewController.enableDebugging(configuration.enableDebugging);
+      final myAndroidController = webViewController as AndroidWebViewController;
+      myAndroidController.setOnShowFileSelector(_androidFilePicker);
     }
     // if (webViewController is WebKitWebViewController) {
     //   (webViewController as WebKitWebViewController).setInspectable(true);

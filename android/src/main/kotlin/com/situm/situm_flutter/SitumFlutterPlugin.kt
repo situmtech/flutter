@@ -12,10 +12,7 @@ import es.situm.sdk.SitumSdk
 import es.situm.sdk.communication.CommunicationConfigImpl
 import es.situm.sdk.configuration.network.NetworkOptionsImpl
 import es.situm.sdk.error.Error
-import es.situm.sdk.location.GeofenceListener
-import es.situm.sdk.location.LocationListener
-import es.situm.sdk.location.LocationRequest
-import es.situm.sdk.location.LocationStatus
+import es.situm.sdk.location.*
 import es.situm.sdk.model.cartography.*
 import es.situm.sdk.model.location.Location
 import es.situm.sdk.utils.Handler
@@ -94,6 +91,7 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
             "requestDirections" -> requestDirections(arguments, result)
             "requestNavigation" -> requestNavigation(arguments, result)
             "stopNavigation" -> stopNavigation(result)
+            "addExternalLocation" -> addExternalLocation(arguments, result)
             "openUrlInDefaultBrowser" -> openUrlInDefaultBrowser(arguments, result)
             else -> result.notImplemented()
         }
@@ -234,6 +232,9 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
 
     private fun requestLocationUpdates(arguments: Map<String, Any>, result: MethodChannel.Result) {
         val locationRequest = LocationRequest.Builder().fromArguments(arguments).build()
+        if (arguments.containsKey("useExternalLocations")) {
+            SitumSdk.configuration().useExternalLocations(true);
+        }
         SitumSdk.locationManager().requestLocationUpdates(locationRequest)
         result.success("DONE")
     }
@@ -253,6 +254,15 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
         navigation.requestNavigation(
             directionsRequestArgs, navigationRequestArgs, result
         )
+    }
+
+    private fun addExternalLocation(arguments: Map<String, Any>, result: MethodChannel.Result) {
+        SitumSdk.locationManager().addExternalLocation(
+                ExternalLocation.Builder(
+                        arguments["buildingIdentifier"] as String,
+                        arguments["floorIdentifier"] as String,
+                        arguments["latitude"] as Double,
+                        arguments["longitude"] as Double).build())
     }
 
     private fun stopNavigation(result: MethodChannel.Result) {

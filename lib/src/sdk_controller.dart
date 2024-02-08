@@ -204,6 +204,11 @@ class SitumSdk {
     await methodChannel.invokeMethod("stopNavigation", {});
   }
 
+  /// Sends new external location
+  Future<void> addExternalLocation(ExternalLocation location) async {
+    await methodChannel.invokeMethod("addExternalLocation", location.toMap());
+  }
+
   /// Sets a callback that will be notified when the navigation starts.
   ///
   /// See [requestNavigation].

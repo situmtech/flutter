@@ -4,6 +4,7 @@ part of sdk;
 class LocationRequest {
   final String? buildingIdentifier;
   final bool? useDeadReckoning;
+  final bool? useExternalLocations;
   final bool? useForegroundService;
   final ForegroundServiceNotificationOptions?
       foregroundServiceNotificationOptions;
@@ -11,6 +12,7 @@ class LocationRequest {
   LocationRequest({
     this.buildingIdentifier,
     this.useDeadReckoning,
+    this.useExternalLocations,
     this.useForegroundService,
     this.foregroundServiceNotificationOptions,
   });
@@ -19,6 +21,7 @@ class LocationRequest {
     Map<String, dynamic> map = {};
     _addToMapIfNotNull("buildingIdentifier", buildingIdentifier, map);
     _addToMapIfNotNull("useDeadReckoning", useDeadReckoning, map);
+    _addToMapIfNotNull("useExternalLocations", useExternalLocations, map);
     _addToMapIfNotNull("useForegroundService", useForegroundService, map);
     _addToMapIfNotNull("foregroundServiceNotificationOptions",
         foregroundServiceNotificationOptions?.toMap(), map);
@@ -252,6 +255,27 @@ class Location {
         'hasBearing': hasBearing,
         'timestamp': timestamp,
       };
+}
+
+class ExternalLocation {
+  final double latitude;
+  final double longitude;
+  final String buildingIdentifier;
+  final String floorIdentifier;
+
+  ExternalLocation({
+    required this.latitude,
+    required this.longitude,
+    required this.buildingIdentifier,
+    required this.floorIdentifier,
+  });
+
+  Map<String, dynamic> toMap() => {
+    'latitude': latitude,
+    'longitude': longitude,
+    'buildingIdentifier': buildingIdentifier,
+    'floorIdentifier': floorIdentifier,
+  };
 }
 
 class OnEnteredGeofenceResult {

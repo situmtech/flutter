@@ -209,3 +209,12 @@ NavigationRequest createNavigationRequest(arguments) => NavigationRequest(
 String stringFromArgsOrEmptyId(arguments, String key) {
   return (arguments[key] ?? -1).toString();
 }
+
+ExternalLocation createExternalLocation(dynamic args) {
+  return ExternalLocation(
+    latitude: args["latitude"],
+    longitude: args["longitude"],
+    buildingIdentifier: args["buildingIdentifier"],
+    floorIdentifier: args["floorIdentifier"],
+  );
+}

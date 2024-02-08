@@ -15,7 +15,13 @@ abstract class MessageHandler {
       case WV_MESSAGE_CARTOGRAPHY_POI_SELECTED:
         return PoiSelectedMessageHandler();
       case WV_MESSAGE_CARTOGRAPHY_POI_DESELECTED:
-        return PoiDeselectedMessageHandler();        
+        return PoiDeselectedMessageHandler();
+      case WV_MESSAGE_START_EXTERNAL_LOCATION:
+        return ExternalLocationStartHandler();
+      case WV_MESSAGE_ADD_EXTERNAL_LOCATION:
+        return ExternalLocationAddHandler();
+      case WV_MESSAGE_LOCATION_STOP:
+        return LocationStopHandler();
       default:
         debugPrint("EmptyMessageHandler handles message of type: $type");
         return EmptyMessageHandler();
@@ -36,6 +42,41 @@ class EmptyMessageHandler implements MessageHandler {
   ) {
     // Do nothing.
     debugPrint("EmptyMessageHandler handles message from map-viewer: $payload");
+  }
+}
+
+class ExternalLocationStartHandler implements MessageHandler {
+  @override
+  void handleMessage(
+      MapViewController mapViewController,
+      Map<String, dynamic> payload,
+      ) {
+    var sdk = SitumSdk();
+    sdk.requestLocationUpdates(LocationRequest(
+      buildingIdentifier: payload["buildingIdentifier"],
+      useExternalLocations: true
+    ));
+  }
+}
+
+class ExternalLocationAddHandler implements MessageHandler {
+  @override
+  void handleMessage(
+      MapViewController mapViewController,
+      Map<String, dynamic> payload,
+      ) {
+    var sdk = SitumSdk();
+    sdk.addExternalLocation(createExternalLocation(payload));
+  }
+}
+
+class LocationStopHandler implements MessageHandler {
+  @override
+  void handleMessage(
+      MapViewController mapViewController,
+      Map<String, dynamic> payload,
+      ) {
+    SitumSdk().removeUpdates();
   }
 }
 
