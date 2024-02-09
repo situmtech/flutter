@@ -78,6 +78,7 @@ jobs:
           system: $(ubuntuVersion)
           XAPIEMAIL: $(XAPIEMAIL)
           BUILDINGID: $(BUILDINGID)
+          BUILDNUMBER: $(BUILDNUMBER)
           REMOTEIDENTIFIER: $(REMOTEIDENTIFIER)
 
   - job: iOS_app
@@ -125,4 +126,5 @@ jobs:
           system: $(macOSVersion)
           XAPIEMAIL: $(XAPIEMAIL)
           BUILDINGID: $(BUILDINGID)
+          BUILDNUMBER: $(BUILDNUMBER)
           REMOTEIDENTIFIER: $(REMOTEIDENTIFIER)
