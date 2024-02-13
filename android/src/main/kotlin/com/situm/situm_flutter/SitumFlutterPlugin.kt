@@ -263,6 +263,7 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
                         arguments["floorIdentifier"] as String,
                         arguments["latitude"] as Double,
                         arguments["longitude"] as Double).build())
+        result.success("DONE")
     }
 
     private fun stopNavigation(result: MethodChannel.Result) {
