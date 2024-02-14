@@ -94,6 +94,9 @@ const NSString* RESULTS_KEY = @"results";
     } else if ([@"openUrlInDefaultBrowser" isEqualToString:call.method]) {
         [self openUrlInDefaultBrowser:call
                                result:result];
+    } else if ([@"addExternalLocation" isEqualToString:call.method]){
+        [self addExternalLocation:call
+                      result:result];
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -162,6 +165,9 @@ const NSString* RESULTS_KEY = @"results";
 
 - (void)handleRequestLocationUpdates:(FlutterMethodCall*)call
                               result:(FlutterResult)result {
+    if ([call.arguments objectForKey:@"useExternalLocations"]) {
+        [SITServices setUseExternalLocations:true];
+    }
     SITLocationRequest * locationRequest = [self createLocationRequest:call.arguments];
     [self.locManager requestLocationUpdates:locationRequest];
     result(@"DONE");
@@ -384,6 +390,16 @@ const NSString* RESULTS_KEY = @"results";
     }
     [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
     result(@(YES));
+}
+
+- (void)addExternalLocation:(FlutterMethodCall*)call
+                   result:(FlutterResult)result{
+    SITExternalLocation *externalLocation = [[SITExternalLocation alloc] initWithBuildingIdentifier:call.arguments[@"buildingIdentifier"] 
+                                                                floorIdentifier:call.arguments[@"floorIdentifier"] 
+                                                                latitude:[call.arguments[@"latitude"] doubleValue] 
+                                                                longitude:[call.arguments[@"longitude"] doubleValue]];
+    [[SITLocationManager sharedInstance] addExternalLocation:externalLocation];
+    result(@"DONE");
 }
 
 
