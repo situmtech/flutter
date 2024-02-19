@@ -10,6 +10,9 @@ parameters:
   - name: DASHBOARD_URL
     type: string
     default: "https://dashboard.situm.com"
+  - name: BUILDNUMBER
+    type: string
+    default: "202430015"
 
 steps:
     - ${{ if contains(parameters.system, 'macOS') }}:
@@ -56,6 +59,7 @@ steps:
           dashboard=$(echo ${{ parameters.DASHBOARD_URL }} | awk -F"/" '{print $3}')  
           export WHATS_NEW="Plugin version: $(pluginVersion), USER: ${{parameters.XAPIEMAIL}}, BUILDINGID: ${{ parameters.BUILDINGID }}, REMOTEIDENTIFIER: ${{ parameters.REMOTEIDENTIFIER }}, DASHBOARD_URL: $dashboard"
           export IPHONEOS_DEPLOYMENT_TARGET=$(IPHONEOS_DEPLOYMENT_TARGET)
+          export BUILDNUMBER=${{ parameters.BUILDNUMBER }}
           echo -e "\n[+] Setting variables to deploy:"
           echo -e "\t[+] Set WHATS_NEW: $WHATS_NEW"
           echo -e "\t[+] IPHONEOS_DEPLOYMENT_TARGET: $IPHONEOS_DEPLOYMENT_TARGET"
@@ -117,7 +121,8 @@ steps:
   
           echo -e "\n[+] Upload APK to $folder/$branchFolder/$destinationFolder\n"
           cd build/app/outputs/flutter-apk/
-          mv app-release.apk app-$(pluginVersion)-release.apk
-          m365 spo file add -p app-$(pluginVersion)-release.apk -u $(SharepointUrl) -f $folder/$branchFolder/$destinationFolder
+
+          mv app-release.apk ${{ parameters.BUILDNUMBER }}-release.apk
+          m365 spo file add -p ${{ parameters.BUILDNUMBER }}-release.apk -u $(SharepointUrl) -f $folder/$branchFolder/$destinationFolder
   
         displayName: Upload APK
