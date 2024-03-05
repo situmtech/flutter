@@ -171,7 +171,15 @@ class MapViewController {
         WV_MESSAGE_AR_UPDATE_STATUS, jsonEncode({"type": status.name}));
   }
 
+  /// Process two lists: included & excluded tags and asynchronously sends directions.set_options message.
   ///
+  /// Example:
+  /// ```dart
+  /// List<String> includedTags = ['user1', 'user5'];
+  /// List<String> excludedTags = [];
+  ///
+  /// setDirectionsOptions(includedTags, excludedTags);
+  /// ```
   void setDirectionsOptions(
       List<String> includedTags, List<String> excludedTags) async {
     dynamic message = {
