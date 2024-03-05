@@ -171,6 +171,17 @@ class MapViewController {
         WV_MESSAGE_AR_UPDATE_STATUS, jsonEncode({"type": status.name}));
   }
 
+  ///
+  void setDirectionsOptions(
+      List<String> includedTags, List<String> excludedTags) async {
+    dynamic message = {
+      "includedTags": includedTags,
+      "excludedTags": excludedTags,
+    };
+
+    _sendMessage(WV_MESSAGE_DIRECTIONS_SET_OPTIONS, jsonEncode(message));
+  }
+
   // WYF internal utils:
 
   void _notifyMapIsReady() {
