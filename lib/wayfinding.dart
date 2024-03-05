@@ -52,6 +52,7 @@ const WV_MESSAGE_LOCATION_STATUS = "location.update_status";
 
 // Directions actions
 const WV_MESSAGE_DIRECTIONS_UPDATE = "directions.update";
+const WV_MESSAGE_DIRECTIONS_SET_OPTIONS = "directions.set_options";
 
 // Navigation actions
 const WV_MESSAGE_NAVIGATION_START = "navigation.start";
