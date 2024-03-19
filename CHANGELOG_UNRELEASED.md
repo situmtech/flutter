@@ -1,7 +1,7 @@
-# Fixed
+## Unreleased
 
-- Fix in example app for removing need of ble permission in info.plist
+### Added
 
-# Added
-
-- Added directions.set_options message & function to use this endpoint
+- Added a new configuration to the `LocationRequest` called `OutdoorLocationOptions`. Now you can
+  use the option `enableOutdoorPositions` to specify if the SDK will notify (or not) outdoor
+  locations through your `onLocationUpdate` callback.

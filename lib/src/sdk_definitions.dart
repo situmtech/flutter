@@ -1,5 +1,19 @@
 part of sdk;
 
+class OutdoorLocationOptions {
+  final bool? enableOutdoorPositions;
+
+  OutdoorLocationOptions({
+    this.enableOutdoorPositions,
+  });
+
+  Map<String, dynamic> toMap() {
+    Map<String, dynamic> map = {};
+    _addToMapIfNotNull("enableOutdoorPositions", enableOutdoorPositions, map);
+    return map;
+  }
+}
+
 /// A data object that allows you to configure the positioning parameters.
 class LocationRequest {
   final String? buildingIdentifier;
@@ -7,12 +21,14 @@ class LocationRequest {
   final bool? useForegroundService;
   final ForegroundServiceNotificationOptions?
       foregroundServiceNotificationOptions;
+  final OutdoorLocationOptions? outdoorLocationOptions;
 
   LocationRequest({
     this.buildingIdentifier,
     this.useDeadReckoning,
     this.useForegroundService,
     this.foregroundServiceNotificationOptions,
+    this.outdoorLocationOptions,
   });
 
   Map<String, dynamic> toMap() {
@@ -22,6 +38,8 @@ class LocationRequest {
     _addToMapIfNotNull("useForegroundService", useForegroundService, map);
     _addToMapIfNotNull("foregroundServiceNotificationOptions",
         foregroundServiceNotificationOptions?.toMap(), map);
+    _addToMapIfNotNull(
+        "outdoorLocationOptions", outdoorLocationOptions?.toMap(), map);
     return map;
   }
 }
