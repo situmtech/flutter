@@ -374,7 +374,7 @@ class SitumSdk {
       'onEnteredGeofences': (call) => _onEnterGeofences(call.arguments),
       'onExitedGeofences': (call) => _onExitGeofences(call.arguments),
       'onNavigationDestinationReached': (call) =>
-          _onNavigationDestinationReached(),
+          _onNavigationDestinationReached(call.arguments),
       'onNavigationStart': (call) => _onNavigationStart(call.arguments),
       'onNavigationCancellation': (call) => _onNavigationCancellation(),
       'onNavigationProgress': (call) => _onNavigationProgress(call.arguments),
@@ -467,7 +467,7 @@ class SitumSdk {
   // NAVIGATION UPDATES:
 
   InternalCall _onNavigationStart(arguments) {
-    SitumRoute situmRoute = SitumRoute(rawContent: arguments);
+    SitumRoute situmRoute = createRoute(arguments);
     _onNavigationStartCallback?.call(situmRoute);
     return InternalCall(InternalCallType.navigationStart, situmRoute);
   }
@@ -478,8 +478,9 @@ class SitumSdk {
     return InternalCall(InternalCallType.navigationProgress, routeProgress);
   }
 
-  InternalCall _onNavigationDestinationReached() {
-    _onNavigationDestReachedCallback?.call();
+  InternalCall _onNavigationDestinationReached(arguments) {
+    SitumRoute route = createRoute(arguments);
+    _onNavigationDestReachedCallback?.call(route);
     return InternalCall(InternalCallType.navigationDestinationReached, {});
   }
 

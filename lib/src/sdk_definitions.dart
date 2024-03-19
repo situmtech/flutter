@@ -76,6 +76,7 @@ class DirectionsRequest {
   final Point from;
   final Point to;
 
+  String? poiTo;
   /// Identifier of the route destination. Can be [EMPTY_ID] if [destinationCategory] is [CATEGORY_LOCATION].
   String destinationIdentifier;
 
@@ -97,6 +98,7 @@ class DirectionsRequest {
   DirectionsRequest({
     required this.from,
     required this.to,
+    this.poiTo,
     this.bearingFrom,
     this.minimizeFloorChanges,
     this.accessibilityMode,
@@ -117,6 +119,9 @@ class DirectionsRequest {
     };
     if (minimizeFloorChanges != null) {
       map['minimizeFloorChanges'] = minimizeFloorChanges;
+    }
+    if (poiTo != null) {
+      map['poiTo'] = poiTo;
     }
     if (bearingFrom != null) {
       map['bearingFrom'] = bearingFrom?.toMap();
@@ -711,9 +716,11 @@ enum ErrorType {
 
 class SitumRoute {
   final dynamic rawContent;
+  final Poi? poiTo;
 
   const SitumRoute({
     required this.rawContent,
+    this.poiTo
   });
 }
 
@@ -746,7 +753,7 @@ typedef OnExitedGeofencesCallback = void Function(
 
 // Navigation.
 typedef OnNavigationStartCallback = void Function(SitumRoute route);
-typedef OnNavigationDestinationReachedCallback = void Function();
+typedef OnNavigationDestinationReachedCallback = void Function(SitumRoute route);
 typedef OnNavigationCancellationCallback = void Function();
 typedef OnNavigationProgressCallback = void Function(RouteProgress progress);
 typedef OnNavigationOutOfRouteCallback = void Function();

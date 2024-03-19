@@ -154,14 +154,26 @@ Location createLocation(dynamic args) {
 }
 
 SitumRoute createRoute(arguments) {
-  return SitumRoute(rawContent: arguments);
+  Poi? poi = null;
+  var poiTo = arguments["poiTo"];
+  if (poiTo != null) {
+    Map map = arguments["poiTo"];
+    poi = createPoi(map);
+  }
+  return SitumRoute(rawContent: arguments,
+      poiTo: poi);
 }
 
 DirectionsRequest createDirectionsRequest(arguments) {
+  var poiTo = "";
+  if (arguments["destinationCategory"] == "POI") {
+    poiTo =  stringFromArgsOrEmptyId(arguments, "destinationIdentifier");
+  }
   var directionsRequestArgs = arguments["directionsRequest"];
   var directionsRequest = DirectionsRequest(
     from: createPoint(directionsRequestArgs["from"]),
     to: createPoint(directionsRequestArgs["to"]),
+    poiTo: poiTo,
     bearingFrom: Angle.fromRadians(
       (directionsRequestArgs["bearingFrom"] != null
               ? directionsRequestArgs["bearingFrom"]["radians"]
