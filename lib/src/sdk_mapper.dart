@@ -165,15 +165,15 @@ SitumRoute createRoute(arguments) {
 }
 
 DirectionsRequest createDirectionsRequest(arguments) {
-  var poiTo = "";
-  if (arguments["destinationCategory"] == "POI") {
-    poiTo =  stringFromArgsOrEmptyId(arguments, "destinationIdentifier");
+  var poiToIdentifier = "";
+  Map directionsRequestArgs = arguments["directionsRequest"];
+  if (!directionsRequestArgs.containsKey("poiToIdentifier") && arguments["destinationCategory"] == "POI") {
+    poiToIdentifier =  stringFromArgsOrEmptyId(arguments, "destinationIdentifier");
   }
-  var directionsRequestArgs = arguments["directionsRequest"];
   var directionsRequest = DirectionsRequest(
     from: createPoint(directionsRequestArgs["from"]),
     to: createPoint(directionsRequestArgs["to"]),
-    poiTo: poiTo,
+    poiToIdentifier: poiToIdentifier,
     bearingFrom: Angle.fromRadians(
       (directionsRequestArgs["bearingFrom"] != null
               ? directionsRequestArgs["bearingFrom"]["radians"]

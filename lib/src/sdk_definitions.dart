@@ -76,7 +76,7 @@ class DirectionsRequest {
   final Point from;
   final Point to;
 
-  String? poiTo;
+  String? poiToIdentifier;
   /// Identifier of the route destination. Can be [EMPTY_ID] if [destinationCategory] is [CATEGORY_LOCATION].
   String destinationIdentifier;
 
@@ -98,7 +98,7 @@ class DirectionsRequest {
   DirectionsRequest({
     required this.from,
     required this.to,
-    this.poiTo,
+    this.poiToIdentifier,
     this.bearingFrom,
     this.minimizeFloorChanges,
     this.accessibilityMode,
@@ -120,8 +120,8 @@ class DirectionsRequest {
     if (minimizeFloorChanges != null) {
       map['minimizeFloorChanges'] = minimizeFloorChanges;
     }
-    if (poiTo != null) {
-      map['poiTo'] = poiTo;
+    if (poiToIdentifier != null) {
+      map['poiToIdentifier'] = poiToIdentifier;
     }
     if (bearingFrom != null) {
       map['bearingFrom'] = bearingFrom?.toMap();
