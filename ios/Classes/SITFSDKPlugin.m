@@ -176,6 +176,23 @@ const NSString* RESULTS_KEY = @"results";
     return options;
 }
 
+SITRealtimeUpdateInterval createRealtimeUpdateInterval(NSString *name) {
+    const NSDictionary *stringToEnum = @{
+        @"NEVER": @(kSITUpdateNever),
+        @"BATTERY_SAVER": @(kSITUpdateIntervalBatterySaver),
+        @"SLOW": @(kSITUpdateIntervalSlow),
+        @"NORMAL": @(kSITUpdateIntervalNormal),
+        @"FAST": @(kSITUpdateIntervalFast),
+        @"REALTIME": @(kSITUpdateIntervalRealtime)
+    };
+    NSNumber *enumNumber = stringToEnum[name];
+    if (enumNumber != nil) {
+        return (SITRealtimeUpdateInterval)enumNumber.unsignedIntegerValue;
+    } else {
+        return kSITUpdateIntervalNormal;
+    }
+}
+
 -(SITLocationRequest *)createLocationRequest:(NSDictionary *)arguments{
     SITLocationRequest *locationRequest = [SITLocationRequest new];
     NSString *buildingID = arguments[@"buildingIdentifier"];
@@ -187,6 +204,10 @@ const NSString* RESULTS_KEY = @"results";
     NSString *useDeadReckoning = arguments[@"useDeadReckoning"];
     if (![SITFSDKUtils isNullArgument:useDeadReckoning]){
         locationRequest.useDeadReckoning = [useDeadReckoning boolValue];
+    }
+    NSString *realtimeUpdateInterval = arguments[@"realtimeUpdateInterval"];
+    if (realtimeUpdateInterval != nil) {
+        locationRequest.realtimeUpdateInterval = createRealtimeUpdateInterval(realtimeUpdateInterval);
     }
     NSDictionary *outdoorOptionsMap = arguments[@"outdoorLocationOptions"];
     if (outdoorOptionsMap != nil) {

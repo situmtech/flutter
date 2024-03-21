@@ -58,7 +58,12 @@ fun LocationRequest.Builder.fromArguments(args: Map<String, Any>): LocationReque
             foregroundServiceNotificationOptions(fgsNotificationOptions)
         }
     }
-
+    if (args.containsKey("realtimeUpdateInterval")) {
+        val realtimeUpdateInterval = args["realtimeUpdateInterval"] as String?
+        if (realtimeUpdateInterval != null) {
+            realtimeUpdateInterval(LocationRequest.RealtimeUpdateInterval.valueOf(realtimeUpdateInterval))
+        }
+    }
     if (args.containsKey("outdoorLocationOptions")) {
         val outdoorOptionsMap = args["outdoorLocationOptions"] as Map<String, Any>
         val outdoorLocationOptions = OutdoorLocationOptions.Builder()

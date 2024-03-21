@@ -1,5 +1,37 @@
 part of sdk;
 
+/// Enum that allows to specify whether the geolocations computed should be sent
+/// to Situm Platform, and if so with which periodicity (time interval).
+enum RealtimeUpdateInterval {
+  never,
+  batterySaver,
+  slow,
+  normal,
+  fast,
+  realtime,
+}
+
+extension RealtimeUpdateIntervalExtension on RealtimeUpdateInterval {
+  String get name {
+    switch (this) {
+      case RealtimeUpdateInterval.never:
+        return 'NEVER';
+      case RealtimeUpdateInterval.batterySaver:
+        return 'BATTERY_SAVER';
+      case RealtimeUpdateInterval.slow:
+        return 'SLOW';
+      case RealtimeUpdateInterval.fast:
+        return 'FAST';
+      case RealtimeUpdateInterval.realtime:
+        return 'REALTIME';
+      default:
+        return 'NORMAL';
+    }
+  }
+}
+
+/// When you build the [LocationRequest], this data object configures the Global
+/// Mode options.
 class OutdoorLocationOptions {
   final bool? enableOutdoorPositions;
 
@@ -22,6 +54,7 @@ class LocationRequest {
   final ForegroundServiceNotificationOptions?
       foregroundServiceNotificationOptions;
   final OutdoorLocationOptions? outdoorLocationOptions;
+  final RealtimeUpdateInterval? realtimeUpdateInterval;
 
   LocationRequest({
     this.buildingIdentifier,
@@ -29,6 +62,7 @@ class LocationRequest {
     this.useForegroundService,
     this.foregroundServiceNotificationOptions,
     this.outdoorLocationOptions,
+    this.realtimeUpdateInterval,
   });
 
   Map<String, dynamic> toMap() {
@@ -40,6 +74,8 @@ class LocationRequest {
         foregroundServiceNotificationOptions?.toMap(), map);
     _addToMapIfNotNull(
         "outdoorLocationOptions", outdoorLocationOptions?.toMap(), map);
+    _addToMapIfNotNull(
+        "realtimeUpdateInterval", realtimeUpdateInterval?.name, map);
     return map;
   }
 }
