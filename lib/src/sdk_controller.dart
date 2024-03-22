@@ -481,7 +481,7 @@ class SitumSdk {
   InternalCall _onNavigationDestinationReached(arguments) {
     SitumRoute route = createRoute(arguments);
     _onNavigationDestReachedCallback?.call(route);
-    return InternalCall(InternalCallType.navigationDestinationReached, {});
+    return InternalCall(InternalCallType.navigationDestinationReached, route);
   }
 
   InternalCall _onNavigationCancellation() {
