@@ -1,7 +1,10 @@
-# Fixed
+## Unreleased
 
-- Fix in example app for removing need of ble permission in info.plist
+### Added
 
-# Added
-
-- Added directions.set_options message & function to use this endpoint
+- Added the following options to the `LocationRequest`:
+    - `OutdoorLocationOptions`: configures the Global Mode options. Now you can
+      use `enableOutdoorPositions` to specify if the SDK will notify (or not) outdoor locations
+      through your `onLocationUpdate` callback.
+    - `realtimeUpdateInterval`: allows to specify whether the geolocations computed should be sent
+      to Situm Platform, and if so with which periodicity (time interval).
