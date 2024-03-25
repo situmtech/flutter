@@ -42,10 +42,10 @@ const NSString* RESULTS_KEY = @"results";
         [self handleInit:call result:result];
     } else if ([@"initSdk" isEqualToString:call.method]) {
         [self handleInitSdk: call
-                              result: result];
+                     result: result];
     } else if ([@"setDashboardURL" isEqualToString:call.method]) {
         [self handleSetDashboardURL: call
-                              result: result];
+                             result: result];
     } else if ([@"setApiKey" isEqualToString:call.method]) {
         [self handleSetApiKey:call result:result];
     } else if ([@"setConfiguration" isEqualToString:call.method]) {
@@ -155,7 +155,7 @@ const NSString* RESULTS_KEY = @"results";
 
 - (void)handleClearCache:(FlutterMethodCall *)call
                   result:(FlutterResult)result {
-    [[SITCommunicationManager sharedManager] clearCache];    
+    [[SITCommunicationManager sharedManager] clearCache];
     result(@"DONE");
 }
 
@@ -165,6 +165,32 @@ const NSString* RESULTS_KEY = @"results";
     SITLocationRequest * locationRequest = [self createLocationRequest:call.arguments];
     [self.locManager requestLocationUpdates:locationRequest];
     result(@"DONE");
+}
+
+-(SITOutdoorLocationOptions *)createOutdoorLocationOptions:(NSDictionary *)arguments {
+    SITOutdoorLocationOptions *options = [[SITOutdoorLocationOptions alloc] init];
+    if ([arguments objectForKey:@"enableOutdoorPositions"]) {
+        bool enableOutdoorPositions = [arguments[@"enableOutdoorPositions"] boolValue];
+        options.enableOutdoorPositions = enableOutdoorPositions;
+    }
+    return options;
+}
+
+SITRealtimeUpdateInterval createRealtimeUpdateInterval(NSString *name) {
+    const NSDictionary *stringToEnum = @{
+        @"NEVER": @(kSITUpdateNever),
+        @"BATTERY_SAVER": @(kSITUpdateIntervalBatterySaver),
+        @"SLOW": @(kSITUpdateIntervalSlow),
+        @"NORMAL": @(kSITUpdateIntervalNormal),
+        @"FAST": @(kSITUpdateIntervalFast),
+        @"REALTIME": @(kSITUpdateIntervalRealtime)
+    };
+    NSNumber *enumNumber = stringToEnum[name];
+    if (enumNumber != nil) {
+        return (SITRealtimeUpdateInterval)enumNumber.unsignedIntegerValue;
+    } else {
+        return kSITUpdateIntervalNormal;
+    }
 }
 
 -(SITLocationRequest *)createLocationRequest:(NSDictionary *)arguments{
@@ -178,6 +204,14 @@ const NSString* RESULTS_KEY = @"results";
     NSString *useDeadReckoning = arguments[@"useDeadReckoning"];
     if (![SITFSDKUtils isNullArgument:useDeadReckoning]){
         locationRequest.useDeadReckoning = [useDeadReckoning boolValue];
+    }
+    NSString *realtimeUpdateInterval = arguments[@"realtimeUpdateInterval"];
+    if (realtimeUpdateInterval != nil) {
+        locationRequest.realtimeUpdateInterval = createRealtimeUpdateInterval(realtimeUpdateInterval);
+    }
+    NSDictionary *outdoorOptionsMap = arguments[@"outdoorLocationOptions"];
+    if (outdoorOptionsMap != nil) {
+        locationRequest.outdoorLocationOptions = [self createOutdoorLocationOptions:arguments[@"outdoorLocationOptions"]];
     }
     return locationRequest;
 }
