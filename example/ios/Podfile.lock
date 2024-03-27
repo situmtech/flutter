@@ -3,7 +3,7 @@ PODS:
   - permission_handler_apple (9.1.1):
     - Flutter
   - Protobuf (3.26.0)
-  - situm_flutter (3.11.17):
+  - situm_flutter (3.12.0):
     - Flutter
     - SitumSDK (~> 3.8.5)
   - SitumSDK (3.8.5):
@@ -36,14 +36,14 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/webview_flutter_wkwebview/ios"
 
 SPEC CHECKSUMS:
-  Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
+  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   permission_handler_apple: e76247795d700c14ea09e3a2d8855d41ee80a2e6
   Protobuf: 5685c66a07eaad9d18ce5ab618e9ac01fd04b5aa
-  situm_flutter: 5dd7a436ba6171f57b4151a0dee4ee590c4e4c2b
+  situm_flutter: 293c28b0b6374ba07f52d7bbbb55228822ca9fe1
   SitumSDK: ffa2882df2a460bc884135e7fa811b452907c654
   SSZipArchive: fe6a26b2a54d5a0890f2567b5cc6de5caa600aef
-  webview_flutter_wkwebview: 2e2d318f21a5e036e2c3f26171342e95908bd60a
+  webview_flutter_wkwebview: be0f0d33777f1bfd0c9fdcb594786704dbf65f36
 
-PODFILE CHECKSUM: 6a0121182a0206242af3e69ab654fe6680052ec4
+PODFILE CHECKSUM: 71f973ba82c5f604995781f418a10a18c4ddcb5d
 
 COCOAPODS: 1.15.2
