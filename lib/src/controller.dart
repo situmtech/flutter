@@ -171,6 +171,12 @@ class MapViewController {
         WV_MESSAGE_AR_UPDATE_STATUS, jsonEncode({"type": status.name}));
   }
 
+  void setFavouritePois(List<double> values) async {
+    var values2 = jsonEncode(values);
+    debugPrint(">>> Seteando pois favoritos desde fuera: $values2");
+    _sendMessage(WV_MESSAGE_UI_FAV_POIS, jsonEncode(values));
+  }
+
   // WYF internal utils:
 
   void _notifyMapIsReady() {

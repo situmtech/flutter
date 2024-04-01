@@ -191,6 +191,7 @@ class _MyTabsState extends State<MyTabs> {
               ),
               _sdkButton("Select", (() => _selectPoi(dropdownValue))),
               _sdkButton("Navigate", (() => _navigateToPoi(dropdownValue))),
+              _sdkButton('Send FAV pois', _sendFavPois),
             ],
           )
         ],
@@ -411,6 +412,10 @@ class _MyTabsState extends State<MyTabs> {
     _echo("SDK> BUILDING INFO...");
     var building = await situmSdk.fetchBuildingInfo(buildingIdentifier);
     _echo("SDK> RESPONSE: BUILDING INFO = \n\n$building)");
+  }
+
+  void _sendFavPois() async {
+    mapViewController?.setFavouritePois([]);
   }
 
   void _fetchBuildings() async {

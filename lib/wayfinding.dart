@@ -43,6 +43,7 @@ const WV_MESSAGE_CARTOGRAPHY_POI_DESELECTED = "cartography.poi_deselected";
 const WV_MESSAGE_MAP_IS_READY = "app.map_is_ready";
 const WV_MESSAGE_LOCATION_START = "location.start";
 const WV_MESSAGE_AR_REQUESTED = "augmented_reality.requested";
+const WV_MESSAGE_UI_FAV_POIS_UPDATED = "ui.favorite_pois_updated";
 
 // ACTIONS sent to map-viewer:
 
@@ -64,6 +65,7 @@ const WV_MESSAGE_CARTOGRAPHY_SELECT_POI_CATEGORY =
     "cartography.select_poi_category";
 const WV_MESSAGE_CARTOGRAPHY_SELECT_FLOOR = "cartography.select_floor";
 const WV_MESSAGE_UI_SET_LANGUAGE = "ui.set_language";
+const WV_MESSAGE_UI_FAV_POIS = "ui.set_favorite_pois";
 
 // Camera actions
 const WV_MESSAGE_CAMERA_FOLLOW_USER = "camera.follow_user";
