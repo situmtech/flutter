@@ -31,6 +31,14 @@ parameters:
     type: string
     default: "https://map-viewer.situm.com"
 
+resources:
+  repositories:
+  - repository: sys_kubernetes_templates
+    type: bitbucket
+    endpoint: Bitbucket - sistemas
+    name: situm/sys-kubernetes-templates.git
+
+
 jobs:
   - job: Android_app
 
