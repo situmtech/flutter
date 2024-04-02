@@ -1,0 +1,1 @@
+* Updated webview_flutter_wkwebview dependency to version 3.10.2. This change allows the plugin to inspect webviews. 
