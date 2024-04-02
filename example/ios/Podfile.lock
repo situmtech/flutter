@@ -42,7 +42,7 @@ SPEC CHECKSUMS:
   situm_flutter: 293c28b0b6374ba07f52d7bbbb55228822ca9fe1
   SitumSDK: ffa2882df2a460bc884135e7fa811b452907c654
   SSZipArchive: fe6a26b2a54d5a0890f2567b5cc6de5caa600aef
-  webview_flutter_wkwebview: be0f0d33777f1bfd0c9fdcb594786704dbf65f36
+  webview_flutter_wkwebview: 4f3e50f7273d31e5500066ed267e3ae4309c5ae4
 
 PODFILE CHECKSUM: 71f973ba82c5f604995781f418a10a18c4ddcb5d
 
