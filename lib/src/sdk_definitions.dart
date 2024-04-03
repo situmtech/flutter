@@ -1,5 +1,51 @@
 part of sdk;
 
+/// Enum that allows to specify whether the geolocations computed should be sent
+/// to Situm Platform, and if so with which periodicity (time interval).
+enum RealtimeUpdateInterval {
+  never,
+  batterySaver,
+  slow,
+  normal,
+  fast,
+  realtime,
+}
+
+extension RealtimeUpdateIntervalExtension on RealtimeUpdateInterval {
+  String get name {
+    switch (this) {
+      case RealtimeUpdateInterval.never:
+        return 'NEVER';
+      case RealtimeUpdateInterval.batterySaver:
+        return 'BATTERY_SAVER';
+      case RealtimeUpdateInterval.slow:
+        return 'SLOW';
+      case RealtimeUpdateInterval.fast:
+        return 'FAST';
+      case RealtimeUpdateInterval.realtime:
+        return 'REALTIME';
+      default:
+        return 'NORMAL';
+    }
+  }
+}
+
+/// When you build the [LocationRequest], this data object configures the Global
+/// Mode options.
+class OutdoorLocationOptions {
+  final bool? enableOutdoorPositions;
+
+  OutdoorLocationOptions({
+    this.enableOutdoorPositions,
+  });
+
+  Map<String, dynamic> toMap() {
+    Map<String, dynamic> map = {};
+    _addToMapIfNotNull("enableOutdoorPositions", enableOutdoorPositions, map);
+    return map;
+  }
+}
+
 /// A data object that allows you to configure the positioning parameters.
 class LocationRequest {
   final String? buildingIdentifier;
@@ -8,6 +54,8 @@ class LocationRequest {
   final bool? useForegroundService;
   final ForegroundServiceNotificationOptions?
       foregroundServiceNotificationOptions;
+  final OutdoorLocationOptions? outdoorLocationOptions;
+  final RealtimeUpdateInterval? realtimeUpdateInterval;
 
   LocationRequest({
     this.buildingIdentifier,
@@ -15,6 +63,8 @@ class LocationRequest {
     this.useExternalLocations,
     this.useForegroundService,
     this.foregroundServiceNotificationOptions,
+    this.outdoorLocationOptions,
+    this.realtimeUpdateInterval,
   });
 
   Map<String, dynamic> toMap() {
@@ -25,6 +75,10 @@ class LocationRequest {
     _addToMapIfNotNull("useForegroundService", useForegroundService, map);
     _addToMapIfNotNull("foregroundServiceNotificationOptions",
         foregroundServiceNotificationOptions?.toMap(), map);
+    _addToMapIfNotNull(
+        "outdoorLocationOptions", outdoorLocationOptions?.toMap(), map);
+    _addToMapIfNotNull(
+        "realtimeUpdateInterval", realtimeUpdateInterval?.name, map);
     return map;
   }
 }
@@ -79,6 +133,7 @@ class DirectionsRequest {
   final Point from;
   final Point to;
 
+  String? poiToIdentifier;
   /// Identifier of the route destination. Can be [EMPTY_ID] if [destinationCategory] is [CATEGORY_LOCATION].
   String destinationIdentifier;
 
@@ -100,6 +155,7 @@ class DirectionsRequest {
   DirectionsRequest({
     required this.from,
     required this.to,
+    this.poiToIdentifier,
     this.bearingFrom,
     this.minimizeFloorChanges,
     this.accessibilityMode,
@@ -120,6 +176,9 @@ class DirectionsRequest {
     };
     if (minimizeFloorChanges != null) {
       map['minimizeFloorChanges'] = minimizeFloorChanges;
+    }
+    if (poiToIdentifier != null) {
+      map['poiToIdentifier'] = poiToIdentifier;
     }
     if (bearingFrom != null) {
       map['bearingFrom'] = bearingFrom?.toMap();
@@ -735,9 +794,11 @@ enum ErrorType {
 
 class SitumRoute {
   final dynamic rawContent;
+  final Poi? poiTo;
 
   const SitumRoute({
     required this.rawContent,
+    this.poiTo
   });
 }
 
@@ -770,7 +831,7 @@ typedef OnExitedGeofencesCallback = void Function(
 
 // Navigation.
 typedef OnNavigationStartCallback = void Function(SitumRoute route);
-typedef OnNavigationDestinationReachedCallback = void Function();
+typedef OnNavigationDestinationReachedCallback = void Function(SitumRoute route);
 typedef OnNavigationCancellationCallback = void Function();
 typedef OnNavigationProgressCallback = void Function(RouteProgress progress);
 typedef OnNavigationOutOfRouteCallback = void Function();

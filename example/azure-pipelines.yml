@@ -31,6 +31,14 @@ parameters:
     type: string
     default: "https://map-viewer.situm.com"
 
+resources:
+  repositories:
+  - repository: sys_kubernetes_templates
+    type: bitbucket
+    endpoint: Bitbucket - sistemas
+    name: situm/sys-kubernetes-templates.git
+
+
 jobs:
   - job: Android_app
 
@@ -80,6 +88,15 @@ jobs:
           BUILDINGID: $(BUILDINGID)
           BUILDNUMBER: $(BUILDNUMBER)
           REMOTEIDENTIFIER: $(REMOTEIDENTIFIER)
+      - ${{ if ne(variables['Build.Reason'],'manual') }}:
+        - template: azure-templates/teams-notifier.yml@sys_kubernetes_templates
+          parameters:
+            channelId: $(releasesMobileChannelId)
+            teamID: $(releasesMobileTeamId)
+            messageType: "error"
+            message: "Hey Team, 🚨 our <strong>Flutter Android Example App auto build</strong> just took a dive off the high board and belly-flopped! 🚨 Let's put on our lifeguard hats and dive in for a rescue mission! 🚑 Time to debug and bring that pipeline back to smooth sailing! 🛠️⚓ Alert level: High! Let's fix it! 🚨"
+
+
 
   - job: iOS_app
 
@@ -128,3 +145,13 @@ jobs:
           BUILDINGID: $(BUILDINGID)
           BUILDNUMBER: $(BUILDNUMBER)
           REMOTEIDENTIFIER: $(REMOTEIDENTIFIER)
+
+      - ${{ if ne(variables['Build.Reason'],'manual') }}:
+        - template: azure-templates/teams-notifier.yml@sys_kubernetes_templates
+          parameters:
+            channelId: $(releasesMobileChannelId)
+            teamID: $(releasesMobileTeamId)
+            messageType: "error"
+            message: "Hey Team, 🚨 our <strong>Flutter iOS Example App auto build</strong> just took a dive off the high board and belly-flopped! 🚨 Let's put on our lifeguard hats and dive in for a rescue mission! 🚑 Time to debug and bring that pipeline back to smooth sailing! 🛠️⚓ Alert level: High! Let's fix it! 🚨"
+
+

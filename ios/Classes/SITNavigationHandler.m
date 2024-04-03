@@ -40,7 +40,7 @@ static const NSTimeInterval kMinNavigationUpdateInterval = 1.0;
 
 - (void)navigationManager:(id<SITNavigationInterface> _Nonnull)navigationManager destinationReachedOnRoute:(SITRoute * _Nonnull)route {
     NSLog(@"Navigation-> Destination Reached");
-    [self.channel invokeMethod:@"onNavigationDestinationReached" arguments: nil];
+    [self.channel invokeMethod:@"onNavigationDestinationReached" arguments: [route toDictionary]];
 }
 
 - (void)navigationManager:(id<SITNavigationInterface> _Nonnull)navigationManager didFailWithError:(NSError * _Nonnull)error {
