@@ -42,6 +42,7 @@ const WV_MESSAGE_CARTOGRAPHY_POI_SELECTED = "cartography.poi_selected";
 const WV_MESSAGE_CARTOGRAPHY_POI_DESELECTED = "cartography.poi_deselected";
 const WV_MESSAGE_MAP_IS_READY = "app.map_is_ready";
 const WV_MESSAGE_LOCATION_START = "location.start";
+const WV_MESSAGE_AR_REQUESTED = "augmented_reality.requested";
 
 // ACTIONS sent to map-viewer:
 
@@ -51,6 +52,7 @@ const WV_MESSAGE_LOCATION_STATUS = "location.update_status";
 
 // Directions actions
 const WV_MESSAGE_DIRECTIONS_UPDATE = "directions.update";
+const WV_MESSAGE_DIRECTIONS_SET_OPTIONS = "directions.set_options";
 
 // Navigation actions
 const WV_MESSAGE_NAVIGATION_START = "navigation.start";
@@ -67,3 +69,6 @@ const WV_MESSAGE_UI_SET_LANGUAGE = "ui.set_language";
 // Camera actions
 const WV_MESSAGE_CAMERA_FOLLOW_USER = "camera.follow_user";
 const WV_MESSAGE_CAMERA_SET = "camera.set";
+
+// AR actions
+const WV_MESSAGE_AR_UPDATE_STATUS = "augmented_reality.update_status";

@@ -61,6 +61,7 @@ class _MyTabsState extends State<MyTabs> {
           _sdkButton('Building Info', _fetchBuildingInfo),
         ]),
         _poiInteraction(),
+        _setCamera(),
         Expanded(
             child: ValueListenableBuilder<String>(
           valueListenable: currentOutputNotifier,
@@ -77,19 +78,22 @@ class _MyTabsState extends State<MyTabs> {
 
   Card _buttonsGroup(IconData iconData, String title, List<Widget> children) {
     return Card(
-      child: Column(
-        children: [
-          _cardTitle(iconData, title),
-          GridView.count(
-            physics: const NeverScrollableScrollPhysics(),
-            crossAxisCount: 3,
-            padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
-            shrinkWrap: true,
-            childAspectRatio: 2.5,
-            children: children,
-          ),
-        ],
-      ),
+      child: Column(children: [
+        ExpansionTile(
+          shape: const Border(),
+          title: _cardTitle(iconData, title),
+          children: <Widget>[
+            GridView.count(
+              physics: const NeverScrollableScrollPhysics(),
+              crossAxisCount: 3,
+              padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+              shrinkWrap: true,
+              childAspectRatio: 2.5,
+              children: children,
+            ),
+          ],
+        )
+      ]),
     );
   }
 
@@ -120,11 +124,49 @@ class _MyTabsState extends State<MyTabs> {
     );
   }
 
+  Card _setCamera() {
+    return Card(
+      child: ExpansionTile(
+        shape: const Border(),
+        title: _cardTitle(Icons.video_camera_front_rounded, "Set Camera"),
+        children: [
+          Row(
+            children: <Widget>[
+              Flexible(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: DropdownButton<Poi>(
+                    isExpanded: true,
+                    value: dropdownValue,
+                    elevation: 16,
+                    onChanged: (Poi? value) {
+                      setState(() {
+                        dropdownValue = value!;
+                      });
+                    },
+                    items: pois.map((value) {
+                      return DropdownMenuItem<Poi>(
+                        value: value,
+                        child: Text(value.name),
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ),
+              _sdkButton("Set", (() => _setCameraViewer(dropdownValue))),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
   Card _poiInteraction() {
     return Card(
-      child: Column(
-        children: [
-          _cardTitle(Icons.interests, "POI Interaction"),
+      child: ExpansionTile(
+        shape: const Border(),
+        title: _cardTitle(Icons.interests, "POI Interaction"),
+        children: <Widget>[
           Row(
             children: <Widget>[
               Flexible(
@@ -151,7 +193,7 @@ class _MyTabsState extends State<MyTabs> {
               _sdkButton("Select", (() => _selectPoi(dropdownValue))),
               _sdkButton("Navigate", (() => _navigateToPoi(dropdownValue))),
             ],
-          ),
+          )
         ],
       ),
     );
@@ -231,6 +273,15 @@ class _MyTabsState extends State<MyTabs> {
       printWarning("WYF> Navigation interceptor: ${navigationRequest.toMap()}");
       //   navigationRequest.distanceToGoalThreshold = 10.0;
       //   ...
+    });
+  }
+
+  void _setCameraViewer(Poi? poi) {
+    Camera c = Camera();
+    c.center = poi?.position.coordinate;
+    mapViewController?.setCamera(c);
+    setState(() {
+      _selectedIndex = 1;
     });
   }
 

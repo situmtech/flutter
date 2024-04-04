@@ -1,23 +1,109 @@
 part of sdk;
 
-/// A data object that allows you to configure the positioning parameters.
-class LocationRequest {
-  final String? buildingIdentifier;
-  final bool? useDeadReckoning;
+/// Enum that allows to specify whether the geolocations computed should be sent
+/// to Situm Platform, and if so with which periodicity (time interval).
+enum RealtimeUpdateInterval {
+  never,
+  batterySaver,
+  slow,
+  normal,
+  fast,
+  realtime,
+}
 
-  LocationRequest({
-    this.buildingIdentifier,
-    this.useDeadReckoning,
+extension RealtimeUpdateIntervalExtension on RealtimeUpdateInterval {
+  String get name {
+    switch (this) {
+      case RealtimeUpdateInterval.never:
+        return 'NEVER';
+      case RealtimeUpdateInterval.batterySaver:
+        return 'BATTERY_SAVER';
+      case RealtimeUpdateInterval.slow:
+        return 'SLOW';
+      case RealtimeUpdateInterval.fast:
+        return 'FAST';
+      case RealtimeUpdateInterval.realtime:
+        return 'REALTIME';
+      default:
+        return 'NORMAL';
+    }
+  }
+}
+
+/// When you build the [LocationRequest], this data object configures the Global
+/// Mode options.
+class OutdoorLocationOptions {
+  final bool? enableOutdoorPositions;
+
+  OutdoorLocationOptions({
+    this.enableOutdoorPositions,
   });
 
   Map<String, dynamic> toMap() {
     Map<String, dynamic> map = {};
-    if (buildingIdentifier != null) {
-      map["buildingIdentifier"] = buildingIdentifier;
-    }
-    if (useDeadReckoning != null) {
-      map["useDeadReckoning"] = useDeadReckoning;
-    }
+    _addToMapIfNotNull("enableOutdoorPositions", enableOutdoorPositions, map);
+    return map;
+  }
+}
+
+/// A data object that allows you to configure the positioning parameters.
+class LocationRequest {
+  final String? buildingIdentifier;
+  final bool? useDeadReckoning;
+  final bool? useForegroundService;
+  final ForegroundServiceNotificationOptions?
+      foregroundServiceNotificationOptions;
+  final OutdoorLocationOptions? outdoorLocationOptions;
+  final RealtimeUpdateInterval? realtimeUpdateInterval;
+
+  LocationRequest({
+    this.buildingIdentifier,
+    this.useDeadReckoning,
+    this.useForegroundService,
+    this.foregroundServiceNotificationOptions,
+    this.outdoorLocationOptions,
+    this.realtimeUpdateInterval,
+  });
+
+  Map<String, dynamic> toMap() {
+    Map<String, dynamic> map = {};
+    _addToMapIfNotNull("buildingIdentifier", buildingIdentifier, map);
+    _addToMapIfNotNull("useDeadReckoning", useDeadReckoning, map);
+    _addToMapIfNotNull("useForegroundService", useForegroundService, map);
+    _addToMapIfNotNull("foregroundServiceNotificationOptions",
+        foregroundServiceNotificationOptions?.toMap(), map);
+    _addToMapIfNotNull(
+        "outdoorLocationOptions", outdoorLocationOptions?.toMap(), map);
+    _addToMapIfNotNull(
+        "realtimeUpdateInterval", realtimeUpdateInterval?.name, map);
+    return map;
+  }
+}
+
+/// A data object that let you customize the Foreground Service Notification
+/// that will be shown in the system's tray when the app is running as a
+/// Foreground Service.
+/// To be used with [LocationRequest].
+/// Only applies for Android.
+class ForegroundServiceNotificationOptions {
+  late String? title;
+  late String? message;
+  late bool? showStopAction;
+  late String? stopActionText;
+
+  ForegroundServiceNotificationOptions({
+    this.title,
+    this.message,
+    this.showStopAction = false,
+    this.stopActionText,
+  });
+
+  Map<String, dynamic> toMap() {
+    Map<String, dynamic> map = {};
+    _addToMapIfNotNull("title", title, map);
+    _addToMapIfNotNull("message", message, map);
+    _addToMapIfNotNull("showStopAction", showStopAction, map);
+    _addToMapIfNotNull("stopActionText", stopActionText, map);
     return map;
   }
 }
@@ -44,6 +130,8 @@ class DirectionsRequest {
   final Point from;
   final Point to;
 
+  String? poiToIdentifier;
+
   /// Identifier of the route destination. Can be [EMPTY_ID] if [destinationCategory] is [CATEGORY_LOCATION].
   String destinationIdentifier;
 
@@ -65,6 +153,7 @@ class DirectionsRequest {
   DirectionsRequest({
     required this.from,
     required this.to,
+    this.poiToIdentifier,
     this.bearingFrom,
     this.minimizeFloorChanges,
     this.accessibilityMode,
@@ -85,6 +174,9 @@ class DirectionsRequest {
     };
     if (minimizeFloorChanges != null) {
       map['minimizeFloorChanges'] = minimizeFloorChanges;
+    }
+    if (poiToIdentifier != null) {
+      map['poiToIdentifier'] = poiToIdentifier;
     }
     if (bearingFrom != null) {
       map['bearingFrom'] = bearingFrom?.toMap();
@@ -602,10 +694,23 @@ class Point {
 
 /// Category of Point of Interest.
 class PoiCategory extends NamedResource {
+  final String? iconSelected;
+  final String? iconUnselected;
+
   PoiCategory({
     required super.identifier,
     required super.name,
+    required this.iconSelected,
+    required this.iconUnselected,
   });
+
+  @override
+  Map<String, dynamic> toMap() => {
+        "identifier": identifier,
+        "name": name,
+        "iconSelected": iconSelected,
+        "iconUnselected": iconUnselected,
+      };
 }
 
 class ConfigurationOptions {
@@ -676,10 +781,9 @@ enum ErrorType {
 
 class SitumRoute {
   final dynamic rawContent;
+  final Poi? poiTo;
 
-  const SitumRoute({
-    required this.rawContent,
-  });
+  const SitumRoute({required this.rawContent, this.poiTo});
 }
 
 class RouteProgress {
@@ -688,6 +792,12 @@ class RouteProgress {
   const RouteProgress({
     required this.rawContent,
   });
+}
+
+void _addToMapIfNotNull(String key, dynamic value, Map<String, dynamic> map) {
+  if (value != null) {
+    map[key] = value;
+  }
 }
 
 // Result callbacks.
@@ -705,7 +815,8 @@ typedef OnExitedGeofencesCallback = void Function(
 
 // Navigation.
 typedef OnNavigationStartCallback = void Function(SitumRoute route);
-typedef OnNavigationDestinationReachedCallback = void Function();
+typedef OnNavigationDestinationReachedCallback = void Function(
+    SitumRoute route);
 typedef OnNavigationCancellationCallback = void Function();
 typedef OnNavigationProgressCallback = void Function(RouteProgress progress);
 typedef OnNavigationOutOfRouteCallback = void Function();
@@ -713,13 +824,50 @@ typedef OnNavigationOutOfRouteCallback = void Function();
 typedef OnDirectionsRequestedCallback = Function(
     DirectionsRequest directionsRequest);
 
-class RelativePosition {
-  final double relativeX;
-  final double relativeY;
+// Internal definitions:
 
-  RelativePosition({required this.relativeX, required this.relativeY});
+/// Set of method calls that are being delegated by the SDK.
+/// For internal use only.
+enum InternalCallType {
+  location,
+  locationStatus,
+  locationError,
+  navigationStart,
+  navigationDestinationReached,
+  navigationProgress,
+  navigationOutOfRoute,
+  navigationCancellation,
+  geofencesEnter,
+  geofencesExit,
+}
+
+/// Represents an internal method call and encapsulates the type of call and
+/// associated data, previously processed by the SDK.
+/// For internal use only.
+class InternalCall {
+  final InternalCallType type;
+  final dynamic data;
+
+  InternalCall(this.type, this.data);
+
+  T get<T>() {
+    return data as T;
+  }
+
   @override
   String toString() {
-    return 'RelativePosition{relativeX: $relativeX, relativeY: $relativeY}';
+    return "$type - ${data.runtimeType}";
+  }
+}
+
+class _InternalDelegates {
+  Function(InternalCall call)? mapViewDelegate;
+  Function(InternalCall call)? arDelegate;
+
+  Future<void> call(InternalCall internalCall) async {
+    await Future.forEach({mapViewDelegate, arDelegate},
+        (Function(InternalCall internalCall)? delegate) async {
+      await delegate?.call(internalCall);
+    });
   }
 }

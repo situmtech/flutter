@@ -1,6 +1,10 @@
 package com.situm.situm_flutter
 
+import android.app.Activity
+import android.content.ActivityNotFoundException
 import android.content.Context
+import android.content.Intent
+import android.net.Uri
 import android.os.Looper
 import android.util.Log
 import androidx.annotation.NonNull
@@ -30,6 +34,12 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
     private var geofenceListener: GeofenceListener? = null
     private var context: Context? = null
     private var handler = android.os.Handler(Looper.getMainLooper())
+
+    // Add this config to avoid preloading images. The default value for preloadImages is true but
+    // this might cause performance issues.
+    private val NO_PRELOAD_IMAGES_CONFIG = CommunicationConfigImpl(
+        NetworkOptionsImpl.Builder().setPreloadImages(false).build()
+    )
 
     companion object {
         private var initialized = false
@@ -75,6 +85,7 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
             "prefetchPositioningInfo" -> prefetchPositioningInfo(arguments, result)
             "geofenceCallbacksRequested" -> geofenceCallbacksRequested(result)
             "fetchPoisFromBuilding" -> fetchPoisFromBuilding(arguments, result)
+            "fetchPoiFromBuilding" -> fetchPoiFromBuilding(arguments, result)
             "fetchCategories" -> fetchCategories(result)
             "clearCache" -> clearCache(result)
             "fetchBuildingInfo" -> fetchBuildingInfo(arguments, result)
@@ -83,6 +94,7 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
             "requestDirections" -> requestDirections(arguments, result)
             "requestNavigation" -> requestNavigation(arguments, result)
             "stopNavigation" -> stopNavigation(result)
+            "openUrlInDefaultBrowser" -> openUrlInDefaultBrowser(arguments, result)
             else -> result.notImplemented()
         }
     }
@@ -197,10 +209,25 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
 
     private fun fetchPoisFromBuilding(arguments: Map<String, Any>, result: MethodChannel.Result) {
         val buildingIdentifier = arguments["buildingIdentifier"] as String
-        SitumSdk.communicationManager()
-            .fetchIndoorPOIsFromBuilding(buildingIdentifier, object : Handler<Collection<Poi>> {
+        SitumSdk.communicationManager().fetchIndoorPOIsFromBuilding(
+            buildingIdentifier, NO_PRELOAD_IMAGES_CONFIG, object : Handler<Collection<Poi>> {
                 override fun onSuccess(pois: Collection<Poi>) {
                     result.success(pois.toMap())
+                }
+
+                override fun onFailure(error: Error) {
+                    result.notifySitumSdkError(error)
+                }
+            })
+    }
+
+    private fun fetchPoiFromBuilding(arguments: Map<String, Any>, result: MethodChannel.Result) {
+        val buildingIdentifier = arguments["buildingIdentifier"] as String
+        val poiIdentifier = arguments["poiIdentifier"] as String
+        SitumSdk.communicationManager().fetchIndoorPOIFromBuilding(
+            poiIdentifier, buildingIdentifier, NO_PRELOAD_IMAGES_CONFIG, object : Handler<Poi> {
+                override fun onSuccess(poi: Poi) {
+                    result.success(poi.toMap())
                 }
 
                 override fun onFailure(error: Error) {
@@ -283,6 +310,27 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
     private fun getDeviceId(result: MethodChannel.Result) {
         val deivceId = SitumSdk.getDeviceID()
         result.success(deivceId.toString())
+    }
+
+    private fun openUrlInDefaultBrowser(arguments: Map<String, Any>, result: MethodChannel.Result) {
+        if (!arguments.containsKey("url")) {
+            result.success(false)
+            return
+        }
+        if (context == null || context !is Activity) {
+            result.success(false)
+            return
+        }
+        val url = arguments["url"] as String
+        val activity = context as Activity
+        val launchIntent: Intent = Intent(Intent.ACTION_VIEW)
+            .setData(Uri.parse(url))
+        try {
+            activity.startActivity(launchIntent)
+        } catch (e: ActivityNotFoundException) {
+            result.success(false)
+        }
+        result.success(true)
     }
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {

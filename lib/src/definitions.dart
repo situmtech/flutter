@@ -82,6 +82,11 @@ class MapViewConfiguration {
   /// Default is false.
   final bool? persistUnderlyingWidget;
 
+  /// Sets the UI language based on the given ISO 639-1 code. Checkout the
+  /// [Situm docs](https://situm.com/docs/query-params/) to see the list of
+  /// supported languages.
+  final String? language;
+
   /// The [MapView] settings. Required fields are your Situm user and API key,
   /// but also a buildingIdentifier or remoteIdentifier.
   MapViewConfiguration({
@@ -95,6 +100,7 @@ class MapViewConfiguration {
     this.enableDebugging = false,
     this.lockCameraToBuilding,
     this.persistUnderlyingWidget = false,
+    this.language,
   }) {
     if (viewerDomain != null) {
       if (!viewerDomain.startsWith("https://") &&
@@ -125,6 +131,9 @@ class MapViewConfiguration {
     var query = "apikey=$situmApiKey&domain=$_internalApiDomain&mode=embed";
     if (lockCameraToBuilding != null) {
       query = "$query&lockCameraToBuilding=$lockCameraToBuilding";
+    }
+    if (language != null) {
+      query = "$query&lng=$language";
     }
 
     if (remoteIdentifier?.isNotEmpty == true &&
@@ -246,6 +255,23 @@ class OnPoiDeselectedResult {
   });
 }
 
+class OnExternalLinkClickedResult {
+  final String url;
+
+  const OnExternalLinkClickedResult({
+    required this.url,
+  });
+}
+
+enum ARStatus {
+  /// The AR module has been presented successfully.
+  success,
+  /// There was an error while trying to present the AR module.
+  error,
+  /// The AR module has been hidden and finished working.
+  finished,
+}
+
 // Result callbacks.
 
 // WYF load callback.
@@ -261,6 +287,9 @@ typedef OnDirectionsRequestInterceptor = void Function(
     DirectionsRequest directionsRequest);
 typedef OnNavigationRequestInterceptor = void Function(
     NavigationRequest navigationRequest);
+// External link click.
+typedef OnExternalLinkClickedCallback = void Function(
+    OnExternalLinkClickedResult data);
 
 // Connection errors
 class ConnectionErrors {

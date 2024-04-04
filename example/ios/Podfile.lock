@@ -2,11 +2,11 @@ PODS:
   - Flutter (1.0.0)
   - permission_handler_apple (9.1.1):
     - Flutter
-  - Protobuf (3.24.4)
-  - situm_flutter (3.4.3):
+  - Protobuf (3.26.0)
+  - situm_flutter (3.11.17):
     - Flutter
-    - SitumSDK (~> 3.1.0)
-  - SitumSDK (3.1.0):
+    - SitumSDK (~> 3.8.5)
+  - SitumSDK (3.8.5):
     - Protobuf (~> 3.7)
     - SSZipArchive (~> 2.4)
   - SSZipArchive (2.4.3)
@@ -38,12 +38,12 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
   permission_handler_apple: e76247795d700c14ea09e3a2d8855d41ee80a2e6
-  Protobuf: 351e9022fe13a6e2af00e9aefc22077cb88520f8
-  situm_flutter: 146339cc68b6498399f8bb117b605a5d0f520c41
-  SitumSDK: f212dc359a509b581da4142e5626208caaf78b8e
+  Protobuf: 5685c66a07eaad9d18ce5ab618e9ac01fd04b5aa
+  situm_flutter: 5dd7a436ba6171f57b4151a0dee4ee590c4e4c2b
+  SitumSDK: ffa2882df2a460bc884135e7fa811b452907c654
   SSZipArchive: fe6a26b2a54d5a0890f2567b5cc6de5caa600aef
   webview_flutter_wkwebview: 2e2d318f21a5e036e2c3f26171342e95908bd60a
 
-PODFILE CHECKSUM: 07035c8840b882772f6d55a298539a54c423e324
+PODFILE CHECKSUM: 6a0121182a0206242af3e69ab654fe6680052ec4
 
-COCOAPODS: 1.12.0
+COCOAPODS: 1.15.2

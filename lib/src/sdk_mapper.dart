@@ -82,6 +82,9 @@ PoiCategory createCategory(Map map) {
   return PoiCategory(
     identifier: map["identifier"].toString(),
     name: map["poiCategoryName"],
+    iconSelected: map["icon_selected"],
+    // Android icon_unselected vs iOS icon_deselected:
+    iconUnselected: map["icon_unselected"] ?? map["icon_deselected"],
   );
 }
 
@@ -157,14 +160,26 @@ Location createLocation(dynamic args) {
 }
 
 SitumRoute createRoute(arguments) {
-  return SitumRoute(rawContent: arguments);
+  Poi? poi = null;
+  var poiTo = arguments["poiTo"];
+  if (poiTo != null) {
+    Map map = arguments["poiTo"];
+    poi = createPoi(map);
+  }
+  return SitumRoute(rawContent: arguments,
+      poiTo: poi);
 }
 
 DirectionsRequest createDirectionsRequest(arguments) {
-  var directionsRequestArgs = arguments["directionsRequest"];
+  var poiToIdentifier = "";
+  Map directionsRequestArgs = arguments["directionsRequest"];
+  if (!directionsRequestArgs.containsKey("poiToIdentifier") && arguments["destinationCategory"] == "POI") {
+    poiToIdentifier =  stringFromArgsOrEmptyId(arguments, "destinationIdentifier");
+  }
   var directionsRequest = DirectionsRequest(
     from: createPoint(directionsRequestArgs["from"]),
     to: createPoint(directionsRequestArgs["to"]),
+    poiToIdentifier: poiToIdentifier,
     bearingFrom: Angle.fromRadians(
       (directionsRequestArgs["bearingFrom"] != null
               ? directionsRequestArgs["bearingFrom"]["radians"]

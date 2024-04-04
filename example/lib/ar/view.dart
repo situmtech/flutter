@@ -369,7 +369,7 @@ class _ARCoreViewState extends State<ARCoreView> {
         navigationSegments = [];
       });
     });
-    widget.situmSdk.onNavigationDestinationReached(() {
+    widget.situmSdk.onNavigationDestinationReached((route) {
       setState(() {
         navigationSegments = [];
       });
