@@ -264,11 +264,11 @@ class OnExternalLinkClickedResult {
 }
 
 class PoiFilter {
-  /// A [text] filter that will
-  /// filters the search results and POIs
+  /// A text that filters the search results and POIs
   /// displaying only the ones that match.
   ///
   /// An empty input will clear any filtering in the searchbar.
+  /// A null value will apply no change.
   String? text;
 
   /// A list of category identifiers that
@@ -276,6 +276,7 @@ class PoiFilter {
   /// displaying only the ones that belong to the given categories.
   ///
   /// An empty list of [categoryIds] will clear the category filter applied.
+  /// A null value will apply no change.
   List<int>? categoryIds;
 
   PoiFilter({
