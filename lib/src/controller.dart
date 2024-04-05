@@ -139,6 +139,13 @@ class MapViewController {
     _sendMessage(WV_MESSAGE_UI_SET_LANGUAGE, "'$lang'");
   }
 
+  /// Filter the POIs displayed on the map and search results of the bottom drawer,
+  /// with the given [PoiFilter].
+  void filterPois(PoiFilter poiFilter) async {
+    _sendMessage(
+        WV_MESSAGE_CARTOGRAPHY_FILTER_POIS, jsonEncode(poiFilter.toMap()));
+  }
+
   /// Tells the map to keep the camera centered on the user position.
   void followUser() async {
     _sendMessage(WV_MESSAGE_CAMERA_FOLLOW_USER, {"value": true});

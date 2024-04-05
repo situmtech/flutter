@@ -263,11 +263,46 @@ class OnExternalLinkClickedResult {
   });
 }
 
+class PoiFilter {
+  /// A [text] filter that will
+  /// filters the search results and POIs
+  /// displaying only the ones that match.
+  ///
+  /// An empty input will clear any filtering in the searchbar.
+  String? text;
+
+  /// A list of category identifiers that
+  /// filters the POIs and search results,
+  /// displaying only the ones that belong to the given categories.
+  ///
+  /// An empty list of [categoryIds] will clear the category filter applied.
+  List<int>? categoryIds;
+
+  PoiFilter({
+    this.text,
+    this.categoryIds,
+  });
+
+  toMap() {
+    Map<String, Object> result = {};
+    if (text != null) {
+      result["text"] = text!;
+    }
+    if (categoryIds != null) {
+      result["categoryIds"] = categoryIds!;
+    }
+
+    return result;
+  }
+}
+
 enum ARStatus {
   /// The AR module has been presented successfully.
   success,
+
   /// There was an error while trying to present the AR module.
   error,
+
   /// The AR module has been hidden and finished working.
   finished,
 }
