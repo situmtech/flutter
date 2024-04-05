@@ -275,9 +275,9 @@ class PoiFilter {
   /// filters the POIs and search results,
   /// displaying only the ones that belong to the given categories.
   ///
-  /// An empty list of [categoryIds] will clear the category filter applied.
+  /// An empty list will clear the category filter applied.
   /// A null value will apply no change.
-  List<int>? categoryIds;
+  List<String>? categoryIds;
 
   PoiFilter({
     this.text,
