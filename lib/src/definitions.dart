@@ -277,11 +277,11 @@ class PoiFilter {
   ///
   /// An empty list will clear the category filter applied.
   /// A null value will apply no change.
-  List<String>? categoryIds;
+  List<String>? categoryIdentifiers;
 
   PoiFilter({
     this.text,
-    this.categoryIds,
+    this.categoryIdentifiers,
   });
 
   toMap() {
@@ -289,8 +289,8 @@ class PoiFilter {
     if (text != null) {
       result["text"] = text!;
     }
-    if (categoryIds != null) {
-      result["categoryIds"] = categoryIds!;
+    if (categoryIdentifiers != null) {
+      result["categoryIdentifiers"] = categoryIdentifiers!;
     }
 
     return result;
