@@ -79,6 +79,7 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
             "initSdk" -> initSdk(result)
             "setDashboardURL" -> setDashboardURL(arguments, result)
             "setApiKey" -> setApiKey(arguments, result)
+            "setUserPass" -> setUserPass(arguments, result)
             "setConfiguration" -> setConfiguration(arguments, result)
             "requestLocationUpdates" -> requestLocationUpdates(arguments, result)
             "removeUpdates" -> removeUpdates(result)
@@ -153,6 +154,12 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
     private fun setApiKey(arguments: Map<String, Any>, result: MethodChannel.Result) {
         SitumSdk.configuration()
             .setApiKey(arguments["situmUser"] as String, arguments["situmApiKey"] as String)
+        result.success("DONE")
+    }
+
+    private fun setUserPass(arguments: Map<String, Any>, result: MethodChannel.Result) {
+        SitumSdk.configuration()
+            .setUserPass(arguments["situmUser"] as String, arguments["situmPass"] as String)
         result.success("DONE")
     }
 

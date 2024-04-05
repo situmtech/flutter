@@ -141,6 +141,17 @@ class SitumSdk {
     );
   }
 
+  /// Authenticate yourself into our SDK. Prefer [setApiKey].
+  Future<void> setUserPass(String user, String pass) async {
+    await methodChannel.invokeMethod(
+      "setUserPass",
+      <String, dynamic>{
+        'situmUser': user,
+        'situmPass': pass,
+      },
+    );
+  }
+
   /// Sets the SDK [ConfigurationOptions].
   Future<void> setConfiguration(ConfigurationOptions options) async {
     await methodChannel.invokeMethod(
@@ -438,8 +449,7 @@ class SitumSdk {
   InternalCall _sendBleDisabledStatusAsError() {
     Error bleDisabled = Error.bleDisabledError();
     _onLocationErrorCallback?.call(bleDisabled);
-    return InternalCall(
-        InternalCallType.locationError, bleDisabled);
+    return InternalCall(InternalCallType.locationError, bleDisabled);
   }
 
   // GEOFENCES:

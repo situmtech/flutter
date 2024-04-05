@@ -48,6 +48,8 @@ const NSString* RESULTS_KEY = @"results";
                              result: result];
     } else if ([@"setApiKey" isEqualToString:call.method]) {
         [self handleSetApiKey:call result:result];
+    } else if ([@"setUserPass" isEqualToString:call.method]) {
+        [self handleSetUserPass:call result:result];
     } else if ([@"setConfiguration" isEqualToString:call.method]) {
         [self handleSetConfiguration: call
                               result: result];
@@ -144,6 +146,21 @@ const NSString* RESULTS_KEY = @"results";
     
     [SITServices provideAPIKey:situmApiKey
                       forEmail:situmUser];
+    result(@"DONE");
+}
+
+- (void)handleSetUserPass:(FlutterMethodCall*)call result:(FlutterResult)result {
+    NSString *situmUser = call.arguments[@"situmUser"];
+    NSString *situmPass = call.arguments[@"situmPass"];
+
+    if (!situmUser || !situmPass) {
+        NSLog(@"error providing credentials");
+        result([FlutterError errorWithCode:@"INVALID_CREDENTIALS" message:@"Error providing credentials" details:nil]);
+        return;
+    }
+
+    [SITServices provideUser:situmUser
+                    password:situmPass];
     result(@"DONE");
 }
 
