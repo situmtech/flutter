@@ -80,6 +80,7 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
             "setDashboardURL" -> setDashboardURL(arguments, result)
             "setApiKey" -> setApiKey(arguments, result)
             "setUserPass" -> setUserPass(arguments, result)
+            "logout" -> logout(result)
             "setConfiguration" -> setConfiguration(arguments, result)
             "requestLocationUpdates" -> requestLocationUpdates(arguments, result)
             "removeUpdates" -> removeUpdates(result)
@@ -161,6 +162,18 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
         SitumSdk.configuration()
             .setUserPass(arguments["situmUser"] as String, arguments["situmPass"] as String)
         result.success("DONE")
+    }
+
+    private fun logout(result: MethodChannel.Result) {
+        SitumSdk.communicationManager().logout(object : Handler<Any> {
+            override fun onSuccess(o: Any?) {
+                result.success("DONE")
+            }
+
+            override fun onFailure(error: Error) {
+                result.notifySitumSdkError(error)
+            }
+        });
     }
 
     private fun setConfiguration(arguments: Map<String, Any>, result: MethodChannel.Result) {

@@ -164,6 +164,19 @@ const NSString* RESULTS_KEY = @"results";
     result(@"DONE");
 }
 
+- (void)handleLogout:(FlutterResult)result {
+    [self.comManager logoutWithCompletion:^(NSError * _Nullable error) {
+        if (!error) {
+            result(@"DONE");
+        } else {
+            FlutterError *ferror = [FlutterError errorWithCode:@"errorLogout"
+                                                       message:[NSString stringWithFormat:@"Failed with error: %@", error]
+                                                       details:nil];
+            result(ferror);
+        }
+    }];
+}
+
 - (void)handleSetConfiguration:(FlutterMethodCall*)call result:(FlutterResult)result {
     BOOL useRemoteConfig = [call.arguments[@"useRemoteConfig"] boolValue];
     [SITServices setUseRemoteConfig:useRemoteConfig];

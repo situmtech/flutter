@@ -152,6 +152,11 @@ class SitumSdk {
     );
   }
 
+  /// Invalidate user's token and remove it from internal credentials, if exist.
+  Future<void> logout() async {
+    await methodChannel.invokeMethod("logout", {});
+  }
+
   /// Sets the SDK [ConfigurationOptions].
   Future<void> setConfiguration(ConfigurationOptions options) async {
     await methodChannel.invokeMethod(
