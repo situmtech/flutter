@@ -266,10 +266,26 @@ class OnExternalLinkClickedResult {
 enum ARStatus {
   /// The AR module has been presented successfully.
   success,
+
   /// There was an error while trying to present the AR module.
   error,
+
   /// The AR module has been hidden and finished working.
   finished,
+}
+
+class CalibrationPointData {
+  final String buildingIdentifier;
+  final String floorIdentifier;
+  final Coordinate coordinate;
+  final bool isIndoor;
+
+  CalibrationPointData({
+    required this.buildingIdentifier,
+    required this.floorIdentifier,
+    required this.coordinate,
+    required this.isIndoor,
+  });
 }
 
 // Result callbacks.
@@ -290,6 +306,11 @@ typedef OnNavigationRequestInterceptor = void Function(
 // External link click.
 typedef OnExternalLinkClickedCallback = void Function(
     OnExternalLinkClickedResult data);
+// Calibrations.
+// TODO: review names!!!
+typedef OnCalibrationPointClickedCallback = void Function(
+    CalibrationPointData data);
+typedef OnCalibrationFinishedCallback = void Function();
 
 // Connection errors
 class ConnectionErrors {

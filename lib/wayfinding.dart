@@ -1,6 +1,7 @@
 library wayfinding;
 // ignore_for_file: constant_identifier_names
 
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
@@ -72,3 +73,6 @@ const WV_MESSAGE_CAMERA_SET = "camera.set";
 
 // AR actions
 const WV_MESSAGE_AR_UPDATE_STATUS = "augmented_reality.update_status";
+
+// Calibration actions
+const WV_MESSAGE_CALIBRATION_START = "calibration.start";

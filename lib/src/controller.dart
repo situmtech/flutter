@@ -279,6 +279,43 @@ class MapViewController {
     _internalMessageDelegate = callback;
   }
 
+  /// Modifies the state of the underlying [MapView] so it allows building
+  /// calibrations.
+  /// You probably don't want to use this method.
+  void enterCalibrationMode(OnCalibrationPointClickedCallback pointsCallback,
+      OnCalibrationFinishedCallback finishedCallback) {
+    _sendMessage(WV_MESSAGE_CALIBRATION_START, {});
+
+    // TODO: listen messages!!!
+    final List<Coordinate> locations = [
+      Coordinate(latitude: 33.72118703543968, longitude: -117.8047018808556),
+      Coordinate(latitude: 33.72118704189628, longitude: -117.80470189344456),
+      Coordinate(latitude: 33.72118704739819, longitude: -117.80470181329007),
+      Coordinate(latitude: 33.72118704268292, longitude: -117.80470175469982),
+      Coordinate(latitude: 33.7211870305818, longitude: -117.8047017491301),
+      Coordinate(latitude: 33.72118701156842, longitude: -117.80470178809514),
+      Coordinate(latitude: 33.72118698889906, longitude: -117.80470184758248),
+      Coordinate(latitude: 33.72118696595733, longitude: -117.80470193627201),
+      Coordinate(latitude: 33.721186948220905, longitude: -117.80470205524347),
+      Coordinate(latitude: 33.72118694229277, longitude: -117.80470220929198),
+    ];
+
+    var currentIndex = 0;
+    Timer.periodic(const Duration(seconds: 1), (timer) {
+      pointsCallback.call(CalibrationPointData(
+        buildingIdentifier: '10778',
+        floorIdentifier: '32236',
+        isIndoor: true,
+        coordinate: locations[currentIndex],
+      ));
+      currentIndex++;
+      if (currentIndex >= locations.length) {
+        timer.cancel();
+        finishedCallback.call();
+      }
+    });
+  }
+
   // Directions & Navigation Interceptors:
 
   void _interceptDirectionsRequest(DirectionsRequest directionsRequest) {

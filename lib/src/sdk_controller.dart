@@ -39,10 +39,13 @@ class SitumSdk {
   OnDirectionsRequestedCallback? _onDirectionsRequestedCallback;
 
   final _LocationStatusAdapter _statusAdapter = _LocationStatusAdapter();
+  final _LocationErrorAdapter _errorAdapter = _LocationErrorAdapter();
+
+  /// Used to prevent MapViewController from re-authenticating, which will cause
+  /// problems on user-password authenticated apps.
+  bool _alreadyAuthenticated = false;
 
   static final SitumSdk _controller = SitumSdk._internal();
-
-  final _LocationErrorAdapter _errorAdapter = _LocationErrorAdapter();
 
   /// Main entry point for the Situm Flutter SDK. Use [SitumSdk] to start
   /// positioning, calculate routes and fetch resources.
@@ -72,10 +75,12 @@ class SitumSdk {
   ///
   /// **Note**: If you call this method without providing any parameters,
   /// it will only initialize the SDK. In this case, ensure to call [setApiKey] afterwards.
+  ///
+  /// **Note**: Once credentials are set, use [logout] to re-authenticate.
   Future<void> init([String? situmUser, String? situmApiKey]) async {
     if (situmApiKey == null) {
       await methodChannel.invokeMethod<String>('initSdk');
-    } else {
+    } else if (!_alreadyAuthenticated) {
       await methodChannel.invokeMethod<String>(
         'init',
         <String, dynamic>{
@@ -84,6 +89,7 @@ class SitumSdk {
           'situmApiKey': situmApiKey,
         },
       );
+      _alreadyAuthenticated = true;
     }
   }
 
@@ -130,7 +136,11 @@ class SitumSdk {
   /// You can find this key at https://dashboard.situm.com/accounts/profile.
   ///
   /// **Note**: This method should only be used if you have called [init] without the optional parameters
+  /// **Note**: Once credentials are set, use [logout] to re-authenticate.
   Future<void> setApiKey(String situmApiKey) async {
+    if (_alreadyAuthenticated) {
+      return;
+    }
     await methodChannel.invokeMethod(
       "setApiKey",
       <String, dynamic>{
@@ -139,10 +149,15 @@ class SitumSdk {
         'situmApiKey': situmApiKey,
       },
     );
+    _alreadyAuthenticated = true;
   }
 
   /// Authenticate yourself into our SDK. Prefer [setApiKey].
+  /// **Note**: Once credentials are set, use [logout] to re-authenticate.
   Future<void> setUserPass(String user, String pass) async {
+    if (_alreadyAuthenticated) {
+      return;
+    }
     await methodChannel.invokeMethod(
       "setUserPass",
       <String, dynamic>{
@@ -150,11 +165,13 @@ class SitumSdk {
         'situmPass': pass,
       },
     );
+    _alreadyAuthenticated = true;
   }
 
   /// Invalidate user's token and remove it from internal credentials, if exist.
   Future<void> logout() async {
     await methodChannel.invokeMethod("logout", {});
+    _alreadyAuthenticated = false;
   }
 
   /// Sets the SDK [ConfigurationOptions].
