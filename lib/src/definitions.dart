@@ -263,25 +263,25 @@ class OnExternalLinkClickedResult {
   });
 }
 
-class PoiFilter {
-  /// A text that filters the search results and POIs
-  /// displaying only the ones that match.
+class SearchFilter {
+  /// A text that filters the search results and cartography elements displayed on the map,
+  /// only showing the ones that match.
   ///
-  /// An empty input will clear any filtering in the searchbar.
+  /// An empty string will clear the current filter (if any).
   /// A null value will apply no change.
   String? text;
 
   /// A list of category identifiers that
-  /// filters the POIs and search results,
-  /// displaying only the ones that belong to the given categories.
+  /// filters the cartography elements dispalyed on the map and search results,
+  /// only showing the ones that belong to the given categories.
   ///
-  /// An empty list will clear the category filter applied.
+  /// An empty list will clear the category filter applied (if any).
   /// A null value will apply no change.
-  List<String>? categoryIdentifiers;
+  List<String>? poiCategoryIdentifiers;
 
-  PoiFilter({
+  SearchFilter({
     this.text,
-    this.categoryIdentifiers,
+    this.poiCategoryIdentifiers,
   });
 
   toMap() {
@@ -289,8 +289,8 @@ class PoiFilter {
     if (text != null) {
       result["text"] = text!;
     }
-    if (categoryIdentifiers != null) {
-      result["categoryIdentifiers"] = categoryIdentifiers!;
+    if (poiCategoryIdentifiers != null) {
+      result["poiCategoryIdentifiers"] = poiCategoryIdentifiers!;
     }
 
     return result;
