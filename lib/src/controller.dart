@@ -145,7 +145,6 @@ class MapViewController {
   /// Filter the POIs displayed on the map and search results of the bottom drawer,
   /// with the given [SearchFilter].
   void setSearchFilter(SearchFilter searchFilter) async {
-    debugPrint(jsonEncode(searchFilter.toMap()));
     _sendMessage(
         WV_MESSAGE_UI_SET_SEARCH_FILTER, jsonEncode(searchFilter.toMap()));
   }
