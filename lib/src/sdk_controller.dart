@@ -76,7 +76,7 @@ class SitumSdk {
   /// **Note**: If you call this method without providing any parameters,
   /// it will only initialize the SDK. In this case, ensure to call [setApiKey] afterwards.
   ///
-  /// **Note**: Once credentials are set, use [logout] to re-authenticate.
+  /// **Note**: After invoking this method with user and api-key, all subsequent calls will be ignored until [logout] is invoked.
   Future<void> init([String? situmUser, String? situmApiKey]) async {
     if (situmApiKey == null) {
       await methodChannel.invokeMethod<String>('initSdk');
@@ -136,7 +136,7 @@ class SitumSdk {
   /// You can find this key at https://dashboard.situm.com/accounts/profile.
   ///
   /// **Note**: This method should only be used if you have called [init] without the optional parameters
-  /// **Note**: Once credentials are set, use [logout] to re-authenticate.
+  /// **Note**: After invoking [setApiKey], all subsequent calls will be ignored until [logout] is invoked.
   Future<void> setApiKey(String situmApiKey) async {
     if (_alreadyAuthenticated) {
       return;
@@ -153,7 +153,7 @@ class SitumSdk {
   }
 
   /// Authenticate yourself into our SDK. Prefer [setApiKey].
-  /// **Note**: Once credentials are set, use [logout] to re-authenticate.
+  /// **Note**: After invoking [setUserPass], all subsequent calls will be ignored until [logout] is invoked.
   Future<void> setUserPass(String user, String pass) async {
     if (_alreadyAuthenticated) {
       return;
