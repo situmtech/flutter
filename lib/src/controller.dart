@@ -85,8 +85,8 @@ class MapViewController {
 
   /// Selects the given POI category in the map.
   ///
-  /// This method is deprecated. You can instead use [setSearchFilter] to filter POIs by category.
-  @Deprecated("Use instead MapViewController.setSearchFilter()")
+  /// This method is deprecated. You can instead use [search] to filter POIs by category.
+  @Deprecated("Use instead MapViewController.search()")
   void selectPoiCategory(String identifier) async {
     _sendMessage(
         WV_MESSAGE_CARTOGRAPHY_SELECT_POI_CATEGORY, {"identifier": identifier});
