@@ -142,11 +142,10 @@ class MapViewController {
     _sendMessage(WV_MESSAGE_UI_SET_LANGUAGE, "'$lang'");
   }
 
-  /// Search for cartography elements of your building
-  /// with the given [SearchFilter].
+  /// Performs a search with the given [SearchFilter].
   ///
-  /// This action will lift the map viewer's bottom drawer
-  /// and display the search results that match the filter, inside the bottom drawer.
+  /// This action will have the same effect
+  /// as the user searching in the searchbar.
   void search(SearchFilter searchFilter) async {
     _sendMessage(
         WV_MESSAGE_UI_SET_SEARCH_FILTER, jsonEncode(searchFilter.toMap()));

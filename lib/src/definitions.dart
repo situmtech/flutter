@@ -264,15 +264,15 @@ class OnExternalLinkClickedResult {
 }
 
 class SearchFilter {
-  /// A text that performs a search and displays only
-  /// the search results whose name or description matches the filter.
+  /// Text used in the searchbar to filter and display the search results
+  /// whose name or description matches the filter.
   ///
   /// An empty string will clear the current text filter (if any).
   /// A null value will apply no change.
   String? text;
 
-  /// A POI category identifier that performs a search
-  /// and displays only the search results that belong to the given category.
+  /// A [PoiCategory] identifier used to filter
+  /// and display the POIs that belong to the given category.
   ///
   /// An empty string will clear the current category filter (if any).
   /// A null value will apply no change.
