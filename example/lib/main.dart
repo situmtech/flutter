@@ -213,8 +213,6 @@ class _MyTabsState extends State<MyTabs> {
           remoteIdentifier: remoteIdentifier,
           // The viewer domain:
           viewerDomain: viewerDomain,
-          // Debug
-          enableDebugging: true,
         ),
         onLoad: _onLoad,
       ),
