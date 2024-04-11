@@ -88,6 +88,7 @@ jobs:
           BUILDINGID: $(BUILDINGID)
           BUILDNUMBER: $(BUILDNUMBER)
           REMOTEIDENTIFIER: $(REMOTEIDENTIFIER)
+          MAPVIEWURL: $(MAPVIEWURL)
       - ${{ if ne(variables['Build.Reason'],'manual') }}:
         - template: azure-templates/teams-notifier.yml@sys_kubernetes_templates
           parameters:
@@ -145,6 +146,7 @@ jobs:
           BUILDINGID: $(BUILDINGID)
           BUILDNUMBER: $(BUILDNUMBER)
           REMOTEIDENTIFIER: $(REMOTEIDENTIFIER)
+          MAPVIEWURL: $(MAPVIEWURL)
 
       - ${{ if ne(variables['Build.Reason'],'manual') }}:
         - template: azure-templates/teams-notifier.yml@sys_kubernetes_templates
