@@ -142,9 +142,12 @@ class MapViewController {
     _sendMessage(WV_MESSAGE_UI_SET_LANGUAGE, "'$lang'");
   }
 
-  /// Filter the POIs displayed on the map and search results of the bottom drawer,
+  /// Search for cartography elements of your building
   /// with the given [SearchFilter].
-  void setSearchFilter(SearchFilter searchFilter) async {
+  ///
+  /// This action will lift the map viewer's bottom drawer
+  /// and display the search results that match the filter, inside the bottom drawer.
+  void search(SearchFilter searchFilter) async {
     _sendMessage(
         WV_MESSAGE_UI_SET_SEARCH_FILTER, jsonEncode(searchFilter.toMap()));
   }

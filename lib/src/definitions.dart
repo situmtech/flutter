@@ -264,24 +264,23 @@ class OnExternalLinkClickedResult {
 }
 
 class SearchFilter {
-  /// A text that filters the search results and cartography elements displayed on the map,
-  /// only showing the ones that match.
+  /// A text that performs a search and displays only
+  /// the search results whose name or description matches the filter.
   ///
-  /// An empty string will clear the current filter (if any).
+  /// An empty string will clear the current text filter (if any).
   /// A null value will apply no change.
   String? text;
 
-  /// A list of category identifiers that
-  /// filters the cartography elements dispalyed on the map and search results,
-  /// only showing the ones that belong to the given categories.
+  /// A POI category identifier that performs a search
+  /// and displays only the search results that belong to the given category.
   ///
-  /// An empty list will clear the category filter applied (if any).
+  /// An empty string will clear the current category filter (if any).
   /// A null value will apply no change.
-  List<String>? poiCategoryIdentifiers;
+  String? poiCategoryIdentifier;
 
   SearchFilter({
     this.text,
-    this.poiCategoryIdentifiers,
+    this.poiCategoryIdentifier,
   });
 
   toMap() {
@@ -289,8 +288,8 @@ class SearchFilter {
     if (text != null) {
       result["text"] = text!;
     }
-    if (poiCategoryIdentifiers != null) {
-      result["poiCategoryIdentifiers"] = poiCategoryIdentifiers!;
+    if (poiCategoryIdentifier != null) {
+      result["poiCategoryIdentifier"] = poiCategoryIdentifier!;
     }
 
     return result;
