@@ -168,29 +168,36 @@ class _MyTabsState extends State<MyTabs> {
         children: <Widget>[
           Row(
             children: <Widget>[
-              Flexible(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: DropdownButton<Poi>(
-                    isExpanded: true,
-                    value: dropdownValue,
-                    elevation: 16,
-                    onChanged: (Poi? value) {
-                      setState(() {
-                        dropdownValue = value!;
-                      });
-                    },
-                    items: pois.map((value) {
-                      return DropdownMenuItem<Poi>(
-                        value: value,
-                        child: Text(value.name),
-                      );
-                    }).toList(),
-                  ),
-                ),
-              ),
-              _sdkButton("Select", (() => _selectPoi(dropdownValue))),
-              _sdkButton("Navigate", (() => _navigateToPoi(dropdownValue))),
+              // Flexible(
+              //   child: Padding(
+              //     padding: const EdgeInsets.all(8.0),
+              //     child: DropdownButton<Poi>(
+              //       isExpanded: true,
+              //       value: dropdownValue,
+              //       elevation: 16,
+              //       onChanged: (Poi? value) {
+              //         setState(() {
+              //           dropdownValue = value!;
+              //         });
+              //       },
+              //       items: pois.map((value) {
+              //         return DropdownMenuItem<Poi>(
+              //           value: value,
+              //           child: Text(value.name),
+              //         );
+              //       }).toList(),
+              //     ),
+              //   ),
+              // ),
+              // _sdkButton("Select", (() => _selectPoi(dropdownValue))),
+              // _sdkButton("Navigate", (() => _navigateToPoi(dropdownValue))),
+              _sdkButton("only text", (() => _search(text: "rec"))),
+              _sdkButton(
+                  "only cat", (() => _search(poiCategoryIdentifier: "2011"))),
+              _sdkButton("both",
+                  (() => _search(text: "rec", poiCategoryIdentifier: "2542"))),
+              _sdkButton("reset",
+                  (() => _search(text: "", poiCategoryIdentifier: ""))),
             ],
           )
         ],
@@ -213,6 +220,7 @@ class _MyTabsState extends State<MyTabs> {
           remoteIdentifier: remoteIdentifier,
           // The viewer domain:
           viewerDomain: viewerDomain,
+          enableDebugging: true,
         ),
         onLoad: _onLoad,
       ),
@@ -257,6 +265,19 @@ class _MyTabsState extends State<MyTabs> {
       //   navigationRequest.distanceToGoalThreshold = 10.0;
       //   ...
     });
+  }
+
+  void _search({String? text, String? poiCategoryIdentifier}) {
+    setState(() {
+      _selectedIndex = 1;
+    });
+    mapViewLoadAction = () {
+      mapViewController?.search(SearchFilter(
+          text: text, poiCategoryIdentifier: poiCategoryIdentifier));
+    };
+    if (mapViewController != null) {
+      _callMapviewLoadAction();
+    }
   }
 
   void _setCameraViewer(Poi? poi) {
