@@ -72,3 +72,6 @@ const WV_MESSAGE_CAMERA_SET = "camera.set";
 
 // AR actions
 const WV_MESSAGE_AR_UPDATE_STATUS = "augmented_reality.update_status";
+
+// Filtering actions
+const WV_MESSAGE_UI_SET_SEARCH_FILTER = "ui.set_search_filter";
