@@ -126,7 +126,7 @@ class MapViewConfiguration {
     return finalApiDomain;
   }
 
-  String _getViewerURL() {
+  String _getViewerURL(String deviceId) {
     var base = viewerDomain;
     var query = "apikey=$situmApiKey&domain=$_internalApiDomain&mode=embed";
     if (lockCameraToBuilding != null) {
@@ -134,6 +134,9 @@ class MapViewConfiguration {
     }
     if (language != null) {
       query = "$query&lng=$language";
+    }
+    if (deviceId != null) {
+      query = "$query&device_id=$deviceId";
     }
 
     if (remoteIdentifier?.isNotEmpty == true &&
