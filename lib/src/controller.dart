@@ -84,6 +84,9 @@ class MapViewController {
   }
 
   /// Selects the given POI category in the map.
+  ///
+  /// This method is deprecated. You can instead use [search] to filter POIs by category.
+  @Deprecated("Use instead MapViewController.search()")
   void selectPoiCategory(String identifier) async {
     _sendMessage(
         WV_MESSAGE_CARTOGRAPHY_SELECT_POI_CATEGORY, {"identifier": identifier});
@@ -137,6 +140,15 @@ class MapViewController {
   /// supported languages.
   void setLanguage(String lang) async {
     _sendMessage(WV_MESSAGE_UI_SET_LANGUAGE, "'$lang'");
+  }
+
+  /// Performs a search with the given [SearchFilter].
+  ///
+  /// This action will have the same effect
+  /// as the user searching in the searchbar.
+  void search(SearchFilter searchFilter) async {
+    _sendMessage(
+        WV_MESSAGE_UI_SET_SEARCH_FILTER, jsonEncode(searchFilter.toMap()));
   }
 
   /// Tells the map to keep the camera centered on the user position.
