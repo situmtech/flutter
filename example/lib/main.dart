@@ -60,6 +60,7 @@ class _MyTabsState extends State<MyTabs> {
           _sdkButton('Building Info', _fetchBuildingInfo),
         ]),
         _poiInteraction(),
+        _searchSection(),
         _setCamera(),
         Expanded(
             child: ValueListenableBuilder<String>(
@@ -198,6 +199,25 @@ class _MyTabsState extends State<MyTabs> {
     );
   }
 
+  Card _searchSection() {
+    return Card(
+      child: ExpansionTile(
+        shape: const Border(),
+        title: _cardTitle(Icons.check_box, "Validate search"),
+        children: <Widget>[
+          Row(
+            children: <Widget>[
+              _sdkButton("only text", (() => _search("asc", null))),
+              _sdkButton("only cat", (() => _search(null, "2011"))),
+              _sdkButton("both", (() => _search("tower", "2011"))),
+              _sdkButton("reset", (() => _search("", ""))),
+            ],
+          )
+        ],
+      ),
+    );
+  }
+
   // Widget that shows the Situm MapView.
   Widget _createSitumMapTab() {
     return Stack(children: [
@@ -277,6 +297,19 @@ class _MyTabsState extends State<MyTabs> {
     });
     mapViewLoadAction = () {
       mapViewController?.selectPoi(poi.identifier);
+    };
+    if (mapViewController != null) {
+      _callMapviewLoadAction();
+    }
+  }
+
+  void _search(String? text, String? poiCategoryIdentifier) {
+    setState(() {
+      _selectedIndex = 1;
+    });
+    mapViewLoadAction = () {
+      mapViewController?.search(SearchFilter(
+          text: text, poiCategoryIdentifier: poiCategoryIdentifier));
     };
     if (mapViewController != null) {
       _callMapviewLoadAction();
