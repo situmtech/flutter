@@ -8,6 +8,8 @@ class MapViewController {
   OnDirectionsRequestInterceptor? _onDirectionsRequestInterceptor;
   OnNavigationRequestInterceptor? _onNavigationRequestInterceptor;
   OnExternalLinkClickedCallback? _onExternalLinkClickedCallback;
+  OnCalibrationPointClickedCallback? _onCalibrationPointClickedCallback;
+  OnCalibrationFinishedCallback? _onCalibrationFinishedCallback;
 
   late Function(MapViewConfiguration) _widgetUpdater;
   late MapViewCallback _widgetLoadCallback;
@@ -296,36 +298,19 @@ class MapViewController {
   /// You probably don't want to use this method.
   void enterCalibrationMode(OnCalibrationPointClickedCallback pointsCallback,
       OnCalibrationFinishedCallback finishedCallback) {
-    _sendMessage(WV_MESSAGE_CALIBRATION_START, {});
+    _setUIMode(UIMode.calibration);
+    _onCalibrationFinishedCallback = finishedCallback;
+    _onCalibrationPointClickedCallback = pointsCallback;
+  }
 
-    // TODO: listen messages!!!
-    final List<Coordinate> locations = [
-      Coordinate(latitude: 33.72118703543968, longitude: -117.8047018808556),
-      Coordinate(latitude: 33.721227021772705, longitude: -117.8046625638729),
-      Coordinate(latitude: 33.72125705812707, longitude: -117.8046340580727),
-      Coordinate(latitude: 33.72127044366114, longitude: -117.80456834395184),
-      Coordinate(latitude: 33.721211324203345, longitude: -117.80437991876855),
-      Coordinate(latitude: 33.720960902649836, longitude: -117.80447178442732),
-      Coordinate(latitude: 33.721033965583196, longitude: -117.804685020044),
-      Coordinate(latitude: 33.721143838732324, longitude: -117.80480706055418),
-      Coordinate(latitude: 33.72126263543075, longitude: -117.80494385321394),
-      Coordinate(latitude: 33.721381989696994, longitude: -117.80485131700293),
-    ];
+  void exitCalibrationMode() {
+    _setUIMode(UIMode.explore);
+    _onCalibrationFinishedCallback = null;
+    _onCalibrationPointClickedCallback = null;
+  }
 
-    var currentIndex = 0;
-    Timer.periodic(const Duration(seconds: 1), (timer) {
-      pointsCallback.call(CalibrationPointData(
-        buildingIdentifier: '10778',
-        floorIdentifier: '32236',
-        isIndoor: true,
-        coordinate: locations[currentIndex],
-      ));
-      currentIndex++;
-      if (currentIndex >= locations.length) {
-        timer.cancel();
-        finishedCallback.call();
-      }
-    });
+  void _setUIMode(UIMode mode) {
+    _sendMessage(WV_MESSAGE_UI_SET_MODE, jsonEncode({"mode": mode.name}));
   }
 
   // Directions & Navigation Interceptors:

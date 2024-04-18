@@ -321,6 +321,17 @@ class CalibrationPointData {
   });
 }
 
+enum CalibrationFinishedStatus {
+  success,
+  undo,
+  cancelled,
+}
+
+enum UIMode {
+  calibration,
+  explore,
+}
+
 // Result callbacks.
 
 // WYF load callback.
@@ -343,7 +354,8 @@ typedef OnExternalLinkClickedCallback = void Function(
 // TODO: review names!!!
 typedef OnCalibrationPointClickedCallback = void Function(
     CalibrationPointData data);
-typedef OnCalibrationFinishedCallback = void Function();
+typedef OnCalibrationFinishedCallback = void Function(
+    CalibrationFinishedStatus status);
 
 // Connection errors
 class ConnectionErrors {

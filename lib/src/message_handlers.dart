@@ -15,7 +15,11 @@ abstract class MessageHandler {
       case WV_MESSAGE_CARTOGRAPHY_POI_SELECTED:
         return PoiSelectedMessageHandler();
       case WV_MESSAGE_CARTOGRAPHY_POI_DESELECTED:
-        return PoiDeselectedMessageHandler();        
+        return PoiDeselectedMessageHandler();
+      case WV_MESSAGE_CALIBRATION_POINT_CLICKED:
+        return CalibrationPointClickedMessageHandler();
+      case WV_MESSAGE_CALIBRATION_STOPPED:
+        return CalibrationStoppedMessageHandler();
       default:
         debugPrint("EmptyMessageHandler handles message of type: $type");
         return EmptyMessageHandler();
@@ -136,10 +140,10 @@ abstract class PoiSelectionMessageHandler implements MessageHandler {
     var poiId = "${payload["identifier"]}";
     var buildingId = "${payload["buildingIdentifier"]}";
     var sdk = SitumSdk();
-      var poi = await sdk.fetchPoiFromBuilding(buildingId, poiId);
-      if (poi != null) {
-        handlePoiInteraction(mapViewController, poi);
-      }
+    var poi = await sdk.fetchPoiFromBuilding(buildingId, poiId);
+    if (poi != null) {
+      handlePoiInteraction(mapViewController, poi);
+    }
   }
 
   void handlePoiInteraction(MapViewController mapViewController, Poi poi);
@@ -158,5 +162,23 @@ class PoiDeselectedMessageHandler extends PoiSelectionMessageHandler {
   void handlePoiInteraction(MapViewController mapViewController, Poi poi) {
     mapViewController._onPoiDeselectedCallback
         ?.call(OnPoiDeselectedResult(poi: poi));
+  }
+}
+
+class CalibrationPointClickedMessageHandler implements MessageHandler {
+  @override
+  void handleMessage(
+      MapViewController mapViewController, Map<String, dynamic> payload) {
+    var data = createCalibrationPointData(payload);
+    mapViewController._onCalibrationPointClickedCallback?.call(data);
+  }
+}
+
+class CalibrationStoppedMessageHandler implements MessageHandler {
+  @override
+  void handleMessage(
+      MapViewController mapViewController, Map<String, dynamic> payload) {
+    var status = createCalibrationFinishedStatus(payload);
+    mapViewController._onCalibrationFinishedCallback?.call(status);
   }
 }

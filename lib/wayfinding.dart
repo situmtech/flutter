@@ -3,6 +3,7 @@ library wayfinding;
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -45,6 +46,10 @@ const WV_MESSAGE_MAP_IS_READY = "app.map_is_ready";
 const WV_MESSAGE_LOCATION_START = "location.start";
 const WV_MESSAGE_AR_REQUESTED = "augmented_reality.requested";
 
+// Calibration events:
+const WV_MESSAGE_CALIBRATION_POINT_CLICKED = "calibration.point_clicked";
+const WV_MESSAGE_CALIBRATION_STOPPED = "calibration.stopped";
+
 // ACTIONS sent to map-viewer:
 
 // Location actions
@@ -78,4 +83,5 @@ const WV_MESSAGE_AR_UPDATE_STATUS = "augmented_reality.update_status";
 const WV_MESSAGE_UI_SET_SEARCH_FILTER = "ui.set_search_filter";
 
 // Calibration actions
-const WV_MESSAGE_CALIBRATION_START = "calibration.start";
+const WV_MESSAGE_UI_SET_MODE = "ui.set_mode";
+
