@@ -243,6 +243,16 @@ SITRealtimeUpdateInterval createRealtimeUpdateInterval(NSString *name) {
     if (outdoorOptionsMap != nil) {
         locationRequest.outdoorLocationOptions = [self createOutdoorLocationOptions:arguments[@"outdoorLocationOptions"]];
     }
+    NSString *useBle = arguments[@"useBle"];
+    if (![SITFSDKUtils isNullArgument:useBle]){
+        NSLog(@"Situm> SDK> LocationRequest> Set useBle: %d", [useBle boolValue]);
+        locationRequest.useBle = [useBle boolValue];
+    }
+    NSString *useGps = arguments[@"useGps"];
+    if (![SITFSDKUtils isNullArgument:useGps]){
+        NSLog(@"Situm> SDK> LocationRequest> Set useGps: %d", [useGps boolValue]);
+        locationRequest.useGps = [useGps boolValue];
+    }
     return locationRequest;
 }
 

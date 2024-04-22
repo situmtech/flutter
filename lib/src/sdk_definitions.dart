@@ -55,6 +55,11 @@ class LocationRequest {
       foregroundServiceNotificationOptions;
   final OutdoorLocationOptions? outdoorLocationOptions;
   final RealtimeUpdateInterval? realtimeUpdateInterval;
+  final bool? useBle;
+  final bool? useGps;
+
+  /// Only for Android.
+  final bool? useWifi;
 
   LocationRequest({
     this.buildingIdentifier,
@@ -63,6 +68,9 @@ class LocationRequest {
     this.foregroundServiceNotificationOptions,
     this.outdoorLocationOptions,
     this.realtimeUpdateInterval,
+    this.useWifi,
+    this.useBle,
+    this.useGps,
   });
 
   Map<String, dynamic> toMap() {
@@ -76,6 +84,9 @@ class LocationRequest {
         "outdoorLocationOptions", outdoorLocationOptions?.toMap(), map);
     _addToMapIfNotNull(
         "realtimeUpdateInterval", realtimeUpdateInterval?.name, map);
+    _addToMapIfNotNull("useWifi", useWifi, map);
+    _addToMapIfNotNull("useBle", useBle, map);
+    _addToMapIfNotNull("useGps", useGps, map);
     return map;
   }
 }
@@ -131,6 +142,7 @@ class DirectionsRequest {
   final Point to;
 
   String? poiToIdentifier;
+
   /// Identifier of the route destination. Can be [EMPTY_ID] if [destinationCategory] is [CATEGORY_LOCATION].
   String destinationIdentifier;
 
@@ -772,10 +784,7 @@ class SitumRoute {
   final dynamic rawContent;
   final Poi? poiTo;
 
-  const SitumRoute({
-    required this.rawContent,
-    this.poiTo
-  });
+  const SitumRoute({required this.rawContent, this.poiTo});
 }
 
 class RouteProgress {
@@ -807,7 +816,8 @@ typedef OnExitedGeofencesCallback = void Function(
 
 // Navigation.
 typedef OnNavigationStartCallback = void Function(SitumRoute route);
-typedef OnNavigationDestinationReachedCallback = void Function(SitumRoute route);
+typedef OnNavigationDestinationReachedCallback = void Function(
+    SitumRoute route);
 typedef OnNavigationCancellationCallback = void Function();
 typedef OnNavigationProgressCallback = void Function(RouteProgress progress);
 typedef OnNavigationOutOfRouteCallback = void Function();
