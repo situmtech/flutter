@@ -3,7 +3,6 @@ library wayfinding;
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:ui';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -84,4 +83,5 @@ const WV_MESSAGE_UI_SET_SEARCH_FILTER = "ui.set_search_filter";
 
 // Calibration actions
 const WV_MESSAGE_UI_SET_MODE = "ui.set_mode";
-
+const WF_MESSAGE_CALIBRATIONS_SET_LOCAL_CALIBRATIONS =
+    "calibration.set_local_calibrations";

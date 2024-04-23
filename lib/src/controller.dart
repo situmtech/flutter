@@ -309,6 +309,13 @@ class MapViewController {
     _onCalibrationPointClickedCallback = null;
   }
 
+  /// Set calibrations stored locally so the MapView can represent them.
+  /// You probably don't want to use this method.
+  void setLocalCalibrations(dynamic payload) {
+    _sendMessage(
+        WF_MESSAGE_CALIBRATIONS_SET_LOCAL_CALIBRATIONS, jsonEncode(payload));
+  }
+
   void _setUIMode(UIMode mode) {
     _sendMessage(WV_MESSAGE_UI_SET_MODE, jsonEncode({"mode": mode.name}));
   }
