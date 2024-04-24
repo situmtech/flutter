@@ -238,7 +238,7 @@ class _MyTabsState extends State<MyTabs> {
 
     //Example on how to automatically launch positioning when opening the map.
     // situmSdk.requestLocationUpdates(LocationRequest(
-    //   BUILDING_IDENTIFIER: BUILDING_IDENTIFIER, //"-1"
+    //   buildingIdentifier: BUILDING_IDENTIFIER, //"-1"
     //   useDeadReckoning: false,
     // ));
 
@@ -305,8 +305,8 @@ class _MyTabsState extends State<MyTabs> {
     }
   }
 
-  void _downloadPois(String BUILDING_IDENTIFIER) async {
-    var poiList = await situmSdk.fetchPoisFromBuilding(BUILDING_IDENTIFIER);
+  void _downloadPois(String buildingIdentifier) async {
+    var poiList = await situmSdk.fetchPoisFromBuilding(buildingIdentifier);
     setState(() {
       pois = poiList;
       dropdownValue = pois[0];
@@ -332,7 +332,7 @@ class _MyTabsState extends State<MyTabs> {
     situmSdk.onLocationUpdate((location) {
       _echo("""SDK> Location changed:
         Time diff: ${location.timestamp - DateTime.now().millisecondsSinceEpoch}
-        B=${location.BUILDING_IDENTIFIER},
+        B=${location.buildingIdentifier},
         F=${location.floorIdentifier},
         C=${location.coordinate.latitude.toStringAsFixed(5)}, ${location.coordinate.longitude.toStringAsFixed(5)}
       """);
@@ -371,7 +371,7 @@ class _MyTabsState extends State<MyTabs> {
     // You don't need to do anything to draw the user's position on the map; the
     // library handles it all internally for you.
     situmSdk.requestLocationUpdates(LocationRequest(
-      BUILDING_IDENTIFIER: BUILDING_IDENTIFIER, //"-1"
+      buildingIdentifier: BUILDING_IDENTIFIER, //"-1"
       useDeadReckoning: false,
     ));
   }
