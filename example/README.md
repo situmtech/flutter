@@ -55,12 +55,11 @@ This example provides you with a template on `lib/config.dart.example`:
 > **Warning**
 > Rename `config.dart.example` to `config.dart`.
 
-Now populate it with your credentials:
+Now populate it with [your credentials](https://situm.com/docs/built-in-wayfinding-ui/#prepare-viewer):
 
 ```dart
-const situmUser = "YOUR-SITUM-USER";
-const situmApiKey = "YOUR-SITUM-API-KEY";
-const buildingIdentifier = "YOUR-SITUM-BUILDING-IDENTIFIER";
+const SITUM_API_KEY = "YOUR-SITUM-API-KEY";
+const BUILDING_IDENTIFIER = "YOUR-SITUM-BUILDING-IDENTIFIER";
 ```
 
 ### Step 3: Run the app <a name="runapplication"></a>

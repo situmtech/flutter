@@ -206,13 +206,15 @@ class _MyTabsState extends State<MyTabs> {
         configuration: MapViewConfiguration(
           // Your Situm credentials.
           // Copy config.dart.example if you haven't already.
-          situmApiKey: situmApiKey,
+          situmApiKey: SITUM_API_KEY,
           // Set your building identifier:
-          buildingIdentifier: buildingIdentifier,
+          buildingIdentifier: BUILDING_IDENTIFIER,
           // Your remote identifier, if any:
-          remoteIdentifier: remoteIdentifier,
+          remoteIdentifier: REMOTE_IDENTIFIER,
+          // Specify the language for the viewer UI:
+          language: LANGUAGE,
           // The viewer domain:
-          viewerDomain: viewerDomain,
+          viewerDomain: VIEWER_DOMAIN,
         ),
         onLoad: _onLoad,
       ),
@@ -236,7 +238,7 @@ class _MyTabsState extends State<MyTabs> {
 
     //Example on how to automatically launch positioning when opening the map.
     // situmSdk.requestLocationUpdates(LocationRequest(
-    //   buildingIdentifier: buildingIdentifier, //"-1"
+    //   BUILDING_IDENTIFIER: BUILDING_IDENTIFIER, //"-1"
     //   useDeadReckoning: false,
     // ));
 
@@ -303,8 +305,8 @@ class _MyTabsState extends State<MyTabs> {
     }
   }
 
-  void _downloadPois(String buildingIdentifier) async {
-    var poiList = await situmSdk.fetchPoisFromBuilding(buildingIdentifier);
+  void _downloadPois(String BUILDING_IDENTIFIER) async {
+    var poiList = await situmSdk.fetchPoisFromBuilding(BUILDING_IDENTIFIER);
     setState(() {
       pois = poiList;
       dropdownValue = pois[0];
@@ -319,7 +321,7 @@ class _MyTabsState extends State<MyTabs> {
     situmSdk.init();
     // Authenticate with your account and API key.
     // You can find yours at https://dashboard.situm.com/accounts/profile
-    situmSdk.setApiKey(situmApiKey);
+    situmSdk.setApiKey(SITUM_API_KEY);
     // Configure SDK before authenticating.
     situmSdk.setConfiguration(ConfigurationOptions(
         // In case you want to use our remote configuration (https://dashboard.situm.com/settings).
@@ -330,7 +332,7 @@ class _MyTabsState extends State<MyTabs> {
     situmSdk.onLocationUpdate((location) {
       _echo("""SDK> Location changed:
         Time diff: ${location.timestamp - DateTime.now().millisecondsSinceEpoch}
-        B=${location.buildingIdentifier},
+        B=${location.BUILDING_IDENTIFIER},
         F=${location.floorIdentifier},
         C=${location.coordinate.latitude.toStringAsFixed(5)}, ${location.coordinate.longitude.toStringAsFixed(5)}
       """);
@@ -348,7 +350,7 @@ class _MyTabsState extends State<MyTabs> {
     situmSdk.onExitGeofences((geofencesResult) {
       _echo("Situm> SDK> Exit geofences: ${geofencesResult.geofences}.");
     });
-    _downloadPois(buildingIdentifier);
+    _downloadPois(BUILDING_IDENTIFIER);
     super.initState();
   }
 
@@ -369,7 +371,7 @@ class _MyTabsState extends State<MyTabs> {
     // You don't need to do anything to draw the user's position on the map; the
     // library handles it all internally for you.
     situmSdk.requestLocationUpdates(LocationRequest(
-      buildingIdentifier: buildingIdentifier, //"-1"
+      BUILDING_IDENTIFIER: BUILDING_IDENTIFIER, //"-1"
       useDeadReckoning: false,
     ));
   }
@@ -387,7 +389,7 @@ class _MyTabsState extends State<MyTabs> {
   void _prefetch() async {
     _echo("SDK> PREFETCH...");
     var prefetch = await situmSdk.prefetchPositioningInfo(
-      [buildingIdentifier],
+      [BUILDING_IDENTIFIER],
       options: PrefetchOptions(
         preloadImages: true,
       ),
@@ -397,7 +399,7 @@ class _MyTabsState extends State<MyTabs> {
 
   void _fetchPois() async {
     _echo("SDK> POIS...");
-    var pois = await situmSdk.fetchPoisFromBuilding(buildingIdentifier);
+    var pois = await situmSdk.fetchPoisFromBuilding(BUILDING_IDENTIFIER);
     _echo("SDK> RESPONSE: POIS = \n\n$pois");
   }
 
@@ -409,7 +411,7 @@ class _MyTabsState extends State<MyTabs> {
 
   void _fetchBuildingInfo() async {
     _echo("SDK> BUILDING INFO...");
-    var building = await situmSdk.fetchBuildingInfo(buildingIdentifier);
+    var building = await situmSdk.fetchBuildingInfo(BUILDING_IDENTIFIER);
     _echo("SDK> RESPONSE: BUILDING INFO = \n\n$building)");
   }
 
