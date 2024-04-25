@@ -136,7 +136,7 @@ class MapViewConfiguration {
       query = "$query&lng=$language";
     }
     if (deviceId != null) {
-      query = "$query&device_id=$deviceId";
+      query = "$query&deviceId=$deviceId";
     }
 
     if (remoteIdentifier?.isNotEmpty == true &&
