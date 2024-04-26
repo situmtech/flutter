@@ -728,7 +728,7 @@ class PrefetchOptions {
   });
 }
 
-/// [code] **LOCATION_PERMISSION_DENIED**
+/// [code] [ErrorCodes.locationPermissionDenied]
 /// * type: [ErrorType.critical].
 ///
 /// * **CAUSE**: Location permissions were not granted yet,
@@ -736,20 +736,20 @@ class PrefetchOptions {
 ///   * ACCESS_FINE_LOCATION (Android)
 ///   * NSLocationWhenInUseUsageDescription (iOS)
 ///
-/// [code] **BLUETOOTH_PERMISSION_DENIED**
+/// [code] [ErrorCodes.bluetoothPermissionDenied]
 /// * (Android only)
 /// * type: [ErrorType.critical].
 ///
 /// * **CAUSE**: BLUETOOTH_CONNECT or BLUETOOTH_SCAN are not granted yet,
 /// so SDK won't be able to start positioning.
 ///
-/// [code] **BLUETOOTH_DISABLED**
+/// [code] [ErrorCodes.bluetoothDisabled]
 /// * type: [ErrorType.critical] for iOS but [ErrorType.nonCritical] for Android.
 ///
 /// * **CAUSE**: The bluetooth sensor of the device is off,
 /// so iOS will stop positioning and Android won't give a precise location as with this sensor on.
 ///
-/// [code] **LOCATION_DISABLED**
+/// [code] [ErrorCodes.locationDisabled]
 /// * type: [ErrorType.critical].
 ///
 /// * **CAUSE**: The location service is disabled, so SDK won't be able to start positioning.
@@ -770,6 +770,13 @@ class Error {
       type: ErrorType.nonCritical,
     );
   }
+}
+
+class ErrorCodes {
+  static const bluetoothDisabled = "BLUETOOTH_DISABLED";
+  static const locationDisabled = "LOCATION_DISABLED";
+  static const locationPermissionDenied = "LOCATION_PERMISSION_DENIED";
+  static const bluetoothPermissionDenied = "BLUETOOTH_PERMISSION_DENIED";
 }
 
 enum ErrorType {
