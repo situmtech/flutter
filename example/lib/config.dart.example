@@ -1,21 +1,21 @@
 // Your Situm user and API Key.
 // From 3.1.0 version onwards, situmUser is not needed anymore.
-// const situmUser = "YOUR-SITUM-USER";
-const SITUM_API_KEY = "YOUR-SITUM-API-KEY";
+// const situmApiUser = "YOUR-SITUM-USER";
+const situmApiKey = "YOUR-SITUM-API-KEY";
 
 // Set here the building identifier you want on the map.
-const BUILDING_IDENTIFIER = "YOUR-SITUM-BUILDING-IDENTIFIER";
+const buildingIdentifier = "YOUR-SITUM-BUILDING-IDENTIFIER";
 
 // Alternatively, you can set an identifier that allows you to remotely configure all map settings.
 // For now, you need to contact Situm to obtain yours.
-const REMOTE_IDENTIFIER = null;
+const remoteIdentifier = null;
 
 //You can also specify the language in which you want the UX of the viewer to be displayed.
-const LANGUAGE = null;
+const language = null;
 
 // A String parameter that allows you to specify which domain will be displayed inside our webview.
 // Take a look at [MapViewConfiguration.viewerDomain].
-const VIEWER_DOMAIN = "https://map-viewer.situm.com";
+const viewerDomain = "https://map-viewer.situm.com";
 
 // Set here the API which you will use to retrieve the cartography from.
 // Take a look at [MapViewConfiguration.apiDomain] and [SitumSdk.setDashboardURL] to learn how to implement it.

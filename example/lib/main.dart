@@ -206,15 +206,15 @@ class _MyTabsState extends State<MyTabs> {
         configuration: MapViewConfiguration(
           // Your Situm credentials.
           // Copy config.dart.example if you haven't already.
-          situmApiKey: SITUM_API_KEY,
+          situmApiKey: situmApiKey,
           // Set your building identifier:
-          buildingIdentifier: BUILDING_IDENTIFIER,
+          buildingIdentifier: buildingIdentifier,
           // Your remote identifier, if any:
-          remoteIdentifier: REMOTE_IDENTIFIER,
+          remoteIdentifier: remoteIdentifier,
           // Specify the language for the viewer UI:
-          language: LANGUAGE,
+          language: language,
           // The viewer domain:
-          viewerDomain: VIEWER_DOMAIN,
+          viewerDomain: viewerDomain,
         ),
         onLoad: _onLoad,
       ),
@@ -321,7 +321,7 @@ class _MyTabsState extends State<MyTabs> {
     situmSdk.init();
     // Authenticate with your account and API key.
     // You can find yours at https://dashboard.situm.com/accounts/profile
-    situmSdk.setApiKey(SITUM_API_KEY);
+    situmSdk.setApiKey(situmApiKey);
     // Configure SDK before authenticating.
     situmSdk.setConfiguration(ConfigurationOptions(
         // In case you want to use our remote configuration (https://dashboard.situm.com/settings).
@@ -350,7 +350,7 @@ class _MyTabsState extends State<MyTabs> {
     situmSdk.onExitGeofences((geofencesResult) {
       _echo("Situm> SDK> Exit geofences: ${geofencesResult.geofences}.");
     });
-    _downloadPois(BUILDING_IDENTIFIER);
+    _downloadPois(buildingIdentifier);
     super.initState();
   }
 
@@ -371,7 +371,7 @@ class _MyTabsState extends State<MyTabs> {
     // You don't need to do anything to draw the user's position on the map; the
     // library handles it all internally for you.
     situmSdk.requestLocationUpdates(LocationRequest(
-      buildingIdentifier: BUILDING_IDENTIFIER, //"-1"
+      buildingIdentifier: buildingIdentifier, //"-1"
       useDeadReckoning: false,
     ));
   }
@@ -389,7 +389,7 @@ class _MyTabsState extends State<MyTabs> {
   void _prefetch() async {
     _echo("SDK> PREFETCH...");
     var prefetch = await situmSdk.prefetchPositioningInfo(
-      [BUILDING_IDENTIFIER],
+      [buildingIdentifier],
       options: PrefetchOptions(
         preloadImages: true,
       ),
@@ -399,7 +399,7 @@ class _MyTabsState extends State<MyTabs> {
 
   void _fetchPois() async {
     _echo("SDK> POIS...");
-    var pois = await situmSdk.fetchPoisFromBuilding(BUILDING_IDENTIFIER);
+    var pois = await situmSdk.fetchPoisFromBuilding(buildingIdentifier);
     _echo("SDK> RESPONSE: POIS = \n\n$pois");
   }
 
@@ -411,7 +411,7 @@ class _MyTabsState extends State<MyTabs> {
 
   void _fetchBuildingInfo() async {
     _echo("SDK> BUILDING INFO...");
-    var building = await situmSdk.fetchBuildingInfo(BUILDING_IDENTIFIER);
+    var building = await situmSdk.fetchBuildingInfo(buildingIdentifier);
     _echo("SDK> RESPONSE: BUILDING INFO = \n\n$building)");
   }
 
