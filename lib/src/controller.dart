@@ -101,8 +101,7 @@ class MapViewController {
 
   /// Starts navigating to the given POI. You can optionally choose the desired
   /// [AccessibilityMode] used to calculate the route.
-  void navigateToPoi(
-    String identifier, {
+  void navigateToPoi(String identifier, {
     AccessibilityMode? accessibilityMode,
   }) async {
     dynamic message = {"navigationTo": identifier};
@@ -116,13 +115,12 @@ class MapViewController {
   /// optionally choose the desired [AccessibilityMode] used to calculate the
   /// route. You can also set the name of the destination to be displayed on the
   /// [MapView].
-  void navigateToPoint(
-    double lat,
-    double lng,
-    String floorIdentifier, {
-    String? navigationName,
-    AccessibilityMode? accessibilityMode,
-  }) async {
+  void navigateToPoint(double lat,
+      double lng,
+      String floorIdentifier, {
+        String? navigationName,
+        AccessibilityMode? accessibilityMode,
+      }) async {
     dynamic message = {
       "lat": lat,
       "lng": lng,
@@ -199,8 +197,8 @@ class MapViewController {
   ///
   /// setDirectionsOptions(includedTags, excludedTags);
   /// ```
-  void setDirectionsOptions(
-      List<String> includedTags, List<String> excludedTags) async {
+  void setDirectionsOptions(List<String> includedTags,
+      List<String> excludedTags) async {
     dynamic message = {
       "includedTags": includedTags,
       "excludedTags": excludedTags,
@@ -218,8 +216,8 @@ class MapViewController {
     }
   }
 
-  void _setRoute(
-      DirectionsMessage directionsMessage, SitumRoute situmRoute) async {
+  void _setRoute(DirectionsMessage directionsMessage,
+      SitumRoute situmRoute) async {
     situmRoute.rawContent["identifier"] = directionsMessage.identifier;
     situmRoute.rawContent["originIdentifier"] =
         directionsMessage.originIdentifier;
@@ -242,11 +240,9 @@ class MapViewController {
         }));
   }
 
-  void _setNavigationRoute(
-    String originIdentifier,
-    String destinationIdentifier,
-    SitumRoute situmRoute,
-  ) async {
+  void _setNavigationRoute(String originIdentifier,
+      String destinationIdentifier,
+      SitumRoute situmRoute,) async {
     situmRoute.rawContent["originIdentifier"] = originIdentifier;
     situmRoute.rawContent["destinationIdentifier"] = destinationIdentifier;
     _sendMessage(
@@ -294,8 +290,10 @@ class MapViewController {
     _onExternalLinkClickedCallback = callback;
   }
 
+  // Public API intended for internal use:
+
   /// Set a callback that will receive internal messages from the [MapView].
-  /// Do not use this method as it is intended for internal use.
+  /// # Do not use this method as it is intended for internal use.
   void internalARMessageDelegate(
       Function(String type, dynamic payload) callback) {
     _internalMessageDelegate = callback;
@@ -303,7 +301,7 @@ class MapViewController {
 
   /// Modifies the state of the underlying [MapView] so it allows building
   /// calibrations.
-  /// You probably don't want to use this method.
+  /// # Do not use this method as it is intended for internal use.
   void enterCalibrationMode(OnCalibrationPointClickedCallback pointsCallback,
       OnCalibrationFinishedCallback finishedCallback) {
     _setUIMode(UIMode.calibration);
@@ -318,10 +316,18 @@ class MapViewController {
   }
 
   /// Set calibrations stored locally so the MapView can represent them.
-  /// You probably don't want to use this method.
+  /// # Do not use this method as it is intended for internal use.
   void setLocalCalibrations(dynamic payload) {
     _sendMessage(
-        WF_MESSAGE_CALIBRATIONS_SET_LOCAL_CALIBRATIONS, jsonEncode(payload));
+        WV_MESSAGE_CALIBRATIONS_SET_LOCAL_CALIBRATIONS, jsonEncode(payload));
+  }
+
+  /// Stops the current calibration.
+  /// A null payload tells the [MapView] to prompt the user to decide what to do
+  /// with the current calibration (save, undo, cancel).
+  /// # Do not use this method as it is intended for internal use.
+  void stopCurrentCalibration(dynamic payload) {
+    _sendMessage(WV_MESSAGE_CALIBRATIONS_STOP_CURRENT, jsonEncode(payload));
   }
 
   void _setUIMode(UIMode mode) {
@@ -373,9 +379,9 @@ class MapViewController {
       case InternalCallType.locationError:
         _onError(call.get());
         break;
-      // Navigation callbacks are used by both WYF and the integrator. If WYF
-      // uses them, they will be overwritten. To avoid that problem, we listen
-      // for native calls here.
+    // Navigation callbacks are used by both WYF and the integrator. If WYF
+    // uses them, they will be overwritten. To avoid that problem, we listen
+    // for native calls here.
       case InternalCallType.navigationDestinationReached:
         _setNavigationDestinationReached();
         break;

@@ -207,12 +207,11 @@ class Camera {
   /// will result in the camera hitting the building bounds and not reaching the specified coordinate.
   Coordinate? center;
 
-  Camera(
-      {this.zoom,
-      this.bearing,
-      this.pitch,
-      this.transitionDuration,
-      this.center});
+  Camera({this.zoom,
+    this.bearing,
+    this.pitch,
+    this.transitionDuration,
+    this.center});
 
   toMap() {
     Map<String, Object> result = {};
@@ -307,6 +306,9 @@ enum ARStatus {
   finished,
 }
 
+/// Encapsulates the data of a calibration point. Each calibration point is
+/// received from the [MapView] when it is in mode [UIMode.calibration].
+/// # You probably don't need to use this class as it is intended for internal use.
 class CalibrationPointData {
   final String buildingIdentifier;
   final String floorIdentifier;
@@ -321,12 +323,18 @@ class CalibrationPointData {
   });
 }
 
+/// Status received when the [MapView] is in mode [UIMode.calibration] and the
+/// user stops the current calibration.
+/// The user may want to save ([success]) or cancel ([cancelled]) the
+/// calibration. When saving, the last calibration point may be discarded ([undo]).
+/// # You probably don't need to use this enum as it is intended for internal use.
 enum CalibrationFinishedStatus {
   success,
   undo,
   cancelled,
 }
 
+/// [MapView] UI Modes.
 enum UIMode {
   calibration,
   explore,
