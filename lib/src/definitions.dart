@@ -340,3 +340,11 @@ class ConnectionErrors {
     IOS_HOSTNAME_NOT_RESOLVED
   ];
 }
+
+class MapViewDirectionsOptions {
+  List<String>? excludedTags;
+  List<String>? includedTags;
+
+  MapViewDirectionsOptions({this.excludedTags, this.includedTags});
+}
+
