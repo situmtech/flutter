@@ -238,7 +238,7 @@ class _MyTabsState extends State<MyTabs> {
 
     //Example on how to automatically launch positioning when opening the map.
     // situmSdk.requestLocationUpdates(LocationRequest(
-    //   buildingIdentifier: BUILDING_IDENTIFIER, //"-1"
+    //   buildingIdentifier: buildingIdentifier, //"-1"
     //   useDeadReckoning: false,
     // ));
 

@@ -22,8 +22,7 @@ const viewerDomain = "https://map-viewer.situm.com";
 //const apiDomain = "https://dashboard.situm.com";
 
 // Supporting documentation
-var doc = '''
-╔══════════════════════════════════════════════════════════════════════════════════════════════╗
-║ Visit https://situm.com/docs/built-in-wayfinding-ui/#prepare-viewer for more information.    ║
-╚══════════════════════════════════════════════════════════════════════════════════════════════╝
-''';
+
+//╔══════════════════════════════════════════════════════════════════════════════════════════════╗
+//║ Visit https://situm.com/docs/built-in-wayfinding-ui/#prepare-viewer for more information.    ║
+//╚══════════════════════════════════════════════════════════════════════════════════════════════╝
