@@ -85,5 +85,8 @@ const WV_MESSAGE_UI_SET_SEARCH_FILTER = "ui.set_search_filter";
 const WV_MESSAGE_UI_SET_MODE = "ui.set_mode";
 const WV_MESSAGE_CALIBRATIONS_SET_LOCAL_CALIBRATIONS =
     "calibration.set_local_calibrations";
-const WV_MESSAGE_CALIBRATIONS_STOP_CURRENT =
-    "calibration.stop";
+const WV_MESSAGE_CALIBRATIONS_STOP_CURRENT = "calibration.stop";
+
+// Calibration events:
+const WV_MESSAGE_LOCAL_CALIB_UPLOAD_REQUESTED =
+    "calibration.local_calibrations_upload_requested";

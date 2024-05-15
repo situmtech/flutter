@@ -50,6 +50,8 @@ const NSString* RESULTS_KEY = @"results";
         [self handleSetApiKey:call result:result];
     } else if ([@"setUserPass" isEqualToString:call.method]) {
         [self handleSetUserPass:call result:result];
+    } else if ([@"logout" isEqualToString:call.method]) {
+        [self handleLogout:result];
     } else if ([@"setConfiguration" isEqualToString:call.method]) {
         [self handleSetConfiguration: call
                               result: result];
