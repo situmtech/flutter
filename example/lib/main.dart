@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:situm_flutter/sdk.dart';
 import 'package:situm_flutter/wayfinding.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 
 import './config.dart';
 
@@ -34,6 +35,7 @@ class MyTabs extends StatefulWidget {
 
 class _MyTabsState extends State<MyTabs> {
   late SitumSdk situmSdk;
+  late FlutterTts flutterTts;
   int _selectedIndex = 0;
   List<Poi> pois = [];
   Poi? dropdownValue;
@@ -257,6 +259,11 @@ class _MyTabsState extends State<MyTabs> {
       //   navigationRequest.distanceToGoalThreshold = 10.0;
       //   ...
     });
+
+    controller.onTextAloudText((text) async {
+      _echo("Situm > SDK > Speak aloud: ${text}");
+      await flutterTts.speak("Hello World");
+    });
   }
 
   void _setCameraViewer(Poi? poi) {
@@ -349,6 +356,9 @@ class _MyTabsState extends State<MyTabs> {
       _echo("Situm> SDK> Exit geofences: ${geofencesResult.geofences}.");
     });
     _downloadPois(buildingIdentifier);
+
+    flutterTts = FlutterTts();
+
     super.initState();
   }
 
