@@ -397,6 +397,13 @@ class SitumSdk {
     await methodChannel.invokeMethod('geofenceCallbacksRequested');
   }
 
+  /// Opens the given URL in the system's default browser.
+  /// This method is used internally but has been exposed publicly as it is
+  /// useful in common use-cases such as handling [Poi] description interactions.
+  void openUrlInDefaultBrowser(String url) {
+    methodChannel.invokeMethod('openUrlInDefaultBrowser', {"url": url});
+  }
+
   // Callbacks:
 
   Future<void> _methodCallHandler(MethodCall call) async {
