@@ -260,9 +260,9 @@ class _MyTabsState extends State<MyTabs> {
       //   ...
     });
 
-    controller.onTextAloudText((text) async {
-      _echo("Situm > SDK > Speak aloud: ${text}");
-      await flutterTts.speak("Hello World");
+    controller.onSpeakAloudText((speakaloudTextResult) async {
+      _echo("Situm > SDK > Speak aloud: ${speakaloudTextResult.text}");
+      await flutterTts.speak(speakaloudTextResult.text);
     });
   }
 

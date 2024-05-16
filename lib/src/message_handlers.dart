@@ -16,7 +16,7 @@ abstract class MessageHandler {
         return PoiSelectedMessageHandler();
       case WV_MESSAGE_CARTOGRAPHY_POI_DESELECTED:
         return PoiDeselectedMessageHandler();
-      case WV_MESSAGE_CARTOGRAPHY_POI_SELECTED:
+      case WV_MESSAGE_UI_SPEAK_ALOUD_TEXT:
         return SpeakAloudTextMessageHandler();
       default:
         debugPrint("EmptyMessageHandler handles message of type: $type");
@@ -167,14 +167,14 @@ class SpeakAloudTextMessageHandler implements MessageHandler {
   @override
   void handleMessage(
       MapViewController mapViewController, Map<String, dynamic> payload) async {
-    if (mapViewController._onTextAloudTextCallback == null &&
-        mapViewController._onTextAloudTextCallback == null) {
+    if (mapViewController._onSpeakAloudTextCallback == null &&
+        mapViewController._onSpeakAloudTextCallback == null) {
       return;
     }
 
     var text = "${payload["text"]}";
 
-    mapViewController._onTextAloudTextCallback
-        ?.call(OnTextAloudTextResult(text: text));
+    mapViewController._onSpeakAloudTextCallback
+        ?.call(OnSpeakAloudTextResult(text: text));
   }
 }

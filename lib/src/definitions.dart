@@ -266,10 +266,10 @@ class OnExternalLinkClickedResult {
   });
 }
 
-class OnTextAloudTextResult {
+class OnSpeakAloudTextResult {
   final String text;
 
-  const OnTextAloudTextResult({
+  const OnSpeakAloudTextResult({
     required this.text,
   });
 }
@@ -336,7 +336,7 @@ typedef OnNavigationRequestInterceptor = void Function(
 // External link click.
 typedef OnExternalLinkClickedCallback = void Function(
     OnExternalLinkClickedResult data);
-typedef OnTextAloudTextCallback = void Function(OnTextAloudTextResult data);
+typedef OnSpeakAloudTextCallback = void Function(OnSpeakAloudTextResult data);
 
 // Connection errors
 class ConnectionErrors {
