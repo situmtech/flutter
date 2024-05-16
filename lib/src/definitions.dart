@@ -307,25 +307,6 @@ enum ARStatus {
   finished,
 }
 
-// Result callbacks.
-
-// WYF load callback.
-typedef MapViewCallback = void Function(MapViewController controller);
-// POI selection callback.
-typedef OnPoiSelectedCallback = void Function(
-    OnPoiSelectedResult poiSelectedResult);
-// POI deselection callback.
-typedef OnPoiDeselectedCallback = void Function(
-    OnPoiDeselectedResult poiDeselectedResult);
-// Directions and navigation interceptor.
-typedef OnDirectionsRequestInterceptor = void Function(
-    DirectionsRequest directionsRequest);
-typedef OnNavigationRequestInterceptor = void Function(
-    NavigationRequest navigationRequest);
-// External link click.
-typedef OnExternalLinkClickedCallback = void Function(
-    OnExternalLinkClickedResult data);
-
 // Connection errors
 class ConnectionErrors {
   static const ANDROID_NO_CONNECTION = -2;
@@ -348,3 +329,21 @@ class MapViewDirectionsOptions {
   MapViewDirectionsOptions({this.excludedTags, this.includedTags});
 }
 
+// Result callbacks.
+
+// WYF load callback.
+typedef MapViewCallback = void Function(MapViewController controller);
+// POI selection callback.
+typedef OnPoiSelectedCallback = void Function(
+    OnPoiSelectedResult poiSelectedResult);
+// POI deselection callback.
+typedef OnPoiDeselectedCallback = void Function(
+    OnPoiDeselectedResult poiDeselectedResult);
+// Directions and navigation interceptor.
+typedef OnDirectionsRequestInterceptor = void Function(
+    DirectionsRequest directionsRequest);
+typedef OnNavigationRequestInterceptor = void Function(
+    NavigationRequest navigationRequest);
+// External link click.
+typedef OnExternalLinkClickedCallback = void Function(
+    OnExternalLinkClickedResult data);
