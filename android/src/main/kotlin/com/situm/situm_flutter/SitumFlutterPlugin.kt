@@ -16,6 +16,7 @@ import es.situm.sdk.location.GeofenceListener
 import es.situm.sdk.location.LocationListener
 import es.situm.sdk.location.LocationRequest
 import es.situm.sdk.location.LocationStatus
+import es.situm.sdk.location.internal.sensors.data.ArCoreData
 import es.situm.sdk.model.cartography.*
 import es.situm.sdk.model.location.Location
 import es.situm.sdk.utils.Handler
@@ -77,6 +78,7 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
         when (methodCall.method) {
             "init" -> init(arguments, result)
             "initSdk" -> initSdk(result)
+            "setArOdometry" -> setArOdometry(arguments, result)
             "setDashboardURL" -> setDashboardURL(arguments, result)
             "setApiKey" -> setApiKey(arguments, result)
             "setConfiguration" -> setConfiguration(arguments, result)
@@ -136,6 +138,28 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
         startListeningLocationUpdates()
         result.success("DONE")
     }
+
+//    private fun setArOdometry(arguments: Map<String, Any>, result: MethodChannel.Result) {
+//
+//            val ArOdometry = arguments
+//            if (ArOdometry != null) {
+//                println("AR Odometry:   $ArOdometry")
+//                SitumSdk.ArCoreData(ArOdometry)
+//                result.success("DONE")
+//                return
+//            }
+//    }
+
+    private fun setArOdometry(arguments: Map<String, Any>, result: MethodChannel.Result) {
+        val ArOdometry = arguments["message"] as Map<String, Any> // Suponiendo que el mapa de argumentos contiene un valor "message" que es otro mapa
+        if (ArOdometry != null) {
+            val arCoreData = ArCoreData(ArOdometry.toString()) // Suponiendo que necesitas pasar un String como argumento
+            // Hacer algo con arCoreData...
+            result.success("DONE")
+            return
+        }
+    }
+
 
     private fun initSdk(result: MethodChannel.Result) {
         SitumSdk.init(context)
