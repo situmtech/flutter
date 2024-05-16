@@ -277,7 +277,7 @@ class MapViewController {
     _onPoiDeselectedCallback = callback;
   }
 
-  /// Get notified when the selected POI is deselected.
+  /// Get notified when the viewer wants to read aloud some text.
   void onSpeakAloudText(OnSpeakAloudTextCallback callback) {
     _onSpeakAloudTextCallback = callback;
   }
