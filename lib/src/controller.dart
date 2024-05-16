@@ -5,6 +5,7 @@ class MapViewController {
   late final MethodChannel methodChannel;
   OnPoiSelectedCallback? _onPoiSelectedCallback;
   OnPoiDeselectedCallback? _onPoiDeselectedCallback;
+  OnTextAloudTextCallback? _onTextAloudTextCallback;
   OnDirectionsRequestInterceptor? _onDirectionsRequestInterceptor;
   OnNavigationRequestInterceptor? _onNavigationRequestInterceptor;
   OnExternalLinkClickedCallback? _onExternalLinkClickedCallback;
@@ -274,6 +275,11 @@ class MapViewController {
   /// Get notified when the selected POI is deselected.
   void onPoiDeselected(OnPoiDeselectedCallback callback) {
     _onPoiDeselectedCallback = callback;
+  }
+
+  /// Get notified when the selected POI is deselected.
+  void onTextAloudText(OnTextAloudTextCallback callback) {
+    _onTextAloudTextCallback = callback;
   }
 
   /// Callback invoked when the user clicks on a link in the MapView that leads

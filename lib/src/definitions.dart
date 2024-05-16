@@ -266,6 +266,14 @@ class OnExternalLinkClickedResult {
   });
 }
 
+class OnTextAloudTextResult {
+  final String text;
+
+  const OnTextAloudTextResult({
+    required this.text,
+  });
+}
+
 class SearchFilter {
   /// Text used in the searchbar to filter and display the search results
   /// whose name or description matches the filter.
@@ -328,6 +336,7 @@ typedef OnNavigationRequestInterceptor = void Function(
 // External link click.
 typedef OnExternalLinkClickedCallback = void Function(
     OnExternalLinkClickedResult data);
+typedef OnTextAloudTextCallback = void Function(OnTextAloudTextResult data);
 
 // Connection errors
 class ConnectionErrors {

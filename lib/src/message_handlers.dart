@@ -15,7 +15,9 @@ abstract class MessageHandler {
       case WV_MESSAGE_CARTOGRAPHY_POI_SELECTED:
         return PoiSelectedMessageHandler();
       case WV_MESSAGE_CARTOGRAPHY_POI_DESELECTED:
-        return PoiDeselectedMessageHandler();        
+        return PoiDeselectedMessageHandler();
+      case WV_MESSAGE_CARTOGRAPHY_POI_SELECTED:
+        return SpeakAloudTextMessageHandler();
       default:
         debugPrint("EmptyMessageHandler handles message of type: $type");
         return EmptyMessageHandler();
@@ -136,10 +138,10 @@ abstract class PoiSelectionMessageHandler implements MessageHandler {
     var poiId = "${payload["identifier"]}";
     var buildingId = "${payload["buildingIdentifier"]}";
     var sdk = SitumSdk();
-      var poi = await sdk.fetchPoiFromBuilding(buildingId, poiId);
-      if (poi != null) {
-        handlePoiInteraction(mapViewController, poi);
-      }
+    var poi = await sdk.fetchPoiFromBuilding(buildingId, poiId);
+    if (poi != null) {
+      handlePoiInteraction(mapViewController, poi);
+    }
   }
 
   void handlePoiInteraction(MapViewController mapViewController, Poi poi);
@@ -158,5 +160,21 @@ class PoiDeselectedMessageHandler extends PoiSelectionMessageHandler {
   void handlePoiInteraction(MapViewController mapViewController, Poi poi) {
     mapViewController._onPoiDeselectedCallback
         ?.call(OnPoiDeselectedResult(poi: poi));
+  }
+}
+
+class SpeakAloudTextMessageHandler implements MessageHandler {
+  @override
+  void handleMessage(
+      MapViewController mapViewController, Map<String, dynamic> payload) async {
+    if (mapViewController._onTextAloudTextCallback == null &&
+        mapViewController._onTextAloudTextCallback == null) {
+      return;
+    }
+
+    var text = "${payload["text"]}";
+
+    mapViewController._onTextAloudTextCallback
+        ?.call(OnTextAloudTextResult(text: text));
   }
 }
