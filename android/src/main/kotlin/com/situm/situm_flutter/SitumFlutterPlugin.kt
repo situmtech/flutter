@@ -139,22 +139,10 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
         result.success("DONE")
     }
 
-//    private fun setArOdometry(arguments: Map<String, Any>, result: MethodChannel.Result) {
-//
-//            val ArOdometry = arguments
-//            if (ArOdometry != null) {
-//                println("AR Odometry:   $ArOdometry")
-//                SitumSdk.ArCoreData(ArOdometry)
-//                result.success("DONE")
-//                return
-//            }
-//    }
-
     private fun setArOdometry(arguments: Map<String, Any>, result: MethodChannel.Result) {
-        val ArOdometry = arguments["message"] as Map<String, Any> // Suponiendo que el mapa de argumentos contiene un valor "message" que es otro mapa
+        val ArOdometry = arguments
         if (ArOdometry != null) {
-            val arCoreData = ArCoreData(ArOdometry.toString()) // Suponiendo que necesitas pasar un String como argumento
-            // Hacer algo con arCoreData...
+            val arCoreData = ArCoreData().setArOdometry(ArOdometry.toString())
             result.success("DONE")
             return
         }
