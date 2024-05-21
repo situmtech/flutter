@@ -127,6 +127,10 @@ class MapViewConfiguration {
   }
 
   String _getViewerURL() {
+    if (buildingIdentifier == null && remoteIdentifier == null) {
+      throw ArgumentError(
+          'Missing configuration: remoteIdentifier or buildingIdentifier must be provided.');
+    }
     var base = viewerDomain;
     var query = "apikey=$situmApiKey&domain=$_internalApiDomain&mode=embed";
     if (lockCameraToBuilding != null) {
@@ -135,17 +139,14 @@ class MapViewConfiguration {
     if (language != null) {
       query = "$query&lng=$language";
     }
-
-    if (remoteIdentifier?.isNotEmpty == true &&
-        buildingIdentifier?.isNotEmpty == true) {
-      return "$base/id/$remoteIdentifier?$query&buildingid=$buildingIdentifier";
-    } else if (remoteIdentifier?.isNotEmpty == true) {
-      return "$base/id/$remoteIdentifier?$query";
-    } else if (buildingIdentifier?.isNotEmpty == true) {
-      return "$base/?$query&buildingid=$buildingIdentifier";
+    if (remoteIdentifier?.isNotEmpty == true) {
+      base = "$base/$remoteIdentifier";
     }
-    throw ArgumentError(
-        'Missing configuration: remoteIdentifier or buildingIdentifier must be provided.');
+    if (buildingIdentifier?.isNotEmpty == true && buildingIdentifier != "-1") {
+      query = "$query&buildingid=$buildingIdentifier";
+    }
+
+    return "$base?$query";
   }
 }
 
@@ -207,11 +208,12 @@ class Camera {
   /// will result in the camera hitting the building bounds and not reaching the specified coordinate.
   Coordinate? center;
 
-  Camera({this.zoom,
-    this.bearing,
-    this.pitch,
-    this.transitionDuration,
-    this.center});
+  Camera(
+      {this.zoom,
+      this.bearing,
+      this.pitch,
+      this.transitionDuration,
+      this.center});
 
   toMap() {
     Map<String, Object> result = {};
