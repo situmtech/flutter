@@ -777,6 +777,9 @@ class ErrorCodes {
   static const locationDisabled = "LOCATION_DISABLED";
   static const locationPermissionDenied = "LOCATION_PERMISSION_DENIED";
   static const bluetoothPermissionDenied = "BLUETOOTH_PERMISSION_DENIED";
+  static const buildingNotCalibrated = "BUILDING_NOT_CALIBRATED";
+  static const buildingModelDownloadError = "BUILDING_MODEL_DOWNLOAD_ERROR";
+  static const buildingModelProcessingError = "BUILDING_MODEL_PROCESSING_ERROR";
 }
 
 enum ErrorType {
