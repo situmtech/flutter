@@ -142,7 +142,7 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
     private fun setArOdometry(arguments: Map<String, Any>, result: MethodChannel.Result) {
         val ArOdometry = arguments
         if (ArOdometry != null) {
-            val arCoreData = ArCoreData().setArOdometry(ArOdometry.toString())
+            ArCoreData().setArOdometry(ArOdometry.toString())
             result.success("DONE")
             return
         }
