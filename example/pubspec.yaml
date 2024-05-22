@@ -17,7 +17,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
+  sensors_plus: ^3.0.0
   situm_flutter:
     # When depending on this package from a real application you should use:
     #   situm_flutter: ^x.y.z
