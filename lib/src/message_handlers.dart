@@ -167,11 +167,6 @@ class SpeakAloudTextMessageHandler implements MessageHandler {
   @override
   void handleMessage(
       MapViewController mapViewController, Map<String, dynamic> payload) async {
-    if (mapViewController._onSpeakAloudTextCallback == null &&
-        mapViewController._onSpeakAloudTextCallback == null) {
-      return;
-    }
-
     var text = "${payload["text"]}";
 
     mapViewController._onSpeakAloudTextCallback
