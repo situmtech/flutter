@@ -24,35 +24,41 @@ class _TapTapTapDetectorState extends State<TapTapTapDetector> {
   final double threshold = 10.0;  // Umbral para considerar un "tap"
   final int maxInterval = 1000;   // Máximo intervalo entre taps en milisegundos
   List<int> tapTimestamps = [];   // Timestamps de los taps detectados
+  int _tapCount = 0;
+  int lastTapTime = 0;
 
   @override
   void initState() {
     super.initState();
     accelerometerEvents.listen((AccelerometerEvent event) {
       double acceleration = event.y.abs();
-      if(event.x.abs() > 10){
-        print("X accelerometer: ${event.x.abs()}");
-      }
+      // if(event.x.abs() > 10){
+      //   print("X accelerometer: ${event.x.abs()}");
+      // }
       if(event.y.abs() > 10){
         print("Y accelerometer: ${event.y.abs()}");
       }
-      if(event.z.abs() > 10){
-        print("Z accelerometer: ${event.z.abs()}");
-      }
+      // if(event.z.abs() > 10){
+      //   print("Z accelerometer: ${event.z.abs()}");
+      // }
+
+      int currentTime = DateTime.now().millisecondsSinceEpoch;
 
 
+      if (acceleration > threshold && (currentTime - lastTapTime) < 1000) {
 
-
-      if (acceleration > threshold) {
-        int currentTime = DateTime.now().millisecondsSinceEpoch;
         tapTimestamps.add(currentTime);
         tapTimestamps = tapTimestamps.where((timestamp) => currentTime - timestamp <= maxInterval).toList();
+        _tapCount ++;
 
-        if (tapTimestamps.length >= 3) {
-          tapTimestamps.clear();
+        if (_tapCount >= 3) {
+          _tapCount = 0;
           triggerVibration();
         }
       }
+
+      lastTapTime = currentTime;
+
     });
   }
 
