@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:sensors_plus/sensors_plus.dart';
-import 'package:flutter/services.dart'; // Importamos esta biblioteca para acceder a la vibración
+// import 'package:flutter/services.dart'; // Importamos esta biblioteca para acceder a la vibración
+import 'package:flutter_vibrate/flutter_vibrate.dart';
 
 void main() {
   runApp(MyApp());
@@ -22,7 +23,7 @@ class TapTapTapDetector extends StatefulWidget {
 
 class _TapTapTapDetectorState extends State<TapTapTapDetector> {
   final double threshold = 10.0;  // Umbral para considerar un "tap"
-  final int maxInterval = 1000;   // Máximo intervalo entre taps en milisegundos
+  final int maxInterval = 1500;   // Máximo intervalo entre taps en milisegundos
   List<int> tapTimestamps = [];   // Timestamps de los taps detectados
   int _tapCount = 0;
   int lastTapTime = 0;
@@ -32,25 +33,16 @@ class _TapTapTapDetectorState extends State<TapTapTapDetector> {
     super.initState();
     accelerometerEvents.listen((AccelerometerEvent event) {
       double acceleration = event.y.abs();
-      // if(event.x.abs() > 10){
-      //   print("X accelerometer: ${event.x.abs()}");
-      // }
-      if(event.y.abs() > 10){
+
+      if(event.y.abs() > threshold){
         print("Y accelerometer: ${event.y.abs()}");
       }
-      // if(event.z.abs() > 10){
-      //   print("Z accelerometer: ${event.z.abs()}");
-      // }
 
       int currentTime = DateTime.now().millisecondsSinceEpoch;
 
+      if (acceleration > threshold && (currentTime - lastTapTime) < maxInterval) {
 
-      if (acceleration > threshold && (currentTime - lastTapTime) < 1000) {
-
-        tapTimestamps.add(currentTime);
-        tapTimestamps = tapTimestamps.where((timestamp) => currentTime - timestamp <= maxInterval).toList();
         _tapCount ++;
-
         if (_tapCount >= 3) {
           _tapCount = 0;
           triggerVibration();
@@ -63,11 +55,9 @@ class _TapTapTapDetectorState extends State<TapTapTapDetector> {
   }
 
   void triggerVibration() {
-    // Hacemos vibrar el teléfono utilizando la clase SystemChannels de la biblioteca Flutter
-    SystemChannels.platform.invokeMethod<void>('HapticFeedback.vibrate');
-
-    // Imprimimos un mensaje en la consola para verificar que la vibración se haya activado
     print("Vibrar! TapTapTap detectado.");
+    Vibrate.vibrate();
+
   }
 
   @override
