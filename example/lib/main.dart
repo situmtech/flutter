@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:sensors_plus/sensors_plus.dart';
-// import 'package:flutter/services.dart'; // Importamos esta biblioteca para acceder a la vibración
 import 'package:flutter_vibrate/flutter_vibrate.dart';
 
 void main() {
@@ -20,7 +19,7 @@ class TapTapTapDetector extends StatefulWidget {
   @override
   _TapTapTapDetectorState createState() => _TapTapTapDetectorState();
 }
-
+////v1 taptaptap
 class _TapTapTapDetectorState extends State<TapTapTapDetector> {
   final double threshold = 10.0;  // Umbral para considerar un "tap"
   final int maxInterval = 1500;   // Máximo intervalo entre taps en milisegundos
