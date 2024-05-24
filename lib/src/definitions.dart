@@ -140,7 +140,7 @@ class MapViewConfiguration {
       query = "$query&lng=$language";
     }
     if (remoteIdentifier?.isNotEmpty == true) {
-      base = "$base/$remoteIdentifier";
+      base = "$base/id/$remoteIdentifier";
     }
     if (buildingIdentifier?.isNotEmpty == true && buildingIdentifier != "-1") {
       query = "$query&buildingid=$buildingIdentifier";
