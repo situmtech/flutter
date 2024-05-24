@@ -772,6 +772,20 @@ class Error {
   }
 }
 
+/// Exposes constant error codes useful for error handling in combination with
+/// [SitumSdk.onLocationError]:
+///
+/// ```dart
+/// SitumSdk().onLocationError((error) {
+///   switch (error.code) {
+///     case ErrorCodes.locationDisabled:
+///       // Handle location disabled.
+///       break;
+///     case ErrorCodes.bluetoothDisabled:
+///       ...
+///   }
+/// });
+/// ```
 class ErrorCodes {
   static const bluetoothDisabled = "BLUETOOTH_DISABLED";
   static const locationDisabled = "LOCATION_DISABLED";
