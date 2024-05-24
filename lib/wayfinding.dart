@@ -65,6 +65,7 @@ const WV_MESSAGE_NAVIGATION_UPDATE = "navigation.update";
 const WV_MESSAGE_NAVIGATION_CANCEL = "navigation.cancel";
 
 // Cartogaphy actions
+const WV_MESSAGE_CARTOGRAPHY_SELECT_BUILDING = "cartography.select_building";
 const WV_MESSAGE_CARTOGRAPHY_SELECT_POI = "cartography.select_poi";
 const WV_MESSAGE_CARTOGRAPHY_SELECT_POI_CATEGORY =
     "cartography.select_poi_category";

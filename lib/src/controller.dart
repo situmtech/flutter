@@ -85,6 +85,19 @@ class MapViewController {
     _widgetUpdater(configuration);
   }
 
+  /// Reloads the [MapView] using the current configuration by reloading the
+  /// underlying platform web view controller.
+  void reload() async {
+    _webViewController.reload();
+  }
+
+  /// Selects the given Building in the map.
+  /// To set the initial Building use [MapViewConfiguration].
+  void selectBuilding(String identifier) async {
+    _sendMessage(
+        WV_MESSAGE_CARTOGRAPHY_SELECT_BUILDING, {"identifier": identifier});
+  }
+
   /// Selects the given POI in the map.
   void selectPoi(String identifier) async {
     _sendMessage(WV_MESSAGE_CARTOGRAPHY_SELECT_POI, {"identifier": identifier});
