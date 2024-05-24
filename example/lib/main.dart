@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:flutter_vibrate/flutter_vibrate.dart';
+import 'dart:math';
+
 
 void main() {
   runApp(MyApp());
@@ -52,11 +54,12 @@ class _TapTapTapDetectorState extends State<TapTapTapDetector> {
   void initState() {
     super.initState();
     accelerometerEvents.listen((AccelerometerEvent event) {
-      double acceleration = event.y.abs();
+      double acceleration = _calculateMagnitude(event.x, event.y, event.z);
       int currentTime = DateTime.now().millisecondsSinceEpoch;
       accelerationBuffer.add([acceleration, currentTime]);
-
+      //print("${event.x.abs()} + ${event.y.abs()} +${event.z.abs()}");
       // smoothAccelerometerData();
+
       // Mantener el tamaño del búfer dentro del límite
       _trimBuffer();
 
@@ -71,27 +74,25 @@ class _TapTapTapDetectorState extends State<TapTapTapDetector> {
     });
   }
 
+
+  double _calculateMagnitude(double x, double y, double z) {
+    return sqrt(x * x + y * y + z * z);
+  }
+
   bool _hasPeak(List<List<dynamic>> data) {
     int tapCount = 0;
-    int timestampFirstPeak = 0;
-    int timestampLastPeak = 0;
+
+    // for (int i = 0; i < data.length ; i++) {
+    //   print(data[i][0] );
+    // }
 
     for (int i = 10; i < data.length - 10; i++) {
-
       if (data[i][0] > 2*data[i - 10][0] && 2*data[i + 10][0] <  data[i][0]) {
-
-        if (timestampFirstPeak == 0 && tapCount == 0) {
-          timestampFirstPeak = data[i][1];
-        }
-        if (timestampLastPeak == 0 && tapCount == 2) {
-          timestampLastPeak = data[i][1];
-        }
         tapCount++;
-        //print ("Tap count:   ${tapCount}");
+        print ("Tap count:   ${tapCount}");
       }
     }
-
-    return tapCount >= tapCountThreshold && (timestampLastPeak - timestampFirstPeak) < peakInterval;
+    return tapCount >= tapCountThreshold;
   }
 
   //Actualiza el buffer de datos para tener
@@ -113,7 +114,7 @@ class _TapTapTapDetectorState extends State<TapTapTapDetector> {
 
   void triggerVibration() {
     print("Vibra!!!!!!!!!!!!!!!!1 TapTapTap detectado.");
-    // Vibrate.vibrate();
+    Vibrate.vibrate();
   }
 
   @override
