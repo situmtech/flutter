@@ -187,14 +187,14 @@ class MapViewController {
   ///
   /// Example:
   /// ```dart
-  ///   
-  /// 
   ///
-  /// setDirectionsOptions(includedTags, excludedTags);
+  /// List<String> includedTags = ['user1', 'user5'];
+  /// List<String> excludedTags = [];
+  ///
+  /// setDirectionsOptions(MapViewDirectionsOptions(includedTags: includedTags, excludedTags: excludedTags));
   /// ```
 
-  void setDirectionsOptions(
-      MapViewDirectionsOptions directionOptions) async {
+  void setDirectionsOptions(MapViewDirectionsOptions directionOptions) async {
     dynamic message = {
       "includedTags": directionOptions.includedTags,
       "excludedTags": directionOptions.excludedTags,
