@@ -90,26 +90,17 @@ fun LocationRequest.Builder.fromArguments(args: Map<String, Any>): LocationReque
         }
         outdoorLocationOptions(outdoorLocationOptions.build())
     }
-    if (args.containsKey("useWifi")) {
-        val useWifi = args["useWifi"] as Boolean?
-        if (useWifi != null) {
-            Log.d("SDK>", "Situm> SDK> LocationRequest> Set useWifi: $useWifi")
-            useWifi(useWifi)
-        }
+    args["useWifi"]?.let {
+        Log.d("SDK>", "Situm> SDK> LocationRequest> Set useWifi: $it")
+        useWifi(it as Boolean)
     }
-    if (args.containsKey("useBle")) {
-        val useBle = args["useBle"] as Boolean?
-        if (useBle != null) {
-            Log.d("SDK>", "Situm> SDK> LocationRequest> Set useBle: $useBle")
-            useBle(useBle)
-        }
+    args["useBle"]?.let {
+        Log.d("SDK>", "Situm> SDK> LocationRequest> Set useBle: $it")
+        useBle(it as Boolean)
     }
-    if (args.containsKey("useGps")) {
-        val useGps = args["useGps"] as Boolean?
-        if (useGps != null) {
-            Log.d("SDK>", "Situm> SDK> LocationRequest> Set useGps: $useGps")
-            useGps(useGps)
-        }
+    args["useGps"]?.let {
+        Log.d("SDK>", "Situm> SDK> LocationRequest> Set useGps: $it")
+        useGps(it as Boolean)
     }
     return this
 }

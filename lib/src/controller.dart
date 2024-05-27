@@ -21,10 +21,10 @@ class MapViewController {
   // intermediation of this plugin.
   Function(String, dynamic payload)? _internalMessageDelegate;
 
-  // Keep a reference to the last status received to avoid missing status
+  // Keep a reference to the last status/error received to avoid missing status
   // notifications to the MapView. Last status will be sent to the MapView after
   // it finishes loading.
-  String? _lastStatusToSend;
+  String? _lastStateToSend;
 
   List<String> mapViewerStatusesFilter = [
     'STARTING',
@@ -226,8 +226,8 @@ class MapViewController {
 
   void _notifyMapIsReady() {
     _widgetLoadCallback(this);
-    if (_lastStatusToSend != null) {
-      _setCurrentLocationStatus(_lastStatusToSend!);
+    if (_lastStateToSend != null) {
+      _setCurrentLocationStatus(_lastStateToSend!);
     }
   }
 
@@ -419,13 +419,13 @@ class MapViewController {
   void _onStatusChanged(String status) {
     if (mapViewerStatusesFilter.contains(status)) {
       _setCurrentLocationStatus(status);
-      _lastStatusToSend = status;
+      _lastStateToSend = status;
     }
   }
 
   void _onError(Error error) {
     // Right now the MapView will show a generic error.
     _setCurrentLocationStatus(error.code);
-    _lastStatusToSend = error.code;
+    _lastStateToSend = error.code;
   }
 }
