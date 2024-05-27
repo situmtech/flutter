@@ -38,7 +38,6 @@ CalibrationPointData createCalibrationPointData(Map<String, dynamic> payload) {
       latitude: lat,
       longitude: lng,
     ),
-    isIndoor: isIndoor,
   );
 }
 

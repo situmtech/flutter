@@ -24,7 +24,8 @@ class MapViewController {
   // Keep a reference to the last status/error received to avoid missing status
   // notifications to the MapView. Last status will be sent to the MapView after
   // it finishes loading.
-  String? _lastStateToSend;
+  String? _lastStatusToSend;
+  String? _lastErrorToSend;
 
   List<String> mapViewerStatusesFilter = [
     'STARTING',
@@ -226,8 +227,12 @@ class MapViewController {
 
   void _notifyMapIsReady() {
     _widgetLoadCallback(this);
-    if (_lastStateToSend != null) {
-      _setCurrentLocationStatus(_lastStateToSend!);
+    if (_lastStatusToSend != null) {
+      _setCurrentLocationStatus(_lastStatusToSend!);
+    }
+    if (_lastErrorToSend != null) {
+      // Same API for sending status and errors...
+      _setCurrentLocationStatus(_lastErrorToSend!);
     }
   }
 
@@ -419,13 +424,13 @@ class MapViewController {
   void _onStatusChanged(String status) {
     if (mapViewerStatusesFilter.contains(status)) {
       _setCurrentLocationStatus(status);
-      _lastStateToSend = status;
+      _lastStatusToSend = status;
     }
   }
 
   void _onError(Error error) {
     // Right now the MapView will show a generic error.
     _setCurrentLocationStatus(error.code);
-    _lastStateToSend = error.code;
+    _lastErrorToSend = error.code;
   }
 }

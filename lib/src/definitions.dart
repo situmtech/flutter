@@ -311,28 +311,26 @@ enum ARStatus {
   finished,
 }
 
+/// # Don't use this class, it is intended for internal use.
 /// Encapsulates the data of a calibration point. Each calibration point is
 /// received from the [MapView] when it is in mode [UIMode.calibration].
-/// # You probably don't need to use this class as it is intended for internal use.
 class CalibrationPointData {
   final String buildingIdentifier;
   final String floorIdentifier;
   final Coordinate coordinate;
-  final bool isIndoor;
 
   CalibrationPointData({
     required this.buildingIdentifier,
     required this.floorIdentifier,
     required this.coordinate,
-    required this.isIndoor,
   });
 }
 
+/// # Don't use this enum, it is intended for internal use.
 /// Status received when the [MapView] is in mode [UIMode.calibration] and the
 /// user stops the current calibration.
 /// The user may want to save ([success]) or cancel ([cancelled]) the
 /// calibration. When saving, the last calibration point may be discarded ([undo]).
-/// # You probably don't need to use this enum as it is intended for internal use.
 enum CalibrationFinishedStatus {
   success,
   undo,

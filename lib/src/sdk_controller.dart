@@ -152,6 +152,7 @@ class SitumSdk {
     _alreadyAuthenticated = true;
   }
 
+  /// # Don't use this method, you probably want to call [setApiKey].
   /// Authenticate yourself into our SDK. Prefer [setApiKey].
   /// **Note**: After invoking [setUserPass], all subsequent calls will be ignored until [logout] is invoked.
   Future<void> setUserPass(String user, String pass) async {
