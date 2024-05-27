@@ -126,7 +126,7 @@ class MapViewConfiguration {
     return finalApiDomain;
   }
 
-  String _getViewerURL() {
+  String _getViewerURL(String? deviceId) {
     if (buildingIdentifier == null && remoteIdentifier == null) {
       throw ArgumentError(
           'Missing configuration: remoteIdentifier or buildingIdentifier must be provided.');
@@ -138,6 +138,9 @@ class MapViewConfiguration {
     }
     if (language != null) {
       query = "$query&lng=$language";
+    }
+    if (deviceId != null) {
+      query = "$query&deviceId=$deviceId";
     }
     if (remoteIdentifier?.isNotEmpty == true) {
       base = "$base/id/$remoteIdentifier";
