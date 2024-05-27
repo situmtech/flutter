@@ -185,74 +185,104 @@ class TapDetectorAlgorithm1 extends TapDetector {
     return max;
   }
 
-
-  // Future<void> _saveAccelerometerData(AccelerometerEvent event, int timestamp) async {
-  //   final directory = await getApplicationDocumentsDirectory();
-  //   final path = '${directory.path}/accelerometer_data.csv';
-  //   //   print("path_ :  ${path}");
-  //   final file = File(path);
-  //
-  //   String data = '$timestamp, ${event.x}, ${event.y}, ${event.z}\n';
-  //   await file.writeAsString(data, mode: FileMode.append);
-  // }
+// Future<void> _saveAccelerometerData(AccelerometerEvent event, int timestamp) async {
+//   final directory = await getApplicationDocumentsDirectory();
+//   final path = '${directory.path}/accelerometer_data.csv';
+//   //   print("path_ :  ${path}");
+//   final file = File(path);
+//
+//   String data = '$timestamp, ${event.x}, ${event.y}, ${event.z}\n';
+//   await file.writeAsString(data, mode: FileMode.append);
+// }
 }
 
 class TapDetectorAlgorithm2 extends TapDetector {
-  final int peakInterval = 1000; // Máximo intervalo entre los 3 taps en milisegundos
+  final int peakInterval = 1500; // Máximo intervalo entre los 3 taps en milisegundos
   final int tapCountThreshold = 3; // Número mínimo de taps para desencadenar la vibración
   List<List<dynamic>> accelerationBuffer = [];
   late StreamSubscription<AccelerometerEvent> _streamSubscription;
-  final int windowSize = 5;
+  final int windowSize = 10;
+  int thresholdPeak = 3;
+  double smoothingFactor = 2.0;
 
   @override
   void start() {
     _streamSubscription = accelerometerEvents.listen((AccelerometerEvent event) {
 
-      List<double> rawAcceleration = [event.x, event.y, event.z];
+      List<List<double>> rawAcceleration = [[event.x, event.y, event.z]];
       List<double> smoothedAcceleration = [
-        _applyMovingAverageFilter(rawAcceleration.map((e) => e).toList(), windowSize),
-        _applyMovingAverageFilter(rawAcceleration.map((e) => e).toList(), windowSize),
-        _applyMovingAverageFilter(rawAcceleration.map((e) => e).toList(), windowSize)
+        applyCustomSmoothingFilterLastValue(rawAcceleration.map((e) => e[0]).toList(), windowSize, smoothingFactor),
+        applyCustomSmoothingFilterLastValue(rawAcceleration.map((e) => e[1]).toList(), windowSize, smoothingFactor),
+        applyCustomSmoothingFilterLastValue(rawAcceleration.map((e) => e[2]).toList(), windowSize, smoothingFactor)
       ];
+      
       int currentTime = DateTime.now().millisecondsSinceEpoch;
       accelerationBuffer.add([smoothedAcceleration, currentTime]);
+      print("Executing algorithm 2");
       _trimBuffer();
       if (_hasPeak(accelerationBuffer)) {
         triggerVibration();
       }
       _saveAccelerometerData(smoothedAcceleration, currentTime);
+      saveRaw(rawAcceleration, currentTime);
+
+
     });
   }
-
+  Future<void> saveRaw(List<List<double>> rawAcceleration, int currentTime) async {
+    final directory = await getApplicationDocumentsDirectory();
+    final path = '${directory.path}/accelerometer_data_raw.csv';
+    final file = File(path);
+    String data = '$currentTime, ${rawAcceleration[0][0]}, ${rawAcceleration[0][1]}, ${rawAcceleration[0][2]}\n';
+    await file.writeAsString(data, mode: FileMode.append);
+  }
   @override
   void stop() {
     _streamSubscription.cancel();
   }
 
-  double _calculateMagnitude(List<double> acceleration) {
-    return math.sqrt(acceleration[0] * acceleration[0] +
-        acceleration[1] * acceleration[1] +
-        acceleration[2] * acceleration[2]);
+  double calcularModulo(List<double> vector) {
+    if (vector.length != 3) {
+      throw ArgumentError("El vector debe tener exactamente tres posiciones");
+    }
+
+    double modulo = 0;
+    for (var componente in vector) {
+      modulo += componente * componente;
+    }
+    return math.sqrt(modulo);
   }
 
   bool _hasPeak(List<List<dynamic>> data) {
     int tapCount = 0;
+    for (int i = 1; i < data.length - 1; i++) {
+      //Componente z es la perpendicular al telefono
+      if((data[i][0][1]>data[i][0][2]) || (data[i][0][0]>data[i][0][2])){ //El teléfono está en vertical.
 
-    for (int i = 10; i < data.length - 10; i++) {
-      double magnitude = _calculateMagnitude(data[i][0]);
-      double prevMagnitude = _calculateMagnitude(data[i - 10][0]);
-      double nextMagnitude = _calculateMagnitude(data[i + 10][0]);
+        double magnitude = data[i][0][2];
+        double prevMagnitude = data[i - 1][0][2];
+        double nextMagnitude = data[i + 1][0][2];
 
-      if (magnitude > 2 * prevMagnitude && magnitude > 2 * nextMagnitude) {
-        tapCount++;
+
+        print(" ${prevMagnitude}  ${magnitude}  ${nextMagnitude}  ${thresholdPeak}  ${tapCount}");
+        // print("${(magnitude - prevMagnitude)} ${(magnitude - nextMagnitude)}  ${tapCount}");
+        // print("");
+
+        if ((magnitude - prevMagnitude) > thresholdPeak  || (magnitude - nextMagnitude) > thresholdPeak ) {
+          tapCount++;
+        }
+
       }
+
     }
 
     return tapCount >= tapCountThreshold;
   }
 
-  double _applyMovingAverageFilter(List<double> data, int windowSize) {
-    if (data.isEmpty) return 0.0;
+  double applyCustomSmoothingFilterLastValue(List<double> data, int windowSize, double smoothingFactor) {
+    if (data.isEmpty) {
+      return 0.0;
+    }
 
     List<double> smoothedData = List<double>.filled(data.length, 0.0);
     int halfWindowSize = windowSize ~/ 2;
@@ -262,17 +292,18 @@ class TapDetectorAlgorithm2 extends TapDetector {
       int end = math.min(data.length - 1, i + halfWindowSize);
 
       double sum = 0.0;
-      int count = 0;
+      double weightSum = 0.0;
 
       for (int j = start; j <= end; j++) {
-        sum += data[j];
-        count++;
+        double weight = math.pow(smoothingFactor, (j - i).abs()).toDouble();
+        sum += data[j] * weight;
+        weightSum += weight;
       }
 
-      smoothedData[i] = sum / count;
+      smoothedData[i] = sum / weightSum;
     }
 
-    return smoothedData.last; // Devuelve el último valor para la ventana actual
+    return smoothedData.last;
   }
 
   void _trimBuffer() {
@@ -280,7 +311,6 @@ class TapDetectorAlgorithm2 extends TapDetector {
 
     int firstTimestamp = accelerationBuffer.first[1];
     int lastTimestamp = accelerationBuffer.last[1];
-    print("Executing algorithm 2");
     while (lastTimestamp - firstTimestamp > peakInterval) {
       accelerationBuffer.removeAt(0);
       if (accelerationBuffer.isEmpty) break;
@@ -300,11 +330,24 @@ class TapDetectorAlgorithm2 extends TapDetector {
     String data = '$timestamp, ${event[0]}, ${event[1]}, ${event[2]}\n';
     await file.writeAsString(data, mode: FileMode.append);
   }
-
 }
 
 void main() {
-  runApp(MyApp());
+  deleteSavedFile().then((_) {
+    runApp(MyApp());
+  });
+}
+
+Future<void> deleteSavedFile() async {
+  try {
+    final directory = await getApplicationDocumentsDirectory();
+    final file = File('${directory.path}/accelerometer_data.csv');
+    if (await file.exists()) {
+      await file.delete();
+    }
+  } catch (e) {
+    print('Error al borrar el archivo: $e');
+  }
 }
 
 class MyApp extends StatelessWidget {
@@ -324,36 +367,44 @@ class TapTapTapDetector extends StatefulWidget {
 class _TapTapTapDetectorState extends State<TapTapTapDetector> {
   late TapDetector _tapDetector;
   String _selectedAlgorithm = 'Algorithm 2';
-  final List<String> _algorithms = ['Algorithm 1', 'Algorithm 2'];
+  final List<String> _algorithms = ['Algorithm 2', 'Algorithm 1'];
+  late TextEditingController _thresholdController; // Controlador para el campo de entrada
 
   @override
   void initState() {
     super.initState();
-    _tapDetector = TapDetectorAlgorithm1(requiredTaps: 3, sensibility: 8); // Algoritmo por defecto
+    _tapDetector = TapDetectorAlgorithm2();
     _tapDetector.start();
+    _thresholdController = TextEditingController(); // Inicializa el controlador
   }
 
   @override
   void dispose() {
     _tapDetector.stop();
+    _thresholdController.dispose(); // Libera el controlador
     super.dispose();
   }
 
   void _onAlgorithmChanged(String? value) {
     if (value != null) {
       setState(() {
-        _tapDetector.stop(); // Detener el algoritmo actual
+        _tapDetector.stop();
         _selectedAlgorithm = value;
-
-        // Cambiar al nuevo algoritmo
-        if (_selectedAlgorithm == 'Algorithm 1') {
-          _tapDetector = TapDetectorAlgorithm1(requiredTaps: 3, sensibility: 8);
-        } else {
+        if (_selectedAlgorithm == 'Algorithm 2') {
           _tapDetector = TapDetectorAlgorithm2();
+        } else {
+          _tapDetector = TapDetectorAlgorithm1(requiredTaps: 3, sensibility: 8);
         }
-        _tapDetector.start(); // Iniciar el nuevo algoritmo
+        _tapDetector.start();
       });
     }
+  }
+
+  void _onThresholdChanged(String value) {
+    // Actualiza el valor de thresholdPeak cuando el usuario cambia el campo de entrada
+    setState(() {
+      (_tapDetector as TapDetectorAlgorithm2).thresholdPeak = int.parse(value);
+    });
   }
 
   @override
@@ -378,144 +429,19 @@ class _TapTapTapDetectorState extends State<TapTapTapDetector> {
                 );
               }).toList(),
             ),
+            SizedBox(height: 20),
+            TextField(
+              controller: _thresholdController,
+              keyboardType: TextInputType.number,
+              decoration: InputDecoration(
+                labelText: 'Umbral de Pico (thresholdPeak)',
+                hintText: 'Ingrese un valor numérico',
+              ),
+              onChanged: _onThresholdChanged,
+            ),
           ],
         ),
       ),
     );
   }
 }
-
-
-// import 'package:flutter/material.dart';
-// import 'package:sensors_plus/sensors_plus.dart';
-// import 'package:flutter_vibrate/flutter_vibrate.dart';
-// import 'dart:math';
-//
-//
-// void main() {
-//   runApp(MyApp());
-// }
-//
-// class MyApp extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       home: TapTapTapDetector(),
-//     );
-//   }
-// }
-//
-// class TapTapTapDetector extends StatefulWidget {
-//   @override
-//   _TapTapTapDetectorState createState() => _TapTapTapDetectorState();
-// }
-//
-// class _TapTapTapDetectorState extends State<TapTapTapDetector> {
-//
-//   final int peakInterval = 1000; // Máximo intervalo entre los 3 taps en milisegundos
-//   final int tapCountThreshold = 3; // Número mínimo de taps para desencadenar la vibración
-//   List<List<dynamic>> accelerationBuffer = [];
-//
-//
-//   // void smoothAccelerometerData() {
-//   //   int windowSize = 3; // Tamaño de la ventana para el filtro de media móvil
-//   //   List<List<dynamic>> smoothedBuffer = [];
-//   //
-//   //   for (int i = 0; i < accelerationBuffer.length; i++) {
-//   //     if (i < windowSize - 1) {
-//   //       // No hay suficientes datos para suavizar, simplemente agregamos el dato original
-//   //       smoothedBuffer.add(accelerationBuffer[i]);
-//   //     } else {
-//   //       double sum = 0.0;
-//   //       for (int j = i - windowSize + 1; j <= i; j++) {
-//   //         sum += accelerationBuffer[j][0]; // Sumar los valores de aceleración
-//   //       }
-//   //       double smoothedValue = sum / windowSize; // Calcular el promedio
-//   //       int timestamp = accelerationBuffer[i][1]; // Conservar el timestamp original
-//   //       smoothedBuffer.add([smoothedValue, timestamp]); // Agregar el valor suavizado al nuevo buffer
-//   //     }
-//   //   }
-//   //   accelerationBuffer = List.from(smoothedBuffer);
-//   // }
-//
-//   @override
-//   void initState() {
-//     super.initState();
-//     accelerometerEvents.listen((AccelerometerEvent event) {
-//       double acceleration = _calculateMagnitude(event.x, event.y, event.z);
-//       int currentTime = DateTime.now().millisecondsSinceEpoch;
-//       accelerationBuffer.add([acceleration, currentTime]);
-//       //print("${event.x.abs()} + ${event.y.abs()} +${event.z.abs()}");
-//       // smoothAccelerometerData();
-//
-//       // Mantener el tamaño del búfer dentro del límite
-//       _trimBuffer();
-//
-//       // for (var entry in accelerationBuffer) {
-//       //   print("Acceleration value Y: ${entry[0]}");
-//       // }
-//
-//       // Detectar picos en el búfer de aceleración
-//       if (_hasPeak(accelerationBuffer)) {
-//         triggerVibration();
-//       }
-//     });
-//   }
-//
-//
-//   double _calculateMagnitude(double x, double y, double z) {
-//     return sqrt(x * x + y * y + z * z);
-//   }
-//
-//   bool _hasPeak(List<List<dynamic>> data) {
-//     int tapCount = 0;
-//
-//     // for (int i = 0; i < data.length ; i++) {
-//     //   print(data[i][0] );
-//     // }
-//
-//     for (int i = 10; i < data.length - 10; i++) {
-//       if (data[i][0] > 2*data[i - 10][0] && 2*data[i + 10][0] <  data[i][0]) {
-//         tapCount++;
-//         print ("Tap count:   ${tapCount}");
-//       }
-//     }
-//     return tapCount >= tapCountThreshold;
-//   }
-//
-//   //Actualiza el buffer de datos para tener
-//   // un buffer de 2000 ms de datos del acelerometro
-//   void _trimBuffer() {
-//     if (accelerationBuffer.isEmpty) return;
-//
-//     int firstTimestamp = accelerationBuffer.first[1];
-//     int lastTimestamp = accelerationBuffer.last[1];
-//
-//     while (lastTimestamp - firstTimestamp > peakInterval) {
-//       setState(() {
-//         accelerationBuffer.removeAt(0);
-//       });
-//       if (accelerationBuffer.isEmpty) break;
-//       firstTimestamp = accelerationBuffer.first[1];
-//     }
-//   }
-//
-//   void triggerVibration() {
-//     print("Vibra!!!!!!!!!!!!!!!!1 TapTapTap detectado.");
-//     Vibrate.vibrate();
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text('TapTapTap Detector'),
-//       ),
-//       body: Center(
-//         child: Text('Realiza un "taptaptap" para que el teléfono vibre'),
-//       ),
-//     );
-//   }
-// }
-//
-//
