@@ -193,6 +193,7 @@ class MapViewController {
   /// List<String> excludedTags = [];
   ///
   /// setDirectionsOptions(MapViewDirectionsOptions(includedTags: includedTags, excludedTags: excludedTags));
+  /// 
   /// ```
 
   void setDirectionsOptions(MapViewDirectionsOptions directionOptions) async {
