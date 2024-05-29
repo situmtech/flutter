@@ -33,7 +33,7 @@ class AlgorithmConfig {
 
 class TapDetectorAlgorithm1 extends TapDetector {
   static const String TAG = 'TapDetector';
-
+  final Function onTapDetected;
   static const int DEFAULT_NUM_TAPS = 3;
   static const int MIN_NUM_TAPS = 1;
   static const int MIN_SENSIBILITY = 0;
@@ -75,7 +75,7 @@ class TapDetectorAlgorithm1 extends TapDetector {
   late StreamSubscription<AccelerometerEvent> _subscription;
   int accTime = 0;
 
-  TapDetectorAlgorithm1({required this.requiredTaps, required this.config}) : currentTaps = 0 {
+  TapDetectorAlgorithm1({required this.requiredTaps, required this.config, required this.onTapDetected}) : currentTaps = 0 {
     _updateThreshold();
   }
 

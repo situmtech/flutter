@@ -400,22 +400,34 @@ class _MyTabsState extends State<MyTabs> {
       _echo("Situm> SDK> Exit geofences: ${geofencesResult.geofences}.");
     });
     _downloadPois(buildingIdentifier);
-    // Inicializar el controlador del TextField
+
+    
     _taptaptapController = TextEditingController();
     tapDetector = TapDetectorAlgorithm1(
       requiredTaps: 3,
       config: AlgorithmConfig(5),
+      onTapDetected: _handleTapDetected,
     );
-
+    tapDetector.start();
+    print("Tap detector started");
     super.initState();
   }
 
   @override
   void dispose() {
-    _taptaptapController.dispose();
     tapDetector.stop();
     super.dispose();
   }
+
+  void _handleTapDetected() {
+    // Manejar el evento de tap detectado
+    print("Tap detected!");
+    // Puedes agregar cualquier otra lógica aquí, como actualizar el estado de la UI
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Tap detected!')),
+    );
+  }
+
 
   void _echo(String output) {
     currentOutputNotifier.value = output;
