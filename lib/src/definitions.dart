@@ -266,11 +266,23 @@ class OnExternalLinkClickedResult {
   });
 }
 
+/// This class represents the object that contains the message passed from
+/// the viewer to the application. This message represents the requirement to
+/// read aloud a text with some parameters like language, volume, etc
 class OnSpeakAloudTextResult {
+  /// A [String] that will be read aloud using TTS
   final String text;
+
+  /// A [String] that represents the language code, i.e. es-ES
   final String? lang;
+
+  /// A [Double] that represents the volume from 0.0 to 1.0
   final double? volume;
+
+  /// A [Double] that represents the speech pitch from 0.0 to 1.0
   final double? pitch;
+
+  /// A [Double] that represents the speech rate from 0.0 to 1.0
   final double? rate;
 
   const OnSpeakAloudTextResult(

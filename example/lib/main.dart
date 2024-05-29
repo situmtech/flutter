@@ -260,6 +260,8 @@ class _MyTabsState extends State<MyTabs> {
       //   ...
     });
 
+    // Flutter-Android webview lacks proper support for TTS technology so we
+    // fallback to third-party libraries
     controller.onSpeakAloudText((speakaloudTextResult) async {
       _echo("Situm > SDK > Speak aloud: ${speakaloudTextResult.text}");
       if (speakaloudTextResult.lang != null &&
