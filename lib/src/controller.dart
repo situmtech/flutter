@@ -187,21 +187,27 @@ class MapViewController {
   ///
   /// Example:
   /// ```dart
+  ///
   /// List<String> includedTags = ['user1', 'user5'];
   /// List<String> excludedTags = [];
   ///
-  /// setDirectionsOptions(includedTags, excludedTags);
+  /// mapViewController?.setDirectionsOptions(
+  ///    MapViewDirectionsOptions(
+  ///      includedTags: includedTags,
+  ///      excludedTags: excludedTags,
+  ///    ),
+  ///  );
+  ///
   /// ```
-  void setDirectionsOptions(
-      List<String> includedTags, List<String> excludedTags) async {
+
+  void setDirectionsOptions(MapViewDirectionsOptions directionOptions) async {
     dynamic message = {
-      "includedTags": includedTags,
-      "excludedTags": excludedTags,
+      "includedTags": directionOptions.includedTags,
+      "excludedTags": directionOptions.excludedTags,
     };
 
     _sendMessage(WV_MESSAGE_DIRECTIONS_SET_OPTIONS, jsonEncode(message));
   }
-
   // WYF internal utils:
 
   void _notifyMapIsReady() {
