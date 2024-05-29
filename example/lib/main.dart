@@ -41,6 +41,8 @@ class _MyTabsState extends State<MyTabs> {
   Function? mapViewLoadAction;
 
   MapViewController? mapViewController;
+  late TextEditingController _taptaptapController;
+  late TapDetectorAlgorithm1 tapDetector;
 
   // Widget to showcase some SDK API functions
   Widget _createHomeTab() {
@@ -62,6 +64,7 @@ class _MyTabsState extends State<MyTabs> {
         ]),
         _poiInteraction(),
         _setCamera(),
+        _Taptaptap(),
         Expanded(
             child: ValueListenableBuilder<String>(
           valueListenable: currentOutputNotifier,
@@ -122,6 +125,53 @@ class _MyTabsState extends State<MyTabs> {
         ],
       ),
     );
+  }
+
+  Card _Taptaptap() {
+    return Card(
+      child: ExpansionTile(
+        shape: const Border(),
+        title: _cardTitle(Icons.video_camera_front_rounded, "TapTapTap"),
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height: 20),
+                TextField(
+                  controller: _taptaptapController,
+                  keyboardType: TextInputType.number,
+                  decoration: InputDecoration(
+                    labelText: 'Sensibility',
+                    hintText: 'Set numeric value',
+                  ),
+                ),
+                SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    _sdkButton("Set", _setSensibility),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _setSensibility() {
+    String? sensibilidadText = _taptaptapController.text;
+    double? sensibility = double.tryParse(sensibilidadText);
+    if (sensibility != null) {
+      print('Valor de sensibilidad: $sensibility');
+      tapDetector.config.sensibility = sensibility.toInt();
+      tapDetector.start();
+    } else {
+      print('El valor de sensibilidad no es un número válido.');
+    }
   }
 
   Card _setCamera() {
@@ -350,7 +400,21 @@ class _MyTabsState extends State<MyTabs> {
       _echo("Situm> SDK> Exit geofences: ${geofencesResult.geofences}.");
     });
     _downloadPois(buildingIdentifier);
+    // Inicializar el controlador del TextField
+    _taptaptapController = TextEditingController();
+    tapDetector = TapDetectorAlgorithm1(
+      requiredTaps: 3,
+      config: AlgorithmConfig(5),
+    );
+
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _taptaptapController.dispose();
+    tapDetector.stop();
+    super.dispose();
   }
 
   void _echo(String output) {

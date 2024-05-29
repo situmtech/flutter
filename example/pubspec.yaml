@@ -17,6 +17,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  sensors_plus: ^3.0.0
+  flutter_vibrate: ^1.3.0
+  path_provider: ^2.0.11
+  http: ^1.2.1
 
   situm_flutter:
     # When depending on this package from a real application you should use:
