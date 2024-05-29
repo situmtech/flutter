@@ -168,8 +168,13 @@ class SpeakAloudTextMessageHandler implements MessageHandler {
   void handleMessage(
       MapViewController mapViewController, Map<String, dynamic> payload) async {
     var text = "${payload["text"]}";
+    var lang =
+        payload["lang"]?.toString().isNotEmpty == true ? payload["lang"] : null;
+    var pitch = payload["pitch"] > 0 ? payload["pitch"].toDouble() : null;
+    var volume = payload["volume"] > 0 ? payload['volume'].toDouble() : null;
+    var rate = payload["rate"] > 0 ? payload['rate'].toDouble() : null;
 
-    mapViewController._onSpeakAloudTextCallback
-        ?.call(OnSpeakAloudTextResult(text: text));
+    mapViewController._onSpeakAloudTextCallback?.call(OnSpeakAloudTextResult(
+        text: text, lang: lang, pitch: pitch, rate: rate, volume: volume));
   }
 }

@@ -1,10 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:situm_flutter/sdk.dart';
 import 'package:situm_flutter/wayfinding.dart';
-import 'package:flutter_tts/flutter_tts.dart';
 
 import './config.dart';
 
@@ -262,6 +262,20 @@ class _MyTabsState extends State<MyTabs> {
 
     controller.onSpeakAloudText((speakaloudTextResult) async {
       _echo("Situm > SDK > Speak aloud: ${speakaloudTextResult.text}");
+      if (speakaloudTextResult.lang != null &&
+          flutterTts.isLanguageAvailable(speakaloudTextResult.lang!) == true) {
+        flutterTts.setLanguage(speakaloudTextResult.lang!);
+      }
+      if (speakaloudTextResult.rate != null) {
+        flutterTts.setSpeechRate(speakaloudTextResult.rate!);
+      }
+      if (speakaloudTextResult.volume != null) {
+        flutterTts.setVolume(speakaloudTextResult.volume!);
+      }
+      if (speakaloudTextResult.pitch != null) {
+        flutterTts.setPitch(speakaloudTextResult.pitch!);
+      }
+
       await flutterTts.speak(speakaloudTextResult.text);
     });
   }

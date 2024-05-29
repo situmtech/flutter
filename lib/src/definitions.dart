@@ -268,10 +268,13 @@ class OnExternalLinkClickedResult {
 
 class OnSpeakAloudTextResult {
   final String text;
+  final String? lang;
+  final double? volume;
+  final double? pitch;
+  final double? rate;
 
-  const OnSpeakAloudTextResult({
-    required this.text,
-  });
+  const OnSpeakAloudTextResult(
+      {required this.text, this.lang, this.volume, this.pitch, this.rate});
 }
 
 class SearchFilter {
