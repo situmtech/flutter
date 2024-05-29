@@ -6,6 +6,10 @@ import 'package:sensors_plus/sensors_plus.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter_vibrate/flutter_vibrate.dart';
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+
+
 
 // Clase base abstracta para los detectores de taps
 abstract class TapDetector {
@@ -13,12 +17,22 @@ abstract class TapDetector {
   void stop();
 }
 
+class AlgorithmConfig {
+  int _sensibility;
+
+  AlgorithmConfig(this._sensibility);
+
+  int get sensibility => _sensibility;
+
+  set sensibility(int value) {
+    _sensibility = value;
+  }
+}
+
 class TapDetectorAlgorithm1 extends TapDetector {
   static const String TAG = 'TapDetector';
 
   static const int DEFAULT_NUM_TAPS = 3;
-  static const int DEFAULT_SENSIBILITY = 8;
-
   static const int MIN_NUM_TAPS = 1;
   static const int MIN_SENSIBILITY = 0;
   static const int MAX_SENSIBILITY = 10;
@@ -29,9 +43,10 @@ class TapDetectorAlgorithm1 extends TapDetector {
   static const int TAP_DETECTED = 3;
 
   final int requiredTaps;
-  int currentTaps;
-  final int sensibility;
-  final double threshold;
+  int currentTaps = 3;
+  final AlgorithmConfig config;
+  late double threshold;
+  late double localThresh;
   final List<double> hpZAxisAccWindow = [];
   final List<double> hpXAxisAccWindow = [];
   final List<double> hpYAxisAccWindow = [];
@@ -50,7 +65,6 @@ class TapDetectorAlgorithm1 extends TapDetector {
   int currentState = INIT;
 
   static const double RC = 0.015915494309189534;
-  final double localThresh;
   double peakV = 0;
   double valleyV = 0;
   static const double MAX_TIME_BETWEEN_TAPS = 0.35;
@@ -59,18 +73,28 @@ class TapDetectorAlgorithm1 extends TapDetector {
   late StreamSubscription<AccelerometerEvent> _subscription;
   int accTime = 0;
 
-  TapDetectorAlgorithm1({required this.requiredTaps, required this.sensibility})
-      : threshold = 2 * (10 - sensibility) + 10,
-        localThresh = (2 * (10 - sensibility) + 10) / 3,
-        currentTaps = 0;
+  TapDetectorAlgorithm1({required this.requiredTaps, required this.config}) : currentTaps = 0 {
+    _updateThreshold();
+  }
+
+  void _updateThreshold() {
+    threshold = 2 * (10 - config.sensibility) + 10;
+    localThresh = threshold / 3;
+  }
 
   @override
   void start() {
     stop();
-    print('$TAG: Started Tap Detector with requiredTaps=$requiredTaps and sensibility=$sensibility');
+    print('$TAG: Started Tap Detector with requiredTaps=$requiredTaps and sensibility=${config.sensibility}');
     _subscription = accelerometerEvents.listen((event) {
       int currentTime = DateTime.now().millisecondsSinceEpoch;
-      print("Executing algorithm 1");
+
+      threshold = 2 * (10 - config.sensibility) + 10;
+      localThresh = threshold / 3;
+
+
+      print("Executing algorithm 1 with sensibility: ${config.sensibility}  threshold: ${localThresh}");
+
       if (accTime != 0) {
         double dT = (currentTime - accTime) / 1000;
         handleAcc(event, dT);
@@ -184,17 +208,8 @@ class TapDetectorAlgorithm1 extends TapDetector {
     }
     return max;
   }
-
-// Future<void> _saveAccelerometerData(AccelerometerEvent event, int timestamp) async {
-//   final directory = await getApplicationDocumentsDirectory();
-//   final path = '${directory.path}/accelerometer_data.csv';
-//   //   print("path_ :  ${path}");
-//   final file = File(path);
-//
-//   String data = '$timestamp, ${event.x}, ${event.y}, ${event.z}\n';
-//   await file.writeAsString(data, mode: FileMode.append);
-// }
 }
+
 
 class TapDetectorAlgorithm2 extends TapDetector {
   final int peakInterval = 1500; // Máximo intervalo entre los 3 taps en milisegundos
@@ -202,8 +217,10 @@ class TapDetectorAlgorithm2 extends TapDetector {
   List<List<dynamic>> accelerationBuffer = [];
   late StreamSubscription<AccelerometerEvent> _streamSubscription;
   final int windowSize = 10;
-  int thresholdPeak = 3;
+  final AlgorithmConfig config;
   double smoothingFactor = 2.0;
+
+  TapDetectorAlgorithm2({required this.config});
 
   @override
   void start() {
@@ -215,13 +232,13 @@ class TapDetectorAlgorithm2 extends TapDetector {
         applyCustomSmoothingFilterLastValue(rawAcceleration.map((e) => e[1]).toList(), windowSize, smoothingFactor),
         applyCustomSmoothingFilterLastValue(rawAcceleration.map((e) => e[2]).toList(), windowSize, smoothingFactor)
       ];
-      
+
       int currentTime = DateTime.now().millisecondsSinceEpoch;
       accelerationBuffer.add([smoothedAcceleration, currentTime]);
-      print("Executing algorithm 2");
+      print("Executing algorithm 2 with sensibility ${config.sensibility}");
       _trimBuffer();
       if (_hasPeak(accelerationBuffer)) {
-        triggerVibration();
+        triggerVibrationAndSendAlert();
       }
       _saveAccelerometerData(smoothedAcceleration, currentTime);
       saveRaw(rawAcceleration, currentTime);
@@ -264,11 +281,11 @@ class TapDetectorAlgorithm2 extends TapDetector {
         double nextMagnitude = data[i + 1][0][2];
 
 
-        print(" ${prevMagnitude}  ${magnitude}  ${nextMagnitude}  ${thresholdPeak}  ${tapCount}");
+        print(" ${prevMagnitude}  ${magnitude}  ${nextMagnitude}  ${config.sensibility}  ${tapCount}");
         // print("${(magnitude - prevMagnitude)} ${(magnitude - nextMagnitude)}  ${tapCount}");
         // print("");
 
-        if ((magnitude - prevMagnitude) > thresholdPeak  || (magnitude - nextMagnitude) > thresholdPeak ) {
+        if ((magnitude - prevMagnitude) > config.sensibility  || (magnitude - nextMagnitude) > config.sensibility ) {
           tapCount++;
         }
 
@@ -318,8 +335,34 @@ class TapDetectorAlgorithm2 extends TapDetector {
     }
   }
 
-  void triggerVibration() {
+  Future<void> triggerVibrationAndSendAlert() async {
     Vibrate.vibrate();
+    // URL del endpoint
+    final url = Uri.parse('https://dashboard.situm.com/api/v1/alarms');
+    final Map<String, dynamic> data = {
+      "type": "DANGER",
+      "building_id": 12469,
+      "x": 20.25,
+      "y": 20.47,
+      "floor_id": 38718
+    };
+    String accessToken ="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzZjA5ZGQ1YS00MmY1LTRkYTAtOTZlNS0zNzBhMWZmNjlmMzIiLCJlbWFpbCI6ImNvcmVAc2l0dW0uY29tIiwib3JnYW5pemF0aW9uX3V1aWQiOiIxZDc1NGVmZi0wOWEyLTQzNWMtODJkNS03MjcwY2IxOTM3ODAiLCJyb2xlIjoiQURNSU5fT1JHIiwiaWF0IjoxNzE2ODk4MzM4LCJpbXBlcnNvbmF0ZSI6IjkwM2UwNGNiLWJjZjktNDgzZC1iMWMxLWU1ZTJmZDRjZTgxNyIsImV4cCI6MTcxNjk4NDczOH0.15MgXV3Ip4ZxM3VmV7u0dlQKndISKmwpI4CsMHJqRzI";
+// Hacer la solicitud POST con el encabezado de autorización
+    final response = await http.post(
+      url,
+      headers: {
+        'Content-Type': 'application/json; charset=UTF-8',
+        'Authorization': 'Bearer $accessToken', // Agrega el token de acceso aquí
+      },
+      body: jsonEncode(data), // Convertir los datos a JSON
+    );
+
+    // Verificar la respuesta
+    if (response.statusCode == 201) {
+      print('Post creado con éxito: ${response.body}');
+    } else {
+      print('Error al crear el post: ${response.statusCode}');
+    }
   }
 
   Future<void> _saveAccelerometerData(List<double> event, int timestamp) async {
@@ -331,6 +374,8 @@ class TapDetectorAlgorithm2 extends TapDetector {
     await file.writeAsString(data, mode: FileMode.append);
   }
 }
+
+
 
 void main() {
   deleteSavedFile().then((_) {
@@ -368,20 +413,25 @@ class _TapTapTapDetectorState extends State<TapTapTapDetector> {
   late TapDetector _tapDetector;
   String _selectedAlgorithm = 'Algorithm 2';
   final List<String> _algorithms = ['Algorithm 2', 'Algorithm 1'];
-  late TextEditingController _thresholdController; // Controlador para el campo de entrada
+  late TextEditingController _thresholdController;
+  late AlgorithmConfig _config;
 
   @override
   void initState() {
     super.initState();
-    _tapDetector = TapDetectorAlgorithm2();
+    // Inicializa la configuración con valores diferentes para cada algoritmo
+    _config = AlgorithmConfig(_selectedAlgorithm == 'Algorithm 2' ? 4 : 8);
+    _tapDetector = _selectedAlgorithm == 'Algorithm 2'
+        ? TapDetectorAlgorithm2(config: _config)
+        : TapDetectorAlgorithm1(requiredTaps: 3, config: _config);
     _tapDetector.start();
-    _thresholdController = TextEditingController(); // Inicializa el controlador
+    _thresholdController = TextEditingController();
   }
 
   @override
   void dispose() {
     _tapDetector.stop();
-    _thresholdController.dispose(); // Libera el controlador
+    _thresholdController.dispose();
     super.dispose();
   }
 
@@ -390,20 +440,19 @@ class _TapTapTapDetectorState extends State<TapTapTapDetector> {
       setState(() {
         _tapDetector.stop();
         _selectedAlgorithm = value;
-        if (_selectedAlgorithm == 'Algorithm 2') {
-          _tapDetector = TapDetectorAlgorithm2();
-        } else {
-          _tapDetector = TapDetectorAlgorithm1(requiredTaps: 3, sensibility: 8);
-        }
+        // Actualiza la configuración según el algoritmo seleccionado
+        _config.sensibility = _selectedAlgorithm == 'Algorithm 2' ? 4 : 8;
+        _tapDetector = _selectedAlgorithm == 'Algorithm 2'
+            ? TapDetectorAlgorithm2(config: _config)
+            : TapDetectorAlgorithm1(requiredTaps: 3, config: _config);
         _tapDetector.start();
       });
     }
   }
 
   void _onThresholdChanged(String value) {
-    // Actualiza el valor de thresholdPeak cuando el usuario cambia el campo de entrada
     setState(() {
-      (_tapDetector as TapDetectorAlgorithm2).thresholdPeak = int.parse(value);
+      _config.sensibility = int.parse(value);
     });
   }
 
@@ -434,7 +483,7 @@ class _TapTapTapDetectorState extends State<TapTapTapDetector> {
               controller: _thresholdController,
               keyboardType: TextInputType.number,
               decoration: InputDecoration(
-                labelText: 'Umbral de Pico (thresholdPeak)',
+                labelText: 'Sensibilidad',
                 hintText: 'Ingrese un valor numérico',
               ),
               onChanged: _onThresholdChanged,
