@@ -160,15 +160,16 @@ SitumRoute createRoute(arguments) {
     Map map = arguments["poiTo"];
     poi = createPoi(map);
   }
-  return SitumRoute(rawContent: arguments,
-      poiTo: poi);
+  return SitumRoute(rawContent: arguments, poiTo: poi);
 }
 
 DirectionsRequest createDirectionsRequest(arguments) {
-  var poiToIdentifier = "";
+  var poiToIdentifier = null;
   Map directionsRequestArgs = arguments["directionsRequest"];
-  if (!directionsRequestArgs.containsKey("poiToIdentifier") && arguments["destinationCategory"] == "POI") {
-    poiToIdentifier =  stringFromArgsOrEmptyId(arguments, "destinationIdentifier");
+  if (!directionsRequestArgs.containsKey("poiToIdentifier") &&
+      arguments["destinationCategory"] == "POI") {
+    poiToIdentifier =
+        stringFromArgsOrEmptyId(arguments, "destinationIdentifier");
   }
   var directionsRequest = DirectionsRequest(
     from: createPoint(directionsRequestArgs["from"]),

@@ -84,6 +84,9 @@ class MapViewController {
   }
 
   /// Selects the given POI category in the map.
+  ///
+  /// This method is deprecated. You can instead use [search] to filter POIs by category.
+  @Deprecated("Use instead MapViewController.search()")
   void selectPoiCategory(String identifier) async {
     _sendMessage(
         WV_MESSAGE_CARTOGRAPHY_SELECT_POI_CATEGORY, {"identifier": identifier});
@@ -139,6 +142,15 @@ class MapViewController {
     _sendMessage(WV_MESSAGE_UI_SET_LANGUAGE, "'$lang'");
   }
 
+  /// Performs a search with the given [SearchFilter].
+  ///
+  /// This action will have the same effect
+  /// as the user searching in the searchbar.
+  void search(SearchFilter searchFilter) async {
+    _sendMessage(
+        WV_MESSAGE_UI_SET_SEARCH_FILTER, jsonEncode(searchFilter.toMap()));
+  }
+
   /// Tells the map to keep the camera centered on the user position.
   void followUser() async {
     _sendMessage(WV_MESSAGE_CAMERA_FOLLOW_USER, {"value": true});
@@ -175,21 +187,27 @@ class MapViewController {
   ///
   /// Example:
   /// ```dart
+  ///
   /// List<String> includedTags = ['user1', 'user5'];
   /// List<String> excludedTags = [];
   ///
-  /// setDirectionsOptions(includedTags, excludedTags);
+  /// mapViewController?.setDirectionsOptions(
+  ///    MapViewDirectionsOptions(
+  ///      includedTags: includedTags,
+  ///      excludedTags: excludedTags,
+  ///    ),
+  ///  );
+  ///
   /// ```
-  void setDirectionsOptions(
-      List<String> includedTags, List<String> excludedTags) async {
+
+  void setDirectionsOptions(MapViewDirectionsOptions directionOptions) async {
     dynamic message = {
-      "includedTags": includedTags,
-      "excludedTags": excludedTags,
+      "includedTags": directionOptions.includedTags,
+      "excludedTags": directionOptions.excludedTags,
     };
 
     _sendMessage(WV_MESSAGE_DIRECTIONS_SET_OPTIONS, jsonEncode(message));
   }
-
   // WYF internal utils:
 
   void _notifyMapIsReady() {

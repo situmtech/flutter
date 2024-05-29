@@ -155,16 +155,20 @@ class _MapViewState extends State<MapView> {
     return [];
   }
 
-  void _loadWithConfig(MapViewConfiguration configuration) {
+  void _loadWithConfig(MapViewConfiguration configuration) async {
     if (webViewController is AndroidWebViewController) {
       AndroidWebViewController.enableDebugging(configuration.enableDebugging);
       final myAndroidController = webViewController as AndroidWebViewController;
       myAndroidController.setOnShowFileSelector(_androidFilePicker);
     }
-    // if (webViewController is WebKitWebViewController) {
-    //   (webViewController as WebKitWebViewController).setInspectable(true);
-    // }
-    final String mapViewUrl = mapViewConfiguration._getViewerURL();
+
+    if (webViewController is WebKitWebViewController) {
+      (webViewController as WebKitWebViewController)
+          .setInspectable(configuration.enableDebugging);
+    }
+    var sdk = SitumSdk();
+    final String deviceId = await sdk.getDeviceId();
+    final String mapViewUrl = mapViewConfiguration._getViewerURL(deviceId);
     // Load the composed URL in the WebView.
     webViewController
         ?.loadRequest(LoadRequestParams(uri: Uri.parse(mapViewUrl)));
