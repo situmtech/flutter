@@ -310,6 +310,28 @@ enum ARStatus {
   finished,
 }
 
+// Connection errors
+class ConnectionErrors {
+  static const ANDROID_NO_CONNECTION = -2;
+  static const ANDROID_SOCKET_NOT_CONNECTED = -6;
+  static const IOS_NO_CONNECTION = -1009;
+  static const IOS_HOSTNAME_NOT_RESOLVED = -1003;
+
+  static const List<int> values = [
+    ANDROID_NO_CONNECTION,
+    ANDROID_SOCKET_NOT_CONNECTED,
+    IOS_NO_CONNECTION,
+    IOS_HOSTNAME_NOT_RESOLVED
+  ];
+}
+
+class MapViewDirectionsOptions {
+  List<String>? excludedTags;
+  List<String>? includedTags;
+
+  MapViewDirectionsOptions({this.excludedTags, this.includedTags});
+}
+
 // Result callbacks.
 
 // WYF load callback.
@@ -328,18 +350,3 @@ typedef OnNavigationRequestInterceptor = void Function(
 // External link click.
 typedef OnExternalLinkClickedCallback = void Function(
     OnExternalLinkClickedResult data);
-
-// Connection errors
-class ConnectionErrors {
-  static const ANDROID_NO_CONNECTION = -2;
-  static const ANDROID_SOCKET_NOT_CONNECTED = -6;
-  static const IOS_NO_CONNECTION = -1009;
-  static const IOS_HOSTNAME_NOT_RESOLVED = -1003;
-
-  static const List<int> values = [
-    ANDROID_NO_CONNECTION,
-    ANDROID_SOCKET_NOT_CONNECTED,
-    IOS_NO_CONNECTION,
-    IOS_HOSTNAME_NOT_RESOLVED
-  ];
-}
