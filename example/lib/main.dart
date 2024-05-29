@@ -264,8 +264,7 @@ class _MyTabsState extends State<MyTabs> {
     // fallback to third-party libraries
     controller.onSpeakAloudText((speakaloudTextResult) async {
       _echo("Situm > SDK > Speak aloud: ${speakaloudTextResult.text}");
-      if (speakaloudTextResult.lang != null &&
-          flutterTts.isLanguageAvailable(speakaloudTextResult.lang!) == true) {
+      if (speakaloudTextResult.lang != null) {
         flutterTts.setLanguage(speakaloudTextResult.lang!);
       }
       if (speakaloudTextResult.rate != null) {
