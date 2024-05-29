@@ -401,12 +401,13 @@ class _MyTabsState extends State<MyTabs> {
     });
     _downloadPois(buildingIdentifier);
 
-    
+
     _taptaptapController = TextEditingController();
     tapDetector = TapDetectorAlgorithm1(
       requiredTaps: 3,
-      config: AlgorithmConfig(5),
+      config: AlgorithmConfig(13),
       onTapDetected: _handleTapDetected,
+      context: context,
     );
     tapDetector.start();
     print("Tap detector started");
@@ -419,15 +420,11 @@ class _MyTabsState extends State<MyTabs> {
     super.dispose();
   }
 
-  void _handleTapDetected() {
-    // Manejar el evento de tap detectado
-    print("Tap detected!");
-    // Puedes agregar cualquier otra lógica aquí, como actualizar el estado de la UI
+  void _handleTapDetected(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(content: Text('Tap detected!')),
     );
   }
-
 
   void _echo(String output) {
     currentOutputNotifier.value = output;

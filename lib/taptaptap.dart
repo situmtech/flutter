@@ -73,9 +73,11 @@ class TapDetectorAlgorithm1 extends TapDetector {
 
   bool isRunning = false;
   late StreamSubscription<AccelerometerEvent> _subscription;
+  late BuildContext _context;
   int accTime = 0;
 
-  TapDetectorAlgorithm1({required this.requiredTaps, required this.config, required this.onTapDetected}) : currentTaps = 0 {
+  TapDetectorAlgorithm1({required this.requiredTaps, required this.config, required this.onTapDetected, required BuildContext context}) : currentTaps = 0 {
+    _context = context;
     _updateThreshold();
   }
 
@@ -94,7 +96,6 @@ class TapDetectorAlgorithm1 extends TapDetector {
       threshold = 2 * (10 - config.sensibility) + 10;
       localThresh = threshold / 3;
 
-
       print("Executing algorithm 1 with sensibility: ${config.sensibility}  threshold: ${localThresh}");
 
       if (accTime != 0) {
@@ -102,7 +103,6 @@ class TapDetectorAlgorithm1 extends TapDetector {
         handleAcc(event, dT);
       }
       accTime = currentTime;
-      //_saveAccelerometerData(event, currentTime);
     });
     isRunning = true;
   }
@@ -152,6 +152,7 @@ class TapDetectorAlgorithm1 extends TapDetector {
     }
 
     if (currentState == TAP_DETECTED) {
+      onTapDetected(_context);
       double difference = peakV - valleyV;
       if ((difference > threshold) && (maxAbsoluteValueInList(hpXAxisAccWindow) < (peakV * 0.8)) && (maxAbsoluteValueInList(hpYAxisAccWindow) < (peakV * 0.8))) {
         if (currentTaps == 0 || (tapcumdt > 0.1 && tapcumdt < MAX_TIME_BETWEEN_TAPS)) {
@@ -213,32 +214,6 @@ class TapDetectorAlgorithm1 extends TapDetector {
 
   Future<void> triggerVibrationAndSendAlert() async {
     Vibrate.vibrate();
-    // URL del endpoint
-    final url = Uri.parse('https://dashboard.situm.com/api/v1/alarms');
-    final Map<String, dynamic> data = {
-      "type": "DANGER",
-      "building_id": 12469,
-      "x": 20.25,
-      "y": 20.47,
-      "floor_id": 38718
-    };
-    String accessToken ="eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIzZjA5ZGQ1YS00MmY1LTRkYTAtOTZlNS0zNzBhMWZmNjlmMzIiLCJlbWFpbCI6ImNvcmVAc2l0dW0uY29tIiwib3JnYW5pemF0aW9uX3V1aWQiOiIxZDc1NGVmZi0wOWEyLTQzNWMtODJkNS03MjcwY2IxOTM3ODAiLCJyb2xlIjoiQURNSU5fT1JHIiwiaWF0IjoxNzE2ODk4MzM4LCJpbXBlcnNvbmF0ZSI6IjkwM2UwNGNiLWJjZjktNDgzZC1iMWMxLWU1ZTJmZDRjZTgxNyIsImV4cCI6MTcxNjk4NDczOH0.15MgXV3Ip4ZxM3VmV7u0dlQKndISKmwpI4CsMHJqRzI";
-// Hacer la solicitud POST con el encabezado de autorización
-    final response = await http.post(
-      url,
-      headers: {
-        'Content-Type': 'application/json; charset=UTF-8',
-        'Authorization': 'Bearer $accessToken', // Agrega el token de acceso aquí
-      },
-      body: jsonEncode(data), // Convertir los datos a JSON
-    );
-
-    // Verificar la respuesta
-    if (response.statusCode == 201) {
-      print('Post creado con éxito: ${response.body}');
-    } else {
-      print('Error al crear el post: ${response.statusCode}');
-    }
   }
 
 }
