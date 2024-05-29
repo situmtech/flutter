@@ -420,7 +420,7 @@ class _TapTapTapDetectorState extends State<TapTapTapDetector> {
   void initState() {
     super.initState();
     // Inicializa la configuración con valores diferentes para cada algoritmo
-    _config = AlgorithmConfig(_selectedAlgorithm == 'Algorithm 2' ? 4 : 8);
+    _config = AlgorithmConfig(_selectedAlgorithm == 'Algorithm 2' ? 7 : 8);
     _tapDetector = _selectedAlgorithm == 'Algorithm 2'
         ? TapDetectorAlgorithm2(config: _config)
         : TapDetectorAlgorithm1(requiredTaps: 3, config: _config);
@@ -441,7 +441,7 @@ class _TapTapTapDetectorState extends State<TapTapTapDetector> {
         _tapDetector.stop();
         _selectedAlgorithm = value;
         // Actualiza la configuración según el algoritmo seleccionado
-        _config.sensibility = _selectedAlgorithm == 'Algorithm 2' ? 4 : 8;
+        _config.sensibility = _selectedAlgorithm == 'Algorithm 2' ? 7 : 8;
         _tapDetector = _selectedAlgorithm == 'Algorithm 2'
             ? TapDetectorAlgorithm2(config: _config)
             : TapDetectorAlgorithm1(requiredTaps: 3, config: _config);
