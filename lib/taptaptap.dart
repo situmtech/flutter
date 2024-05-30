@@ -7,9 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:flutter_vibrate/flutter_vibrate.dart';
 import 'dart:convert';
-import 'package:http/http.dart' as http;
+// import 'package:http/http.dart' as http;
+// import 'package:flutter_vibrate/flutter_vibrate.dart';
 
 
 
@@ -162,7 +162,7 @@ class TapDetectorAlgorithm1 extends TapDetector {
         }
       }
       print('$TAG: $currentTaps taps detected');
-      triggerVibrationAndSendAlert();
+      //triggerVibrationAndSendAlert();
       tapcumdt = 0;
       cumdt = 0;
       currentState = INIT;
@@ -212,8 +212,8 @@ class TapDetectorAlgorithm1 extends TapDetector {
     return max;
   }
 
-  Future<void> triggerVibrationAndSendAlert() async {
-    Vibrate.vibrate();
-  }
+  // Future<void> triggerVibrationAndSendAlert() async {
+  //   Vibrate.vibrate();
+  // }
 
 }
