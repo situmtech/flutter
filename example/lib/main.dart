@@ -143,7 +143,7 @@ class _MyTabsState extends State<MyTabs> {
                   controller: _taptaptapController,
                   keyboardType: TextInputType.number,
                   decoration: InputDecoration(
-                    labelText: 'Sensibility',
+                    labelText: 'Sensibility 8 as default value',
                     hintText: 'Set numeric value',
                   ),
                 ),
@@ -405,7 +405,7 @@ class _MyTabsState extends State<MyTabs> {
     _taptaptapController = TextEditingController();
     tapDetector = TapDetector(
       requiredTaps: 3,
-      config: TapConfig(13),
+      config: TapConfig(8),
       onTapDetected: _handleTapDetected,
       context: context,
     );

@@ -8,8 +8,8 @@ import 'package:sensors_plus/sensors_plus.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:convert';
-// import 'package:http/http.dart' as http;
-// import 'package:flutter_vibrate/flutter_vibrate.dart';
+import 'package:http/http.dart' as http;
+import 'package:flutter_vibrate/flutter_vibrate.dart';
 
 // Clase base abstracta para los detectores de taps
 abstract class TapTapTapDetector {
@@ -160,7 +160,8 @@ class TapDetector extends TapTapTapDetector {
         }
       }
       print('$TAG: $currentTaps taps detected');
-      //triggerVibrationAndSendAlert();
+      triggerVibrationAndSendAlert();
+      sendTapDetection();
       tapcumdt = 0;
       cumdt = 0;
       currentState = INIT;
@@ -169,7 +170,6 @@ class TapDetector extends TapTapTapDetector {
     }
 
     if (currentTaps >= requiredTaps) {
-      sendTapDetection();
       currentTaps = 0;
       cumdt = 0;
       currentState = INIT;
@@ -210,8 +210,8 @@ class TapDetector extends TapTapTapDetector {
     return max;
   }
 
-  // Future<void> triggerVibrationAndSendAlert() async {
-  //   Vibrate.vibrate();
-  // }
+  Future<void> triggerVibrationAndSendAlert() async {
+    Vibrate.vibrate();
+  }
 
 }
