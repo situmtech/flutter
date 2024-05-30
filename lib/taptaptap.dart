@@ -11,18 +11,16 @@ import 'dart:convert';
 // import 'package:http/http.dart' as http;
 // import 'package:flutter_vibrate/flutter_vibrate.dart';
 
-
-
 // Clase base abstracta para los detectores de taps
-abstract class TapDetector {
+abstract class TapTapTapDetector {
   void start();
   void stop();
 }
 
-class AlgorithmConfig {
+class TapConfig {
   int _sensibility;
 
-  AlgorithmConfig(this._sensibility);
+  TapConfig(this._sensibility);
 
   int get sensibility => _sensibility;
 
@@ -31,7 +29,7 @@ class AlgorithmConfig {
   }
 }
 
-class TapDetectorAlgorithm1 extends TapDetector {
+class TapDetector extends TapTapTapDetector {
   static const String TAG = 'TapDetector';
   final Function onTapDetected;
   static const int DEFAULT_NUM_TAPS = 3;
@@ -46,7 +44,7 @@ class TapDetectorAlgorithm1 extends TapDetector {
 
   final int requiredTaps;
   int currentTaps = 3;
-  final AlgorithmConfig config;
+  final TapConfig config;
   late double threshold;
   late double localThresh;
   final List<double> hpZAxisAccWindow = [];
@@ -76,7 +74,7 @@ class TapDetectorAlgorithm1 extends TapDetector {
   late BuildContext _context;
   int accTime = 0;
 
-  TapDetectorAlgorithm1({required this.requiredTaps, required this.config, required this.onTapDetected, required BuildContext context}) : currentTaps = 0 {
+  TapDetector({required this.requiredTaps, required this.config, required this.onTapDetected, required BuildContext context}) : currentTaps = 0 {
     _context = context;
     _updateThreshold();
   }
@@ -96,7 +94,7 @@ class TapDetectorAlgorithm1 extends TapDetector {
       threshold = 2 * (10 - config.sensibility) + 10;
       localThresh = threshold / 3;
 
-      print("Executing algorithm 1 with sensibility: ${config.sensibility}  threshold: ${localThresh}");
+      //print("Executing algorithm 1 with sensibility: ${config.sensibility}  threshold: ${localThresh}");
 
       if (accTime != 0) {
         double dT = (currentTime - accTime) / 1000;

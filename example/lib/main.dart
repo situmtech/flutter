@@ -42,7 +42,7 @@ class _MyTabsState extends State<MyTabs> {
 
   MapViewController? mapViewController;
   late TextEditingController _taptaptapController;
-  late TapDetectorAlgorithm1 tapDetector;
+  late TapDetector tapDetector;
 
   // Widget to showcase some SDK API functions
   Widget _createHomeTab() {
@@ -403,9 +403,9 @@ class _MyTabsState extends State<MyTabs> {
 
 
     _taptaptapController = TextEditingController();
-    tapDetector = TapDetectorAlgorithm1(
+    tapDetector = TapDetector(
       requiredTaps: 3,
-      config: AlgorithmConfig(13),
+      config: TapConfig(13),
       onTapDetected: _handleTapDetected,
       context: context,
     );
