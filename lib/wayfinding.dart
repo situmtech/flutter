@@ -75,3 +75,6 @@ const WV_MESSAGE_AR_UPDATE_STATUS = "augmented_reality.update_status";
 
 // Filtering actions
 const WV_MESSAGE_UI_SET_SEARCH_FILTER = "ui.set_search_filter";
+
+// TTS
+const WV_MESSAGE_UI_SPEAK_ALOUD_TEXT = "ui.speak_aloud_text";
