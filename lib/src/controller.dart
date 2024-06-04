@@ -5,6 +5,7 @@ class MapViewController {
   late final MethodChannel methodChannel;
   OnPoiSelectedCallback? _onPoiSelectedCallback;
   OnPoiDeselectedCallback? _onPoiDeselectedCallback;
+  OnSpeakAloudTextCallback? _onSpeakAloudTextCallback;
   OnDirectionsRequestInterceptor? _onDirectionsRequestInterceptor;
   OnNavigationRequestInterceptor? _onNavigationRequestInterceptor;
   OnExternalLinkClickedCallback? _onExternalLinkClickedCallback;
@@ -208,16 +209,23 @@ class MapViewController {
   ///
   /// Example:
   /// ```dart
+  ///
   /// List<String> includedTags = ['user1', 'user5'];
   /// List<String> excludedTags = [];
   ///
-  /// setDirectionsOptions(includedTags, excludedTags);
+  /// mapViewController?.setDirectionsOptions(
+  ///    MapViewDirectionsOptions(
+  ///      includedTags: includedTags,
+  ///      excludedTags: excludedTags,
+  ///    ),
+  ///  );
+  ///
   /// ```
-  void setDirectionsOptions(
-      List<String> includedTags, List<String> excludedTags) async {
+
+  void setDirectionsOptions(MapViewDirectionsOptions directionOptions) async {
     dynamic message = {
-      "includedTags": includedTags,
-      "excludedTags": excludedTags,
+      "includedTags": directionOptions.includedTags,
+      "excludedTags": directionOptions.excludedTags,
     };
 
     _sendMessage(WV_MESSAGE_DIRECTIONS_SET_OPTIONS, jsonEncode(message));
@@ -302,6 +310,11 @@ class MapViewController {
   /// Get notified when the selected POI is deselected.
   void onPoiDeselected(OnPoiDeselectedCallback callback) {
     _onPoiDeselectedCallback = callback;
+  }
+
+  /// Get notified when the viewer wants to read aloud some text.
+  void onSpeakAloudText(OnSpeakAloudTextCallback callback) {
+    _onSpeakAloudTextCallback = callback;
   }
 
   /// Callback invoked when the user clicks on a link in the MapView that leads

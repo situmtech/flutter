@@ -267,6 +267,29 @@ class OnExternalLinkClickedResult {
   });
 }
 
+/// This class represents the object that contains the message passed from
+/// the viewer to the application. This message represents the requirement to
+/// read aloud a text with some parameters like language, volume, etc
+class OnSpeakAloudTextResult {
+  /// A [String] that will be read aloud using TTS
+  final String text;
+
+  /// A [String] that represents the language code, i.e. es-ES
+  final String? lang;
+
+  /// A [Double] that represents the volume from 0.0 to 1.0
+  final double? volume;
+
+  /// A [Double] that represents the speech pitch from 0.0 to 1.0
+  final double? pitch;
+
+  /// A [Double] that represents the speech rate from 0.0 to 1.0
+  final double? rate;
+
+  const OnSpeakAloudTextResult(
+      {required this.text, this.lang, this.volume, this.pitch, this.rate});
+}
+
 class SearchFilter {
   /// Text used in the searchbar to filter and display the search results
   /// whose name or description matches the filter.
@@ -309,6 +332,28 @@ enum ARStatus {
 
   /// The AR module has been hidden and finished working.
   finished,
+}
+
+// Connection errors
+class ConnectionErrors {
+  static const ANDROID_NO_CONNECTION = -2;
+  static const ANDROID_SOCKET_NOT_CONNECTED = -6;
+  static const IOS_NO_CONNECTION = -1009;
+  static const IOS_HOSTNAME_NOT_RESOLVED = -1003;
+
+  static const List<int> values = [
+    ANDROID_NO_CONNECTION,
+    ANDROID_SOCKET_NOT_CONNECTED,
+    IOS_NO_CONNECTION,
+    IOS_HOSTNAME_NOT_RESOLVED
+  ];
+}
+
+class MapViewDirectionsOptions {
+  List<String>? excludedTags;
+  List<String>? includedTags;
+
+  MapViewDirectionsOptions({this.excludedTags, this.includedTags});
 }
 
 /// # Don't use this class, it is intended for internal use.
@@ -361,24 +406,11 @@ typedef OnNavigationRequestInterceptor = void Function(
 // External link click.
 typedef OnExternalLinkClickedCallback = void Function(
     OnExternalLinkClickedResult data);
+// TTS callback.
+typedef OnSpeakAloudTextCallback = void Function(OnSpeakAloudTextResult data);
+
 // Calibrations.
-// TODO: review names!!!
 typedef OnCalibrationPointClickedCallback = void Function(
     CalibrationPointData data);
 typedef OnCalibrationFinishedCallback = void Function(
     CalibrationFinishedStatus status);
-
-// Connection errors
-class ConnectionErrors {
-  static const ANDROID_NO_CONNECTION = -2;
-  static const ANDROID_SOCKET_NOT_CONNECTED = -6;
-  static const IOS_NO_CONNECTION = -1009;
-  static const IOS_HOSTNAME_NOT_RESOLVED = -1003;
-
-  static const List<int> values = [
-    ANDROID_NO_CONNECTION,
-    ANDROID_SOCKET_NOT_CONNECTED,
-    IOS_NO_CONNECTION,
-    IOS_HOSTNAME_NOT_RESOLVED
-  ];
-}
