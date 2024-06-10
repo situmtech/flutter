@@ -14,10 +14,11 @@ buildscript {
     }
 }
 
-allprojects {
+rootProject.allprojects {
     repositories {
         google()
         mavenCentral()
+        maven { url "https://repo.situm.es/artifactory/libs-release-local" }
     }
 }
 

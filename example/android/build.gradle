@@ -2,8 +2,6 @@ allprojects {
     repositories {
         google()
         mavenCentral()
-        // TODO: right now, this line is a per-app requirement:
-        maven { url "https://repo.situm.es/artifactory/libs-release-local" }
     }
 }
 
