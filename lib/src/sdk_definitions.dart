@@ -30,6 +30,24 @@ extension RealtimeUpdateIntervalExtension on RealtimeUpdateInterval {
   }
 }
 
+enum MotionMode {
+  byFoot,
+  byFootVisualOdometry,
+}
+
+extension MotionModeExtension on MotionMode {
+  String get name {
+    switch (this) {
+      case MotionMode.byFoot:
+        return 'BY_FOOT';
+      case MotionMode.byFootVisualOdometry:
+        return 'BY_FOOT_VISUAL_ODOMETRY';
+      default:
+        return 'BY_FOOT';
+    }
+  }
+}
+
 /// When you build the [LocationRequest], this data object configures the Global
 /// Mode options.
 class OutdoorLocationOptions {
@@ -55,15 +73,16 @@ class LocationRequest {
       foregroundServiceNotificationOptions;
   final OutdoorLocationOptions? outdoorLocationOptions;
   final RealtimeUpdateInterval? realtimeUpdateInterval;
+  final MotionMode? motionMode;
 
-  LocationRequest({
-    this.buildingIdentifier,
-    this.useDeadReckoning,
-    this.useForegroundService,
-    this.foregroundServiceNotificationOptions,
-    this.outdoorLocationOptions,
-    this.realtimeUpdateInterval,
-  });
+  LocationRequest(
+      {this.buildingIdentifier,
+      this.useDeadReckoning,
+      this.useForegroundService,
+      this.foregroundServiceNotificationOptions,
+      this.outdoorLocationOptions,
+      this.realtimeUpdateInterval,
+      this.motionMode});
 
   Map<String, dynamic> toMap() {
     Map<String, dynamic> map = {};
@@ -76,6 +95,7 @@ class LocationRequest {
         "outdoorLocationOptions", outdoorLocationOptions?.toMap(), map);
     _addToMapIfNotNull(
         "realtimeUpdateInterval", realtimeUpdateInterval?.name, map);
+    _addToMapIfNotNull("motionMode", motionMode?.name, map);
     return map;
   }
 }
@@ -131,6 +151,7 @@ class DirectionsRequest {
   final Point to;
 
   String? poiToIdentifier;
+
   /// Identifier of the route destination. Can be [EMPTY_ID] if [destinationCategory] is [CATEGORY_LOCATION].
   String destinationIdentifier;
 
@@ -772,10 +793,7 @@ class SitumRoute {
   final dynamic rawContent;
   final Poi? poiTo;
 
-  const SitumRoute({
-    required this.rawContent,
-    this.poiTo
-  });
+  const SitumRoute({required this.rawContent, this.poiTo});
 }
 
 class RouteProgress {
@@ -807,7 +825,8 @@ typedef OnExitedGeofencesCallback = void Function(
 
 // Navigation.
 typedef OnNavigationStartCallback = void Function(SitumRoute route);
-typedef OnNavigationDestinationReachedCallback = void Function(SitumRoute route);
+typedef OnNavigationDestinationReachedCallback = void Function(
+    SitumRoute route);
 typedef OnNavigationCancellationCallback = void Function();
 typedef OnNavigationProgressCallback = void Function(RouteProgress progress);
 typedef OnNavigationOutOfRouteCallback = void Function();
