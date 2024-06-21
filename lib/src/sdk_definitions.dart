@@ -519,6 +519,7 @@ class Floor extends NamedResource {
   @override
   Map<String, dynamic> toMap() => {
         "buildingId": buildingIdentifier,
+        "floorIdentifier": identifier,
         "floorIndex": floorIndex,
         "mapUrl": mapUrl,
         "scale": scale,
