@@ -49,10 +49,12 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Location is required to find out where you are</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Location is required to find out where you are</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>Location is required to find out where you are</string>
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>Location is required to find out where you are</string>
+    <key>NSMotionUsageDescription</key>
+    <string>We use your phone sensors (giroscope, accelerometer and altimeter) to improve location quality</string>
 	<key>WKAppBoundDomains</key>
 	<array>
 		<string>map-viewer.situm.com</string>
