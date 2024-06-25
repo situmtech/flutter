@@ -94,7 +94,11 @@ const NSString* RESULTS_KEY = @"results";
     } else if ([@"openUrlInDefaultBrowser" isEqualToString:call.method]) {
         [self openUrlInDefaultBrowser:call
                                result:result];
-    } else {
+    } else  if ([@"setArOdometry" isEqualToString:call.method]) {
+        [self handleSetArOdometry:call
+                               result:result];
+    } else 
+    {
         result(FlutterMethodNotImplemented);
     }
 }
@@ -130,6 +134,35 @@ const NSString* RESULTS_KEY = @"results";
 - (void)handleSetDashboardURL:(FlutterMethodCall*)call result:(FlutterResult)result {
     NSString *url = call.arguments[@"url"];
     [SITServices setDashboardURL: url];
+    result(@"DONE");
+}
+
+- (void)handleSetArOdometry:(FlutterMethodCall*)call result:(FlutterResult)result {
+    NSLog(@"Regue handleSetArOdometry");
+    NSString *url = call.arguments[@"url"];
+    NSDictionary *arguments = call.arguments[@"message"];
+    NSError *jsonError;
+    NSData *objectData = [call.arguments[@"message"] dataUsingEncoding:NSUTF8StringEncoding];
+    NSDictionary *message = [NSJSONSerialization JSONObjectWithData:objectData
+                                          options:NSJSONReadingMutableContainers
+                                            error:&jsonError];
+    float x= [message[@"position"][@"x"] floatValue];
+    float y= [message[@"position"][@"y"] floatValue];
+    float z= [message[@"position"][@"z"] floatValue];
+    double timestamp= [message[@"timestamp"] doubleValue];
+    float xEuler= [message[@"eulerRotation"][@"x"] floatValue];
+    float yEuler= [message[@"eulerRotation"][@"y"] floatValue];
+    float zEuler= [message[@"eulerRotation"][@"z"] floatValue];
+    SITArData * arData = [[SITArData alloc] initWitharState:kSITArTracking
+                                                          dt:0
+                                                           x:x
+                                                           y:y
+                                                           z:z
+                                                   timestamp:timestamp
+                                                      xEuler:xEuler
+                                                      yEuler:yEuler
+                                                      zEuler:zEuler];
+    [SITExternalSensorManager.sharedManager setArData: arData];
     result(@"DONE");
 }
 
