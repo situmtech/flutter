@@ -35,6 +35,8 @@ dependencies:
   ar_flutter_plugin: ^0.7.3
   vector_math: ^2.1.4
 
+  flutter_tts: ^3.6.3
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -126,7 +126,7 @@ class MapViewConfiguration {
     return finalApiDomain;
   }
 
-  String _getViewerURL() {
+  String _getViewerURL(String deviceId) {
     var base = viewerDomain;
     var query = "apikey=$situmApiKey&domain=$_internalApiDomain&mode=embed";
     if (lockCameraToBuilding != null) {
@@ -134,6 +134,9 @@ class MapViewConfiguration {
     }
     if (language != null) {
       query = "$query&lng=$language";
+    }
+    if (deviceId != null) {
+      query = "$query&deviceId=$deviceId";
     }
 
     if (remoteIdentifier?.isNotEmpty == true &&
@@ -263,13 +266,93 @@ class OnExternalLinkClickedResult {
   });
 }
 
+/// This class represents the object that contains the message passed from
+/// the viewer to the application. This message represents the requirement to
+/// read aloud a text with some parameters like language, volume, etc
+class OnSpeakAloudTextResult {
+  /// A [String] that will be read aloud using TTS
+  final String text;
+
+  /// A [String] that represents the language code, i.e. es-ES
+  final String? lang;
+
+  /// A [Double] that represents the volume from 0.0 to 1.0
+  final double? volume;
+
+  /// A [Double] that represents the speech pitch from 0.0 to 1.0
+  final double? pitch;
+
+  /// A [Double] that represents the speech rate from 0.0 to 1.0
+  final double? rate;
+
+  const OnSpeakAloudTextResult(
+      {required this.text, this.lang, this.volume, this.pitch, this.rate});
+}
+
+class SearchFilter {
+  /// Text used in the searchbar to filter and display the search results
+  /// whose name or description matches the filter.
+  ///
+  /// An empty string will clear the current text filter (if any).
+  /// A null value will apply no change.
+  String? text;
+
+  /// A [PoiCategory] identifier used to filter
+  /// and display the POIs that belong to the given category.
+  ///
+  /// An empty string will clear the current category filter (if any).
+  /// A null value will apply no change.
+  String? poiCategoryIdentifier;
+
+  SearchFilter({
+    this.text,
+    this.poiCategoryIdentifier,
+  });
+
+  toMap() {
+    Map<String, Object> result = {};
+    if (text != null) {
+      result["text"] = text!;
+    }
+    if (poiCategoryIdentifier != null) {
+      result["poiCategoryIdentifier"] = poiCategoryIdentifier!;
+    }
+
+    return result;
+  }
+}
+
 enum ARStatus {
   /// The AR module has been presented successfully.
   success,
+
   /// There was an error while trying to present the AR module.
   error,
+
   /// The AR module has been hidden and finished working.
   finished,
+}
+
+// Connection errors
+class ConnectionErrors {
+  static const ANDROID_NO_CONNECTION = -2;
+  static const ANDROID_SOCKET_NOT_CONNECTED = -6;
+  static const IOS_NO_CONNECTION = -1009;
+  static const IOS_HOSTNAME_NOT_RESOLVED = -1003;
+
+  static const List<int> values = [
+    ANDROID_NO_CONNECTION,
+    ANDROID_SOCKET_NOT_CONNECTED,
+    IOS_NO_CONNECTION,
+    IOS_HOSTNAME_NOT_RESOLVED
+  ];
+}
+
+class MapViewDirectionsOptions {
+  List<String>? excludedTags;
+  List<String>? includedTags;
+
+  MapViewDirectionsOptions({this.excludedTags, this.includedTags});
 }
 
 // Result callbacks.
@@ -290,18 +373,5 @@ typedef OnNavigationRequestInterceptor = void Function(
 // External link click.
 typedef OnExternalLinkClickedCallback = void Function(
     OnExternalLinkClickedResult data);
-
-// Connection errors
-class ConnectionErrors {
-  static const ANDROID_NO_CONNECTION = -2;
-  static const ANDROID_SOCKET_NOT_CONNECTED = -6;
-  static const IOS_NO_CONNECTION = -1009;
-  static const IOS_HOSTNAME_NOT_RESOLVED = -1003;
-
-  static const List<int> values = [
-    ANDROID_NO_CONNECTION,
-    ANDROID_SOCKET_NOT_CONNECTED,
-    IOS_NO_CONNECTION,
-    IOS_HOSTNAME_NOT_RESOLVED
-  ];
-}
+// TTS callback.
+typedef OnSpeakAloudTextCallback = void Function(OnSpeakAloudTextResult data);

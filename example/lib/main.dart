@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_tts/flutter_tts.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:situmFlutterExample/ar/view.dart';
 import 'package:situm_flutter/sdk.dart';
@@ -36,6 +37,7 @@ class MyTabs extends StatefulWidget {
 
 class _MyTabsState extends State<MyTabs> {
   late SitumSdk situmSdk;
+  late FlutterTts flutterTts;
   int _selectedIndex = 0;
   List<Poi> pois = [];
   Poi? dropdownValue;
@@ -274,6 +276,26 @@ class _MyTabsState extends State<MyTabs> {
       //   navigationRequest.distanceToGoalThreshold = 10.0;
       //   ...
     });
+
+    // Flutter-Android webview lacks proper support for TTS technology so we
+    // fallback to third-party libraries
+    controller.onSpeakAloudText((speakaloudTextResult) async {
+      _echo("Situm > SDK > Speak aloud: ${speakaloudTextResult.text}");
+      if (speakaloudTextResult.lang != null) {
+        flutterTts.setLanguage(speakaloudTextResult.lang!);
+      }
+      if (speakaloudTextResult.rate != null) {
+        flutterTts.setSpeechRate(speakaloudTextResult.rate!);
+      }
+      if (speakaloudTextResult.volume != null) {
+        flutterTts.setVolume(speakaloudTextResult.volume!);
+      }
+      if (speakaloudTextResult.pitch != null) {
+        flutterTts.setPitch(speakaloudTextResult.pitch!);
+      }
+
+      await flutterTts.speak(speakaloudTextResult.text);
+    });
   }
 
   void _setCameraViewer(Poi? poi) {
@@ -367,6 +389,9 @@ class _MyTabsState extends State<MyTabs> {
       _echo("Situm> SDK> Exit geofences: ${geofencesResult.geofences}.");
     });
     _downloadPois(buildingIdentifier);
+
+    flutterTts = FlutterTts();
+
     super.initState();
   }
 
