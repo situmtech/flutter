@@ -126,7 +126,11 @@ class MapViewConfiguration {
     return finalApiDomain;
   }
 
-  String _getViewerURL(String deviceId) {
+  String _getViewerURL(String? deviceId) {
+    if (buildingIdentifier == null && remoteIdentifier == null) {
+      throw ArgumentError(
+          'Missing configuration: remoteIdentifier or buildingIdentifier must be provided.');
+    }
     var base = viewerDomain;
     var query = "apikey=$situmApiKey&domain=$_internalApiDomain&mode=embed";
     if (lockCameraToBuilding != null) {
@@ -138,17 +142,14 @@ class MapViewConfiguration {
     if (deviceId != null) {
       query = "$query&deviceId=$deviceId";
     }
-
-    if (remoteIdentifier?.isNotEmpty == true &&
-        buildingIdentifier?.isNotEmpty == true) {
-      return "$base/id/$remoteIdentifier?$query&buildingid=$buildingIdentifier";
-    } else if (remoteIdentifier?.isNotEmpty == true) {
-      return "$base/id/$remoteIdentifier?$query";
-    } else if (buildingIdentifier?.isNotEmpty == true) {
-      return "$base/?$query&buildingid=$buildingIdentifier";
+    if (remoteIdentifier?.isNotEmpty == true) {
+      base = "$base/id/$remoteIdentifier";
     }
-    throw ArgumentError(
-        'Missing configuration: remoteIdentifier or buildingIdentifier must be provided.');
+    if (buildingIdentifier?.isNotEmpty == true && buildingIdentifier != "-1") {
+      query = "$query&buildingid=$buildingIdentifier";
+    }
+
+    return "$base?$query";
   }
 }
 
@@ -355,6 +356,38 @@ class MapViewDirectionsOptions {
   MapViewDirectionsOptions({this.excludedTags, this.includedTags});
 }
 
+/// # Don't use this class, it is intended for internal use.
+/// Encapsulates the data of a calibration point. Each calibration point is
+/// received from the [MapView] when it is in mode [UIMode.calibration].
+class CalibrationPointData {
+  final String buildingIdentifier;
+  final String floorIdentifier;
+  final Coordinate coordinate;
+
+  CalibrationPointData({
+    required this.buildingIdentifier,
+    required this.floorIdentifier,
+    required this.coordinate,
+  });
+}
+
+/// # Don't use this enum, it is intended for internal use.
+/// Status received when the [MapView] is in mode [UIMode.calibration] and the
+/// user stops the current calibration.
+/// The user may want to save ([success]) or cancel ([cancelled]) the
+/// calibration. When saving, the last calibration point may be discarded ([undo]).
+enum CalibrationFinishedStatus {
+  success,
+  undo,
+  cancelled,
+}
+
+/// [MapView] UI Modes.
+enum UIMode {
+  calibration,
+  explore,
+}
+
 // Result callbacks.
 
 // WYF load callback.
@@ -375,3 +408,9 @@ typedef OnExternalLinkClickedCallback = void Function(
     OnExternalLinkClickedResult data);
 // TTS callback.
 typedef OnSpeakAloudTextCallback = void Function(OnSpeakAloudTextResult data);
+
+// Calibrations.
+typedef OnCalibrationPointClickedCallback = void Function(
+    CalibrationPointData data);
+typedef OnCalibrationFinishedCallback = void Function(
+    CalibrationFinishedStatus status);

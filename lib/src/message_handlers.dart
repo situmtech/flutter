@@ -16,6 +16,10 @@ abstract class MessageHandler {
         return PoiSelectedMessageHandler();
       case WV_MESSAGE_CARTOGRAPHY_POI_DESELECTED:
         return PoiDeselectedMessageHandler();
+      case WV_MESSAGE_CALIBRATION_POINT_CLICKED:
+        return CalibrationPointClickedMessageHandler();
+      case WV_MESSAGE_CALIBRATION_STOPPED:
+        return CalibrationStoppedMessageHandler();
       case WV_MESSAGE_UI_SPEAK_ALOUD_TEXT:
         return SpeakAloudTextMessageHandler();
       default:
@@ -176,5 +180,23 @@ class SpeakAloudTextMessageHandler implements MessageHandler {
 
     mapViewController._onSpeakAloudTextCallback?.call(OnSpeakAloudTextResult(
         text: text, lang: lang, pitch: pitch, rate: rate, volume: volume));
+  }
+}
+
+class CalibrationPointClickedMessageHandler implements MessageHandler {
+  @override
+  void handleMessage(
+      MapViewController mapViewController, Map<String, dynamic> payload) {
+    var data = createCalibrationPointData(payload);
+    mapViewController._onCalibrationPointClickedCallback?.call(data);
+  }
+}
+
+class CalibrationStoppedMessageHandler implements MessageHandler {
+  @override
+  void handleMessage(
+      MapViewController mapViewController, Map<String, dynamic> payload) {
+    var status = createCalibrationFinishedStatus(payload);
+    mapViewController._onCalibrationFinishedCallback?.call(status);
   }
 }

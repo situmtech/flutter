@@ -358,10 +358,10 @@ class _MyTabsState extends State<MyTabs> {
       """);
     });
     situmSdk.onLocationStatus((status) {
-      _echo("SDK> STATUS: $status");
+      _echo("Situm> SDK> STATUS: $status");
     });
     situmSdk.onLocationError((Error error) {
-      _echo("SDK> Error ${error.code}:\n${error.message}");
+      _echo("Situm> SDK> Error ${error.code}:\n${error.message}");
     });
     // Set up listener for events on geofences
     situmSdk.onEnterGeofences((geofencesResult) {
