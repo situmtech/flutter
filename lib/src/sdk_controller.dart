@@ -39,10 +39,13 @@ class SitumSdk {
   OnDirectionsRequestedCallback? _onDirectionsRequestedCallback;
 
   final _LocationStatusAdapter _statusAdapter = _LocationStatusAdapter();
+  final _LocationErrorAdapter _errorAdapter = _LocationErrorAdapter();
+
+  /// Used to prevent MapViewController from re-authenticating, which will cause
+  /// problems on user-password authenticated apps.
+  bool _alreadyAuthenticated = false;
 
   static final SitumSdk _controller = SitumSdk._internal();
-
-  final _LocationErrorAdapter _errorAdapter = _LocationErrorAdapter();
 
   /// Main entry point for the Situm Flutter SDK. Use [SitumSdk] to start
   /// positioning, calculate routes and fetch resources.
@@ -72,10 +75,12 @@ class SitumSdk {
   ///
   /// **Note**: If you call this method without providing any parameters,
   /// it will only initialize the SDK. In this case, ensure to call [setApiKey] afterwards.
+  ///
+  /// **Note**: After invoking this method with user and api-key, all subsequent calls will be ignored until [logout] is invoked.
   Future<void> init([String? situmUser, String? situmApiKey]) async {
     if (situmApiKey == null) {
       await methodChannel.invokeMethod<String>('initSdk');
-    } else {
+    } else if (!_alreadyAuthenticated) {
       await methodChannel.invokeMethod<String>(
         'init',
         <String, dynamic>{
@@ -84,6 +89,7 @@ class SitumSdk {
           'situmApiKey': situmApiKey,
         },
       );
+      _alreadyAuthenticated = true;
     }
   }
 
@@ -130,7 +136,11 @@ class SitumSdk {
   /// You can find this key at https://dashboard.situm.com/accounts/profile.
   ///
   /// **Note**: This method should only be used if you have called [init] without the optional parameters
+  /// **Note**: After invoking [setApiKey], all subsequent calls will be ignored until [logout] is invoked.
   Future<void> setApiKey(String situmApiKey) async {
+    if (_alreadyAuthenticated) {
+      return;
+    }
     await methodChannel.invokeMethod(
       "setApiKey",
       <String, dynamic>{
@@ -139,6 +149,30 @@ class SitumSdk {
         'situmApiKey': situmApiKey,
       },
     );
+    _alreadyAuthenticated = true;
+  }
+
+  /// # Don't use this method, you probably want to call [setApiKey].
+  /// Authenticate yourself into our SDK. Prefer [setApiKey].
+  /// **Note**: After invoking [setUserPass], all subsequent calls will be ignored until [logout] is invoked.
+  Future<void> setUserPass(String user, String pass) async {
+    if (_alreadyAuthenticated) {
+      return;
+    }
+    await methodChannel.invokeMethod(
+      "setUserPass",
+      <String, dynamic>{
+        'situmUser': user,
+        'situmPass': pass,
+      },
+    );
+    _alreadyAuthenticated = true;
+  }
+
+  /// Invalidate user's token and remove it from internal credentials, if exist.
+  Future<void> logout() async {
+    _alreadyAuthenticated = false;
+    await methodChannel.invokeMethod("logout", {});
   }
 
   /// Sets the SDK [ConfigurationOptions].
@@ -364,6 +398,13 @@ class SitumSdk {
     await methodChannel.invokeMethod('geofenceCallbacksRequested');
   }
 
+  /// Opens the given URL in the system's default browser.
+  /// This method is used internally but has been exposed publicly as it is
+  /// useful in common use-cases such as handling [Poi] description interactions.
+  void openUrlInDefaultBrowser(String url) {
+    methodChannel.invokeMethod('openUrlInDefaultBrowser', {"url": url});
+  }
+
   // Callbacks:
 
   Future<void> _methodCallHandler(MethodCall call) async {
@@ -438,8 +479,7 @@ class SitumSdk {
   InternalCall _sendBleDisabledStatusAsError() {
     Error bleDisabled = Error.bleDisabledError();
     _onLocationErrorCallback?.call(bleDisabled);
-    return InternalCall(
-        InternalCallType.locationError, bleDisabled);
+    return InternalCall(InternalCallType.locationError, bleDisabled);
   }
 
   // GEOFENCES:

@@ -55,6 +55,11 @@ class LocationRequest {
       foregroundServiceNotificationOptions;
   final OutdoorLocationOptions? outdoorLocationOptions;
   final RealtimeUpdateInterval? realtimeUpdateInterval;
+  final bool? useBle;
+  final bool? useGps;
+
+  /// Only for Android.
+  final bool? useWifi;
 
   LocationRequest({
     this.buildingIdentifier,
@@ -63,6 +68,9 @@ class LocationRequest {
     this.foregroundServiceNotificationOptions,
     this.outdoorLocationOptions,
     this.realtimeUpdateInterval,
+    this.useWifi,
+    this.useBle,
+    this.useGps,
   });
 
   Map<String, dynamic> toMap() {
@@ -76,6 +84,9 @@ class LocationRequest {
         "outdoorLocationOptions", outdoorLocationOptions?.toMap(), map);
     _addToMapIfNotNull(
         "realtimeUpdateInterval", realtimeUpdateInterval?.name, map);
+    _addToMapIfNotNull("useWifi", useWifi, map);
+    _addToMapIfNotNull("useBle", useBle, map);
+    _addToMapIfNotNull("useGps", useGps, map);
     return map;
   }
 }
@@ -131,6 +142,7 @@ class DirectionsRequest {
   final Point to;
 
   String? poiToIdentifier;
+
   /// Identifier of the route destination. Can be [EMPTY_ID] if [destinationCategory] is [CATEGORY_LOCATION].
   String destinationIdentifier;
 
@@ -716,7 +728,7 @@ class PrefetchOptions {
   });
 }
 
-/// [code] **LOCATION_PERMISSION_DENIED**
+/// [code] [ErrorCodes.locationPermissionDenied]
 /// * type: [ErrorType.critical].
 ///
 /// * **CAUSE**: Location permissions were not granted yet,
@@ -724,20 +736,20 @@ class PrefetchOptions {
 ///   * ACCESS_FINE_LOCATION (Android)
 ///   * NSLocationWhenInUseUsageDescription (iOS)
 ///
-/// [code] **BLUETOOTH_PERMISSION_DENIED**
+/// [code] [ErrorCodes.bluetoothPermissionDenied]
 /// * (Android only)
 /// * type: [ErrorType.critical].
 ///
 /// * **CAUSE**: BLUETOOTH_CONNECT or BLUETOOTH_SCAN are not granted yet,
 /// so SDK won't be able to start positioning.
 ///
-/// [code] **BLUETOOTH_DISABLED**
+/// [code] [ErrorCodes.bluetoothDisabled]
 /// * type: [ErrorType.critical] for iOS but [ErrorType.nonCritical] for Android.
 ///
 /// * **CAUSE**: The bluetooth sensor of the device is off,
 /// so iOS will stop positioning and Android won't give a precise location as with this sensor on.
 ///
-/// [code] **LOCATION_DISABLED**
+/// [code] [ErrorCodes.locationDisabled]
 /// * type: [ErrorType.critical].
 ///
 /// * **CAUSE**: The location service is disabled, so SDK won't be able to start positioning.
@@ -760,6 +772,30 @@ class Error {
   }
 }
 
+/// Exposes constant error codes useful for error handling in combination with
+/// [SitumSdk.onLocationError]:
+///
+/// ```dart
+/// SitumSdk().onLocationError((error) {
+///   switch (error.code) {
+///     case ErrorCodes.locationDisabled:
+///       // Handle location disabled.
+///       break;
+///     case ErrorCodes.bluetoothDisabled:
+///       ...
+///   }
+/// });
+/// ```
+class ErrorCodes {
+  static const bluetoothDisabled = "BLUETOOTH_DISABLED";
+  static const locationDisabled = "LOCATION_DISABLED";
+  static const locationPermissionDenied = "LOCATION_PERMISSION_DENIED";
+  static const bluetoothPermissionDenied = "BLUETOOTH_PERMISSION_DENIED";
+  static const buildingNotCalibrated = "BUILDING_NOT_CALIBRATED";
+  static const buildingModelDownloadError = "BUILDING_MODEL_DOWNLOAD_ERROR";
+  static const buildingModelProcessingError = "BUILDING_MODEL_PROCESSING_ERROR";
+}
+
 enum ErrorType {
   /// An error that must be fixed to be able to start positioning.
   critical,
@@ -772,10 +808,7 @@ class SitumRoute {
   final dynamic rawContent;
   final Poi? poiTo;
 
-  const SitumRoute({
-    required this.rawContent,
-    this.poiTo
-  });
+  const SitumRoute({required this.rawContent, this.poiTo});
 }
 
 class RouteProgress {
@@ -807,7 +840,8 @@ typedef OnExitedGeofencesCallback = void Function(
 
 // Navigation.
 typedef OnNavigationStartCallback = void Function(SitumRoute route);
-typedef OnNavigationDestinationReachedCallback = void Function(SitumRoute route);
+typedef OnNavigationDestinationReachedCallback = void Function(
+    SitumRoute route);
 typedef OnNavigationCancellationCallback = void Function();
 typedef OnNavigationProgressCallback = void Function(RouteProgress progress);
 typedef OnNavigationOutOfRouteCallback = void Function();

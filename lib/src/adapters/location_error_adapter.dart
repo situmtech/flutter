@@ -21,18 +21,29 @@ class _LocationErrorAdapter {
       case "8": // kSITLocationErrorLocationDisabled
       case "9": // kSITLocationErrorLocationRestricted
       case "10": // kSITLocationErrorLocationAuthStatusNotDetermined
-        arguments["code"] = "LOCATION_PERMISSION_DENIED";
+        arguments["code"] = ErrorCodes.locationPermissionDenied;
         break;
       case "8002": // LOCATION_DISABLED
-        arguments["code"] = "LOCATION_DISABLED";
+        arguments["code"] = ErrorCodes.locationDisabled;
         break;
       case "8012": // MISSING_BLUETOOTH_PERMISSION
-        arguments["code"] = "BLUETOOTH_PERMISSION_DENIED";
+        arguments["code"] = ErrorCodes.bluetoothPermissionDenied;
         break;
       case "6": // kSITLocationErrorBluetoothisOff
-        arguments["code"] = "BLUETOOTH_DISABLED";
+        arguments["code"] = ErrorCodes.bluetoothDisabled;
         // BLUETOOTH_DISABLED is also sent
         // when BLE_DISABLED_BY_USER (Android) status is received, but with type: nonCritical
+        break;
+      case "14": // iOS kSITLocationErrorBuildingNotCalibrated
+      case "8003": // Android
+        arguments["code"] = ErrorCodes.buildingNotCalibrated;
+        break;
+      case "8004":
+        arguments["code"] = ErrorCodes.buildingModelDownloadError;
+        break;
+      case "13": // iOS kSITLocationErrorBuildingModelNotAvaliable
+      case "8005": // Android
+        arguments["code"] = ErrorCodes.buildingModelProcessingError;
         break;
     }
 
