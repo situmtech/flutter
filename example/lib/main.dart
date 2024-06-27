@@ -213,6 +213,8 @@ class _MyTabsState extends State<MyTabs> {
           buildingIdentifier: buildingIdentifier,
           // Your remote identifier, if any:
           remoteIdentifier: remoteIdentifier,
+          // Specify the language for the viewer UI:
+          language: language,
           // The viewer domain:
           viewerDomain: viewerDomain,
         ),
