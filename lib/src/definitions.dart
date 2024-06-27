@@ -126,7 +126,11 @@ class MapViewConfiguration {
     return finalApiDomain;
   }
 
-  String _getViewerURL(String deviceId) {
+  String _getViewerURL(String? deviceId) {
+    if (buildingIdentifier == null && remoteIdentifier == null) {
+      throw ArgumentError(
+          'Missing configuration: remoteIdentifier or buildingIdentifier must be provided.');
+    }
     var base = viewerDomain;
     var query = "apikey=$situmApiKey&domain=$_internalApiDomain&mode=embed";
     if (lockCameraToBuilding != null) {
@@ -138,17 +142,14 @@ class MapViewConfiguration {
     if (deviceId != null) {
       query = "$query&deviceId=$deviceId";
     }
-
-    if (remoteIdentifier?.isNotEmpty == true &&
-        buildingIdentifier?.isNotEmpty == true) {
-      return "$base/id/$remoteIdentifier?$query&buildingid=$buildingIdentifier";
-    } else if (remoteIdentifier?.isNotEmpty == true) {
-      return "$base/id/$remoteIdentifier?$query";
-    } else if (buildingIdentifier?.isNotEmpty == true) {
-      return "$base/?$query&buildingid=$buildingIdentifier";
+    if (remoteIdentifier?.isNotEmpty == true) {
+      base = "$base/id/$remoteIdentifier";
     }
-    throw ArgumentError(
-        'Missing configuration: remoteIdentifier or buildingIdentifier must be provided.');
+    if (buildingIdentifier?.isNotEmpty == true && buildingIdentifier != "-1") {
+      query = "$query&buildingid=$buildingIdentifier";
+    }
+
+    return "$base?$query";
   }
 }
 
@@ -266,6 +267,29 @@ class OnExternalLinkClickedResult {
   });
 }
 
+/// This class represents the object that contains the message passed from
+/// the viewer to the application. This message represents the requirement to
+/// read aloud a text with some parameters like language, volume, etc
+class OnSpeakAloudTextResult {
+  /// A [String] that will be read aloud using TTS
+  final String text;
+
+  /// A [String] that represents the language code, i.e. es-ES
+  final String? lang;
+
+  /// A [Double] that represents the volume from 0.0 to 1.0
+  final double? volume;
+
+  /// A [Double] that represents the speech pitch from 0.0 to 1.0
+  final double? pitch;
+
+  /// A [Double] that represents the speech rate from 0.0 to 1.0
+  final double? rate;
+
+  const OnSpeakAloudTextResult(
+      {required this.text, this.lang, this.volume, this.pitch, this.rate});
+}
+
 class SearchFilter {
   /// Text used in the searchbar to filter and display the search results
   /// whose name or description matches the filter.
@@ -310,6 +334,60 @@ enum ARStatus {
   finished,
 }
 
+// Connection errors
+class ConnectionErrors {
+  static const ANDROID_NO_CONNECTION = -2;
+  static const ANDROID_SOCKET_NOT_CONNECTED = -6;
+  static const IOS_NO_CONNECTION = -1009;
+  static const IOS_HOSTNAME_NOT_RESOLVED = -1003;
+
+  static const List<int> values = [
+    ANDROID_NO_CONNECTION,
+    ANDROID_SOCKET_NOT_CONNECTED,
+    IOS_NO_CONNECTION,
+    IOS_HOSTNAME_NOT_RESOLVED
+  ];
+}
+
+class MapViewDirectionsOptions {
+  List<String>? excludedTags;
+  List<String>? includedTags;
+
+  MapViewDirectionsOptions({this.excludedTags, this.includedTags});
+}
+
+/// # Don't use this class, it is intended for internal use.
+/// Encapsulates the data of a calibration point. Each calibration point is
+/// received from the [MapView] when it is in mode [UIMode.calibration].
+class CalibrationPointData {
+  final String buildingIdentifier;
+  final String floorIdentifier;
+  final Coordinate coordinate;
+
+  CalibrationPointData({
+    required this.buildingIdentifier,
+    required this.floorIdentifier,
+    required this.coordinate,
+  });
+}
+
+/// # Don't use this enum, it is intended for internal use.
+/// Status received when the [MapView] is in mode [UIMode.calibration] and the
+/// user stops the current calibration.
+/// The user may want to save ([success]) or cancel ([cancelled]) the
+/// calibration. When saving, the last calibration point may be discarded ([undo]).
+enum CalibrationFinishedStatus {
+  success,
+  undo,
+  cancelled,
+}
+
+/// [MapView] UI Modes.
+enum UIMode {
+  calibration,
+  explore,
+}
+
 // Result callbacks.
 
 // WYF load callback.
@@ -328,18 +406,11 @@ typedef OnNavigationRequestInterceptor = void Function(
 // External link click.
 typedef OnExternalLinkClickedCallback = void Function(
     OnExternalLinkClickedResult data);
+// TTS callback.
+typedef OnSpeakAloudTextCallback = void Function(OnSpeakAloudTextResult data);
 
-// Connection errors
-class ConnectionErrors {
-  static const ANDROID_NO_CONNECTION = -2;
-  static const ANDROID_SOCKET_NOT_CONNECTED = -6;
-  static const IOS_NO_CONNECTION = -1009;
-  static const IOS_HOSTNAME_NOT_RESOLVED = -1003;
-
-  static const List<int> values = [
-    ANDROID_NO_CONNECTION,
-    ANDROID_SOCKET_NOT_CONNECTED,
-    IOS_NO_CONNECTION,
-    IOS_HOSTNAME_NOT_RESOLVED
-  ];
-}
+// Calibrations.
+typedef OnCalibrationPointClickedCallback = void Function(
+    CalibrationPointData data);
+typedef OnCalibrationFinishedCallback = void Function(
+    CalibrationFinishedStatus status);

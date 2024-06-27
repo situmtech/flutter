@@ -15,7 +15,13 @@ abstract class MessageHandler {
       case WV_MESSAGE_CARTOGRAPHY_POI_SELECTED:
         return PoiSelectedMessageHandler();
       case WV_MESSAGE_CARTOGRAPHY_POI_DESELECTED:
-        return PoiDeselectedMessageHandler();        
+        return PoiDeselectedMessageHandler();
+      case WV_MESSAGE_CALIBRATION_POINT_CLICKED:
+        return CalibrationPointClickedMessageHandler();
+      case WV_MESSAGE_CALIBRATION_STOPPED:
+        return CalibrationStoppedMessageHandler();
+      case WV_MESSAGE_UI_SPEAK_ALOUD_TEXT:
+        return SpeakAloudTextMessageHandler();
       default:
         debugPrint("EmptyMessageHandler handles message of type: $type");
         return EmptyMessageHandler();
@@ -136,10 +142,10 @@ abstract class PoiSelectionMessageHandler implements MessageHandler {
     var poiId = "${payload["identifier"]}";
     var buildingId = "${payload["buildingIdentifier"]}";
     var sdk = SitumSdk();
-      var poi = await sdk.fetchPoiFromBuilding(buildingId, poiId);
-      if (poi != null) {
-        handlePoiInteraction(mapViewController, poi);
-      }
+    var poi = await sdk.fetchPoiFromBuilding(buildingId, poiId);
+    if (poi != null) {
+      handlePoiInteraction(mapViewController, poi);
+    }
   }
 
   void handlePoiInteraction(MapViewController mapViewController, Poi poi);
@@ -158,5 +164,39 @@ class PoiDeselectedMessageHandler extends PoiSelectionMessageHandler {
   void handlePoiInteraction(MapViewController mapViewController, Poi poi) {
     mapViewController._onPoiDeselectedCallback
         ?.call(OnPoiDeselectedResult(poi: poi));
+  }
+}
+
+class SpeakAloudTextMessageHandler implements MessageHandler {
+  @override
+  void handleMessage(
+      MapViewController mapViewController, Map<String, dynamic> payload) async {
+    var text = "${payload["text"]}";
+    var lang =
+        payload["lang"]?.toString().isNotEmpty == true ? payload["lang"] : null;
+    var pitch = payload["pitch"] > 0 ? payload["pitch"].toDouble() : null;
+    var volume = payload["volume"] > 0 ? payload['volume'].toDouble() : null;
+    var rate = payload["rate"] > 0 ? payload['rate'].toDouble() : null;
+
+    mapViewController._onSpeakAloudTextCallback?.call(OnSpeakAloudTextResult(
+        text: text, lang: lang, pitch: pitch, rate: rate, volume: volume));
+  }
+}
+
+class CalibrationPointClickedMessageHandler implements MessageHandler {
+  @override
+  void handleMessage(
+      MapViewController mapViewController, Map<String, dynamic> payload) {
+    var data = createCalibrationPointData(payload);
+    mapViewController._onCalibrationPointClickedCallback?.call(data);
+  }
+}
+
+class CalibrationStoppedMessageHandler implements MessageHandler {
+  @override
+  void handleMessage(
+      MapViewController mapViewController, Map<String, dynamic> payload) {
+    var status = createCalibrationFinishedStatus(payload);
+    mapViewController._onCalibrationFinishedCallback?.call(status);
   }
 }
