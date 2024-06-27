@@ -98,6 +98,8 @@ const NSString* RESULTS_KEY = @"results";
     } else if ([@"openUrlInDefaultBrowser" isEqualToString:call.method]) {
         [self openUrlInDefaultBrowser:call
                                result:result];
+    } else if ([@"addExternalArData" isEqualToString:call.method]) {
+        // TODO: implement this for iOS.
     } else {
         result(FlutterMethodNotImplemented);
     }
