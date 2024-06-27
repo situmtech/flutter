@@ -12,11 +12,11 @@ import es.situm.sdk.SitumSdk
 import es.situm.sdk.communication.CommunicationConfigImpl
 import es.situm.sdk.configuration.network.NetworkOptionsImpl
 import es.situm.sdk.error.Error
+import es.situm.sdk.location.ExternalArData
 import es.situm.sdk.location.GeofenceListener
 import es.situm.sdk.location.LocationListener
 import es.situm.sdk.location.LocationRequest
 import es.situm.sdk.location.LocationStatus
-import es.situm.sdk.location.internal.sensors.data.ArCoreData
 import es.situm.sdk.model.cartography.*
 import es.situm.sdk.model.location.Location
 import es.situm.sdk.utils.Handler
@@ -78,7 +78,7 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
         when (methodCall.method) {
             "init" -> init(arguments, result)
             "initSdk" -> initSdk(result)
-            "setArOdometry" -> setArOdometry(arguments, result)
+            "addExternalArData" -> addExternalArData(arguments, result)
             "setDashboardURL" -> setDashboardURL(arguments, result)
             "setApiKey" -> setApiKey(arguments, result)
             "setConfiguration" -> setConfiguration(arguments, result)
@@ -139,13 +139,10 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
         result.success("DONE")
     }
 
-    private fun setArOdometry(arguments: Map<String, Any>, result: MethodChannel.Result) {
-        val ArOdometry = arguments
-        if (ArOdometry != null) {
-            ArCoreData().setArOdometry(ArOdometry.toString())
-            result.success("DONE")
-            return
-        }
+    private fun addExternalArData(arguments: Map<String, Any>, result: MethodChannel.Result) {
+        val externalArData = ExternalArData.Builder().rawJsonString(arguments.toString()).build()
+        SitumSdk.locationManager().addExternalArData(externalArData)
+        result.success("DONE")
     }
 
 

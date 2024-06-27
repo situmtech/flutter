@@ -87,10 +87,10 @@ class SitumSdk {
     }
   }
 
-  Future<void> setArOdometry(String? message) async {
+  Future<void> addExternalArData(String? message) async {
     if (message != null) {
       await methodChannel.invokeMethod(
-        "setArOdometry",
+        "addExternalArData",
         <String, dynamic>{
           'message': message,
         },
@@ -449,8 +449,7 @@ class SitumSdk {
   InternalCall _sendBleDisabledStatusAsError() {
     Error bleDisabled = Error.bleDisabledError();
     _onLocationErrorCallback?.call(bleDisabled);
-    return InternalCall(
-        InternalCallType.locationError, bleDisabled);
+    return InternalCall(InternalCallType.locationError, bleDisabled);
   }
 
   // GEOFENCES:
