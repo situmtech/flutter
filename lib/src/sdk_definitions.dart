@@ -30,6 +30,24 @@ extension RealtimeUpdateIntervalExtension on RealtimeUpdateInterval {
   }
 }
 
+enum MotionMode {
+  byFoot,
+  byFootVisualOdometry,
+}
+
+extension MotionModeExtension on MotionMode {
+  String get name {
+    switch (this) {
+      case MotionMode.byFoot:
+        return 'BY_FOOT';
+      case MotionMode.byFootVisualOdometry:
+        return 'BY_FOOT_VISUAL_ODOMETRY';
+      default:
+        return 'BY_FOOT';
+    }
+  }
+}
+
 /// When you build the [LocationRequest], this data object configures the Global
 /// Mode options.
 class OutdoorLocationOptions {
@@ -55,6 +73,7 @@ class LocationRequest {
       foregroundServiceNotificationOptions;
   final OutdoorLocationOptions? outdoorLocationOptions;
   final RealtimeUpdateInterval? realtimeUpdateInterval;
+  final MotionMode? motionMode;
   final bool? useBle;
   final bool? useGps;
 
@@ -71,6 +90,7 @@ class LocationRequest {
     this.useWifi,
     this.useBle,
     this.useGps,
+    this.motionMode,
   });
 
   Map<String, dynamic> toMap() {
@@ -84,6 +104,7 @@ class LocationRequest {
         "outdoorLocationOptions", outdoorLocationOptions?.toMap(), map);
     _addToMapIfNotNull(
         "realtimeUpdateInterval", realtimeUpdateInterval?.name, map);
+    _addToMapIfNotNull("motionMode", motionMode?.name, map);
     _addToMapIfNotNull("useWifi", useWifi, map);
     _addToMapIfNotNull("useBle", useBle, map);
     _addToMapIfNotNull("useGps", useGps, map);
@@ -510,6 +531,7 @@ class Floor extends NamedResource {
   @override
   Map<String, dynamic> toMap() => {
         "buildingId": buildingIdentifier,
+        "floorIdentifier": identifier,
         "floorIndex": floorIndex,
         "mapUrl": mapUrl,
         "scale": scale,

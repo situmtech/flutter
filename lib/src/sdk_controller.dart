@@ -93,6 +93,17 @@ class SitumSdk {
     }
   }
 
+  Future<void> addExternalArData(String? message) async {
+    if (message != null) {
+      await methodChannel.invokeMethod(
+        "addExternalArData",
+        <String, dynamic>{
+          'message': message,
+        },
+      );
+    }
+  }
+
   /// Sets the API's base URL to retrieve the data. **Make sure you follow the next steps**:
   ///
   /// * For this method to work correctly, you should call methods in the following order:
