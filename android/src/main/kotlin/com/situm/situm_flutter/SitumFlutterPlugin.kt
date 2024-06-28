@@ -12,6 +12,7 @@ import es.situm.sdk.SitumSdk
 import es.situm.sdk.communication.CommunicationConfigImpl
 import es.situm.sdk.configuration.network.NetworkOptionsImpl
 import es.situm.sdk.error.Error
+import es.situm.sdk.location.ExternalArData
 import es.situm.sdk.location.GeofenceListener
 import es.situm.sdk.location.LocationListener
 import es.situm.sdk.location.LocationRequest
@@ -77,6 +78,7 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
         when (methodCall.method) {
             "init" -> init(arguments, result)
             "initSdk" -> initSdk(result)
+            "addExternalArData" -> addExternalArData(arguments, result)
             "setDashboardURL" -> setDashboardURL(arguments, result)
             "setApiKey" -> setApiKey(arguments, result)
             "setUserPass" -> setUserPass(arguments, result)
@@ -138,6 +140,13 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
         startListeningLocationUpdates()
         result.success("DONE")
     }
+
+    private fun addExternalArData(arguments: Map<String, Any>, result: MethodChannel.Result) {
+        val externalArData = ExternalArData.Builder().rawJsonString(arguments.toString()).build()
+        SitumSdk.locationManager().addExternalArData(externalArData)
+        result.success("DONE")
+    }
+
 
     private fun initSdk(result: MethodChannel.Result) {
         SitumSdk.init(context)

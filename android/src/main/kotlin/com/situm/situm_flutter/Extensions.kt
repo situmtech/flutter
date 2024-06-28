@@ -82,6 +82,12 @@ fun LocationRequest.Builder.fromArguments(args: Map<String, Any>): LocationReque
             )
         }
     }
+    if (args.containsKey("motionMode")) {
+        val motionMode = args["motionMode"] as String?
+        if (motionMode != null) {
+            motionMode(LocationRequest.MotionMode.valueOf(motionMode))
+        }
+    }
     if (args.containsKey("outdoorLocationOptions")) {
         val outdoorOptionsMap = args["outdoorLocationOptions"] as Map<String, Any>
         val outdoorLocationOptions = OutdoorLocationOptions.Builder()
