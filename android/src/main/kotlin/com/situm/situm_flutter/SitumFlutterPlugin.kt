@@ -18,6 +18,7 @@ import es.situm.sdk.location.LocationRequest
 import es.situm.sdk.location.LocationStatus
 import es.situm.sdk.model.cartography.*
 import es.situm.sdk.model.location.Location
+import es.situm.sdk.navigation.ExternalNavigation
 import es.situm.sdk.utils.Handler
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
@@ -30,6 +31,7 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
 
     private lateinit var channel: MethodChannel
     private lateinit var navigation: Navigation
+    private lateinit var viewerNavigation: ViewerNavigation
     private var locationListener: LocationListener? = null
     private var geofenceListener: GeofenceListener? = null
     private var context: Context? = null
@@ -56,6 +58,7 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
         channel = MethodChannel(flutterPluginBinding.binaryMessenger, CHANNEL_ID_SDK)
         channel.setMethodCallHandler(this)
         navigation = Navigation.init(channel, handler)
+        viewerNavigation = ViewerNavigation.init(channel, handler)
     }
 
     override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
@@ -97,6 +100,7 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
             "requestNavigation" -> requestNavigation(arguments, result)
             "stopNavigation" -> stopNavigation(result)
             "openUrlInDefaultBrowser" -> openUrlInDefaultBrowser(arguments, result)
+            "updateNavigationState" -> updateNavigationState(arguments, result)
             else -> result.notImplemented()
         }
     }
@@ -346,6 +350,47 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
         } catch (e: ActivityNotFoundException) {
             result.success(false)
         }
+        result.success(true)
+    }
+
+    private fun updateNavigationState(arguments: Map<String, Any>, result: MethodChannel.Result) {
+        if (!arguments.containsKey("messageType")
+            || !arguments.containsKey("payload")) {
+            result.success(false)
+            return
+        }
+        println(">>>> messageType: ${arguments["messageType"]}")
+        println(">>>> payload: ${arguments["payload"]}")
+        val messageType = arguments["messageType"] as String
+        val payload = arguments["payload"] as Map<String, Any>
+
+        var type: ExternalNavigation.MessageType? = null
+
+        when(messageType) {
+            "NavigationStarted" -> {
+                SitumSdk.navigationManager().addNavigationListener(viewerNavigation)
+                type = ExternalNavigation.MessageType.NAVIGATION_STARTED
+            }
+            "NavigationUpdated" -> {
+                type = ExternalNavigation.MessageType.NAVIGATION_UPDATED
+            }
+            "DestinationReached" -> {
+                type = ExternalNavigation.MessageType.DESTINATION_REACHED
+            }
+            "OutsideRoute" -> {
+                type = ExternalNavigation.MessageType.OUTSIDE_ROUTE
+            }
+            "NavigationCancelled" -> {
+                type = ExternalNavigation.MessageType.NAVIGATION_CANCELLED
+            }
+        }
+
+        if (type == null) {
+            result.success(false)
+            return
+        }
+
+        viewerNavigation.updateNavigationState(ExternalNavigation(type, payload))
         result.success(true)
     }
 

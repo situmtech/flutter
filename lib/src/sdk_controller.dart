@@ -405,6 +405,19 @@ class SitumSdk {
     methodChannel.invokeMethod('openUrlInDefaultBrowser', {"url": url});
   }
 
+  /// Update SDK with the viewer navigation states.
+  /// Do not use this method as it is intended for internal use by the map
+  /// viewer module.
+  void updateNavigationState(ExternalNavigation externalNavigation) {
+    methodChannel.invokeMethod(
+      'updateNavigationState',
+      {
+        "messageType": externalNavigation.messageType.name,
+        "payload": externalNavigation.payload,
+      },
+    );
+  }
+
   // Callbacks:
 
   Future<void> _methodCallHandler(MethodCall call) async {

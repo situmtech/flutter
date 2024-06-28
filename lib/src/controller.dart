@@ -35,10 +35,14 @@ class MapViewController {
     'STOPPED',
   ];
 
+  bool? _useViewerNavigation;
+
   MapViewController({
     String? situmUser,
     required String situmApiKey,
+    bool? useViewerNavigation,
   }) {
+    _useViewerNavigation = useViewerNavigation;
     // Open SDK channel to call native (private) methods if necessary.
     // WARNING: don't set the method call handler here as it will overwrite the
     // one provided by the SDK controller.
@@ -241,6 +245,14 @@ class MapViewController {
     if (_lastErrorToSend != null) {
       // Same API for sending status and errors...
       _setCurrentLocationStatus(_lastErrorToSend!);
+    }
+    if (_useViewerNavigation != null) {
+      var navigationType = _useViewerNavigation! ? "webAssembly" : "sdk";
+      Map<String, dynamic> configItem = {
+        "key": "'internal.navigationLibrary'",
+        "value": "'$navigationType'",
+      };
+      _sendMessage(WV_MESSAGE_SET_CONFIG_ITEM, [configItem]);
     }
   }
 
