@@ -212,7 +212,7 @@ class ViewerNavigationStartedMessageHandler implements MessageHandler {
   void handleMessage(
       MapViewController mapViewController, Map<String, dynamic> payload) {
     var externalNavigation = ExternalNavigation(
-      ExternalNavigationMessageType.NavigationStarted,
+      ExternalNavigationMessageType.navigationStarted,
       payload,
     );
     SitumSdk().updateNavigationState(externalNavigation);
@@ -228,19 +228,19 @@ class ViewerNavigationUpdatedMessageHandler implements MessageHandler {
     switch (payload["type"]) {
       case "PROGRESS":
         externalNavigation = ExternalNavigation(
-          ExternalNavigationMessageType.NavigationUpdated,
+          ExternalNavigationMessageType.navigationUpdated,
           payload,
         );
         break;
       case "DESTINATION_REACHED":
         externalNavigation = ExternalNavigation(
-          ExternalNavigationMessageType.DestinationReached,
+          ExternalNavigationMessageType.destinationReached,
           payload,
         );
         break;
       case "OUT_OF_ROUTE":
         externalNavigation = ExternalNavigation(
-          ExternalNavigationMessageType.OutsideRoute,
+          ExternalNavigationMessageType.outsideRoute,
           payload,
         );
         break;
@@ -257,7 +257,7 @@ class ViewerNavigationStoppedMessageHandler implements MessageHandler {
   void handleMessage(
       MapViewController mapViewController, Map<String, dynamic> payload) {
     var externalNavigation = ExternalNavigation(
-      ExternalNavigationMessageType.NavigationCancelled,
+      ExternalNavigationMessageType.navigationCancelled,
       payload,
     );
     SitumSdk().updateNavigationState(externalNavigation);

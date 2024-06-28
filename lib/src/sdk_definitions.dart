@@ -1,5 +1,3 @@
-// ignore_for_file: constant_identifier_names
-
 part of sdk;
 
 /// Enum that allows to specify whether the geolocations computed should be sent
@@ -828,18 +826,18 @@ void _addToMapIfNotNull(String key, dynamic value, Map<String, dynamic> map) {
 }
 
 class ExternalNavigation {
-  ExternalNavigationMessageType messageType;
+  String messageType;
   Map<String, dynamic> payload;
 
   ExternalNavigation(this.messageType, this.payload);
 }
 
-enum ExternalNavigationMessageType {
-  NavigationStarted,
-  NavigationUpdated,
-  DestinationReached,
-  OutsideRoute,
-  NavigationCancelled,
+class ExternalNavigationMessageType {
+  static const navigationStarted = "NavigationStarted";
+  static const navigationUpdated = "NavigationUpdated";
+  static const destinationReached = "DestinationReached";
+  static const outsideRoute = "OutsideRoute";
+  static const navigationCancelled = "NavigationCancelled";
 }
 
 // Result callbacks.

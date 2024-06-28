@@ -412,7 +412,7 @@ class SitumSdk {
     methodChannel.invokeMethod(
       'updateNavigationState',
       {
-        "messageType": externalNavigation.messageType.name,
+        "messageType": externalNavigation.messageType,
         "payload": externalNavigation.payload,
       },
     );
