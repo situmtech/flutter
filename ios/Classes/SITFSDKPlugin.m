@@ -98,6 +98,9 @@ const NSString* RESULTS_KEY = @"results";
     } else if ([@"openUrlInDefaultBrowser" isEqualToString:call.method]) {
         [self openUrlInDefaultBrowser:call
                                result:result];
+    } else if ([@"updateNavigationState" isEqualToString:call.method]) {
+        [self updateNavigationState:call
+                               result:result];
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -460,6 +463,33 @@ SITRealtimeUpdateInterval createRealtimeUpdateInterval(NSString *name) {
     }
     [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
     result(@(YES));
+}
+
+- (void) updateNavigationState:(FlutterMethodCall*)call
+                         result:(FlutterResult)result {
+    if (call.arguments.count > 0) {
+        NSDictionary *data = (NSDictionary*) [call.arguments objectAtIndex:0];
+        NSString *messageType = (NSString*)[data objectForKey:@"messageType"];
+        NSDictionary *payload = (NSDictionary*)[data objectForKey:@"payload"];
+        SITExternalNavigation *externalNavigation;
+        if ([messageType isEqual:@"NavigationStarted"]) {
+            externalNavigation = [[SITExternalNavigation alloc] initWithMessageType:kSITNavigationStarted
+                                                             payload:payload];
+        } else if ([messageType isEqual:@"NavigationUpdated"]) {
+            externalNavigation = [[SITExternalNavigation alloc] initWithMessageType:kSITNavigationUpdated
+                                                             payload:payload];
+        } else if ([messageType isEqual:@"DestinationReached"]) {
+            externalNavigation = [[SITExternalNavigation alloc] initWithMessageType:kSITDestinationReached
+                                                             payload:payload];
+        } else if ([messageType isEqual:@"OutsideRoute"]) {
+            externalNavigation = [[SITExternalNavigation alloc] initWithMessageType:kSITOutsideRoute
+                                                             payload:payload];
+        } else if ([messageType isEqual:@"NavigationCancelled"]) {
+            externalNavigation = [[SITExternalNavigation alloc] initWithMessageType:kSITNavigationCancelled
+                                                             payload:payload];
+        }
+        [[SITNavigationManager sharedManager] updateNavigationState:externalNavigation];
+    }
 }
 
 

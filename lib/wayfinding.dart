@@ -44,6 +44,9 @@ const WV_MESSAGE_CARTOGRAPHY_POI_DESELECTED = "cartography.poi_deselected";
 const WV_MESSAGE_MAP_IS_READY = "app.map_is_ready";
 const WV_MESSAGE_LOCATION_START = "location.start";
 const WV_MESSAGE_AR_REQUESTED = "augmented_reality.requested";
+const WV_VIEWER_NAVIGATION_STARTED = "viewer.navigation.started";
+const WV_VIEWER_NAVIGATION_UPDATED = "viewer.navigation.updated";
+const WV_VIEWER_NAVIGATION_STOPPED = "viewer.navigation.stopped";
 
 // Calibration events:
 const WV_MESSAGE_CALIBRATION_POINT_CLICKED = "calibration.point_clicked";
@@ -94,3 +97,6 @@ const WV_MESSAGE_CALIBRATIONS_STOP_CURRENT = "calibration.stop";
 // Calibration events:
 const WV_MESSAGE_LOCAL_CALIB_UPLOAD_REQUESTED =
     "calibration.local_calibrations_upload_requested";
+
+// Configure some parameter of the remote configuration file:
+const WV_MESSAGE_SET_CONFIG_ITEM = "app.set_config_item";

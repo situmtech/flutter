@@ -124,6 +124,7 @@ class _MapViewState extends State<MapView> {
       );
     wyfController ??= MapViewController(
       situmApiKey: mapViewConfiguration.situmApiKey,
+      useViewerNavigation: mapViewConfiguration.useViewerNavigation,
     );
     wyfController!._widgetUpdater = _loadWithConfig;
     wyfController!._widgetLoadCallback = widget.onLoad;
@@ -150,7 +151,8 @@ class _MapViewState extends State<MapView> {
     }
 
     if (webViewController is WebKitWebViewController) {
-      (webViewController as WebKitWebViewController).setInspectable(configuration.enableDebugging);
+      (webViewController as WebKitWebViewController)
+          .setInspectable(configuration.enableDebugging);
     }
     var sdk = SitumSdk();
     final String deviceId = await sdk.getDeviceId();
