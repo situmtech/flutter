@@ -359,8 +359,7 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
             result.success(false)
             return
         }
-        println(">>>> messageType: ${arguments["messageType"]}")
-        println(">>>> payload: ${arguments["payload"]}")
+
         val messageType = arguments["messageType"] as String
         val payload = arguments["payload"] as Map<String, Any>
 
