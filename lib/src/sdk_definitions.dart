@@ -76,6 +76,8 @@ class LocationRequest {
   final MotionMode? motionMode;
   final bool? useBle;
   final bool? useGps;
+
+  /// Only for Android.
   final bool? useWifi;
 
   LocationRequest({
