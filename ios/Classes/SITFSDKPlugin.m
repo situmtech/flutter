@@ -48,6 +48,10 @@ const NSString* RESULTS_KEY = @"results";
                              result: result];
     } else if ([@"setApiKey" isEqualToString:call.method]) {
         [self handleSetApiKey:call result:result];
+    } else if ([@"setUserPass" isEqualToString:call.method]) {
+        [self handleSetUserPass:call result:result];
+    } else if ([@"logout" isEqualToString:call.method]) {
+        [self handleLogout:result];
     } else if ([@"setConfiguration" isEqualToString:call.method]) {
         [self handleSetConfiguration: call
                               result: result];
@@ -94,7 +98,7 @@ const NSString* RESULTS_KEY = @"results";
     } else if ([@"openUrlInDefaultBrowser" isEqualToString:call.method]) {
         [self openUrlInDefaultBrowser:call
                                result:result];
-    } else  if ([@"setArOdometry" isEqualToString:call.method]) {
+    } else  if ([@"addExternalArData" isEqualToString:call.method]) {
         [self handleSetArOdometry:call
                                result:result];
     } else 
@@ -179,6 +183,34 @@ const NSString* RESULTS_KEY = @"results";
     result(@"DONE");
 }
 
+- (void)handleSetUserPass:(FlutterMethodCall*)call result:(FlutterResult)result {
+    NSString *situmUser = call.arguments[@"situmUser"];
+    NSString *situmPass = call.arguments[@"situmPass"];
+
+    if (!situmUser || !situmPass) {
+        NSLog(@"error providing credentials");
+        result([FlutterError errorWithCode:@"INVALID_CREDENTIALS" message:@"Error providing credentials" details:nil]);
+        return;
+    }
+
+    [SITServices provideUser:situmUser
+                    password:situmPass];
+    result(@"DONE");
+}
+
+- (void)handleLogout:(FlutterResult)result {
+    [self.comManager logoutWithCompletion:^(NSError * _Nullable error) {
+        if (!error) {
+            result(@"DONE");
+        } else {
+            FlutterError *ferror = [FlutterError errorWithCode:@"errorLogout"
+                                                       message:[NSString stringWithFormat:@"Failed with error: %@", error]
+                                                       details:nil];
+            result(ferror);
+        }
+    }];
+}
+
 - (void)handleSetConfiguration:(FlutterMethodCall*)call result:(FlutterResult)result {
     BOOL useRemoteConfig = [call.arguments[@"useRemoteConfig"] boolValue];
     [SITServices setUseRemoteConfig:useRemoteConfig];
@@ -244,6 +276,16 @@ SITRealtimeUpdateInterval createRealtimeUpdateInterval(NSString *name) {
     NSDictionary *outdoorOptionsMap = arguments[@"outdoorLocationOptions"];
     if (outdoorOptionsMap != nil) {
         locationRequest.outdoorLocationOptions = [self createOutdoorLocationOptions:arguments[@"outdoorLocationOptions"]];
+    }
+    NSString *useBle = arguments[@"useBle"];
+    if (![SITFSDKUtils isNullArgument:useBle]){
+        NSLog(@"Situm> SDK> LocationRequest> Set useBle: %d", [useBle boolValue]);
+        locationRequest.useBle = [useBle boolValue];
+    }
+    NSString *useGps = arguments[@"useGps"];
+    if (![SITFSDKUtils isNullArgument:useGps]){
+        NSLog(@"Situm> SDK> LocationRequest> Set useGps: %d", [useGps boolValue]);
+        locationRequest.useGps = [useGps boolValue];
     }
     return locationRequest;
 }

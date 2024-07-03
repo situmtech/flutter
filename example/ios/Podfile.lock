@@ -1,12 +1,14 @@
 PODS:
   - Flutter (1.0.0)
+  - flutter_tts (0.0.1):
+    - Flutter
   - permission_handler_apple (9.1.1):
     - Flutter
-  - Protobuf (3.26.0)
-  - situm_flutter (3.12.0):
+  - Protobuf (3.27.1)
+  - situm_flutter (3.15.3):
     - Flutter
-    - SitumSDK (~> 3.8.5)
-  - SitumSDK (3.8.5):
+    - SitumSDK (~> 3.13.1)
+  - SitumSDK (3.13.1):
     - Protobuf (~> 3.7)
     - SSZipArchive (~> 2.4)
   - SSZipArchive (2.4.3)
@@ -15,6 +17,7 @@ PODS:
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
+  - flutter_tts (from `.symlinks/plugins/flutter_tts/ios`)
   - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
   - situm_flutter (from `.symlinks/plugins/situm_flutter/ios`)
   - webview_flutter_wkwebview (from `.symlinks/plugins/webview_flutter_wkwebview/ios`)
@@ -28,6 +31,8 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   Flutter:
     :path: Flutter
+  flutter_tts:
+    :path: ".symlinks/plugins/flutter_tts/ios"
   permission_handler_apple:
     :path: ".symlinks/plugins/permission_handler_apple/ios"
   situm_flutter:
@@ -37,13 +42,14 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
+  flutter_tts: 0f492aab6accf87059b72354fcb4ba934304771d
   permission_handler_apple: e76247795d700c14ea09e3a2d8855d41ee80a2e6
-  Protobuf: 5685c66a07eaad9d18ce5ab618e9ac01fd04b5aa
-  situm_flutter: 293c28b0b6374ba07f52d7bbbb55228822ca9fe1
-  SitumSDK: ffa2882df2a460bc884135e7fa811b452907c654
+  Protobuf: f1b82a3ffb1c8f13d20e141a838c411840e1c223
+  situm_flutter: f2cac202bb7b8b8dea2c1f1b7568d0b992a99912
+  SitumSDK: 2b3537e9eeaf9883a02c0f9742a1c6eb6ab19d32
   SSZipArchive: fe6a26b2a54d5a0890f2567b5cc6de5caa600aef
   webview_flutter_wkwebview: 4f3e50f7273d31e5500066ed267e3ae4309c5ae4
 
-PODFILE CHECKSUM: 71f973ba82c5f604995781f418a10a18c4ddcb5d
+PODFILE CHECKSUM: b372eb01cab451b27c846ed62cbdd2b859c6b5a0
 
 COCOAPODS: 1.15.2

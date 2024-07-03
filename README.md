@@ -46,24 +46,13 @@ up a Situm account.
 
 ### Android
 
-1. Include the Situm repository in your project level `build.gradle`:
-
-```groovy
-allprojects {
-    repositories {
-        ...
-        maven { url "https://repo.situm.es/artifactory/libs-release-local" }
-    }
-}
-```
-
-2. Add the `ACCESS_FINE_LOCATION` permission to your `AndroidManifest.xml` file if you have configured Situm SDK to [use GPS](<https://developers.situm.com/sdk_documentation/android/javadoc/latest/es/situm/sdk/location/locationrequest#useGps()>):
+1. Add the `ACCESS_FINE_LOCATION` permission to your `AndroidManifest.xml` file if you have configured Situm SDK to [use GPS](<https://developers.situm.com/sdk_documentation/android/javadoc/latest/es/situm/sdk/location/locationrequest#useGps()>):
 
 ```xml
   <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
 ```
 
-3. Set the `minSdkVersion` to 21 or later on your app's `build.gradle` file.
+2. Set the `minSdkVersion` to 21 or later on your app's `build.gradle` file.
 
 ### iOS
 
@@ -75,15 +64,11 @@ allprojects {
 
 ```
 <key>NSLocationWhenInUseUsageDescription</key>
-	<string>Location is required to find out where you are</string>
-<key>NSBluetoothPeripheralUsageDescription</key>
-	<string>Bluetooth is required to find out where you are</string>
-<key>NSLocationAlwaysUsageDescription</key>
-	<string>Location is required to find out where you are</string>
+<string>Location is required to find out where you are</string>
 <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Location is required to find out where you are</string>
-<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>Bluetooth is required to find out where you are</string>
+<string>Location is required to find out where you are</string>
+<key>NSMotionUsageDescription</key>
+<string>We use your phone sensors (giroscope, accelerometer and altimeter) to improve location quality</string>
 ```
 
 4. For offline support you will have to add the underlying web application's domain inside the entry `WKAppBoundDomains` on `Info.plist` as follows:
