@@ -34,6 +34,8 @@ dependencies:
   cupertino_icons: ^1.0.2
   ar_flutter_plugin: ^0.7.3
 
+  flutter_tts: ^3.6.3
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

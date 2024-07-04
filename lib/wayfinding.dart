@@ -1,6 +1,7 @@
 library wayfinding;
 // ignore_for_file: constant_identifier_names
 
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
@@ -42,6 +43,11 @@ const WV_MESSAGE_CARTOGRAPHY_POI_SELECTED = "cartography.poi_selected";
 const WV_MESSAGE_CARTOGRAPHY_POI_DESELECTED = "cartography.poi_deselected";
 const WV_MESSAGE_MAP_IS_READY = "app.map_is_ready";
 const WV_MESSAGE_LOCATION_START = "location.start";
+const WV_MESSAGE_AR_REQUESTED = "augmented_reality.requested";
+
+// Calibration events:
+const WV_MESSAGE_CALIBRATION_POINT_CLICKED = "calibration.point_clicked";
+const WV_MESSAGE_CALIBRATION_STOPPED = "calibration.stopped";
 
 // ACTIONS sent to map-viewer:
 
@@ -51,6 +57,7 @@ const WV_MESSAGE_LOCATION_STATUS = "location.update_status";
 
 // Directions actions
 const WV_MESSAGE_DIRECTIONS_UPDATE = "directions.update";
+const WV_MESSAGE_DIRECTIONS_SET_OPTIONS = "directions.set_options";
 
 // Navigation actions
 const WV_MESSAGE_NAVIGATION_START = "navigation.start";
@@ -58,6 +65,7 @@ const WV_MESSAGE_NAVIGATION_UPDATE = "navigation.update";
 const WV_MESSAGE_NAVIGATION_CANCEL = "navigation.cancel";
 
 // Cartogaphy actions
+const WV_MESSAGE_CARTOGRAPHY_SELECT_BUILDING = "cartography.select_building";
 const WV_MESSAGE_CARTOGRAPHY_SELECT_POI = "cartography.select_poi";
 const WV_MESSAGE_CARTOGRAPHY_SELECT_POI_CATEGORY =
     "cartography.select_poi_category";
@@ -67,3 +75,22 @@ const WV_MESSAGE_UI_SET_LANGUAGE = "ui.set_language";
 // Camera actions
 const WV_MESSAGE_CAMERA_FOLLOW_USER = "camera.follow_user";
 const WV_MESSAGE_CAMERA_SET = "camera.set";
+
+// AR actions
+const WV_MESSAGE_AR_UPDATE_STATUS = "augmented_reality.update_status";
+
+// Filtering actions
+const WV_MESSAGE_UI_SET_SEARCH_FILTER = "ui.set_search_filter";
+
+// TTS
+const WV_MESSAGE_UI_SPEAK_ALOUD_TEXT = "ui.speak_aloud_text";
+
+// Calibration actions
+const WV_MESSAGE_UI_SET_MODE = "ui.set_mode";
+const WV_MESSAGE_CALIBRATIONS_SET_LOCAL_CALIBRATIONS =
+    "calibration.set_local_calibrations";
+const WV_MESSAGE_CALIBRATIONS_STOP_CURRENT = "calibration.stop";
+
+// Calibration events:
+const WV_MESSAGE_LOCAL_CALIB_UPLOAD_REQUESTED =
+    "calibration.local_calibrations_upload_requested";

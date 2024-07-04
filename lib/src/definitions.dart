@@ -82,6 +82,11 @@ class MapViewConfiguration {
   /// Default is false.
   final bool? persistUnderlyingWidget;
 
+  /// Sets the UI language based on the given ISO 639-1 code. Checkout the
+  /// [Situm docs](https://situm.com/docs/query-params/) to see the list of
+  /// supported languages.
+  final String? language;
+
   /// The [MapView] settings. Required fields are your Situm user and API key,
   /// but also a buildingIdentifier or remoteIdentifier.
   MapViewConfiguration({
@@ -95,6 +100,7 @@ class MapViewConfiguration {
     this.enableDebugging = false,
     this.lockCameraToBuilding,
     this.persistUnderlyingWidget = false,
+    this.language,
   }) {
     if (viewerDomain != null) {
       if (!viewerDomain.startsWith("https://") &&
@@ -120,23 +126,30 @@ class MapViewConfiguration {
     return finalApiDomain;
   }
 
-  String _getViewerURL() {
+  String _getViewerURL(String? deviceId) {
+    if (buildingIdentifier == null && remoteIdentifier == null) {
+      throw ArgumentError(
+          'Missing configuration: remoteIdentifier or buildingIdentifier must be provided.');
+    }
     var base = viewerDomain;
     var query = "apikey=$situmApiKey&domain=$_internalApiDomain&mode=embed";
     if (lockCameraToBuilding != null) {
       query = "$query&lockCameraToBuilding=$lockCameraToBuilding";
     }
-
-    if (remoteIdentifier?.isNotEmpty == true &&
-        buildingIdentifier?.isNotEmpty == true) {
-      return "$base/id/$remoteIdentifier?$query&buildingid=$buildingIdentifier";
-    } else if (remoteIdentifier?.isNotEmpty == true) {
-      return "$base/id/$remoteIdentifier?$query";
-    } else if (buildingIdentifier?.isNotEmpty == true) {
-      return "$base/?$query&buildingid=$buildingIdentifier";
+    if (language != null) {
+      query = "$query&lng=$language";
     }
-    throw ArgumentError(
-        'Missing configuration: remoteIdentifier or buildingIdentifier must be provided.');
+    if (deviceId != null) {
+      query = "$query&deviceId=$deviceId";
+    }
+    if (remoteIdentifier?.isNotEmpty == true) {
+      base = "$base/id/$remoteIdentifier";
+    }
+    if (buildingIdentifier?.isNotEmpty == true && buildingIdentifier != "-1") {
+      query = "$query&buildingid=$buildingIdentifier";
+    }
+
+    return "$base?$query";
   }
 }
 
@@ -246,21 +259,80 @@ class OnPoiDeselectedResult {
   });
 }
 
-// Result callbacks.
+class OnExternalLinkClickedResult {
+  final String url;
 
-// WYF load callback.
-typedef MapViewCallback = void Function(MapViewController controller);
-// POI selection callback.
-typedef OnPoiSelectedCallback = void Function(
-    OnPoiSelectedResult poiSelectedResult);
-// POI deselection callback.
-typedef OnPoiDeselectedCallback = void Function(
-    OnPoiDeselectedResult poiDeselectedResult);
-// Directions and navigation interceptor.
-typedef OnDirectionsRequestInterceptor = void Function(
-    DirectionsRequest directionsRequest);
-typedef OnNavigationRequestInterceptor = void Function(
-    NavigationRequest navigationRequest);
+  const OnExternalLinkClickedResult({
+    required this.url,
+  });
+}
+
+/// This class represents the object that contains the message passed from
+/// the viewer to the application. This message represents the requirement to
+/// read aloud a text with some parameters like language, volume, etc
+class OnSpeakAloudTextResult {
+  /// A [String] that will be read aloud using TTS
+  final String text;
+
+  /// A [String] that represents the language code, i.e. es-ES
+  final String? lang;
+
+  /// A [Double] that represents the volume from 0.0 to 1.0
+  final double? volume;
+
+  /// A [Double] that represents the speech pitch from 0.0 to 1.0
+  final double? pitch;
+
+  /// A [Double] that represents the speech rate from 0.0 to 1.0
+  final double? rate;
+
+  const OnSpeakAloudTextResult(
+      {required this.text, this.lang, this.volume, this.pitch, this.rate});
+}
+
+class SearchFilter {
+  /// Text used in the searchbar to filter and display the search results
+  /// whose name or description matches the filter.
+  ///
+  /// An empty string will clear the current text filter (if any).
+  /// A null value will apply no change.
+  String? text;
+
+  /// A [PoiCategory] identifier used to filter
+  /// and display the POIs that belong to the given category.
+  ///
+  /// An empty string will clear the current category filter (if any).
+  /// A null value will apply no change.
+  String? poiCategoryIdentifier;
+
+  SearchFilter({
+    this.text,
+    this.poiCategoryIdentifier,
+  });
+
+  toMap() {
+    Map<String, Object> result = {};
+    if (text != null) {
+      result["text"] = text!;
+    }
+    if (poiCategoryIdentifier != null) {
+      result["poiCategoryIdentifier"] = poiCategoryIdentifier!;
+    }
+
+    return result;
+  }
+}
+
+enum ARStatus {
+  /// The AR module has been presented successfully.
+  success,
+
+  /// There was an error while trying to present the AR module.
+  error,
+
+  /// The AR module has been hidden and finished working.
+  finished,
+}
 
 // Connection errors
 class ConnectionErrors {
@@ -276,3 +348,69 @@ class ConnectionErrors {
     IOS_HOSTNAME_NOT_RESOLVED
   ];
 }
+
+class MapViewDirectionsOptions {
+  List<String>? excludedTags;
+  List<String>? includedTags;
+
+  MapViewDirectionsOptions({this.excludedTags, this.includedTags});
+}
+
+/// # Don't use this class, it is intended for internal use.
+/// Encapsulates the data of a calibration point. Each calibration point is
+/// received from the [MapView] when it is in mode [UIMode.calibration].
+class CalibrationPointData {
+  final String buildingIdentifier;
+  final String floorIdentifier;
+  final Coordinate coordinate;
+
+  CalibrationPointData({
+    required this.buildingIdentifier,
+    required this.floorIdentifier,
+    required this.coordinate,
+  });
+}
+
+/// # Don't use this enum, it is intended for internal use.
+/// Status received when the [MapView] is in mode [UIMode.calibration] and the
+/// user stops the current calibration.
+/// The user may want to save ([success]) or cancel ([cancelled]) the
+/// calibration. When saving, the last calibration point may be discarded ([undo]).
+enum CalibrationFinishedStatus {
+  success,
+  undo,
+  cancelled,
+}
+
+/// [MapView] UI Modes.
+enum UIMode {
+  calibration,
+  explore,
+}
+
+// Result callbacks.
+
+// WYF load callback.
+typedef MapViewCallback = void Function(MapViewController controller);
+// POI selection callback.
+typedef OnPoiSelectedCallback = void Function(
+    OnPoiSelectedResult poiSelectedResult);
+// POI deselection callback.
+typedef OnPoiDeselectedCallback = void Function(
+    OnPoiDeselectedResult poiDeselectedResult);
+// Directions and navigation interceptor.
+typedef OnDirectionsRequestInterceptor = void Function(
+    DirectionsRequest directionsRequest);
+typedef OnNavigationRequestInterceptor = void Function(
+    NavigationRequest navigationRequest);
+// External link click.
+typedef OnExternalLinkClickedCallback = void Function(
+    OnExternalLinkClickedResult data);
+// TTS callback.
+typedef OnSpeakAloudTextCallback = void Function(OnSpeakAloudTextResult data);
+
+// Calibrations.
+typedef OnCalibrationPointClickedCallback = void Function(
+    CalibrationPointData data);
+typedef OnCalibrationFinishedCallback = void Function(
+    CalibrationFinishedStatus status);

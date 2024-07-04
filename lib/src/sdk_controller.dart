@@ -21,7 +21,7 @@ part of sdk;
 /// ```
 class SitumSdk {
   late final MethodChannel methodChannel;
-  Function(MethodCall call)? internalMethodCallDelegate;
+  final _InternalDelegates _internalMethodCallDelegates = _InternalDelegates();
 
   OnLocationUpdateCallback? _onLocationUpdateCallback;
   OnLocationStatusCallback? _onLocationStatusCallback;
@@ -39,10 +39,13 @@ class SitumSdk {
   OnDirectionsRequestedCallback? _onDirectionsRequestedCallback;
 
   final _LocationStatusAdapter _statusAdapter = _LocationStatusAdapter();
+  final _LocationErrorAdapter _errorAdapter = _LocationErrorAdapter();
+
+  /// Used to prevent MapViewController from re-authenticating, which will cause
+  /// problems on user-password authenticated apps.
+  bool _alreadyAuthenticated = false;
 
   static final SitumSdk _controller = SitumSdk._internal();
-
-  final _LocationErrorAdapter _errorAdapter = _LocationErrorAdapter();
 
   /// Main entry point for the Situm Flutter SDK. Use [SitumSdk] to start
   /// positioning, calculate routes and fetch resources.
@@ -56,7 +59,7 @@ class SitumSdk {
   }
 
   _initializeMethodChannel() {
-    methodChannel = const MethodChannel(_CHANNEL_SDK_ID);
+    methodChannel = const MethodChannel(situmSdkChannelId);
     methodChannel.setMethodCallHandler(_methodCallHandler);
   }
 
@@ -72,16 +75,30 @@ class SitumSdk {
   ///
   /// **Note**: If you call this method without providing any parameters,
   /// it will only initialize the SDK. In this case, ensure to call [setApiKey] afterwards.
+  ///
+  /// **Note**: After invoking this method with user and api-key, all subsequent calls will be ignored until [logout] is invoked.
   Future<void> init([String? situmUser, String? situmApiKey]) async {
     if (situmApiKey == null) {
       await methodChannel.invokeMethod<String>('initSdk');
-    } else {
+    } else if (!_alreadyAuthenticated) {
       await methodChannel.invokeMethod<String>(
         'init',
         <String, dynamic>{
           'situmUser': "---@situm.com",
           // Underlying sdk expects to have a non empty, non null and valid email. But is not used anymore.
           'situmApiKey': situmApiKey,
+        },
+      );
+      _alreadyAuthenticated = true;
+    }
+  }
+
+  Future<void> addExternalArData(String? message) async {
+    if (message != null) {
+      await methodChannel.invokeMethod(
+        "addExternalArData",
+        <String, dynamic>{
+          'message': message,
         },
       );
     }
@@ -130,7 +147,11 @@ class SitumSdk {
   /// You can find this key at https://dashboard.situm.com/accounts/profile.
   ///
   /// **Note**: This method should only be used if you have called [init] without the optional parameters
+  /// **Note**: After invoking [setApiKey], all subsequent calls will be ignored until [logout] is invoked.
   Future<void> setApiKey(String situmApiKey) async {
+    if (_alreadyAuthenticated) {
+      return;
+    }
     await methodChannel.invokeMethod(
       "setApiKey",
       <String, dynamic>{
@@ -139,6 +160,30 @@ class SitumSdk {
         'situmApiKey': situmApiKey,
       },
     );
+    _alreadyAuthenticated = true;
+  }
+
+  /// # Don't use this method, you probably want to call [setApiKey].
+  /// Authenticate yourself into our SDK. Prefer [setApiKey].
+  /// **Note**: After invoking [setUserPass], all subsequent calls will be ignored until [logout] is invoked.
+  Future<void> setUserPass(String user, String pass) async {
+    if (_alreadyAuthenticated) {
+      return;
+    }
+    await methodChannel.invokeMethod(
+      "setUserPass",
+      <String, dynamic>{
+        'situmUser': user,
+        'situmPass': pass,
+      },
+    );
+    _alreadyAuthenticated = true;
+  }
+
+  /// Invalidate user's token and remove it from internal credentials, if exist.
+  Future<void> logout() async {
+    _alreadyAuthenticated = false;
+    await methodChannel.invokeMethod("logout", {});
   }
 
   /// Sets the SDK [ConfigurationOptions].
@@ -293,6 +338,7 @@ class SitumSdk {
     });
   }
 
+  /// Returns the complete list of indoor POIs of the given building.
   Future<List<Poi>> fetchPoisFromBuilding(String buildingIdentifier) async {
     List response = await methodChannel.invokeMethod("fetchPoisFromBuilding", {
       "buildingIdentifier": buildingIdentifier,
@@ -300,12 +346,14 @@ class SitumSdk {
     return createList<Poi>(response, createPoi);
   }
 
+  /// Returns the given indoor POI for the given building.
   Future<Poi?> fetchPoiFromBuilding(
       String buildingIdentifier, String poiIdentifier) async {
-    List<Poi> buildingPois = await fetchPoisFromBuilding(buildingIdentifier);
-    return buildingPois.cast<Poi?>().firstWhere(
-        (poi) => poi?.identifier == poiIdentifier,
-        orElse: () => null);
+    var response = await methodChannel.invokeMethod("fetchPoiFromBuilding", {
+      "buildingIdentifier": buildingIdentifier,
+      "poiIdentifier": poiIdentifier
+    });
+    return createPoi(response);
   }
 
   Future<List<PoiCategory>> fetchPoiCategories() async {
@@ -339,136 +387,161 @@ class SitumSdk {
   /// Set a native [MethodCall] delegate.
   /// Do not use this method as it is intended for internal use by the map
   /// viewer module.
-  void internalSetMethodCallDelegate(Function(MethodCall call) delegate) {
-    internalMethodCallDelegate = delegate;
+  void internalSetMethodCallMapDelegate(Function(InternalCall call) delegate) {
+    _internalMethodCallDelegates.mapViewDelegate = delegate;
+  }
+
+  /// Set a native [MethodCall] delegate.
+  /// Do not use this method as it is intended for internal use by the Situm AR
+  /// module (that you will find on the situm_flutter_ar package).
+  void internalSetMethodCallARDelegate(Function(InternalCall call) delegate) {
+    _internalMethodCallDelegates.arDelegate = delegate;
+  }
+
+  /// Enables internal calls to native Geofence listeners. Receiving Geofence
+  /// callbacks involves the execution of certain processes with a computational
+  /// cost that we have chosen to avoid by default. This method activates those
+  /// processes while preventing collisions with [onEnterGeofences] and
+  /// [onExitGeofences].
+  /// Do not use this method as it is intended for internal use by the Situm AR
+  /// module (that you will find on the situm_flutter_ar package).
+  void internalEnableGeofenceListening() async {
+    await methodChannel.invokeMethod('geofenceCallbacksRequested');
+  }
+
+  /// Opens the given URL in the system's default browser.
+  /// This method is used internally but has been exposed publicly as it is
+  /// useful in common use-cases such as handling [Poi] description interactions.
+  void openUrlInDefaultBrowser(String url) {
+    methodChannel.invokeMethod('openUrlInDefaultBrowser', {"url": url});
   }
 
   // Callbacks:
 
   Future<void> _methodCallHandler(MethodCall call) async {
-    switch (call.method) {
-      case 'onLocationChanged':
-        // Reset last status stored in case it was USER_NOT_IN_BUILDING
-        // and a new location is received.
-        _statusAdapter.resetUserNotInBuilding();
+    Map<String, InternalCall? Function(MethodCall call)> handlers = {
+      'onLocationChanged': _onLocationChanged,
+      'onStatusChanged': _onStatusChanged,
+      'onError': _onError,
+      'onEnteredGeofences': (call) => _onEnterGeofences(call.arguments),
+      'onExitedGeofences': (call) => _onExitGeofences(call.arguments),
+      'onNavigationDestinationReached': (call) =>
+          _onNavigationDestinationReached(call.arguments),
+      'onNavigationStart': (call) => _onNavigationStart(call.arguments),
+      'onNavigationCancellation': (call) => _onNavigationCancellation(),
+      'onNavigationProgress': (call) => _onNavigationProgress(call.arguments),
+      'onUserOutsideRoute': (call) => _onNavigationOutOfRoute(),
+    };
 
-        _onLocationChanged(call.arguments);
-        break;
-      case 'onStatusChanged':
-        if (call.arguments["statusName"] == "BLE_SENSOR_DISABLED_BY_USER") {
-          // Send Android BLE_SENSOR_DISABLED_BY_USER as nonCritical error
-          // to the _onLocationErrorCallback.
-          // NOTE: MapViewController will keep receiving a the status, not the processed error
-          _sendBleDisabledStatusAsError();
-        } else {
-          String? processedStatus =
-              _statusAdapter.handleStatus(call.arguments["statusName"]);
-          // statusName will be null when some native status should be ignored,
-          // so do not forward this call in these cases.
-          if (processedStatus == null) return;
+    Function(MethodCall call)? handler = handlers[call.method];
+    InternalCall? internalCall = handler?.call(call);
 
-          call.arguments["statusName"] = processedStatus;
-          _onStatusChanged(call.arguments);
-        }
-        break;
-      case 'onError':
-        // TODO: We are currently processing only positioning errors,
-        // in some future we might need to differentiate between
-        // navigation errors, communication errors, ...
-        Error proccessedError = _errorAdapter.handleError(call.arguments);
-        // Modify the method call arguments with the processed error
-        // before sending it to the _onLocationErrorCallback and the MapViewController.
-        call.arguments["code"] = proccessedError.code;
-        call.arguments["type"] = proccessedError.type;
-        _onError(proccessedError);
-        break;
-      case 'onEnteredGeofences':
-        _onEnterGeofences(call.arguments);
-        break;
-      case 'onExitedGeofences':
-        _onExitGeofences(call.arguments);
-        break;
-      case 'onNavigationDestinationReached':
-        _onNavigationDestinationReached();
-        break;
-      case 'onNavigationStart':
-        _onNavigationStart(call.arguments);
-        break;
-      case 'onNavigationCancellation':
-        _onNavigationCancellation();
-        break;
-      case 'onNavigationProgress':
-        _onNavigationProgress(call.arguments);
-        break;
-      case 'onUserOutsideRoute':
-        _onNavigationOutOfRoute();
-        break;
-      default:
-        debugPrint('Method ${call.method} not found!');
-    }
     // Forward call to internal delegate (send locations and status to MapViewController).
-    internalMethodCallDelegate?.call(call);
+    if (internalCall != null) {
+      _internalMethodCallDelegates.call(internalCall);
+    }
   }
 
   // LOCATION UPDATES:
 
-  void _onLocationChanged(arguments) {
+  InternalCall _onLocationChanged(MethodCall call) {
+    // Reset last status stored in case it was USER_NOT_IN_BUILDING
+    // and a new location is received.
+    _statusAdapter.resetUserNotInBuilding();
     // Send location to the _onLocationUpdateCallback.
-    _onLocationUpdateCallback?.call(createLocation(arguments));
+    Location location = createLocation(call.arguments);
+    _onLocationUpdateCallback?.call(location);
+    return InternalCall(InternalCallType.location, location);
   }
 
-  void _onStatusChanged(arguments) {
-    // Send the processed location status to the _onLocationStatusCallback.
-    _onLocationStatusCallback?.call(arguments["statusName"]);
+  InternalCall? _onStatusChanged(MethodCall call) {
+    if (call.arguments["statusName"] == "BLE_SENSOR_DISABLED_BY_USER") {
+      // Send Android BLE_SENSOR_DISABLED_BY_USER as nonCritical error
+      // to the _onLocationErrorCallback.
+      return _sendBleDisabledStatusAsError();
+    } else {
+      String? processedStatus =
+          _statusAdapter.handleStatus(call.arguments["statusName"]);
+      // statusName will be null when some native status should be ignored,
+      // so do not forward this call in these cases.
+      if (processedStatus == null) return null;
+
+      call.arguments["statusName"] = processedStatus;
+      // Send the processed location status to the _onLocationStatusCallback.
+      String statusName = call.arguments["statusName"];
+      _onLocationStatusCallback?.call(statusName);
+      return InternalCall(InternalCallType.locationStatus, statusName);
+    }
   }
 
-  void _onError(Error proccessedError) {
-    _onLocationErrorCallback?.call(proccessedError);
+  InternalCall _onError(MethodCall call) {
+    // TODO: We are currently processing only positioning errors,
+    // in some future we might need to differentiate between
+    // navigation errors, communication errors, ...
+    Error processedError = _errorAdapter.handleError(call.arguments);
+    // Modify the method call arguments with the processed error
+    // before sending it to the _onLocationErrorCallback and the MapViewController.
+    call.arguments["code"] = processedError.code;
+    call.arguments["type"] = processedError.type;
+    _onLocationErrorCallback?.call(processedError);
+    return InternalCall(InternalCallType.locationError, processedError);
   }
 
-  void _sendBleDisabledStatusAsError() {
-    _onLocationErrorCallback?.call(Error.bleDisabledError());
+  InternalCall _sendBleDisabledStatusAsError() {
+    Error bleDisabled = Error.bleDisabledError();
+    _onLocationErrorCallback?.call(bleDisabled);
+    return InternalCall(InternalCallType.locationError, bleDisabled);
   }
 
   // GEOFENCES:
 
-  void _onEnterGeofences(arguments) {
+  InternalCall _onEnterGeofences(arguments) {
     List<Geofence> geofencesList =
         createList<Geofence>(arguments, createGeofence);
     if (geofencesList.isNotEmpty) {
       _onEnteredGeofencesCallback
           ?.call(OnEnteredGeofenceResult(geofences: geofencesList));
     }
+    return InternalCall(InternalCallType.geofencesEnter, geofencesList);
   }
 
-  void _onExitGeofences(arguments) {
+  InternalCall _onExitGeofences(arguments) {
     List<Geofence> geofencesList =
         createList<Geofence>(arguments, createGeofence);
     if (geofencesList.isNotEmpty) {
       _onExitedGeofencesCallback
           ?.call(OnExitedGeofenceResult(geofences: geofencesList));
     }
+    return InternalCall(InternalCallType.geofencesExit, geofencesList);
   }
 
   // NAVIGATION UPDATES:
 
-  void _onNavigationStart(arguments) {
-    _onNavigationStartCallback?.call(SitumRoute(rawContent: arguments));
+  InternalCall _onNavigationStart(arguments) {
+    SitumRoute situmRoute = createRoute(arguments);
+    _onNavigationStartCallback?.call(situmRoute);
+    return InternalCall(InternalCallType.navigationStart, situmRoute);
   }
 
-  void _onNavigationProgress(arguments) {
-    _onNavigationProgressCallback?.call(RouteProgress(rawContent: arguments));
+  InternalCall _onNavigationProgress(arguments) {
+    RouteProgress routeProgress = RouteProgress(rawContent: arguments);
+    _onNavigationProgressCallback?.call(routeProgress);
+    return InternalCall(InternalCallType.navigationProgress, routeProgress);
   }
 
-  void _onNavigationDestinationReached() {
-    _onNavigationDestReachedCallback?.call();
+  InternalCall _onNavigationDestinationReached(arguments) {
+    SitumRoute route = createRoute(arguments);
+    _onNavigationDestReachedCallback?.call(route);
+    return InternalCall(InternalCallType.navigationDestinationReached, route);
   }
 
-  void _onNavigationCancellation() {
+  InternalCall _onNavigationCancellation() {
     _onNavigationCancellationCallback?.call();
+    return InternalCall(InternalCallType.navigationCancellation, {});
   }
 
-  void _onNavigationOutOfRoute() {
+  InternalCall _onNavigationOutOfRoute() {
     _onNavigationOORCallback?.call();
+    return InternalCall(InternalCallType.navigationOutOfRoute, {});
   }
 }

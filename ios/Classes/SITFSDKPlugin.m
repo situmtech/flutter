@@ -42,12 +42,16 @@ const NSString* RESULTS_KEY = @"results";
         [self handleInit:call result:result];
     } else if ([@"initSdk" isEqualToString:call.method]) {
         [self handleInitSdk: call
-                              result: result];
+                     result: result];
     } else if ([@"setDashboardURL" isEqualToString:call.method]) {
         [self handleSetDashboardURL: call
-                              result: result];
+                             result: result];
     } else if ([@"setApiKey" isEqualToString:call.method]) {
         [self handleSetApiKey:call result:result];
+    } else if ([@"setUserPass" isEqualToString:call.method]) {
+        [self handleSetUserPass:call result:result];
+    } else if ([@"logout" isEqualToString:call.method]) {
+        [self handleLogout:result];
     } else if ([@"setConfiguration" isEqualToString:call.method]) {
         [self handleSetConfiguration: call
                               result: result];
@@ -65,6 +69,9 @@ const NSString* RESULTS_KEY = @"results";
     } else if ([@"fetchPoisFromBuilding" isEqualToString:call.method]) {
         [self handleFetchPoisFromBuilding:call
                                    result:result];
+    } else if ([@"fetchPoiFromBuilding" isEqualToString:call.method]) {
+        [self handleFetchPoiFromBuilding:call
+                                  result:result];
     } else if ([@"fetchCategories" isEqualToString:call.method]) {
         [self handleFetchCategories:call
                              result:result];
@@ -88,8 +95,12 @@ const NSString* RESULTS_KEY = @"results";
     } else if ([@"stopNavigation" isEqualToString:call.method]){
         [self stopNavigation:call
                       result:result];
-    }
-    else {
+    } else if ([@"openUrlInDefaultBrowser" isEqualToString:call.method]) {
+        [self openUrlInDefaultBrowser:call
+                               result:result];
+    } else if ([@"addExternalArData" isEqualToString:call.method]) {
+        // TODO: implement this for iOS.
+    } else {
         result(FlutterMethodNotImplemented);
     }
 }
@@ -142,6 +153,34 @@ const NSString* RESULTS_KEY = @"results";
     result(@"DONE");
 }
 
+- (void)handleSetUserPass:(FlutterMethodCall*)call result:(FlutterResult)result {
+    NSString *situmUser = call.arguments[@"situmUser"];
+    NSString *situmPass = call.arguments[@"situmPass"];
+
+    if (!situmUser || !situmPass) {
+        NSLog(@"error providing credentials");
+        result([FlutterError errorWithCode:@"INVALID_CREDENTIALS" message:@"Error providing credentials" details:nil]);
+        return;
+    }
+
+    [SITServices provideUser:situmUser
+                    password:situmPass];
+    result(@"DONE");
+}
+
+- (void)handleLogout:(FlutterResult)result {
+    [self.comManager logoutWithCompletion:^(NSError * _Nullable error) {
+        if (!error) {
+            result(@"DONE");
+        } else {
+            FlutterError *ferror = [FlutterError errorWithCode:@"errorLogout"
+                                                       message:[NSString stringWithFormat:@"Failed with error: %@", error]
+                                                       details:nil];
+            result(ferror);
+        }
+    }];
+}
+
 - (void)handleSetConfiguration:(FlutterMethodCall*)call result:(FlutterResult)result {
     BOOL useRemoteConfig = [call.arguments[@"useRemoteConfig"] boolValue];
     [SITServices setUseRemoteConfig:useRemoteConfig];
@@ -150,7 +189,7 @@ const NSString* RESULTS_KEY = @"results";
 
 - (void)handleClearCache:(FlutterMethodCall *)call
                   result:(FlutterResult)result {
-    [[SITCommunicationManager sharedManager] clearCache];    
+    [[SITCommunicationManager sharedManager] clearCache];
     result(@"DONE");
 }
 
@@ -160,6 +199,32 @@ const NSString* RESULTS_KEY = @"results";
     SITLocationRequest * locationRequest = [self createLocationRequest:call.arguments];
     [self.locManager requestLocationUpdates:locationRequest];
     result(@"DONE");
+}
+
+-(SITOutdoorLocationOptions *)createOutdoorLocationOptions:(NSDictionary *)arguments {
+    SITOutdoorLocationOptions *options = [[SITOutdoorLocationOptions alloc] init];
+    if ([arguments objectForKey:@"enableOutdoorPositions"]) {
+        bool enableOutdoorPositions = [arguments[@"enableOutdoorPositions"] boolValue];
+        options.enableOutdoorPositions = enableOutdoorPositions;
+    }
+    return options;
+}
+
+SITRealtimeUpdateInterval createRealtimeUpdateInterval(NSString *name) {
+    const NSDictionary *stringToEnum = @{
+        @"NEVER": @(kSITUpdateNever),
+        @"BATTERY_SAVER": @(kSITUpdateIntervalBatterySaver),
+        @"SLOW": @(kSITUpdateIntervalSlow),
+        @"NORMAL": @(kSITUpdateIntervalNormal),
+        @"FAST": @(kSITUpdateIntervalFast),
+        @"REALTIME": @(kSITUpdateIntervalRealtime)
+    };
+    NSNumber *enumNumber = stringToEnum[name];
+    if (enumNumber != nil) {
+        return (SITRealtimeUpdateInterval)enumNumber.unsignedIntegerValue;
+    } else {
+        return kSITUpdateIntervalNormal;
+    }
 }
 
 -(SITLocationRequest *)createLocationRequest:(NSDictionary *)arguments{
@@ -173,6 +238,24 @@ const NSString* RESULTS_KEY = @"results";
     NSString *useDeadReckoning = arguments[@"useDeadReckoning"];
     if (![SITFSDKUtils isNullArgument:useDeadReckoning]){
         locationRequest.useDeadReckoning = [useDeadReckoning boolValue];
+    }
+    NSString *realtimeUpdateInterval = arguments[@"realtimeUpdateInterval"];
+    if (realtimeUpdateInterval != nil) {
+        locationRequest.realtimeUpdateInterval = createRealtimeUpdateInterval(realtimeUpdateInterval);
+    }
+    NSDictionary *outdoorOptionsMap = arguments[@"outdoorLocationOptions"];
+    if (outdoorOptionsMap != nil) {
+        locationRequest.outdoorLocationOptions = [self createOutdoorLocationOptions:arguments[@"outdoorLocationOptions"]];
+    }
+    NSString *useBle = arguments[@"useBle"];
+    if (![SITFSDKUtils isNullArgument:useBle]){
+        NSLog(@"Situm> SDK> LocationRequest> Set useBle: %d", [useBle boolValue]);
+        locationRequest.useBle = [useBle boolValue];
+    }
+    NSString *useGps = arguments[@"useGps"];
+    if (![SITFSDKUtils isNullArgument:useGps]){
+        NSLog(@"Situm> SDK> LocationRequest> Set useGps: %d", [useGps boolValue]);
+        locationRequest.useGps = [useGps boolValue];
     }
     return locationRequest;
 }
@@ -213,7 +296,7 @@ const NSString* RESULTS_KEY = @"results";
     NSString *buildingId = call.arguments[@"buildingIdentifier"];
     
     if (!buildingId) {
-        FlutterError *error = [FlutterError errorWithCode:@"errorFetchPois"
+        FlutterError *error = [FlutterError errorWithCode:@"errorFetchPoisFromBuilding"
                                                   message:@"Unable to retrieve buildingId string on arguments"
                                                   details:nil];
         
@@ -224,14 +307,46 @@ const NSString* RESULTS_KEY = @"results";
     [self.comManager fetchPoisOfBuilding:buildingId
                              withOptions:nil
                                  success:^(NSDictionary * _Nullable mapping) {
-        result([SITFSDKUtils toArrayDict: mapping[RESULTS_KEY]]);
-        
-    } failure:^(NSError * _Nullable error) {
-        FlutterError *ferror = [FlutterError errorWithCode:@"errorPrefetch"
+                                    result([SITFSDKUtils toArrayDict: mapping[RESULTS_KEY]]);
+                                 } 
+                                 failure:^(NSError * _Nullable error) {
+        FlutterError *ferror = [FlutterError errorWithCode:@"errorFetchPoisFromBuilding"
                                                    message:[NSString stringWithFormat:@"Failed with error: %@", error]
                                                    details:nil];
         result(ferror); // Send error
     }];
+}
+
+- (void)handleFetchPoiFromBuilding:(FlutterMethodCall*)call result:(FlutterResult)result {
+    
+    NSString *buildingId = call.arguments[@"buildingIdentifier"];
+    NSString *poiId = call.arguments[@"poiIdentifier"];
+    
+    if (!buildingId || !poiId) {
+        FlutterError *error = [FlutterError errorWithCode:@"errorFetchPoiFromBuilding"
+                                                  message:@"Unable to retrieve buildingIdentifier or poiIdentifier string on arguments"
+                                                  details:nil];
+        
+        result(error); // Send error
+        return;
+    }
+    
+    [self.comManager  fetchIndoorPoi:poiId 
+                          ofBuilding:buildingId
+                         withOptions:nil
+                             success:^(NSDictionary * _Nullable mapping) {
+                                    SITPOI *poi = mapping[RESULTS_KEY];
+        
+                                    result(poi.toDictionary);
+                                 }
+                             failure:^(NSError * _Nullable error) {
+        FlutterError *ferror = [FlutterError errorWithCode:@"errorFetchPoisFromBuilding"
+                                                   message:[NSString stringWithFormat:@"Failed with error: %@", error]
+                                                   details:nil];
+        result(ferror); // Send error
+    }];
+
+
 }
 
 - (void)handleFetchBuildings:(FlutterMethodCall*)call result:(FlutterResult)result {
@@ -331,6 +446,22 @@ const NSString* RESULTS_KEY = @"results";
                    result:(FlutterResult)result{
     [SITNavigationManager.sharedManager removeUpdates];
     result(@"DONE");
+}
+
+- (void)openUrlInDefaultBrowser:(FlutterMethodCall*)call
+                         result:(FlutterResult)result{
+    NSString *urlString = call.arguments[@"url"];
+    if (urlString == nil) {
+        result(@(NO));
+        return;
+    }
+    NSURL *url = [NSURL URLWithString:urlString];
+    if (![[UIApplication sharedApplication] canOpenURL:url]) {
+        result(@(NO));
+        return;
+    }
+    [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
+    result(@(YES));
 }
 
 

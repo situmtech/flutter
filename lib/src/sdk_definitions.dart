@@ -1,23 +1,141 @@
 part of sdk;
 
-/// A data object that allows you to configure the positioning parameters.
-class LocationRequest {
-  final String? buildingIdentifier;
-  final bool? useDeadReckoning;
+/// Enum that allows to specify whether the geolocations computed should be sent
+/// to Situm Platform, and if so with which periodicity (time interval).
+enum RealtimeUpdateInterval {
+  never,
+  batterySaver,
+  slow,
+  normal,
+  fast,
+  realtime,
+}
 
-  LocationRequest({
-    this.buildingIdentifier,
-    this.useDeadReckoning,
+extension RealtimeUpdateIntervalExtension on RealtimeUpdateInterval {
+  String get name {
+    switch (this) {
+      case RealtimeUpdateInterval.never:
+        return 'NEVER';
+      case RealtimeUpdateInterval.batterySaver:
+        return 'BATTERY_SAVER';
+      case RealtimeUpdateInterval.slow:
+        return 'SLOW';
+      case RealtimeUpdateInterval.fast:
+        return 'FAST';
+      case RealtimeUpdateInterval.realtime:
+        return 'REALTIME';
+      default:
+        return 'NORMAL';
+    }
+  }
+}
+
+enum MotionMode {
+  byFoot,
+  byFootVisualOdometry,
+}
+
+extension MotionModeExtension on MotionMode {
+  String get name {
+    switch (this) {
+      case MotionMode.byFoot:
+        return 'BY_FOOT';
+      case MotionMode.byFootVisualOdometry:
+        return 'BY_FOOT_VISUAL_ODOMETRY';
+      default:
+        return 'BY_FOOT';
+    }
+  }
+}
+
+/// When you build the [LocationRequest], this data object configures the Global
+/// Mode options.
+class OutdoorLocationOptions {
+  final bool? enableOutdoorPositions;
+
+  OutdoorLocationOptions({
+    this.enableOutdoorPositions,
   });
 
   Map<String, dynamic> toMap() {
     Map<String, dynamic> map = {};
-    if (buildingIdentifier != null) {
-      map["buildingIdentifier"] = buildingIdentifier;
-    }
-    if (useDeadReckoning != null) {
-      map["useDeadReckoning"] = useDeadReckoning;
-    }
+    _addToMapIfNotNull("enableOutdoorPositions", enableOutdoorPositions, map);
+    return map;
+  }
+}
+
+/// A data object that allows you to configure the positioning parameters.
+class LocationRequest {
+  final String? buildingIdentifier;
+  final bool? useDeadReckoning;
+  final bool? useForegroundService;
+  final ForegroundServiceNotificationOptions?
+      foregroundServiceNotificationOptions;
+  final OutdoorLocationOptions? outdoorLocationOptions;
+  final RealtimeUpdateInterval? realtimeUpdateInterval;
+  final MotionMode? motionMode;
+  final bool? useBle;
+  final bool? useGps;
+
+  /// Only for Android.
+  final bool? useWifi;
+
+  LocationRequest({
+    this.buildingIdentifier,
+    this.useDeadReckoning,
+    this.useForegroundService,
+    this.foregroundServiceNotificationOptions,
+    this.outdoorLocationOptions,
+    this.realtimeUpdateInterval,
+    this.useWifi,
+    this.useBle,
+    this.useGps,
+    this.motionMode,
+  });
+
+  Map<String, dynamic> toMap() {
+    Map<String, dynamic> map = {};
+    _addToMapIfNotNull("buildingIdentifier", buildingIdentifier, map);
+    _addToMapIfNotNull("useDeadReckoning", useDeadReckoning, map);
+    _addToMapIfNotNull("useForegroundService", useForegroundService, map);
+    _addToMapIfNotNull("foregroundServiceNotificationOptions",
+        foregroundServiceNotificationOptions?.toMap(), map);
+    _addToMapIfNotNull(
+        "outdoorLocationOptions", outdoorLocationOptions?.toMap(), map);
+    _addToMapIfNotNull(
+        "realtimeUpdateInterval", realtimeUpdateInterval?.name, map);
+    _addToMapIfNotNull("motionMode", motionMode?.name, map);
+    _addToMapIfNotNull("useWifi", useWifi, map);
+    _addToMapIfNotNull("useBle", useBle, map);
+    _addToMapIfNotNull("useGps", useGps, map);
+    return map;
+  }
+}
+
+/// A data object that let you customize the Foreground Service Notification
+/// that will be shown in the system's tray when the app is running as a
+/// Foreground Service.
+/// To be used with [LocationRequest].
+/// Only applies for Android.
+class ForegroundServiceNotificationOptions {
+  late String? title;
+  late String? message;
+  late bool? showStopAction;
+  late String? stopActionText;
+
+  ForegroundServiceNotificationOptions({
+    this.title,
+    this.message,
+    this.showStopAction = false,
+    this.stopActionText,
+  });
+
+  Map<String, dynamic> toMap() {
+    Map<String, dynamic> map = {};
+    _addToMapIfNotNull("title", title, map);
+    _addToMapIfNotNull("message", message, map);
+    _addToMapIfNotNull("showStopAction", showStopAction, map);
+    _addToMapIfNotNull("stopActionText", stopActionText, map);
     return map;
   }
 }
@@ -44,6 +162,8 @@ class DirectionsRequest {
   final Point from;
   final Point to;
 
+  String? poiToIdentifier;
+
   /// Identifier of the route destination. Can be [EMPTY_ID] if [destinationCategory] is [CATEGORY_LOCATION].
   String destinationIdentifier;
 
@@ -65,6 +185,7 @@ class DirectionsRequest {
   DirectionsRequest({
     required this.from,
     required this.to,
+    this.poiToIdentifier,
     this.bearingFrom,
     this.minimizeFloorChanges,
     this.accessibilityMode,
@@ -85,6 +206,9 @@ class DirectionsRequest {
     };
     if (minimizeFloorChanges != null) {
       map['minimizeFloorChanges'] = minimizeFloorChanges;
+    }
+    if (poiToIdentifier != null) {
+      map['poiToIdentifier'] = poiToIdentifier;
     }
     if (bearingFrom != null) {
       map['bearingFrom'] = bearingFrom?.toMap();
@@ -412,6 +536,7 @@ class Floor extends NamedResource {
   @override
   Map<String, dynamic> toMap() => {
         "buildingId": buildingIdentifier,
+        "floorIdentifier": identifier,
         "floorIndex": floorIndex,
         "mapUrl": mapUrl,
         "scale": scale,
@@ -602,10 +727,23 @@ class Point {
 
 /// Category of Point of Interest.
 class PoiCategory extends NamedResource {
+  final String? iconSelected;
+  final String? iconUnselected;
+
   PoiCategory({
     required super.identifier,
     required super.name,
+    required this.iconSelected,
+    required this.iconUnselected,
   });
+
+  @override
+  Map<String, dynamic> toMap() => {
+        "identifier": identifier,
+        "name": name,
+        "iconSelected": iconSelected,
+        "iconUnselected": iconUnselected,
+      };
 }
 
 class ConfigurationOptions {
@@ -622,7 +760,7 @@ class PrefetchOptions {
   });
 }
 
-/// [code] **LOCATION_PERMISSION_DENIED**
+/// [code] [ErrorCodes.locationPermissionDenied]
 /// * type: [ErrorType.critical].
 ///
 /// * **CAUSE**: Location permissions were not granted yet,
@@ -630,20 +768,20 @@ class PrefetchOptions {
 ///   * ACCESS_FINE_LOCATION (Android)
 ///   * NSLocationWhenInUseUsageDescription (iOS)
 ///
-/// [code] **BLUETOOTH_PERMISSION_DENIED**
+/// [code] [ErrorCodes.bluetoothPermissionDenied]
 /// * (Android only)
 /// * type: [ErrorType.critical].
 ///
 /// * **CAUSE**: BLUETOOTH_CONNECT or BLUETOOTH_SCAN are not granted yet,
 /// so SDK won't be able to start positioning.
 ///
-/// [code] **BLUETOOTH_DISABLED**
+/// [code] [ErrorCodes.bluetoothDisabled]
 /// * type: [ErrorType.critical] for iOS but [ErrorType.nonCritical] for Android.
 ///
 /// * **CAUSE**: The bluetooth sensor of the device is off,
 /// so iOS will stop positioning and Android won't give a precise location as with this sensor on.
 ///
-/// [code] **LOCATION_DISABLED**
+/// [code] [ErrorCodes.locationDisabled]
 /// * type: [ErrorType.critical].
 ///
 /// * **CAUSE**: The location service is disabled, so SDK won't be able to start positioning.
@@ -666,6 +804,30 @@ class Error {
   }
 }
 
+/// Exposes constant error codes useful for error handling in combination with
+/// [SitumSdk.onLocationError]:
+///
+/// ```dart
+/// SitumSdk().onLocationError((error) {
+///   switch (error.code) {
+///     case ErrorCodes.locationDisabled:
+///       // Handle location disabled.
+///       break;
+///     case ErrorCodes.bluetoothDisabled:
+///       ...
+///   }
+/// });
+/// ```
+class ErrorCodes {
+  static const bluetoothDisabled = "BLUETOOTH_DISABLED";
+  static const locationDisabled = "LOCATION_DISABLED";
+  static const locationPermissionDenied = "LOCATION_PERMISSION_DENIED";
+  static const bluetoothPermissionDenied = "BLUETOOTH_PERMISSION_DENIED";
+  static const buildingNotCalibrated = "BUILDING_NOT_CALIBRATED";
+  static const buildingModelDownloadError = "BUILDING_MODEL_DOWNLOAD_ERROR";
+  static const buildingModelProcessingError = "BUILDING_MODEL_PROCESSING_ERROR";
+}
+
 enum ErrorType {
   /// An error that must be fixed to be able to start positioning.
   critical,
@@ -676,10 +838,9 @@ enum ErrorType {
 
 class SitumRoute {
   final dynamic rawContent;
+  final Poi? poiTo;
 
-  const SitumRoute({
-    required this.rawContent,
-  });
+  const SitumRoute({required this.rawContent, this.poiTo});
 }
 
 class RouteProgress {
@@ -688,6 +849,12 @@ class RouteProgress {
   const RouteProgress({
     required this.rawContent,
   });
+}
+
+void _addToMapIfNotNull(String key, dynamic value, Map<String, dynamic> map) {
+  if (value != null) {
+    map[key] = value;
+  }
 }
 
 // Result callbacks.
@@ -705,7 +872,8 @@ typedef OnExitedGeofencesCallback = void Function(
 
 // Navigation.
 typedef OnNavigationStartCallback = void Function(SitumRoute route);
-typedef OnNavigationDestinationReachedCallback = void Function();
+typedef OnNavigationDestinationReachedCallback = void Function(
+    SitumRoute route);
 typedef OnNavigationCancellationCallback = void Function();
 typedef OnNavigationProgressCallback = void Function(RouteProgress progress);
 typedef OnNavigationOutOfRouteCallback = void Function();
@@ -713,13 +881,62 @@ typedef OnNavigationOutOfRouteCallback = void Function();
 typedef OnDirectionsRequestedCallback = Function(
     DirectionsRequest directionsRequest);
 
+//TODO: Check this and move if needed
 class RelativePosition {
   final double relativeX;
   final double relativeY;
 
   RelativePosition({required this.relativeX, required this.relativeY});
-    @override
+  @override
   String toString() {
     return 'RelativePosition{relativeX: $relativeX, relativeY: $relativeY}';
+  }
+}
+
+// Internal definitions:
+
+/// Set of method calls that are being delegated by the SDK.
+/// For internal use only.
+enum InternalCallType {
+  location,
+  locationStatus,
+  locationError,
+  navigationStart,
+  navigationDestinationReached,
+  navigationProgress,
+  navigationOutOfRoute,
+  navigationCancellation,
+  geofencesEnter,
+  geofencesExit,
+}
+
+/// Represents an internal method call and encapsulates the type of call and
+/// associated data, previously processed by the SDK.
+/// For internal use only.
+class InternalCall {
+  final InternalCallType type;
+  final dynamic data;
+
+  InternalCall(this.type, this.data);
+
+  T get<T>() {
+    return data as T;
+  }
+
+  @override
+  String toString() {
+    return "$type - ${data.runtimeType}";
+  }
+}
+
+class _InternalDelegates {
+  Function(InternalCall call)? mapViewDelegate;
+  Function(InternalCall call)? arDelegate;
+
+  Future<void> call(InternalCall internalCall) async {
+    await Future.forEach({mapViewDelegate, arDelegate},
+        (Function(InternalCall internalCall)? delegate) async {
+      await delegate?.call(internalCall);
+    });
   }
 }

@@ -2,14 +2,31 @@ part of wayfinding;
 
 /// Controller for [MapView]. This class exposes methods and callbacks.
 class MapViewController {
+  late final MethodChannel methodChannel;
   OnPoiSelectedCallback? _onPoiSelectedCallback;
   OnPoiDeselectedCallback? _onPoiDeselectedCallback;
+  OnSpeakAloudTextCallback? _onSpeakAloudTextCallback;
   OnDirectionsRequestInterceptor? _onDirectionsRequestInterceptor;
   OnNavigationRequestInterceptor? _onNavigationRequestInterceptor;
+  OnExternalLinkClickedCallback? _onExternalLinkClickedCallback;
+  OnCalibrationPointClickedCallback? _onCalibrationPointClickedCallback;
+  OnCalibrationFinishedCallback? _onCalibrationFinishedCallback;
 
   late Function(MapViewConfiguration) _widgetUpdater;
   late MapViewCallback _widgetLoadCallback;
   late PlatformWebViewController _webViewController;
+
+  // Internal callback that will receive every MapView message. This callback
+  // has been introduced to enable communication between MapView and the new AR
+  // module, serving as a direct and extensible mode that avoids the
+  // intermediation of this plugin.
+  Function(String, dynamic payload)? _internalMessageDelegate;
+
+  // Keep a reference to the last status/error received to avoid missing status
+  // notifications to the MapView. Last status will be sent to the MapView after
+  // it finishes loading.
+  String? _lastStatusToSend;
+  String? _lastErrorToSend;
 
   List<String> mapViewerStatusesFilter = [
     'STARTING',
@@ -22,6 +39,10 @@ class MapViewController {
     String? situmUser,
     required String situmApiKey,
   }) {
+    // Open SDK channel to call native (private) methods if necessary.
+    // WARNING: don't set the method call handler here as it will overwrite the
+    // one provided by the SDK controller.
+    methodChannel = const MethodChannel(situmSdkChannelId);
     var situmSdk = SitumSdk();
     // Be sure to initialize, configure and authenticate in our SDK
     // so it can be used in callbacks, etc.
@@ -30,7 +51,7 @@ class MapViewController {
     situmSdk.setConfiguration(ConfigurationOptions(useRemoteConfig: true));
     // Subscribe to native SDK messages so the location updates can be directly
     // forwarded to the map viewer.
-    situmSdk.internalSetMethodCallDelegate(_methodCallHandler);
+    situmSdk.internalSetMethodCallMapDelegate(_methodCallHandler);
   }
 
   /// Tells the [MapView] where the user is located at.
@@ -47,6 +68,7 @@ class MapViewController {
 
   void onMapViewerMessage(String type, Map<String, dynamic> payload) {
     MessageHandler(type).handleMessage(this, payload);
+    _internalMessageDelegate?.call(type, payload);
   }
 
   void sendMessage(String type, dynamic payload) {
@@ -73,12 +95,28 @@ class MapViewController {
     _widgetUpdater(configuration);
   }
 
+  /// Reloads the [MapView] using the current configuration by reloading the
+  /// underlying platform web view controller.
+  void reload() async {
+    _webViewController.reload();
+  }
+
+  /// Selects the given Building in the map.
+  /// To set the initial Building use [MapViewConfiguration].
+  void selectBuilding(String identifier) async {
+    _sendMessage(
+        WV_MESSAGE_CARTOGRAPHY_SELECT_BUILDING, {"identifier": identifier});
+  }
+
   /// Selects the given POI in the map.
   void selectPoi(String identifier) async {
     _sendMessage(WV_MESSAGE_CARTOGRAPHY_SELECT_POI, {"identifier": identifier});
   }
 
   /// Selects the given POI category in the map.
+  ///
+  /// This method is deprecated. You can instead use [search] to filter POIs by category.
+  @Deprecated("Use instead MapViewController.search()")
   void selectPoiCategory(String identifier) async {
     _sendMessage(
         WV_MESSAGE_CARTOGRAPHY_SELECT_POI_CATEGORY, {"identifier": identifier});
@@ -134,6 +172,15 @@ class MapViewController {
     _sendMessage(WV_MESSAGE_UI_SET_LANGUAGE, "'$lang'");
   }
 
+  /// Performs a search with the given [SearchFilter].
+  ///
+  /// This action will have the same effect
+  /// as the user searching in the searchbar.
+  void search(SearchFilter searchFilter) async {
+    _sendMessage(
+        WV_MESSAGE_UI_SET_SEARCH_FILTER, jsonEncode(searchFilter.toMap()));
+  }
+
   /// Tells the map to keep the camera centered on the user position.
   void followUser() async {
     _sendMessage(WV_MESSAGE_CAMERA_FOLLOW_USER, {"value": true});
@@ -154,16 +201,55 @@ class MapViewController {
 
   /// Select a floor of the current building by its [Floor.identifier].
   ///
-  /// **NOTE**: introducing an invalid identifer may result in unexpected behaviours.
+  /// **NOTE**: introducing an invalid identifier may result in unexpected behaviours.
   void selectFloor(int identifier) async {
     _sendMessage(
         WV_MESSAGE_CARTOGRAPHY_SELECT_FLOOR, {"identifier": identifier});
+  }
+
+  /// Communicates the state of the AR module to the [MapView].
+  void updateAugmentedRealityStatus(ARStatus status) async {
+    _sendMessage(
+        WV_MESSAGE_AR_UPDATE_STATUS, jsonEncode({"type": status.name}));
+  }
+
+  /// Process two lists: included & excluded tags and asynchronously sends directions.set_options message.
+  ///
+  /// Example:
+  /// ```dart
+  ///
+  /// List<String> includedTags = ['user1', 'user5'];
+  /// List<String> excludedTags = [];
+  ///
+  /// mapViewController?.setDirectionsOptions(
+  ///    MapViewDirectionsOptions(
+  ///      includedTags: includedTags,
+  ///      excludedTags: excludedTags,
+  ///    ),
+  ///  );
+  ///
+  /// ```
+
+  void setDirectionsOptions(MapViewDirectionsOptions directionOptions) async {
+    dynamic message = {
+      "includedTags": directionOptions.includedTags,
+      "excludedTags": directionOptions.excludedTags,
+    };
+
+    _sendMessage(WV_MESSAGE_DIRECTIONS_SET_OPTIONS, jsonEncode(message));
   }
 
   // WYF internal utils:
 
   void _notifyMapIsReady() {
     _widgetLoadCallback(this);
+    if (_lastStatusToSend != null) {
+      _setCurrentLocationStatus(_lastStatusToSend!);
+    }
+    if (_lastErrorToSend != null) {
+      // Same API for sending status and errors...
+      _setCurrentLocationStatus(_lastErrorToSend!);
+    }
   }
 
   void _setRoute(
@@ -234,6 +320,63 @@ class MapViewController {
     _onPoiDeselectedCallback = callback;
   }
 
+  /// Get notified when the viewer wants to read aloud some text.
+  void onSpeakAloudText(OnSpeakAloudTextCallback callback) {
+    _onSpeakAloudTextCallback = callback;
+  }
+
+  /// Callback invoked when the user clicks on a link in the MapView that leads
+  /// to a website different from the MapView's domain.
+  /// If this callback is not set, the link will be opened in the system's
+  /// default browser by default.
+  void onExternalLinkClicked(OnExternalLinkClickedCallback callback) {
+    _onExternalLinkClickedCallback = callback;
+  }
+
+  // Public API intended for internal use:
+
+  /// Set a callback that will receive internal messages from the [MapView].
+  /// # Do not use this method as it is intended for internal use.
+  void internalARMessageDelegate(
+      Function(String type, dynamic payload) callback) {
+    _internalMessageDelegate = callback;
+  }
+
+  /// Modifies the state of the underlying [MapView] so it allows building
+  /// calibrations.
+  /// # Do not use this method as it is intended for internal use.
+  void enterCalibrationMode(OnCalibrationPointClickedCallback pointsCallback,
+      OnCalibrationFinishedCallback finishedCallback) {
+    _setUIMode(UIMode.calibration);
+    _onCalibrationFinishedCallback = finishedCallback;
+    _onCalibrationPointClickedCallback = pointsCallback;
+  }
+
+  void exitCalibrationMode() {
+    _setUIMode(UIMode.explore);
+    _onCalibrationFinishedCallback = null;
+    _onCalibrationPointClickedCallback = null;
+  }
+
+  /// Set calibrations stored locally so the MapView can represent them.
+  /// # Do not use this method as it is intended for internal use.
+  void setLocalCalibrations(dynamic payload) {
+    _sendMessage(
+        WV_MESSAGE_CALIBRATIONS_SET_LOCAL_CALIBRATIONS, jsonEncode(payload));
+  }
+
+  /// Stops the current calibration.
+  /// A null payload tells the [MapView] to prompt the user to decide what to do
+  /// with the current calibration (save, undo, cancel).
+  /// # Do not use this method as it is intended for internal use.
+  void stopCurrentCalibration(dynamic payload) {
+    _sendMessage(WV_MESSAGE_CALIBRATIONS_STOP_CURRENT, jsonEncode(payload));
+  }
+
+  void _setUIMode(UIMode mode) {
+    _sendMessage(WV_MESSAGE_UI_SET_MODE, jsonEncode({"mode": mode.name}));
+  }
+
   // Directions & Navigation Interceptors:
 
   void _interceptDirectionsRequest(DirectionsRequest directionsRequest) {
@@ -252,50 +395,63 @@ class MapViewController {
     _onNavigationRequestInterceptor = callback;
   }
 
+  // External links navigation:
+
+  void _onExternalLinkClicked(String url) {
+    if (_onExternalLinkClickedCallback != null) {
+      _onExternalLinkClickedCallback!
+          .call(OnExternalLinkClickedResult(url: url));
+    } else {
+      // Invoke native method directly:
+      SitumSdk().openUrlInDefaultBrowser(url);
+    }
+  }
+
   // Native SDK callbacks:
   // This component needs to listen the native SDK callbacks so it can send
   // location (and status/errors) to the map-viewer automatically.
 
-  Future<void> _methodCallHandler(MethodCall call) async {
-    switch (call.method) {
-      case 'onLocationChanged':
-        _onLocationChanged(call.arguments);
+  Future<void> _methodCallHandler(InternalCall call) async {
+    switch (call.type) {
+      case InternalCallType.location:
+        _onLocationChanged(call.get());
         break;
-      case 'onStatusChanged':
-        _onStatusChanged(call.arguments);
+      case InternalCallType.locationStatus:
+        _onStatusChanged(call.get());
         break;
-      case 'onError':
-        _onError(call.arguments);
+      case InternalCallType.locationError:
+        _onError(call.get());
         break;
       // Navigation callbacks are used by both WYF and the integrator. If WYF
       // uses them, they will be overwritten. To avoid that problem, we listen
       // for native calls here.
-      case 'onNavigationDestinationReached':
+      case InternalCallType.navigationDestinationReached:
         _setNavigationDestinationReached();
         break;
-      case 'onNavigationProgress':
-        _setNavigationProgress(RouteProgress(rawContent: call.arguments));
+      case InternalCallType.navigationProgress:
+        _setNavigationProgress(call.get());
         break;
-      case 'onUserOutsideRoute':
+      case InternalCallType.navigationOutOfRoute:
         _setNavigationOutOfRoute();
         break;
     }
   }
 
-  void _onLocationChanged(arguments) {
+  void _onLocationChanged(Location location) {
     // Send location to the map-viewer.
-    setCurrentLocation(createLocation(arguments));
+    setCurrentLocation(location);
   }
 
-  void _onStatusChanged(arguments) {
-    String newStatus = arguments["statusName"];
-
-    if (mapViewerStatusesFilter.contains(newStatus)) {
-      _setCurrentLocationStatus(newStatus);
+  void _onStatusChanged(String status) {
+    if (mapViewerStatusesFilter.contains(status)) {
+      _setCurrentLocationStatus(status);
+      _lastStatusToSend = status;
     }
   }
 
-  void _onError(arguments) {
-    _setCurrentLocationStatus(arguments["code"]);
+  void _onError(Error error) {
+    // Right now the MapView will show a generic error.
+    _setCurrentLocationStatus(error.code);
+    _lastErrorToSend = error.code;
   }
 }
