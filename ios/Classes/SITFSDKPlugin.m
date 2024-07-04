@@ -142,7 +142,6 @@ const NSString* RESULTS_KEY = @"results";
 }
 
 - (void)handleSetArOdometry:(FlutterMethodCall*)call result:(FlutterResult)result {
-    NSString *url = call.arguments[@"url"];
     NSDictionary *arguments = call.arguments[@"message"];
     NSError *jsonError;
     NSData *objectData = [call.arguments[@"message"] dataUsingEncoding:NSUTF8StringEncoding];
