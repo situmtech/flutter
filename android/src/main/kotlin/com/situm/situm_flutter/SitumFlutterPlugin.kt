@@ -18,7 +18,6 @@ import es.situm.sdk.location.LocationRequest
 import es.situm.sdk.location.LocationStatus
 import es.situm.sdk.model.cartography.*
 import es.situm.sdk.model.location.Location
-import es.situm.sdk.navigation.ExternalNavigation
 import es.situm.sdk.utils.Handler
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
@@ -354,42 +353,18 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
     }
 
     private fun updateNavigationState(arguments: Map<String, Any>, result: MethodChannel.Result) {
-        if (!arguments.containsKey("messageType")
-            || !arguments.containsKey("payload")) {
+        if (!arguments.containsKey("messageType") || !arguments.containsKey("payload")) {
             result.success(false)
             return
         }
 
-        val messageType = arguments["messageType"] as String
-        val payload = arguments["payload"] as Map<String, Any>
-
-        var type: ExternalNavigation.MessageType? = null
-
-        when(messageType) {
-            "NavigationStarted" -> {
-                SitumSdk.navigationManager().addNavigationListener(viewerNavigation)
-                type = ExternalNavigation.MessageType.NAVIGATION_STARTED
-            }
-            "NavigationUpdated" -> {
-                type = ExternalNavigation.MessageType.NAVIGATION_UPDATED
-            }
-            "DestinationReached" -> {
-                type = ExternalNavigation.MessageType.DESTINATION_REACHED
-            }
-            "OutsideRoute" -> {
-                type = ExternalNavigation.MessageType.OUTSIDE_ROUTE
-            }
-            "NavigationCancelled" -> {
-                type = ExternalNavigation.MessageType.NAVIGATION_CANCELLED
-            }
-        }
-
-        if (type == null) {
+        val externalNavigation = viewerNavigation.updateNavigationState(arguments)
+        if (externalNavigation == null) {
             result.success(false)
             return
         }
 
-        viewerNavigation.updateNavigationState(ExternalNavigation(type, payload))
+        SitumSdk.navigationManager().updateNavigationState(externalNavigation)
         result.success(true)
     }
 

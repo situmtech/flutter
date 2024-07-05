@@ -1,20 +1,20 @@
 package com.situm.situm_flutter
 
 import es.situm.sdk.SitumSdk
-import es.situm.sdk.directions.DirectionsRequest
-import es.situm.sdk.error.Error
 import es.situm.sdk.model.directions.Route
 import es.situm.sdk.model.navigation.NavigationProgress
 import es.situm.sdk.navigation.ExternalNavigation
 import es.situm.sdk.navigation.NavigationListener
-import es.situm.sdk.navigation.NavigationRequest
 import es.situm.sdk.utils.Handler
 import io.flutter.plugin.common.MethodChannel
+import android.util.Log
 
 class ViewerNavigation private constructor() : NavigationListener {
 
     private lateinit var channel: MethodChannel
     private lateinit var osHandler: android.os.Handler
+
+    private var navigationStarted: Boolean = false
 
     // Navigation will be a singleton so we can be sure that calls to
     // locationManager.addListener(this) always receive the same instance.
@@ -34,14 +34,41 @@ class ViewerNavigation private constructor() : NavigationListener {
     }
 
     fun updateNavigationState(
-        externalNavigation: ExternalNavigation,
-    ) {
-        if (externalNavigation.messageType == ExternalNavigation.MessageType.NAVIGATION_STARTED) {
-            SitumSdk.navigationManager().addNavigationListener(this)
+            arguments: Map<String, Any>,
+    ): ExternalNavigation? {
+        val messageType = arguments["messageType"] as String
+        val payload = arguments["payload"] as Map<String, Any>
+
+        var type: ExternalNavigation.MessageType? = null
+
+        when (messageType) {
+            "NavigationStarted" -> {
+                if (!navigationStarted) {
+                    navigationStarted = true
+                    SitumSdk.navigationManager().addNavigationListener(this)
+                    Log.d("ViewerNavigation", "navigation has started, added navigation listener.");
+                }
+                type = ExternalNavigation.MessageType.NAVIGATION_STARTED
+            }
+            "NavigationUpdated" -> {
+                type = ExternalNavigation.MessageType.NAVIGATION_UPDATED
+            }
+            "DestinationReached" -> {
+                type = ExternalNavigation.MessageType.DESTINATION_REACHED
+            }
+            "OutsideRoute" -> {
+                type = ExternalNavigation.MessageType.OUTSIDE_ROUTE
+            }
+            "NavigationCancelled" -> {
+                type = ExternalNavigation.MessageType.NAVIGATION_CANCELLED
+            }
         }
-        SitumSdk.navigationManager().updateNavigationState(
-            externalNavigation
-        )
+
+        if (type == null) {
+            return null
+        }
+
+        return ExternalNavigation(type, payload)
     }
 
     // Navigation listener:
@@ -53,6 +80,8 @@ class ViewerNavigation private constructor() : NavigationListener {
     override fun onCancellation() {
         channel.invokeMethod("onNavigationCancellation", null)
         SitumSdk.navigationManager().removeNavigationListener(this)
+        navigationStarted = false
+        Log.d("ViewerNavigation", "navigation was cancelled, navigation listener removed.");
     }
 
     override fun onDestinationReached() {
@@ -66,6 +95,8 @@ class ViewerNavigation private constructor() : NavigationListener {
     override fun onDestinationReached(route: Route) {
         channel.invokeMethod("onNavigationDestinationReached", route.toMap())
         SitumSdk.navigationManager().removeNavigationListener(this)
+        navigationStarted = false
+        Log.d("ViewerNavigation", "destination was reached, navigation listener removed.");
     }
 
     override fun onUserOutsideRoute() {
