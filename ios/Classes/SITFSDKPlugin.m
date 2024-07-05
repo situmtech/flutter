@@ -473,6 +473,8 @@ SITRealtimeUpdateInterval createRealtimeUpdateInterval(NSString *name) {
         NSDictionary *payload = (NSDictionary*)[data objectForKey:@"payload"];
         SITExternalNavigation *externalNavigation;
         if ([messageType isEqual:@"NavigationStarted"]) {
+            _navigationUpdates = YES;
+            [SITNavigationManager.sharedManager addDelegate:instance.navigationHandler]; // Add navigation delegate when starting.
             externalNavigation = [[SITExternalNavigation alloc] initWithMessageType:kSITNavigationStarted
                                                              payload:payload];
         } else if ([messageType isEqual:@"NavigationUpdated"]) {
@@ -489,6 +491,11 @@ SITRealtimeUpdateInterval createRealtimeUpdateInterval(NSString *name) {
                                                              payload:payload];
         }
         [[SITNavigationManager sharedManager] updateNavigationState:externalNavigation];
+
+        if ([messageType isEqual:@"DestinationReached"] || [messageType isEqual:@"NavigationCancelled"]) {
+            _navigationUpdates = NO;
+            [[SITNavigationManager sharedManager] removeUpdates];
+        }
     }
 }
 
