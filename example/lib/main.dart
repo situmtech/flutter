@@ -60,7 +60,16 @@ class _MyTabsState extends State<MyTabs> {
   late ARSessionManager arSessionManager;
   late ARObjectManager arObjectManager;
   late ARAnchorManager arAnchorManager;
-  late Location currentLocation;
+  late Location currentLocation = Location(
+      coordinate: Coordinate(latitude: 0, longitude: 0),
+      cartesianCoordinate: CartesianCoordinate(x: 0, y: 0),
+      buildingIdentifier: buildingIdentifier,
+      floorIdentifier: '',
+      accuracy: 0,
+      isIndoor: false,
+      isOutdoor: false,
+      hasBearing: false,
+      timestamp: 0);
   List<Poi> nearPois = [];
   List<RelativePosition> relativePositions = [];
   //List<Vector3>  arCorePositions = [];
@@ -269,12 +278,12 @@ class _MyTabsState extends State<MyTabs> {
       Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          // Text(
-          //     'Location cartesian coords (${currentLocation?.cartesianCoordinate.x}, ${currentLocation?.cartesianCoordinate.y})'),
-          // Text(
-          //     'Situm Cartesian Rotation Y ${currentLocation?.cartesianBearing?.radians.toStringAsFixed(3)}'),
-          // Text(
-          //     'Situm Rotation Y ${currentLocation?.bearing?.radians.toStringAsFixed(3)}'),
+          Text(
+              'Location cartesian coords (${currentLocation?.cartesianCoordinate.x.toStringAsFixed(2)}, ${currentLocation?.cartesianCoordinate.y.toStringAsFixed(2)})'),
+          Text(
+              'Situm Cartesian Rotation Y ${currentLocation?.cartesianBearing?.radians.toStringAsFixed(3)}'),
+          Text(
+              'Situm Rotation Y ${currentLocation?.bearing?.radians.toStringAsFixed(3)}'),
           ElevatedButton(
             onPressed: calculateAndGeneratePois,
             child: const Text('Update poi positions'),
@@ -290,7 +299,7 @@ class _MyTabsState extends State<MyTabs> {
 
     debugPrint(
         "**************** currentLocation: ${currentLocation.toString()}");
-    this.nearPois = filterPoisByDistanceAndFloor(pois, currentLocation, 1000);
+    nearPois = filterPoisByDistanceAndFloor(pois, currentLocation, 1000);
     debugPrint("**************** TIME NEAR POIS: ${nearPois.toString()}");
     //this.relativePositions = calculateRelativePositions(currentLocation, nearPois);
     //    debugPrint("**************** TIME RELATIVE POSITIONS: ${relativePositions.toString()}");
@@ -410,38 +419,34 @@ class _MyTabsState extends State<MyTabs> {
         // );
         // }
         // else
-        if (poi.name == "TestAAAAA") {
+        if (poi.name == "Situm") {
           objectNode = ARNode(
-              type: NodeType.webGLB,
-              uri:
-                  "https://github.com/KhronosGroup/glTF-Sample-Models/raw/master/2.0/BarramundiFish/glTF-Binary/BarramundiFish.glb",
+              type: NodeType.localGLTF2,
+              uri: "assets/Duck/Duck.gltf",
               scale: Vector3(1, 1, 1),
               position: Vector3(0.0, 0.0, 0.0),
               rotation: Vector4(1.0, 0.0, 0.0, 0.0),
               data: {"onTapText": poi.name});
-        } else if (poi.name == "finish") {
+        } else if (poi.name == "ABC") {
           objectNode = ARNode(
-              type: NodeType.webGLB,
-              uri:
-                  "https://github.com/KhronosGroup/glTF-Sample-Models/raw/master/2.0/Fox/glTF-Binary/Fox.glb",
+              type: NodeType.localGLTF2,
+              uri: "assets/Fox/Fox.gltf",
               scale: Vector3(1, 1, 1),
               position: Vector3(0.0, 0.0, 0.0),
               rotation: Vector4(1.0, 0.0, 0.0, 0.0),
               data: {"onTapText": poi.name});
-        } else if (poi.name == "ascensor") {
+        } else if (poi.name == "Ascensor") {
           objectNode = ARNode(
-              type: NodeType.webGLB,
-              uri:
-                  "https://github.com/KhronosGroup/glTF-Sample-Models/raw/master/2.0/Lantern/glTF-Binary/Lantern.glb",
+              type: NodeType.localGLTF2,
+              uri: "assets/Lantern/Lantern.gltf",
               scale: Vector3(1, 1, 1),
               position: Vector3(0.0, 0.0, 0.0),
               rotation: Vector4(1.0, 0.0, 0.0, 0.0),
               data: {"onTapText": poi.name});
         } else {
           objectNode = ARNode(
-              type: NodeType.webGLB,
-              uri:
-                  "https://github.com/KhronosGroup/glTF-Sample-Models/raw/master/2.0/Duck/glTF-Binary/Duck.glb",
+              type: NodeType.localGLTF2,
+              uri: "assets/BoxAnimated/BoxAnimated.gltf",
               scale: Vector3(1, 1, 1),
               position: Vector3(0.0, 0.0, 0.0),
               rotation: Vector4(1.0, 0.0, 0.0, 0.0),
@@ -522,7 +527,7 @@ class _MyTabsState extends State<MyTabs> {
     // Extraer la rotación de la cámara como Quaternion
     Quaternion cameraRotation =
         Quaternion.fromRotation(cameraTransform.getRotation());
-    double cameraBearing = -getBearingFromMatrix(cameraTransform);
+    double cameraBearing = getBearingFromMatrix(cameraTransform);
     // Ajustar la rotación para mantener solo la componente horizontal
     // Esto puede implicar normalizar el Quaternion y ajustar su componente Y
     //Quaternion horizontalRotation = Quaternion.axisAngle(Vector3(0, 1, 0), cameraRotation.y);
@@ -555,7 +560,7 @@ class _MyTabsState extends State<MyTabs> {
 
       // Rotar la posición relativa basándose en el bearing
       Quaternion bearingRotation =
-          Quaternion.axisAngle(Vector3(0, -1, 0), bearingRadians - (pi / 2));
+          Quaternion.axisAngle(Vector3(0, -1, 0), adjustedBearing + (pi / 2));
       Vector3 bearingAdjustedPosition =
           bearingRotation.rotated(relativePoiPosition);
 
