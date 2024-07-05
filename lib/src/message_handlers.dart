@@ -211,6 +211,7 @@ class ViewerNavigationStartedMessageHandler implements MessageHandler {
   @override
   void handleMessage(
       MapViewController mapViewController, Map<String, dynamic> payload) {
+    mapViewController._useViewerNavigation ??= true;
     var externalNavigation = ExternalNavigation(
       ExternalNavigationMessageType.navigationStarted,
       payload,
@@ -223,6 +224,7 @@ class ViewerNavigationUpdatedMessageHandler implements MessageHandler {
   @override
   void handleMessage(
       MapViewController mapViewController, Map<String, dynamic> payload) {
+    mapViewController._useViewerNavigation ??= true;
     ExternalNavigation? externalNavigation;
 
     switch (payload["type"]) {
@@ -256,6 +258,7 @@ class ViewerNavigationStoppedMessageHandler implements MessageHandler {
   @override
   void handleMessage(
       MapViewController mapViewController, Map<String, dynamic> payload) {
+    mapViewController._useViewerNavigation ??= true;
     var externalNavigation = ExternalNavigation(
       ExternalNavigationMessageType.navigationCancelled,
       payload,

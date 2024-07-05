@@ -353,19 +353,7 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
     }
 
     private fun updateNavigationState(arguments: Map<String, Any>, result: MethodChannel.Result) {
-        if (!arguments.containsKey("messageType") || !arguments.containsKey("payload")) {
-            result.success(false)
-            return
-        }
-
-        val externalNavigation = viewerNavigation.updateNavigationState(arguments)
-        if (externalNavigation == null) {
-            result.success(false)
-            return
-        }
-
-        SitumSdk.navigationManager().updateNavigationState(externalNavigation)
-        result.success(true)
+        viewerNavigation.updateNavigationState(arguments, result)
     }
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {

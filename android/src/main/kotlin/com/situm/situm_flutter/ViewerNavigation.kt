@@ -35,7 +35,13 @@ class ViewerNavigation private constructor() : NavigationListener {
 
     fun updateNavigationState(
             arguments: Map<String, Any>,
-    ): ExternalNavigation? {
+            result: MethodChannel.Result
+    ) {
+        if (!arguments.containsKey("messageType") || !arguments.containsKey("payload")) {
+            result.success(false)
+            return
+        }
+
         val messageType = arguments["messageType"] as String
         val payload = arguments["payload"] as Map<String, Any>
 
@@ -65,10 +71,14 @@ class ViewerNavigation private constructor() : NavigationListener {
         }
 
         if (type == null) {
-            return null
+            result.success(false)
+            return
         }
 
-        return ExternalNavigation(type, payload)
+        SitumSdk.navigationManager().updateNavigationState(
+            ExternalNavigation(type, payload)
+        )
+        result.success(true)
     }
 
     // Navigation listener:
