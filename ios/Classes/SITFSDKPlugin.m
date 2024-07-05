@@ -498,7 +498,7 @@ SITRealtimeUpdateInterval createRealtimeUpdateInterval(NSString *name) {
 
         if ([messageType isEqual:@"DestinationReached"] || [messageType isEqual:@"NavigationCancelled"]) {
             _navigationUpdates = NO;
-            [[SITNavigationManager sharedManager] removeUpdates];
+            [[SITNavigationManager sharedManager] removeDelegate:instance.navigationHandler];
         }
     }
 }

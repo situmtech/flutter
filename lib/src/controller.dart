@@ -292,6 +292,9 @@ class MapViewController {
   }
 
   void _setNavigationOutOfRoute() {
+    // Only send this message when using SDK navigation engine.
+    if (_useViewerNavigation != null && _useViewerNavigation!) return;
+
     _sendMessage(
         WV_MESSAGE_NAVIGATION_UPDATE,
         jsonEncode({
@@ -300,6 +303,9 @@ class MapViewController {
   }
 
   void _setNavigationDestinationReached() {
+    // Only send this message when using SDK navigation engine.
+    if (_useViewerNavigation != null && _useViewerNavigation!) return;
+
     _sendMessage(
         WV_MESSAGE_NAVIGATION_UPDATE,
         jsonEncode({
@@ -308,6 +314,9 @@ class MapViewController {
   }
 
   void _setNavigationProgress(RouteProgress progress) {
+    // Only send this message when using SDK navigation engine.
+    if (_useViewerNavigation != null && _useViewerNavigation!) return;
+
     progress.rawContent["type"] = "PROGRESS";
     _sendMessage(WV_MESSAGE_NAVIGATION_UPDATE, jsonEncode(progress.rawContent));
   }
