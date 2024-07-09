@@ -81,6 +81,7 @@ class Navigation private constructor() : NavigationListener {
 
     override fun onCancellation() {
         channel.invokeMethod("onNavigationCancellation", null)
+        SitumSdk.navigationManager().removeNavigationListener(this)
     }
 
     override fun onDestinationReached() {
@@ -93,6 +94,7 @@ class Navigation private constructor() : NavigationListener {
 
     override fun onDestinationReached(route: Route) {
         channel.invokeMethod("onNavigationDestinationReached", route.toMap())
+        SitumSdk.navigationManager().removeNavigationListener(this)
     }
 
     override fun onUserOutsideRoute() {
