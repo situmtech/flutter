@@ -100,6 +100,7 @@ class NavigationMessageHandler implements MessageHandler {
     MapViewController mapViewController,
     Map<String, dynamic> payload,
   ) async {
+    mapViewController._useViewerNavigation = false;
     var sdk = SitumSdk();
     // Calculate route and start navigation. WayfindingController will listen
     // for native callbacks to get up to date with the navigation status, using
@@ -132,6 +133,7 @@ class NavigationStopMessageHandler implements MessageHandler {
   @override
   void handleMessage(
       MapViewController mapViewController, Map<String, dynamic> payload) {
+    mapViewController._useViewerNavigation = false;
     var sdk = SitumSdk();
     sdk.stopNavigation();
   }
@@ -211,7 +213,7 @@ class ViewerNavigationStartedMessageHandler implements MessageHandler {
   @override
   void handleMessage(
       MapViewController mapViewController, Map<String, dynamic> payload) {
-    mapViewController._useViewerNavigation ??= true;
+    mapViewController._useViewerNavigation = true;
     var externalNavigation = ExternalNavigation(
       ExternalNavigationMessageType.navigationStarted,
       payload,
@@ -224,7 +226,7 @@ class ViewerNavigationUpdatedMessageHandler implements MessageHandler {
   @override
   void handleMessage(
       MapViewController mapViewController, Map<String, dynamic> payload) {
-    mapViewController._useViewerNavigation ??= true;
+    mapViewController._useViewerNavigation = true;
     ExternalNavigation? externalNavigation;
 
     switch (payload["type"]) {
@@ -258,7 +260,7 @@ class ViewerNavigationStoppedMessageHandler implements MessageHandler {
   @override
   void handleMessage(
       MapViewController mapViewController, Map<String, dynamic> payload) {
-    mapViewController._useViewerNavigation ??= true;
+    mapViewController._useViewerNavigation = true;
     var externalNavigation = ExternalNavigation(
       ExternalNavigationMessageType.navigationCancelled,
       payload,
