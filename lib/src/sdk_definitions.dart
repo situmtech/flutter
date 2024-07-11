@@ -825,21 +825,6 @@ void _addToMapIfNotNull(String key, dynamic value, Map<String, dynamic> map) {
   }
 }
 
-class ExternalNavigation {
-  String messageType;
-  Map<String, dynamic> payload;
-
-  ExternalNavigation(this.messageType, this.payload);
-}
-
-class ExternalNavigationMessageType {
-  static const navigationStarted = "NavigationStarted";
-  static const navigationUpdated = "NavigationUpdated";
-  static const destinationReached = "DestinationReached";
-  static const outsideRoute = "OutsideRoute";
-  static const navigationCancelled = "NavigationCancelled";
-}
-
 // Result callbacks.
 
 // Location.

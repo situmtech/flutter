@@ -87,12 +87,6 @@ class MapViewConfiguration {
   /// supported languages.
   final String? language;
 
-  // When set to true, the MapView's navigation engine will be calculating the routes.
-  // When set to false, the SDK will be the one managing the navigation.
-  //
-  // Defaults to the value specified in your remote configuration file.
-  final bool? useViewerNavigation;
-
   /// The [MapView] settings. Required fields are your Situm user and API key,
   /// but also a buildingIdentifier or remoteIdentifier.
   MapViewConfiguration({
@@ -107,7 +101,6 @@ class MapViewConfiguration {
     this.lockCameraToBuilding,
     this.persistUnderlyingWidget = false,
     this.language,
-    this.useViewerNavigation,
   }) {
     if (viewerDomain != null) {
       if (!viewerDomain.startsWith("https://") &&

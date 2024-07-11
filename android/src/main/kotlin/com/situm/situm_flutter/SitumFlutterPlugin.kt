@@ -139,12 +139,14 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
         SitumSdk.configuration()
             .setApiKey(arguments["situmUser"] as String, arguments["situmApiKey"] as String)
         startListeningLocationUpdates()
+        SitumSdk.navigationManager().addNavigationListener(navigation)
         result.success("DONE")
     }
 
     private fun initSdk(result: MethodChannel.Result) {
         SitumSdk.init(context)
         startListeningLocationUpdates()
+        SitumSdk.navigationManager().addNavigationListener(navigation)
         result.success("DONE")
     }
 

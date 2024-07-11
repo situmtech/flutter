@@ -24,7 +24,6 @@
 @implementation SITFSDKPlugin
 
 const NSString* RESULTS_KEY = @"results";
-bool _navigationRunning = false;
 
 +(void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
     FlutterMethodChannel *channel = [FlutterMethodChannel methodChannelWithName:@"situm.com/flutter_sdk" binaryMessenger:[registrar messenger]];
@@ -33,6 +32,7 @@ bool _navigationRunning = false;
     instance.locManager = [SITLocationManager sharedInstance];
     instance.navigationHandler = [SITNavigationHandler sharedInstance];
     instance.navigationHandler.channel = channel;
+    [SITNavigationManager.sharedManager addDelegate:instance.navigationHandler];
     instance.channel = channel;
     [registrar addMethodCallDelegate:instance channel:channel];
 }
@@ -470,37 +470,22 @@ SITRealtimeUpdateInterval createRealtimeUpdateInterval(NSString *name) {
 - (void) updateNavigationState:(FlutterMethodCall*)call
                          result:(FlutterResult)result {
     if ([call.arguments count] > 0) {
-        NSString *messageType = (NSString*)[call.arguments objectForKey:@"messageType"];
+        NSString *type = (NSString*)[call.arguments objectForKey:@"type"];
         NSDictionary *payload = (NSDictionary*)[call.arguments objectForKey:@"payload"];
         SITExternalNavigation *externalNavigation;
 
-        if ([messageType isEqual:@"NavigationStarted"]) {           
-            if (_navigationRunning == NO) {
-                _navigationRunning = YES;
-                [SITNavigationManager.sharedManager removeDelegate:self.navigationHandler];
-                [SITNavigationManager.sharedManager addDelegate:self.navigationHandler];
-            }
-            externalNavigation = [[SITExternalNavigation alloc] initWithMessageType:kSITNavigationStarted
-                                                             payload:payload];
-        } else if ([messageType isEqual:@"NavigationUpdated"]) {
-            externalNavigation = [[SITExternalNavigation alloc] initWithMessageType:kSITNavigationUpdated
-                                                             payload:payload];
-        } else if ([messageType isEqual:@"DestinationReached"]) {
-            externalNavigation = [[SITExternalNavigation alloc] initWithMessageType:kSITDestinationReached
-                                                             payload:payload];
-        } else if ([messageType isEqual:@"OutsideRoute"]) {
-            externalNavigation = [[SITExternalNavigation alloc] initWithMessageType:kSITOutsideRoute
-                                                             payload:payload];
-        } else if ([messageType isEqual:@"NavigationCancelled"]) {
-            externalNavigation = [[SITExternalNavigation alloc] initWithMessageType:kSITNavigationCancelled
-                                                             payload:payload];
-        }
+        NSMutableDictionary *messageTypes = [NSMutableDictionary dictionaryWithDictionary:@{
+            @"NAVIGATION_STARTED": @kSITNavigationStarted,
+            @"PROGRESS": @kSITNavigationUpdated,
+            @"DESTINATION_REACHED": @kSITDestinationReached,
+            @"OUT_OF_ROUTE": @kSITOutsideRoute,
+            @"NAVIGATION_CANCELLED": @kSITNavigationCancelled,
+        }];
+
+        externalNavigation = 
+                [[SITExternalNavigation alloc] initWithMessageType:messageTypes[type] payload:payload];
 
         [[SITNavigationManager sharedManager] updateNavigationState:externalNavigation];
-
-        if ([messageType isEqual:@"DestinationReached"] || [messageType isEqual:@"NavigationCancelled"]) {
-            _navigationRunning = NO;
-        }
     }
 }
 

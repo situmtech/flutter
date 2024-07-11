@@ -97,6 +97,3 @@ const WV_MESSAGE_CALIBRATIONS_STOP_CURRENT = "calibration.stop";
 // Calibration events:
 const WV_MESSAGE_LOCAL_CALIB_UPLOAD_REQUESTED =
     "calibration.local_calibrations_upload_requested";
-
-// Configure some parameter of the remote configuration file:
-const WV_MESSAGE_SET_CONFIG_ITEM = "app.set_config_item";

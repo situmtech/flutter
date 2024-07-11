@@ -35,14 +35,14 @@ class MapViewController {
     'STOPPED',
   ];
 
-  bool? _useViewerNavigation;
+  // Internal variable to make MapViewController aware of
+  // which navigation engine is being used on MapView (WASM or SDK).
+  bool? _usingViewerNavigation;
 
   MapViewController({
     String? situmUser,
     required String situmApiKey,
-    bool? useViewerNavigation,
   }) {
-    _useViewerNavigation = useViewerNavigation;
     // Open SDK channel to call native (private) methods if necessary.
     // WARNING: don't set the method call handler here as it will overwrite the
     // one provided by the SDK controller.
@@ -246,14 +246,6 @@ class MapViewController {
       // Same API for sending status and errors...
       _setCurrentLocationStatus(_lastErrorToSend!);
     }
-    if (_useViewerNavigation != null) {
-      var navigationType = _useViewerNavigation! ? "webAssembly" : "sdk";
-      Map<String, dynamic> configItem = {
-        "key": "'internal.navigationLibrary'",
-        "value": "'$navigationType'",
-      };
-      _sendMessage(WV_MESSAGE_SET_CONFIG_ITEM, [configItem]);
-    }
   }
 
   void _setRoute(
@@ -293,7 +285,7 @@ class MapViewController {
 
   void _setNavigationOutOfRoute() {
     // Only send this message when using SDK navigation engine.
-    if (_useViewerNavigation != null && _useViewerNavigation!) return;
+    if (_usingViewerNavigation == true) return;
 
     _sendMessage(
         WV_MESSAGE_NAVIGATION_UPDATE,
@@ -304,7 +296,7 @@ class MapViewController {
 
   void _setNavigationDestinationReached() {
     // Only send this message when using SDK navigation engine.
-    if (_useViewerNavigation != null && _useViewerNavigation!) return;
+    if (_usingViewerNavigation == true) return;
 
     _sendMessage(
         WV_MESSAGE_NAVIGATION_UPDATE,
@@ -315,7 +307,7 @@ class MapViewController {
 
   void _setNavigationProgress(RouteProgress progress) {
     // Only send this message when using SDK navigation engine.
-    if (_useViewerNavigation != null && _useViewerNavigation!) return;
+    if (_usingViewerNavigation == true) return;
 
     progress.rawContent["type"] = "PROGRESS";
     _sendMessage(WV_MESSAGE_NAVIGATION_UPDATE, jsonEncode(progress.rawContent));

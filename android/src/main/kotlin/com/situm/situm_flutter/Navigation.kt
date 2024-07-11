@@ -39,11 +39,10 @@ class Navigation private constructor() : NavigationListener {
     ) {
         val navigationRequest = NavigationRequest.fromMap(navigationRequestArgs)
         val directionsRequest = DirectionsRequest.fromMap(directionsRequestArgs)
-        SitumSdk.navigationManager().addNavigationListener(this)
         SitumSdk.navigationManager().requestNavigationUpdates(
             navigationRequest,
             directionsRequest,
-            CommonHandler(result) { SitumSdk.navigationManager().removeNavigationListener(this) }
+            CommonHandler(result)
         )
     }
 
@@ -53,15 +52,13 @@ class Navigation private constructor() : NavigationListener {
     ) {
         val directionsRequest = DirectionsRequest.fromMap(directionsRequestArgs)
         SitumSdk.directionsManager().requestDirections(
-            directionsRequest, CommonHandler(result, null)
+            directionsRequest, CommonHandler(result)
         )
     }
 
     // Common handler:
-
     private class CommonHandler(
         private val result: MethodChannel.Result,
-        private val onError: (() -> Unit)?
     ) : Handler<Route> {
         override fun onSuccess(route: Route) {
             result.success(route.toMap())
@@ -69,7 +66,6 @@ class Navigation private constructor() : NavigationListener {
 
         override fun onFailure(error: Error) {
             result.notifySitumSdkError(error)
-            onError?.invoke()
         }
     }
 
@@ -81,7 +77,6 @@ class Navigation private constructor() : NavigationListener {
 
     override fun onCancellation() {
         channel.invokeMethod("onNavigationCancellation", null)
-        SitumSdk.navigationManager().removeNavigationListener(this)
     }
 
     override fun onDestinationReached() {
@@ -94,7 +89,6 @@ class Navigation private constructor() : NavigationListener {
 
     override fun onDestinationReached(route: Route) {
         channel.invokeMethod("onNavigationDestinationReached", route.toMap())
-        SitumSdk.navigationManager().removeNavigationListener(this)
     }
 
     override fun onUserOutsideRoute() {
