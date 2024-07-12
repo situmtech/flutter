@@ -23,11 +23,9 @@ abstract class MessageHandler {
       case WV_MESSAGE_UI_SPEAK_ALOUD_TEXT:
         return SpeakAloudTextMessageHandler();
       case WV_VIEWER_NAVIGATION_STARTED:
-        return ViewerNavigationStartedMessageHandler();
       case WV_VIEWER_NAVIGATION_UPDATED:
-        return ViewerNavigationUpdatedMessageHandler();
       case WV_VIEWER_NAVIGATION_STOPPED:
-        return ViewerNavigationStoppedMessageHandler();
+        return ViewerNavigationMessageHandler();
       default:
         debugPrint("EmptyMessageHandler handles message of type: $type");
         return EmptyMessageHandler();
@@ -209,47 +207,12 @@ class CalibrationStoppedMessageHandler implements MessageHandler {
   }
 }
 
-class ViewerNavigationStartedMessageHandler implements MessageHandler {
+class ViewerNavigationMessageHandler implements MessageHandler {
   @override
   void handleMessage(
       MapViewController mapViewController, Map<String, dynamic> payload) {
     mapViewController._usingViewerNavigation = true;
 
-    var processedPayload = Map.from(payload);
-    processedPayload.remove("type");
-
-    var externalNavigation = {
-      "type": "NAVIGATION_STARTED",
-      "payload": processedPayload
-    };
-    SitumSdk().updateNavigationState(externalNavigation);
-  }
-}
-
-class ViewerNavigationUpdatedMessageHandler implements MessageHandler {
-  @override
-  void handleMessage(
-      MapViewController mapViewController, Map<String, dynamic> payload) {
-    mapViewController._usingViewerNavigation = true;
-
-    var processedPayload = Map.from(payload);
-    processedPayload.remove("type");
-
-    var externalNavigation = {
-      "type": payload["type"],
-      "payload": processedPayload
-    };
-    SitumSdk().updateNavigationState(externalNavigation);
-  }
-}
-
-class ViewerNavigationStoppedMessageHandler implements MessageHandler {
-  @override
-  void handleMessage(
-      MapViewController mapViewController, Map<String, dynamic> payload) {
-    mapViewController._usingViewerNavigation = true;
-
-    var externalNavigation = {"type": "NAVIGATION_CANCELLED", "payload": {}};
-    SitumSdk().updateNavigationState(externalNavigation);
+    SitumSdk().updateNavigationState(payload);
   }
 }

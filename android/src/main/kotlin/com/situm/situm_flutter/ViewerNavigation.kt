@@ -30,28 +30,9 @@ class ViewerNavigation private constructor() {
             arguments: Map<String, Any>,
             result: MethodChannel.Result
     ) {
-        if (!arguments.containsKey("type") || !arguments.containsKey("payload")) {
-            result.success(false)
-            return
-        }
-
-        val messageTypes = mutableMapOf<String, ExternalNavigation.MessageType>()
-        messageTypes["NAVIGATION_STARTED"] = ExternalNavigation.MessageType.NAVIGATION_STARTED
-        messageTypes["PROGRESS"] = ExternalNavigation.MessageType.NAVIGATION_UPDATED
-        messageTypes["DESTINATION_REACHED"] = ExternalNavigation.MessageType.DESTINATION_REACHED
-        messageTypes["OUT_OF_ROUTE"] = ExternalNavigation.MessageType.OUTSIDE_ROUTE
-        messageTypes["NAVIGATION_CANCELLED"] = ExternalNavigation.MessageType.NAVIGATION_CANCELLED
-
-        val type = messageTypes[arguments["type"]]
-        val payload = arguments["payload"] as Map<String, Any>
-
-        if (type == null) {
-            result.success(false)
-            return
-        }
-
+       
         SitumSdk.navigationManager().updateNavigationState(
-            ExternalNavigation(type, payload)
+            ExternalNavigation.fromMap(arguments)
         )
         result.success(true)
     }

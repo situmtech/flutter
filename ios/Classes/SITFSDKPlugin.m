@@ -470,20 +470,7 @@ SITRealtimeUpdateInterval createRealtimeUpdateInterval(NSString *name) {
 - (void) updateNavigationState:(FlutterMethodCall*)call
                          result:(FlutterResult)result {
     if ([call.arguments count] > 0) {
-        NSString *type = (NSString*)[call.arguments objectForKey:@"type"];
-        NSDictionary *payload = (NSDictionary*)[call.arguments objectForKey:@"payload"];
-        SITExternalNavigation *externalNavigation;
-
-        NSMutableDictionary *messageTypes = [NSMutableDictionary dictionaryWithDictionary:@{
-            @"NAVIGATION_STARTED": @kSITNavigationStarted,
-            @"PROGRESS": @kSITNavigationUpdated,
-            @"DESTINATION_REACHED": @kSITDestinationReached,
-            @"OUT_OF_ROUTE": @kSITOutsideRoute,
-            @"NAVIGATION_CANCELLED": @kSITNavigationCancelled,
-        }];
-
-        externalNavigation = 
-                [[SITExternalNavigation alloc] initWithMessageType:messageTypes[type] payload:payload];
+        SITExternalNavigation *externalNavigation = [SITExternalNavigation fromDictionary:call.arguments]
 
         [[SITNavigationManager sharedManager] updateNavigationState:externalNavigation];
     }
