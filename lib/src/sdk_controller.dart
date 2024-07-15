@@ -405,7 +405,7 @@ class SitumSdk {
     methodChannel.invokeMethod('openUrlInDefaultBrowser', {"url": url});
   }
 
-  /// Update SDK with the viewer navigation states.
+  /// Update SDK with the MapView navigation states.
   /// Do not use this method as it is intended for internal use by the map
   /// viewer module.
   void updateNavigationState(Map<String, dynamic> externalNavigation) {

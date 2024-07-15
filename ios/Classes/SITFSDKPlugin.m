@@ -411,8 +411,6 @@ SITRealtimeUpdateInterval createRealtimeUpdateInterval(NSString *name) {
 
 - (void)requestNavigation:(FlutterMethodCall*)call
                    result:(FlutterResult)result{
-    [SITNavigationManager.sharedManager removeDelegate:self.navigationHandler];
-    [SITNavigationManager.sharedManager addDelegate:self.navigationHandler];
     SITDirectionsRequest *directionsRequest = [SITDirectionsRequest fromDictionary:call.arguments[@"directionsRequest"]];
     SITNavigationRequest *navigationRequest = [SITNavigationRequest fromDictionary:call.arguments[@"navigationRequest"]];
     [SITNavigationManager.sharedManager requestNavigationUpdates:navigationRequest directionsRequest:directionsRequest completion:^(SITRoute * _Nullable route, NSError * _Nullable error) {
