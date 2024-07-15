@@ -9,8 +9,6 @@ class ViewerNavigation private constructor() {
     private lateinit var channel: MethodChannel
     private lateinit var osHandler: android.os.Handler
 
-    // Navigation will be a singleton so we can be sure that calls to
-    // locationManager.addListener(this) always receive the same instance.
     companion object {
         private var instance: ViewerNavigation? = null
 
