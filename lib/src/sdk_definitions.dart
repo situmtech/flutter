@@ -112,6 +112,29 @@ class LocationRequest {
   }
 }
 
+/// Predefined actions performed when tapping the Situm Foreground Service Notification.
+enum ForegroundServiceNotificationTapAction {
+  /// Launch the app's main activity using the information returned by android.content.pm.PackageManager#getLaunchIntentForPackage(String).
+  launchApp,
+
+  /// Launch the operating system settings screen for the current app.
+  launchSettings,
+
+  /// Do nothing when tapping the notification.
+  doNothing,
+}
+
+extension _TapActionNameExtension on ForegroundServiceNotificationTapAction {
+  String get name {
+    final javaNames = {
+      ForegroundServiceNotificationTapAction.launchApp: "LAUNCH_APP",
+      ForegroundServiceNotificationTapAction.launchSettings: "LAUNCH_SETTINGS",
+      ForegroundServiceNotificationTapAction.doNothing: "DO_NOTHING"
+    };
+    return javaNames[this]!;
+  }
+}
+
 /// A data object that let you customize the Foreground Service Notification
 /// that will be shown in the system's tray when the app is running as a
 /// Foreground Service.
@@ -122,12 +145,14 @@ class ForegroundServiceNotificationOptions {
   late String? message;
   late bool? showStopAction;
   late String? stopActionText;
+  late ForegroundServiceNotificationTapAction? tapAction;
 
   ForegroundServiceNotificationOptions({
     this.title,
     this.message,
-    this.showStopAction = false,
+    this.showStopAction,
     this.stopActionText,
+    this.tapAction,
   });
 
   Map<String, dynamic> toMap() {
@@ -136,6 +161,7 @@ class ForegroundServiceNotificationOptions {
     _addToMapIfNotNull("message", message, map);
     _addToMapIfNotNull("showStopAction", showStopAction, map);
     _addToMapIfNotNull("stopActionText", stopActionText, map);
+    _addToMapIfNotNull("tapAction", tapAction?.name, map);
     return map;
   }
 }
