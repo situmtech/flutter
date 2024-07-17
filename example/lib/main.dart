@@ -215,6 +215,7 @@ class _MyTabsState extends State<MyTabs> {
           remoteIdentifier: remoteIdentifier,
           // The viewer domain:
           viewerDomain: viewerDomain,
+          enableDebugging: true,
         ),
         onLoad: _onLoad,
       ),
@@ -370,6 +371,24 @@ class _MyTabsState extends State<MyTabs> {
     situmSdk.onExitGeofences((geofencesResult) {
       _echo("Situm> SDK> Exit geofences: ${geofencesResult.geofences}.");
     });
+
+    situmSdk.onNavigationStart((route) {
+      _echo("Situm> WYF> navigation has started to ${route.poiTo?.name}.");
+    });
+    situmSdk.onNavigationProgress((routeProgress) {
+      _echo(
+          "Situm> WYF> navigation progress, remanining distance to goal ${routeProgress.rawContent["distanceToGoal"]} m.");
+    });
+    situmSdk.onNavigationDestinationReached((route) {
+      _echo("Situm> WYF> destination ${route.poiTo?.name} was reached.");
+    });
+    situmSdk.onNavigationOutOfRoute(() {
+      _echo("Situm> WYF> user went out of route.");
+    });
+    situmSdk.onNavigationCancellation(() {
+      _echo("Situm> WYF> user did cancel the route.");
+    });
+
     _downloadPois(buildingIdentifier);
 
     flutterTts = FlutterTts();
