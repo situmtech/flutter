@@ -52,6 +52,9 @@ class MapViewController {
     // Subscribe to native SDK messages so the location updates can be directly
     // forwarded to the map viewer.
     situmSdk.internalSetMethodCallMapDelegate(_methodCallHandler);
+    if (Platform.isIOS) {
+      _validateMapViewProjectSettings();
+    }
   }
 
   /// Tells the [MapView] where the user is located at.
@@ -80,6 +83,9 @@ class MapViewController {
     """);
   }
 
+  Future<void> _validateMapViewProjectSettings() async {
+     await methodChannel.invokeMethod("validateMapViewProjectSettings");
+  }
   // Actions:
 
   void _reloadWithConfiguration(MapViewConfiguration configuration) async {
