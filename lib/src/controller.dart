@@ -105,6 +105,11 @@ class MapViewController {
     _sendMessage(WV_MESSAGE_CARTOGRAPHY_SELECT_POI, {"identifier": identifier});
   }
 
+  /// Selects a point saved as find my car on the map.
+  void selectCar() async {
+    _sendMessage(WV_MESSAGE_CARTOGRAPHY_SELECT_CAR, {});
+  }
+
   /// Selects the given POI category in the map.
   ///
   /// This method is deprecated. You can instead use [search] to filter POIs by category.
@@ -125,6 +130,18 @@ class MapViewController {
       message["type"] = "'${accessibilityMode.name}'";
     }
     _sendMessage(WV_MESSAGE_NAVIGATION_START, message);
+  }
+
+  /// Starts navigating to a point saved as find my car. You can optionally choose the desired
+  /// [AccessibilityMode] used to calculate the route.
+  void navigateToCar({
+    AccessibilityMode? accessibilityMode,
+  }) async {
+    dynamic message = {};
+    if (accessibilityMode != null) {
+      message["type"] = "'${accessibilityMode.name}'";
+    }
+    _sendMessage(WV_MESSAGE_NAVIGATION_TO_CAR, message);
   }
 
   /// Starts navigating to the given coordinates, at the given floor. You can
