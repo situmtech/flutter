@@ -101,8 +101,10 @@ const NSString* RESULTS_KEY = @"results";
     } else  if ([@"addExternalArData" isEqualToString:call.method]) {
         [self handleSetArOdometry:call
                                result:result];
-    } else 
-    {
+    } else if ([@"updateNavigationState" isEqualToString:call.method]) {
+        [self updateNavigationState:call
+                               result:result];
+    } else {
         result(FlutterMethodNotImplemented);
     }
 }
@@ -491,6 +493,15 @@ SITRealtimeUpdateInterval createRealtimeUpdateInterval(NSString *name) {
     }
     [[UIApplication sharedApplication] openURL:url options:@{} completionHandler:nil];
     result(@(YES));
+}
+
+- (void) updateNavigationState:(FlutterMethodCall*)call
+                         result:(FlutterResult)result {
+    if ([call.arguments count] > 0) {
+        SITExternalNavigation *externalNavigation = [SITExternalNavigation fromDictionary:call.arguments];
+
+        [[SITNavigationManager sharedManager] updateNavigationState:externalNavigation];
+    }
 }
 
 
