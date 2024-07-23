@@ -22,6 +22,10 @@ abstract class MessageHandler {
         return CalibrationStoppedMessageHandler();
       case WV_MESSAGE_UI_SPEAK_ALOUD_TEXT:
         return SpeakAloudTextMessageHandler();
+      case WV_VIEWER_NAVIGATION_STARTED:
+      case WV_VIEWER_NAVIGATION_UPDATED:
+      case WV_VIEWER_NAVIGATION_STOPPED:
+        return ViewerNavigationMessageHandler();
       default:
         debugPrint("EmptyMessageHandler handles message of type: $type");
         return EmptyMessageHandler();
@@ -94,6 +98,7 @@ class NavigationMessageHandler implements MessageHandler {
     MapViewController mapViewController,
     Map<String, dynamic> payload,
   ) async {
+    mapViewController._usingViewerNavigation = false;
     var sdk = SitumSdk();
     // Calculate route and start navigation. WayfindingController will listen
     // for native callbacks to get up to date with the navigation status, using
@@ -126,6 +131,7 @@ class NavigationStopMessageHandler implements MessageHandler {
   @override
   void handleMessage(
       MapViewController mapViewController, Map<String, dynamic> payload) {
+    mapViewController._usingViewerNavigation = false;
     var sdk = SitumSdk();
     sdk.stopNavigation();
   }
@@ -198,5 +204,15 @@ class CalibrationStoppedMessageHandler implements MessageHandler {
       MapViewController mapViewController, Map<String, dynamic> payload) {
     var status = createCalibrationFinishedStatus(payload);
     mapViewController._onCalibrationFinishedCallback?.call(status);
+  }
+}
+
+class ViewerNavigationMessageHandler implements MessageHandler {
+  @override
+  void handleMessage(
+      MapViewController mapViewController, Map<String, dynamic> payload) {
+    mapViewController._usingViewerNavigation = true;
+
+    SitumSdk().updateNavigationState(payload);
   }
 }
