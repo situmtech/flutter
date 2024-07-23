@@ -61,7 +61,7 @@ const WV_MESSAGE_DIRECTIONS_SET_OPTIONS = "directions.set_options";
 
 // Navigation actions
 const WV_MESSAGE_NAVIGATION_START = "navigation.start";
-const WV_MESSAGE_NAVIGATION_TO_CAR = "navigation.to_car";
+const WV_MESSAGE_NAVIGATION_TO_CAR = "navigation.start.to_car";
 const WV_MESSAGE_NAVIGATION_UPDATE = "navigation.update";
 const WV_MESSAGE_NAVIGATION_CANCEL = "navigation.cancel";
 
