@@ -62,7 +62,6 @@ class _MyTabsState extends State<MyTabs> {
           _sdkButton('Building Info', _fetchBuildingInfo),
         ]),
         _poiInteraction(),
-        _fmcInteraction(),
         _setCamera(),
         Expanded(
             child: ValueListenableBuilder<String>(
@@ -158,23 +157,6 @@ class _MyTabsState extends State<MyTabs> {
               _sdkButton("Set", (() => _setCameraViewer(dropdownValue))),
             ],
           ),
-        ],
-      ),
-    );
-  }
-
-  Card _fmcInteraction() {
-    return Card(
-      child: ExpansionTile(
-        shape: const Border(),
-        title: _cardTitle(Icons.interests, "Find My Car Interaction"),
-        children: <Widget>[
-          Row(
-            children: <Widget>[
-              _sdkButton("Select", (() => _selectFMC())),
-              _sdkButton("Navigate", (() => _navigateToFMC())),
-            ],
-          )
         ],
       ),
     );
@@ -308,18 +290,6 @@ class _MyTabsState extends State<MyTabs> {
     });
   }
 
-  void _selectFMC() {
-    setState(() {
-      _selectedIndex = 1;
-    });
-    mapViewLoadAction = () {
-      mapViewController?.selectCar();
-    };
-    if (mapViewController != null) {
-      _callMapviewLoadAction();
-    }
-  }
-
   void _selectPoi(Poi? poi) {
     if (poi == null) {
       return;
@@ -349,18 +319,6 @@ class _MyTabsState extends State<MyTabs> {
     });
     mapViewLoadAction = () {
       mapViewController?.navigateToPoi(poi.identifier);
-    };
-    if (mapViewController != null) {
-      _callMapviewLoadAction();
-    }
-  }
-
-  void _navigateToFMC() {
-    setState(() {
-      _selectedIndex = 1;
-    });
-    mapViewLoadAction = () {
-      mapViewController?.navigateToCar();
     };
     if (mapViewController != null) {
       _callMapviewLoadAction();
