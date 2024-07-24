@@ -150,7 +150,8 @@ class _MapViewState extends State<MapView> {
     }
 
     if (webViewController is WebKitWebViewController) {
-      (webViewController as WebKitWebViewController).setInspectable(configuration.enableDebugging);
+      (webViewController as WebKitWebViewController)
+          .setInspectable(configuration.enableDebugging);
     }
     var sdk = SitumSdk();
     final String deviceId = await sdk.getDeviceId();

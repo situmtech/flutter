@@ -35,6 +35,10 @@ class MapViewController {
     'STOPPED',
   ];
 
+  // Internal variable to make MapViewController aware of
+  // which navigation engine is being used on MapView (WASM or SDK).
+  bool? _usingViewerNavigation;
+
   MapViewController({
     String? situmUser,
     required String situmApiKey,
@@ -301,6 +305,9 @@ class MapViewController {
   }
 
   void _setNavigationOutOfRoute() {
+    // Only send this message when using SDK navigation engine.
+    if (_usingViewerNavigation == true) return;
+
     _sendMessage(
         WV_MESSAGE_NAVIGATION_UPDATE,
         jsonEncode({
@@ -309,6 +316,9 @@ class MapViewController {
   }
 
   void _setNavigationDestinationReached() {
+    // Only send this message when using SDK navigation engine.
+    if (_usingViewerNavigation == true) return;
+
     _sendMessage(
         WV_MESSAGE_NAVIGATION_UPDATE,
         jsonEncode({
@@ -317,6 +327,9 @@ class MapViewController {
   }
 
   void _setNavigationProgress(RouteProgress progress) {
+    // Only send this message when using SDK navigation engine.
+    if (_usingViewerNavigation == true) return;
+
     progress.rawContent["type"] = "PROGRESS";
     _sendMessage(WV_MESSAGE_NAVIGATION_UPDATE, jsonEncode(progress.rawContent));
   }
