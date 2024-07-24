@@ -106,6 +106,8 @@ class MapViewController {
   }
 
   /// Selects a point saved as find my car on the map.
+  ///
+  /// To use it, the feature 'Find My Car' must be enabled.
   void selectCar() async {
     _sendMessage(WV_MESSAGE_CARTOGRAPHY_SELECT_CAR, {});
   }
@@ -134,6 +136,8 @@ class MapViewController {
 
   /// Starts navigating to a point saved as find my car. You can optionally choose the desired
   /// [AccessibilityMode] used to calculate the route.
+  ///
+  /// To use it, the feature 'Find My Car' must be enabled.
   void navigateToCar({
     AccessibilityMode? accessibilityMode,
   }) async {
