@@ -14,6 +14,21 @@ void main() => runApp(const MyApp());
 
 const _title = "Situm Flutter";
 
+extension AccessibilityModeExtension on AccessibilityMode {
+  String get name {
+    switch (this) {
+      case AccessibilityMode.CHOOSE_SHORTEST:
+        return 'Choose Shortest';
+      case AccessibilityMode.ONLY_ACCESSIBLE:
+        return 'Only Accessible';
+      case AccessibilityMode.ONLY_NOT_ACCESSIBLE_FLOOR_CHANGES:
+        return 'Only Not Accessible Floor Changes';
+      default:
+        return '';
+    }
+  }
+}
+
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
@@ -39,6 +54,7 @@ class _MyTabsState extends State<MyTabs> {
   int _selectedIndex = 0;
   List<Poi> pois = [];
   Poi? dropdownValue;
+  AccessibilityMode? accessibilityMode;
   Function? mapViewLoadAction;
 
   MapViewController? mapViewController;
@@ -171,6 +187,29 @@ class _MyTabsState extends State<MyTabs> {
         children: <Widget>[
           Row(
             children: <Widget>[
+              Flexible(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: DropdownButton<AccessibilityMode>(
+                    isExpanded: true,
+                    value: accessibilityMode,
+                    elevation: 16,
+                    onChanged: (AccessibilityMode? value) {
+                      setState(() {
+                        accessibilityMode = value!;
+                      });
+                    },
+                    items: AccessibilityMode.values
+                        .map<DropdownMenuItem<AccessibilityMode>>(
+                            (AccessibilityMode value) {
+                      return DropdownMenuItem<AccessibilityMode>(
+                        value: value,
+                        child: Text(value.name),
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ),
               _sdkButton("Select", (() => _selectFMC())),
               _sdkButton("Navigate", (() => _navigateToFMC())),
             ],
@@ -360,7 +399,7 @@ class _MyTabsState extends State<MyTabs> {
       _selectedIndex = 1;
     });
     mapViewLoadAction = () {
-      mapViewController?.navigateToCar();
+      mapViewController?.navigateToCar(accessibilityMode: accessibilityMode);
     };
     if (mapViewController != null) {
       _callMapviewLoadAction();
@@ -415,6 +454,7 @@ class _MyTabsState extends State<MyTabs> {
     _downloadPois(buildingIdentifier);
 
     flutterTts = FlutterTts();
+    accessibilityMode = AccessibilityMode.CHOOSE_SHORTEST;
 
     super.initState();
   }
