@@ -1,5 +1,5 @@
-## Unreleased
+## [3.16.2] - Unreleased
 
-### Changed
+### Added
 
-- **BREAKING CHANGE**: Now [setDirectionsOptions](https://pub.dev/documentation/situm_flutter/latest/wayfinding/MapViewController/setDirectionsOptions.html) uses as parameter the [MapViewDirectionsOptions](https://pub.dev/documentation/situm_flutter/latest/wayfinding/MapViewDirectionsOptions-class.html) interface. You can use the snippet given on the method documentation.
+- New navigation engine. When [MapView](https://situm.com/docs/built-in-wayfinding-ui/) is present, you can use the navigation of the MapView instead of the SDK navigation. This type of navigation improves routes, indications and performance.

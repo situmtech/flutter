@@ -5,9 +5,12 @@ class MapViewController {
   late final MethodChannel methodChannel;
   OnPoiSelectedCallback? _onPoiSelectedCallback;
   OnPoiDeselectedCallback? _onPoiDeselectedCallback;
+  OnSpeakAloudTextCallback? _onSpeakAloudTextCallback;
   OnDirectionsRequestInterceptor? _onDirectionsRequestInterceptor;
   OnNavigationRequestInterceptor? _onNavigationRequestInterceptor;
   OnExternalLinkClickedCallback? _onExternalLinkClickedCallback;
+  OnCalibrationPointClickedCallback? _onCalibrationPointClickedCallback;
+  OnCalibrationFinishedCallback? _onCalibrationFinishedCallback;
 
   late Function(MapViewConfiguration) _widgetUpdater;
   late MapViewCallback _widgetLoadCallback;
@@ -19,12 +22,22 @@ class MapViewController {
   // intermediation of this plugin.
   Function(String, dynamic payload)? _internalMessageDelegate;
 
+  // Keep a reference to the last status/error received to avoid missing status
+  // notifications to the MapView. Last status will be sent to the MapView after
+  // it finishes loading.
+  String? _lastStatusToSend;
+  String? _lastErrorToSend;
+
   List<String> mapViewerStatusesFilter = [
     'STARTING',
     'USER_NOT_IN_BUILDING',
     'BLE_DISABLED',
     'STOPPED',
   ];
+
+  // Internal variable to make MapViewController aware of
+  // which navigation engine is being used on MapView (WASM or SDK).
+  bool? _usingViewerNavigation;
 
   MapViewController({
     String? situmUser,
@@ -76,6 +89,19 @@ class MapViewController {
   void _reloadWithConfiguration(MapViewConfiguration configuration) async {
     // TODO - feature: reload with a new configuration.
     _widgetUpdater(configuration);
+  }
+
+  /// Reloads the [MapView] using the current configuration by reloading the
+  /// underlying platform web view controller.
+  void reload() async {
+    _webViewController.reload();
+  }
+
+  /// Selects the given Building in the map.
+  /// To set the initial Building use [MapViewConfiguration].
+  void selectBuilding(String identifier) async {
+    _sendMessage(
+        WV_MESSAGE_CARTOGRAPHY_SELECT_BUILDING, {"identifier": identifier});
   }
 
   /// Selects the given POI in the map.
@@ -208,10 +234,18 @@ class MapViewController {
 
     _sendMessage(WV_MESSAGE_DIRECTIONS_SET_OPTIONS, jsonEncode(message));
   }
+
   // WYF internal utils:
 
   void _notifyMapIsReady() {
     _widgetLoadCallback(this);
+    if (_lastStatusToSend != null) {
+      _setCurrentLocationStatus(_lastStatusToSend!);
+    }
+    if (_lastErrorToSend != null) {
+      // Same API for sending status and errors...
+      _setCurrentLocationStatus(_lastErrorToSend!);
+    }
   }
 
   void _setRoute(
@@ -250,6 +284,9 @@ class MapViewController {
   }
 
   void _setNavigationOutOfRoute() {
+    // Only send this message when using SDK navigation engine.
+    if (_usingViewerNavigation == true) return;
+
     _sendMessage(
         WV_MESSAGE_NAVIGATION_UPDATE,
         jsonEncode({
@@ -258,6 +295,9 @@ class MapViewController {
   }
 
   void _setNavigationDestinationReached() {
+    // Only send this message when using SDK navigation engine.
+    if (_usingViewerNavigation == true) return;
+
     _sendMessage(
         WV_MESSAGE_NAVIGATION_UPDATE,
         jsonEncode({
@@ -266,6 +306,9 @@ class MapViewController {
   }
 
   void _setNavigationProgress(RouteProgress progress) {
+    // Only send this message when using SDK navigation engine.
+    if (_usingViewerNavigation == true) return;
+
     progress.rawContent["type"] = "PROGRESS";
     _sendMessage(WV_MESSAGE_NAVIGATION_UPDATE, jsonEncode(progress.rawContent));
   }
@@ -282,6 +325,11 @@ class MapViewController {
     _onPoiDeselectedCallback = callback;
   }
 
+  /// Get notified when the viewer wants to read aloud some text.
+  void onSpeakAloudText(OnSpeakAloudTextCallback callback) {
+    _onSpeakAloudTextCallback = callback;
+  }
+
   /// Callback invoked when the user clicks on a link in the MapView that leads
   /// to a website different from the MapView's domain.
   /// If this callback is not set, the link will be opened in the system's
@@ -290,11 +338,48 @@ class MapViewController {
     _onExternalLinkClickedCallback = callback;
   }
 
+  // Public API intended for internal use:
+
   /// Set a callback that will receive internal messages from the [MapView].
-  /// Do not use this method as it is intended for internal use.
+  /// # Do not use this method as it is intended for internal use.
   void internalARMessageDelegate(
       Function(String type, dynamic payload) callback) {
     _internalMessageDelegate = callback;
+  }
+
+  /// Modifies the state of the underlying [MapView] so it allows building
+  /// calibrations.
+  /// # Do not use this method as it is intended for internal use.
+  void enterCalibrationMode(OnCalibrationPointClickedCallback pointsCallback,
+      OnCalibrationFinishedCallback finishedCallback) {
+    _setUIMode(UIMode.calibration);
+    _onCalibrationFinishedCallback = finishedCallback;
+    _onCalibrationPointClickedCallback = pointsCallback;
+  }
+
+  void exitCalibrationMode() {
+    _setUIMode(UIMode.explore);
+    _onCalibrationFinishedCallback = null;
+    _onCalibrationPointClickedCallback = null;
+  }
+
+  /// Set calibrations stored locally so the MapView can represent them.
+  /// # Do not use this method as it is intended for internal use.
+  void setLocalCalibrations(dynamic payload) {
+    _sendMessage(
+        WV_MESSAGE_CALIBRATIONS_SET_LOCAL_CALIBRATIONS, jsonEncode(payload));
+  }
+
+  /// Stops the current calibration.
+  /// A null payload tells the [MapView] to prompt the user to decide what to do
+  /// with the current calibration (save, undo, cancel).
+  /// # Do not use this method as it is intended for internal use.
+  void stopCurrentCalibration(dynamic payload) {
+    _sendMessage(WV_MESSAGE_CALIBRATIONS_STOP_CURRENT, jsonEncode(payload));
+  }
+
+  void _setUIMode(UIMode mode) {
+    _sendMessage(WV_MESSAGE_UI_SET_MODE, jsonEncode({"mode": mode.name}));
   }
 
   // Directions & Navigation Interceptors:
@@ -323,7 +408,7 @@ class MapViewController {
           .call(OnExternalLinkClickedResult(url: url));
     } else {
       // Invoke native method directly:
-      methodChannel.invokeMethod('openUrlInDefaultBrowser', {"url": url});
+      SitumSdk().openUrlInDefaultBrowser(url);
     }
   }
 
@@ -365,11 +450,13 @@ class MapViewController {
   void _onStatusChanged(String status) {
     if (mapViewerStatusesFilter.contains(status)) {
       _setCurrentLocationStatus(status);
+      _lastStatusToSend = status;
     }
   }
 
   void _onError(Error error) {
     // Right now the MapView will show a generic error.
     _setCurrentLocationStatus(error.code);
+    _lastErrorToSend = error.code;
   }
 }

@@ -32,36 +32,60 @@ fun LocationRequest.Builder.fromArguments(args: Map<String, Any>): LocationReque
     if (args.containsKey("buildingIdentifier")) {
         val buildingIdentifier = args["buildingIdentifier"] as String?
         if (buildingIdentifier.isValidIdentifier() || buildingIdentifier.isGlobalModeIdentifier()) {
-            Log.d("SDK>", "Set buildingIdentifier: $buildingIdentifier")
+            Log.d(
+                "SDK>",
+                "Situm> SDK> LocationRequest> Set buildingIdentifier: $buildingIdentifier"
+            )
             buildingIdentifier(buildingIdentifier!!)
         }
     }
     if (args.containsKey("useDeadReckoning")) {
         val useDeadReckoning = args["useDeadReckoning"] as Boolean?
         if (useDeadReckoning != null) {
-            Log.d("SDK>", "Set useDeadReckoning: ${args["useDeadReckoning"]}")
+            Log.d(
+                "SDK>",
+                "Situm> SDK> LocationRequest> Set useDeadReckoning: ${args["useDeadReckoning"]}"
+            )
             useDeadReckoning(useDeadReckoning)
         }
     }
     if (args.containsKey("useForegroundService")) {
         val useForegroundService = args["useForegroundService"] as Boolean?
         if (useForegroundService != null) {
-            Log.d("SDK>", "Set useForegroundService: ${args["useForegroundService"]}")
+            Log.d(
+                "SDK>",
+                "Situm> SDK> LocationRequest> Set useForegroundService: ${args["useForegroundService"]}"
+            )
             useForegroundService(useForegroundService)
         }
     }
     if (args.containsKey("foregroundServiceNotificationOptions")) {
-        val fgsNotificationOptionsMap = args["foregroundServiceNotificationOptions"] as Map<String, Any>
+        val fgsNotificationOptionsMap =
+            args["foregroundServiceNotificationOptions"] as Map<String, Any>
         if (fgsNotificationOptionsMap != null) {
-            val fgsNotificationOptions = ForegroundServiceNotificationOptions.fromMap(fgsNotificationOptionsMap)
-            Log.d("SDK>", "Set foregroundServiceNotificationOptions: $fgsNotificationOptions")
+            val fgsNotificationOptions =
+                ForegroundServiceNotificationOptions.fromMap(fgsNotificationOptionsMap)
+            Log.d(
+                "SDK>",
+                "Situm> SDK> LocationRequest> Set foregroundServiceNotificationOptions: $fgsNotificationOptions"
+            )
             foregroundServiceNotificationOptions(fgsNotificationOptions)
         }
     }
     if (args.containsKey("realtimeUpdateInterval")) {
         val realtimeUpdateInterval = args["realtimeUpdateInterval"] as String?
         if (realtimeUpdateInterval != null) {
-            realtimeUpdateInterval(LocationRequest.RealtimeUpdateInterval.valueOf(realtimeUpdateInterval))
+            realtimeUpdateInterval(
+                LocationRequest.RealtimeUpdateInterval.valueOf(
+                    realtimeUpdateInterval
+                )
+            )
+        }
+    }
+    if (args.containsKey("motionMode")) {
+        val motionMode = args["motionMode"] as String?
+        if (motionMode != null) {
+            motionMode(LocationRequest.MotionMode.valueOf(motionMode))
         }
     }
     if (args.containsKey("outdoorLocationOptions")) {
@@ -71,6 +95,18 @@ fun LocationRequest.Builder.fromArguments(args: Map<String, Any>): LocationReque
             outdoorLocationOptions.enableOutdoorPositions(outdoorOptionsMap["enableOutdoorPositions"] as Boolean)
         }
         outdoorLocationOptions(outdoorLocationOptions.build())
+    }
+    args["useWifi"]?.let {
+        Log.d("SDK>", "Situm> SDK> LocationRequest> Set useWifi: $it")
+        useWifi(it as Boolean)
+    }
+    args["useBle"]?.let {
+        Log.d("SDK>", "Situm> SDK> LocationRequest> Set useBle: $it")
+        useBle(it as Boolean)
+    }
+    args["useGps"]?.let {
+        Log.d("SDK>", "Situm> SDK> LocationRequest> Set useGps: $it")
+        useGps(it as Boolean)
     }
     return this
 }

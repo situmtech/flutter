@@ -22,6 +22,16 @@ abstract class MessageHandler {
         return ExternalLocationAddHandler();
       case WV_MESSAGE_LOCATION_STOP:
         return LocationStopHandler();
+      case WV_MESSAGE_CALIBRATION_POINT_CLICKED:
+        return CalibrationPointClickedMessageHandler();
+      case WV_MESSAGE_CALIBRATION_STOPPED:
+        return CalibrationStoppedMessageHandler();
+      case WV_MESSAGE_UI_SPEAK_ALOUD_TEXT:
+        return SpeakAloudTextMessageHandler();
+      case WV_VIEWER_NAVIGATION_STARTED:
+      case WV_VIEWER_NAVIGATION_UPDATED:
+      case WV_VIEWER_NAVIGATION_STOPPED:
+        return ViewerNavigationMessageHandler();
       default:
         debugPrint("EmptyMessageHandler handles message of type: $type");
         return EmptyMessageHandler();
@@ -48,23 +58,22 @@ class EmptyMessageHandler implements MessageHandler {
 class ExternalLocationStartHandler implements MessageHandler {
   @override
   void handleMessage(
-      MapViewController mapViewController,
-      Map<String, dynamic> payload,
-      ) {
+    MapViewController mapViewController,
+    Map<String, dynamic> payload,
+  ) {
     var sdk = SitumSdk();
     sdk.requestLocationUpdates(LocationRequest(
-      buildingIdentifier: payload["buildingIdentifier"],
-      useExternalLocations: true
-    ));
+        buildingIdentifier: payload["buildingIdentifier"],
+        useExternalLocations: true));
   }
 }
 
 class ExternalLocationAddHandler implements MessageHandler {
   @override
   void handleMessage(
-      MapViewController mapViewController,
-      Map<String, dynamic> payload,
-      ) {
+    MapViewController mapViewController,
+    Map<String, dynamic> payload,
+  ) {
     var sdk = SitumSdk();
     sdk.addExternalLocation(createExternalLocation(payload));
   }
@@ -73,9 +82,9 @@ class ExternalLocationAddHandler implements MessageHandler {
 class LocationStopHandler implements MessageHandler {
   @override
   void handleMessage(
-      MapViewController mapViewController,
-      Map<String, dynamic> payload,
-      ) {
+    MapViewController mapViewController,
+    Map<String, dynamic> payload,
+  ) {
     SitumSdk().removeUpdates();
   }
 }
@@ -129,6 +138,7 @@ class NavigationMessageHandler implements MessageHandler {
     MapViewController mapViewController,
     Map<String, dynamic> payload,
   ) async {
+    mapViewController._usingViewerNavigation = false;
     var sdk = SitumSdk();
     // Calculate route and start navigation. WayfindingController will listen
     // for native callbacks to get up to date with the navigation status, using
@@ -161,6 +171,7 @@ class NavigationStopMessageHandler implements MessageHandler {
   @override
   void handleMessage(
       MapViewController mapViewController, Map<String, dynamic> payload) {
+    mapViewController._usingViewerNavigation = false;
     var sdk = SitumSdk();
     sdk.stopNavigation();
   }
@@ -177,10 +188,10 @@ abstract class PoiSelectionMessageHandler implements MessageHandler {
     var poiId = "${payload["identifier"]}";
     var buildingId = "${payload["buildingIdentifier"]}";
     var sdk = SitumSdk();
-      var poi = await sdk.fetchPoiFromBuilding(buildingId, poiId);
-      if (poi != null) {
-        handlePoiInteraction(mapViewController, poi);
-      }
+    var poi = await sdk.fetchPoiFromBuilding(buildingId, poiId);
+    if (poi != null) {
+      handlePoiInteraction(mapViewController, poi);
+    }
   }
 
   void handlePoiInteraction(MapViewController mapViewController, Poi poi);
@@ -199,5 +210,49 @@ class PoiDeselectedMessageHandler extends PoiSelectionMessageHandler {
   void handlePoiInteraction(MapViewController mapViewController, Poi poi) {
     mapViewController._onPoiDeselectedCallback
         ?.call(OnPoiDeselectedResult(poi: poi));
+  }
+}
+
+class SpeakAloudTextMessageHandler implements MessageHandler {
+  @override
+  void handleMessage(
+      MapViewController mapViewController, Map<String, dynamic> payload) async {
+    var text = "${payload["text"]}";
+    var lang =
+        payload["lang"]?.toString().isNotEmpty == true ? payload["lang"] : null;
+    var pitch = payload["pitch"] > 0 ? payload["pitch"].toDouble() : null;
+    var volume = payload["volume"] > 0 ? payload['volume'].toDouble() : null;
+    var rate = payload["rate"] > 0 ? payload['rate'].toDouble() : null;
+
+    mapViewController._onSpeakAloudTextCallback?.call(OnSpeakAloudTextResult(
+        text: text, lang: lang, pitch: pitch, rate: rate, volume: volume));
+  }
+}
+
+class CalibrationPointClickedMessageHandler implements MessageHandler {
+  @override
+  void handleMessage(
+      MapViewController mapViewController, Map<String, dynamic> payload) {
+    var data = createCalibrationPointData(payload);
+    mapViewController._onCalibrationPointClickedCallback?.call(data);
+  }
+}
+
+class CalibrationStoppedMessageHandler implements MessageHandler {
+  @override
+  void handleMessage(
+      MapViewController mapViewController, Map<String, dynamic> payload) {
+    var status = createCalibrationFinishedStatus(payload);
+    mapViewController._onCalibrationFinishedCallback?.call(status);
+  }
+}
+
+class ViewerNavigationMessageHandler implements MessageHandler {
+  @override
+  void handleMessage(
+      MapViewController mapViewController, Map<String, dynamic> payload) {
+    mapViewController._usingViewerNavigation = true;
+
+    SitumSdk().updateNavigationState(payload);
   }
 }

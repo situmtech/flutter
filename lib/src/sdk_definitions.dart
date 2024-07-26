@@ -30,6 +30,24 @@ extension RealtimeUpdateIntervalExtension on RealtimeUpdateInterval {
   }
 }
 
+enum MotionMode {
+  byFoot,
+  byFootVisualOdometry,
+}
+
+extension MotionModeExtension on MotionMode {
+  String get name {
+    switch (this) {
+      case MotionMode.byFoot:
+        return 'BY_FOOT';
+      case MotionMode.byFootVisualOdometry:
+        return 'BY_FOOT_VISUAL_ODOMETRY';
+      default:
+        return 'BY_FOOT';
+    }
+  }
+}
+
 /// When you build the [LocationRequest], this data object configures the Global
 /// Mode options.
 class OutdoorLocationOptions {
@@ -56,6 +74,12 @@ class LocationRequest {
       foregroundServiceNotificationOptions;
   final OutdoorLocationOptions? outdoorLocationOptions;
   final RealtimeUpdateInterval? realtimeUpdateInterval;
+  final MotionMode? motionMode;
+  final bool? useBle;
+  final bool? useGps;
+
+  /// Only for Android.
+  final bool? useWifi;
 
   LocationRequest({
     this.buildingIdentifier,
@@ -65,6 +89,10 @@ class LocationRequest {
     this.foregroundServiceNotificationOptions,
     this.outdoorLocationOptions,
     this.realtimeUpdateInterval,
+    this.useWifi,
+    this.useBle,
+    this.useGps,
+    this.motionMode,
   });
 
   Map<String, dynamic> toMap() {
@@ -79,7 +107,34 @@ class LocationRequest {
         "outdoorLocationOptions", outdoorLocationOptions?.toMap(), map);
     _addToMapIfNotNull(
         "realtimeUpdateInterval", realtimeUpdateInterval?.name, map);
+    _addToMapIfNotNull("motionMode", motionMode?.name, map);
+    _addToMapIfNotNull("useWifi", useWifi, map);
+    _addToMapIfNotNull("useBle", useBle, map);
+    _addToMapIfNotNull("useGps", useGps, map);
     return map;
+  }
+}
+
+/// Predefined actions performed when tapping the Situm Foreground Service Notification.
+enum ForegroundServiceNotificationTapAction {
+  /// Launch the app's main activity using the information returned by android.content.pm.PackageManager#getLaunchIntentForPackage(String).
+  launchApp,
+
+  /// Launch the operating system settings screen for the current app.
+  launchSettings,
+
+  /// Do nothing when tapping the notification.
+  doNothing,
+}
+
+extension _TapActionNameExtension on ForegroundServiceNotificationTapAction {
+  String get name {
+    final javaNames = {
+      ForegroundServiceNotificationTapAction.launchApp: "LAUNCH_APP",
+      ForegroundServiceNotificationTapAction.launchSettings: "LAUNCH_SETTINGS",
+      ForegroundServiceNotificationTapAction.doNothing: "DO_NOTHING"
+    };
+    return javaNames[this]!;
   }
 }
 
@@ -93,12 +148,14 @@ class ForegroundServiceNotificationOptions {
   late String? message;
   late bool? showStopAction;
   late String? stopActionText;
+  late ForegroundServiceNotificationTapAction? tapAction;
 
   ForegroundServiceNotificationOptions({
     this.title,
     this.message,
-    this.showStopAction = false,
+    this.showStopAction,
     this.stopActionText,
+    this.tapAction,
   });
 
   Map<String, dynamic> toMap() {
@@ -107,6 +164,7 @@ class ForegroundServiceNotificationOptions {
     _addToMapIfNotNull("message", message, map);
     _addToMapIfNotNull("showStopAction", showStopAction, map);
     _addToMapIfNotNull("stopActionText", stopActionText, map);
+    _addToMapIfNotNull("tapAction", tapAction?.name, map);
     return map;
   }
 }
@@ -134,6 +192,7 @@ class DirectionsRequest {
   final Point to;
 
   String? poiToIdentifier;
+
   /// Identifier of the route destination. Can be [EMPTY_ID] if [destinationCategory] is [CATEGORY_LOCATION].
   String destinationIdentifier;
 
@@ -522,6 +581,7 @@ class Floor extends NamedResource {
   @override
   Map<String, dynamic> toMap() => {
         "buildingId": buildingIdentifier,
+        "floorIdentifier": identifier,
         "floorIndex": floorIndex,
         "mapUrl": mapUrl,
         "scale": scale,
@@ -740,7 +800,7 @@ class PrefetchOptions {
   });
 }
 
-/// [code] **LOCATION_PERMISSION_DENIED**
+/// [code] [ErrorCodes.locationPermissionDenied]
 /// * type: [ErrorType.critical].
 ///
 /// * **CAUSE**: Location permissions were not granted yet,
@@ -748,20 +808,20 @@ class PrefetchOptions {
 ///   * ACCESS_FINE_LOCATION (Android)
 ///   * NSLocationWhenInUseUsageDescription (iOS)
 ///
-/// [code] **BLUETOOTH_PERMISSION_DENIED**
+/// [code] [ErrorCodes.bluetoothPermissionDenied]
 /// * (Android only)
 /// * type: [ErrorType.critical].
 ///
 /// * **CAUSE**: BLUETOOTH_CONNECT or BLUETOOTH_SCAN are not granted yet,
 /// so SDK won't be able to start positioning.
 ///
-/// [code] **BLUETOOTH_DISABLED**
+/// [code] [ErrorCodes.bluetoothDisabled]
 /// * type: [ErrorType.critical] for iOS but [ErrorType.nonCritical] for Android.
 ///
 /// * **CAUSE**: The bluetooth sensor of the device is off,
 /// so iOS will stop positioning and Android won't give a precise location as with this sensor on.
 ///
-/// [code] **LOCATION_DISABLED**
+/// [code] [ErrorCodes.locationDisabled]
 /// * type: [ErrorType.critical].
 ///
 /// * **CAUSE**: The location service is disabled, so SDK won't be able to start positioning.
@@ -784,6 +844,30 @@ class Error {
   }
 }
 
+/// Exposes constant error codes useful for error handling in combination with
+/// [SitumSdk.onLocationError]:
+///
+/// ```dart
+/// SitumSdk().onLocationError((error) {
+///   switch (error.code) {
+///     case ErrorCodes.locationDisabled:
+///       // Handle location disabled.
+///       break;
+///     case ErrorCodes.bluetoothDisabled:
+///       ...
+///   }
+/// });
+/// ```
+class ErrorCodes {
+  static const bluetoothDisabled = "BLUETOOTH_DISABLED";
+  static const locationDisabled = "LOCATION_DISABLED";
+  static const locationPermissionDenied = "LOCATION_PERMISSION_DENIED";
+  static const bluetoothPermissionDenied = "BLUETOOTH_PERMISSION_DENIED";
+  static const buildingNotCalibrated = "BUILDING_NOT_CALIBRATED";
+  static const buildingModelDownloadError = "BUILDING_MODEL_DOWNLOAD_ERROR";
+  static const buildingModelProcessingError = "BUILDING_MODEL_PROCESSING_ERROR";
+}
+
 enum ErrorType {
   /// An error that must be fixed to be able to start positioning.
   critical,
@@ -796,10 +880,7 @@ class SitumRoute {
   final dynamic rawContent;
   final Poi? poiTo;
 
-  const SitumRoute({
-    required this.rawContent,
-    this.poiTo
-  });
+  const SitumRoute({required this.rawContent, this.poiTo});
 }
 
 class RouteProgress {
@@ -831,7 +912,8 @@ typedef OnExitedGeofencesCallback = void Function(
 
 // Navigation.
 typedef OnNavigationStartCallback = void Function(SitumRoute route);
-typedef OnNavigationDestinationReachedCallback = void Function(SitumRoute route);
+typedef OnNavigationDestinationReachedCallback = void Function(
+    SitumRoute route);
 typedef OnNavigationCancellationCallback = void Function();
 typedef OnNavigationProgressCallback = void Function(RouteProgress progress);
 typedef OnNavigationOutOfRouteCallback = void Function();

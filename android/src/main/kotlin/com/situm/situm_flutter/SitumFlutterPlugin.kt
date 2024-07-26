@@ -12,7 +12,12 @@ import es.situm.sdk.SitumSdk
 import es.situm.sdk.communication.CommunicationConfigImpl
 import es.situm.sdk.configuration.network.NetworkOptionsImpl
 import es.situm.sdk.error.Error
-import es.situm.sdk.location.*
+import es.situm.sdk.location.ExternalArData
+import es.situm.sdk.location.ExternalLocation
+import es.situm.sdk.location.GeofenceListener
+import es.situm.sdk.location.LocationListener
+import es.situm.sdk.location.LocationRequest
+import es.situm.sdk.location.LocationStatus
 import es.situm.sdk.model.cartography.*
 import es.situm.sdk.model.location.Location
 import es.situm.sdk.utils.Handler
@@ -27,6 +32,7 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
 
     private lateinit var channel: MethodChannel
     private lateinit var navigation: Navigation
+    private lateinit var viewerNavigation: ViewerNavigation
     private var locationListener: LocationListener? = null
     private var geofenceListener: GeofenceListener? = null
     private var context: Context? = null
@@ -53,6 +59,7 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
         channel = MethodChannel(flutterPluginBinding.binaryMessenger, CHANNEL_ID_SDK)
         channel.setMethodCallHandler(this)
         navigation = Navigation.init(channel, handler)
+        viewerNavigation = ViewerNavigation.init(channel, handler)
     }
 
     override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
@@ -74,8 +81,11 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
         when (methodCall.method) {
             "init" -> init(arguments, result)
             "initSdk" -> initSdk(result)
+            "addExternalArData" -> addExternalArData(arguments, result)
             "setDashboardURL" -> setDashboardURL(arguments, result)
             "setApiKey" -> setApiKey(arguments, result)
+            "setUserPass" -> setUserPass(arguments, result)
+            "logout" -> logout(result)
             "setConfiguration" -> setConfiguration(arguments, result)
             "requestLocationUpdates" -> requestLocationUpdates(arguments, result)
             "removeUpdates" -> removeUpdates(result)
@@ -93,6 +103,7 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
             "stopNavigation" -> stopNavigation(result)
             "addExternalLocation" -> addExternalLocation(arguments, result)
             "openUrlInDefaultBrowser" -> openUrlInDefaultBrowser(arguments, result)
+            "updateNavigationState" -> updateNavigationState(arguments, result)
             else -> result.notImplemented()
         }
     }
@@ -125,19 +136,31 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
         SitumSdk.locationManager().addLocationListener(locationListener!!)
     }
 
+    private fun onSdkInitialized() {
+        startListeningLocationUpdates()
+        SitumSdk.navigationManager().addNavigationListener(navigation)
+    }
+
     // Public methods (impl):
 
     private fun init(arguments: Map<String, Any>, result: MethodChannel.Result) {
         SitumSdk.init(context)
         SitumSdk.configuration()
             .setApiKey(arguments["situmUser"] as String, arguments["situmApiKey"] as String)
-        startListeningLocationUpdates()
+        onSdkInitialized()
         result.success("DONE")
     }
 
+    private fun addExternalArData(arguments: Map<String, Any>, result: MethodChannel.Result) {
+        val externalArData = ExternalArData.Builder().rawJsonString(arguments.toString()).build()
+        SitumSdk.locationManager().addExternalArData(externalArData)
+        result.success("DONE")
+    }
+
+
     private fun initSdk(result: MethodChannel.Result) {
         SitumSdk.init(context)
-        startListeningLocationUpdates()
+        onSdkInitialized()
         result.success("DONE")
     }
 
@@ -152,6 +175,24 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
         SitumSdk.configuration()
             .setApiKey(arguments["situmUser"] as String, arguments["situmApiKey"] as String)
         result.success("DONE")
+    }
+
+    private fun setUserPass(arguments: Map<String, Any>, result: MethodChannel.Result) {
+        SitumSdk.configuration()
+            .setUserPass(arguments["situmUser"] as String, arguments["situmPass"] as String)
+        result.success("DONE")
+    }
+
+    private fun logout(result: MethodChannel.Result) {
+        SitumSdk.communicationManager().logout(object : Handler<Any> {
+            override fun onSuccess(o: Any?) {
+                result.success("DONE")
+            }
+
+            override fun onFailure(error: Error) {
+                result.notifySitumSdkError(error)
+            }
+        });
     }
 
     private fun setConfiguration(arguments: Map<String, Any>, result: MethodChannel.Result) {
@@ -338,6 +379,10 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
             result.success(false)
         }
         result.success(true)
+    }
+
+    private fun updateNavigationState(arguments: Map<String, Any>, result: MethodChannel.Result) {
+        viewerNavigation.updateNavigationState(arguments, result)
     }
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
