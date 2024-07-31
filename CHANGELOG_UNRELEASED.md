@@ -1,5 +1,5 @@
-## [3.16.2] - Unreleased
+## [3.17.0] - Unreleased
 
 ### Added
 
-- New navigation engine. When [MapView](https://situm.com/docs/built-in-wayfinding-ui/) is present, you can use the navigation of the MapView instead of the SDK navigation. This type of navigation improves routes, indications and performance.
+- Added actions selectCar and navigateToCar to be able to perform actions over the saved find my car point.
