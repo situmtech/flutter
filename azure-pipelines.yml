@@ -248,9 +248,9 @@ steps:
   - template: azure-templates/plugins_merge.yml@sys_kubernetes_templates
     parameters:
       plugins:
-        - name: "FLUTTERSMT"
+        - name: "Flutter SMT"
           repo: "https://bitbucket.org/situm/flutter-app-sitummappingtool"
-      system: "ios" 
+      system: "N/A" 
 
  
 
