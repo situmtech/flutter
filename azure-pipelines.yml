@@ -26,7 +26,6 @@ resources:
       type: bitbucket
       endpoint: Bitbucket - sistemas
       name: situm/sys-kubernetes-templates.git
-      ref: feature/SIS-797
 
 pool:
   vmImage: $(ubuntuVersion)
