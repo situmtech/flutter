@@ -35,6 +35,8 @@ class _MapViewState extends State<MapView> {
   static PlatformWebViewWidget? webViewWidget;
   late MapViewConfiguration mapViewConfiguration;
 
+  bool _shouldDisplayBlankScreen = true;
+
   @override
   void initState() {
     super.initState();
@@ -67,6 +69,7 @@ class _MapViewState extends State<MapView> {
           })
           ..setOnPageStarted((String url) {
             // Do nothing.
+            _displayBlankScreen(false);
           })
           ..setOnPageFinished((String url) {
             debugPrint("Situm> WYF> Page loaded.");
@@ -112,6 +115,9 @@ class _MapViewState extends State<MapView> {
         name: OFFLINE_CHANNEL,
         onMessageReceived: (JavaScriptMessage message) {
           _loadWithConfig(widget.configuration);
+          // Retry attempt might fail,
+          // so cover the android native error screen
+          _displayBlankScreen(true);
         },
       ))
       ..setOnPlatformPermissionRequest(
@@ -161,15 +167,26 @@ class _MapViewState extends State<MapView> {
         ?.loadRequest(LoadRequestParams(uri: Uri.parse(mapViewUrl)));
   }
 
+  // Display this screen only when webview
+  // is going to display the android native error screen.
+  void _displayBlankScreen(bool value) {
+    setState(() {
+      _shouldDisplayBlankScreen =
+          defaultTargetPlatform == TargetPlatform.android ? value : false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    // In the example of the plugin (https://pub.dev/packages/webview_flutter_android/example),
-    // PlatformWebViewWidget is instantiated in each call to the 'build' method.
-    // However, we avoid doing so because it is causing a native view to be
-    // generated with each 'build' call, resulting in flashes and even crashes.
-    // To solve this, we store a reference to the PlatformWebViewWidget and
-    // invoke its 'build' method.
-    return webViewWidget!.build(context);
+    return _shouldDisplayBlankScreen
+        ? Container(color: Colors.white)
+        // In the example of the plugin (https://pub.dev/packages/webview_flutter_android/example),
+        // PlatformWebViewWidget is instantiated in each call to the 'build' method.
+        // However, we avoid doing so because it is causing a native view to be
+        // generated with each 'build' call, resulting in flashes and even crashes.
+        // To solve this, we store a reference to the PlatformWebViewWidget and
+        // invoke its 'build' method.
+        : webViewWidget!.build(context);
   }
 
   @override
