@@ -115,9 +115,6 @@ class _MapViewState extends State<MapView> {
         name: OFFLINE_CHANNEL,
         onMessageReceived: (JavaScriptMessage message) {
           _loadWithConfig(widget.configuration);
-          // Retry attempt might fail,
-          // so cover the android native error screen
-          // _displayBlankScreen(true);
         },
       ))
       ..setOnPlatformPermissionRequest(
