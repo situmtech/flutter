@@ -117,7 +117,7 @@ class _MapViewState extends State<MapView> {
           _loadWithConfig(widget.configuration);
           // Retry attempt might fail,
           // so cover the android native error screen
-          _displayBlankScreen(true);
+          // _displayBlankScreen(true);
         },
       ))
       ..setOnPlatformPermissionRequest(
