@@ -359,7 +359,7 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
         val activity = context as Activity
         val launchIntent: Intent = Intent(Intent.ACTION_VIEW)
 
-        if (url.contains(".pdf")) {
+        if (url.endsWith(".pdf")) {
             launchIntent.setDataAndType(Uri.parse(url), "application/pdf")
         } else {
             launchIntent.setData(Uri.parse(url))
