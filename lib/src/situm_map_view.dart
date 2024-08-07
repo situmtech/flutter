@@ -68,7 +68,7 @@ class _MapViewState extends State<MapView> {
             // Do nothing.
           })
           ..setOnPageStarted((String url) {
-            // Do nothing.
+            // Once we have loaded a page, hide the blank screen
             _displayBlankScreen(false);
           })
           ..setOnPageFinished((String url) {
@@ -115,6 +115,7 @@ class _MapViewState extends State<MapView> {
         name: OFFLINE_CHANNEL,
         onMessageReceived: (JavaScriptMessage message) {
           _loadWithConfig(widget.configuration);
+          // Make sure we hide any native Android error screens before trying to load MapView again.
           _displayBlankScreen(true);
         },
       ))
@@ -165,8 +166,6 @@ class _MapViewState extends State<MapView> {
         ?.loadRequest(LoadRequestParams(uri: Uri.parse(mapViewUrl)));
   }
 
-  // Display this screen only when webview
-  // is going to display the android native error screen.
   void _displayBlankScreen(bool value) {
     setState(() {
       _shouldDisplayBlankScreen =
@@ -177,6 +176,8 @@ class _MapViewState extends State<MapView> {
   @override
   Widget build(BuildContext context) {
     return _shouldDisplayBlankScreen
+        // This blank screen hides any error screen that the native Android webview could display
+        // before we handle it in setOnWebResourceError() callback.
         ? Container(color: Colors.white)
         // In the example of the plugin (https://pub.dev/packages/webview_flutter_android/example),
         // PlatformWebViewWidget is instantiated in each call to the 'build' method.
