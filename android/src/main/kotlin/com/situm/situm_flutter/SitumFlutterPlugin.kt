@@ -355,9 +355,16 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
             return
         }
         val url = arguments["url"] as String
+
         val activity = context as Activity
         val launchIntent: Intent = Intent(Intent.ACTION_VIEW)
-            .setData(Uri.parse(url))
+
+        if (url.endsWith(".pdf")) {
+            launchIntent.setDataAndType(Uri.parse(url), "application/pdf")
+        } else {
+            launchIntent.setData(Uri.parse(url))
+        }
+            
         try {
             activity.startActivity(launchIntent)
         } catch (e: ActivityNotFoundException) {
