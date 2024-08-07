@@ -35,7 +35,8 @@ class _MapViewState extends State<MapView> {
   static PlatformWebViewWidget? webViewWidget;
   late MapViewConfiguration mapViewConfiguration;
 
-  bool _shouldDisplayBlankScreen = true;
+  bool _shouldDisplayBlankScreen =
+      defaultTargetPlatform == TargetPlatform.android ? true : false;
 
   @override
   void initState() {
