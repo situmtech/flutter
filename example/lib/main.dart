@@ -36,7 +36,7 @@ class MyTabs extends StatefulWidget {
 class _MyTabsState extends State<MyTabs> {
   late SitumSdk situmSdk;
   late FlutterTts flutterTts;
-  int _selectedIndex = 0;
+  int _selectedIndex = 1;
   List<Poi> pois = [];
   Poi? dropdownValue;
   Function? mapViewLoadAction;
@@ -215,6 +215,7 @@ class _MyTabsState extends State<MyTabs> {
           remoteIdentifier: remoteIdentifier,
           // The viewer domain:
           viewerDomain: viewerDomain,
+          enableDebugging: true,
         ),
         onLoad: _onLoad,
       ),
@@ -230,6 +231,7 @@ class _MyTabsState extends State<MyTabs> {
   }
 
   void _onLoad(MapViewController controller) {
+    debugPrint("QA>> onLoad() method was called.");
     // Use MapViewController to communicate with the map: methods and callbacks
     // are available to perform actions and listen to events (e.g., listen to
     // POI selections, intercept navigation options, navigate to POIs, etc.).
