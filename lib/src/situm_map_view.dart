@@ -176,17 +176,21 @@ class _MapViewState extends State<MapView> {
 
   @override
   Widget build(BuildContext context) {
-    return _shouldDisplayBlankScreen
-        // This blank screen hides any error screen that the native Android webview could display
-        // before we handle it in setOnWebResourceError() callback.
-        ? Container(color: Colors.white)
-        // In the example of the plugin (https://pub.dev/packages/webview_flutter_android/example),
-        // PlatformWebViewWidget is instantiated in each call to the 'build' method.
-        // However, we avoid doing so because it is causing a native view to be
-        // generated with each 'build' call, resulting in flashes and even crashes.
-        // To solve this, we store a reference to the PlatformWebViewWidget and
-        // invoke its 'build' method.
-        : webViewWidget!.build(context);
+    return Scaffold(
+      floatingActionButton: FloatingActionButton(
+          onPressed: () => _displayBlankScreen(!_shouldDisplayBlankScreen)),
+      body: _shouldDisplayBlankScreen
+          // This blank screen hides any error screen that the native Android webview could display
+          // before we handle it in setOnWebResourceError() callback.
+          ? Container(color: Colors.white)
+          // In the example of the plugin (https://pub.dev/packages/webview_flutter_android/example),
+          // PlatformWebViewWidget is instantiated in each call to the 'build' method.
+          // However, we avoid doing so because it is causing a native view to be
+          // generated with each 'build' call, resulting in flashes and even crashes.
+          // To solve this, we store a reference to the PlatformWebViewWidget and
+          // invoke its 'build' method.
+          : webViewWidget!.build(context),
+    );
   }
 
   @override
