@@ -208,7 +208,7 @@ class _MyTabsState extends State<MyTabs> {
                   ),
                 ),
               ),
-              _sdkButton("Set", (() => _selectFloorViewer(floorDropdownValue))),
+              _sdkButton("Set", (() => _selectFloor(floorDropdownValue))),
               _sdkCheckbox(
                 "Fit",
                 fitCameraToFloor,
@@ -353,13 +353,11 @@ class _MyTabsState extends State<MyTabs> {
     });
   }
 
-  void _selectFloorViewer(Floor? floor) {
+  void _selectFloor(Floor? floor) {
     int floorId = int.tryParse(floor?.identifier ?? "") ?? 0;
-
     if (floorId != 0) {
-      Map<String, dynamic> options = {
-        'fitCamera': fitCameraToFloor,
-      };
+      CartographyOptions options = CartographyOptions();
+      options.fitCamera = fitCameraToFloor;
 
       mapViewController?.selectFloor(floorId, options: options);
 

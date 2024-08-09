@@ -243,6 +243,26 @@ class Camera {
   }
 }
 
+class CartographyOptions {
+  /// Set the [fitCamera] to true or false
+  ///
+  /// The truth value provokes that the camera will fit to cartographic element selected.
+  ///
+  /// Value defaults to false.
+  bool? fitCamera;
+
+  CartographyOptions({this.fitCamera});
+
+  toMap() {
+    Map<String, Object> result = {};
+    if (fitCamera != null) {
+      result["fitCamera"] = fitCamera!;
+    }
+
+    return result;
+  }
+}
+
 class OnPoiSelectedResult {
   final Poi poi;
 
