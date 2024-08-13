@@ -356,7 +356,7 @@ class _MyTabsState extends State<MyTabs> {
   void _selectFloor(Floor? floor) {
     int floorId = int.tryParse(floor?.identifier ?? "") ?? 0;
     if (floorId != 0) {
-      CartographyOptions options = CartographyOptions();
+      SelectCartographyOptions options = SelectCartographyOptions();
       options.fitCamera = fitCameraToFloor;
 
       mapViewController?.selectFloor(floorId, options: options);

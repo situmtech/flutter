@@ -219,7 +219,7 @@ class MapViewController {
   /// Select a floor of the current building by its [Floor.identifier].
   ///
   /// **NOTE**: introducing an invalid identifier may result in unexpected behaviours.
-  void selectFloor(int identifier, {CartographyOptions? options}) async {
+  void selectFloor(int identifier, {SelectCartographyOptions? options}) async {
     final message = {
       "identifier": identifier,
       if (options != null) "options": options.toMap(),

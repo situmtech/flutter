@@ -243,7 +243,7 @@ class Camera {
   }
 }
 
-class CartographyOptions {
+class SelectCartographyOptions {
   /// Set the [fitCamera] to true or false
   ///
   /// The truth value provokes that the camera will fit to cartographic element selected.
@@ -251,7 +251,7 @@ class CartographyOptions {
   /// Value defaults to false.
   bool? fitCamera;
 
-  CartographyOptions({this.fitCamera});
+  SelectCartographyOptions({this.fitCamera});
 
   toMap() {
     Map<String, Object> result = {};
