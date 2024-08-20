@@ -219,9 +219,12 @@ class MapViewController {
   /// Select a floor of the current building by its [Floor.identifier].
   ///
   /// **NOTE**: introducing an invalid identifier may result in unexpected behaviours.
-  void selectFloor(int identifier) async {
-    _sendMessage(
-        WV_MESSAGE_CARTOGRAPHY_SELECT_FLOOR, {"identifier": identifier});
+  void selectFloor(int identifier, {SelectCartographyOptions? options}) async {
+    final message = {
+      "identifier": identifier,
+      if (options != null) "options": options.toMap(),
+    };
+    _sendMessage(WV_MESSAGE_CARTOGRAPHY_SELECT_FLOOR, message);
   }
 
   /// Communicates the state of the AR module to the [MapView].
