@@ -1,4 +1,9 @@
+
 ## Unreleased
+
+### Added
+
+    * Added new method to select a floor programatically
 
 ### Changed
 
