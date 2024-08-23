@@ -63,7 +63,20 @@ class AppErrorHandler implements MessageHandler {
   @override
   void handleMessage(
       MapViewController mapViewController, Map<String, dynamic> payload) {
-    mapViewController._notifyError(payload);
+    String code = payload['code'] ?? '';
+    MapViewError? errorPayload;
+
+    switch (code) {
+      case 'NO_NETWORK_ERROR':
+        errorPayload = MapViewError.NoNetworkError();
+        break;
+      default:
+        break;
+    }
+
+    if (errorPayload != null) {
+      mapViewController._notifyMapViewError(errorPayload);
+    }
   }
 }
 

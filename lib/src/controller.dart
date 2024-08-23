@@ -11,7 +11,7 @@ class MapViewController {
   OnExternalLinkClickedCallback? _onExternalLinkClickedCallback;
   OnCalibrationPointClickedCallback? _onCalibrationPointClickedCallback;
   OnCalibrationFinishedCallback? _onCalibrationFinishedCallback;
-  OnErrorCallback? _onErrorCallBack;
+  OnMapViewErrorCallback? _onMapViewErrorCallBack;
 
   late Function(MapViewConfiguration) _widgetUpdater;
   late MapViewCallback _widgetLoadCallback;
@@ -273,8 +273,8 @@ class MapViewController {
     }
   }
 
-  void _notifyError(Map<String, dynamic> payload) {
-    _onErrorCallBack!(payload);
+  void _notifyMapViewError(MapViewError payload) {
+    _onMapViewErrorCallBack!(payload);
   }
 
   void _setRoute(

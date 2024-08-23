@@ -280,7 +280,10 @@ class _MyTabsState extends State<MyTabs> {
             viewerDomain: viewerDomain,
           ),
           onLoad: _onLoad,
-          onError: (response) => {debugPrint(" error received >>> $response")}),
+          onError: (response) => {
+                _echo(
+                    "Situm> Mapviewer> Error Received>> ${response.toString()}.")
+              }),
     ]);
   }
 

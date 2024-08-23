@@ -369,6 +369,31 @@ class ConnectionErrors {
   ];
 }
 
+class MapViewError {
+  final String code;
+  final String message;
+
+  const MapViewError({required this.code, required this.message});
+
+  static MapViewError NoNetworkError() {
+    return const MapViewError(
+      code: "NO_NETWORK_ERROR",
+      message:
+          "There is no internet connection, unable to download all the resources",
+    );
+  }
+
+  Map<String, dynamic> toMap() => {
+        "code": code,
+        "message": message,
+      };
+
+  @override
+  String toString() {
+    return const JsonEncoder.withIndent('\t').convert(toMap());
+  }
+}
+
 class MapViewDirectionsOptions {
   List<String>? excludedTags;
   List<String>? includedTags;
@@ -415,7 +440,7 @@ typedef MapViewCallback = void Function(MapViewController controller);
 // POI selection callback.
 typedef OnPoiSelectedCallback = void Function(
     OnPoiSelectedResult poiSelectedResult);
-typedef OnErrorCallback = void Function(Map<String, dynamic> response);
+typedef OnMapViewErrorCallback = void Function(MapViewError response);
 // POI deselection callback.
 typedef OnPoiDeselectedCallback = void Function(
     OnPoiDeselectedResult poiDeselectedResult);
