@@ -7,7 +7,7 @@ abstract class MessageHandler {
       case WV_MESSAGE_MAP_IS_READY:
         return MapIsReadyHandler();
       case WV_MESSAGE_ERROR:
-        return AppErrorHandler();
+        return MapViewErrorHandler();
       case WV_MESSAGE_DIRECTIONS_REQUESTED:
         return DirectionsMessageHandler();
       case WV_MESSAGE_NAVIGATION_REQUESTED:
@@ -59,7 +59,7 @@ class MapIsReadyHandler implements MessageHandler {
   }
 }
 
-class AppErrorHandler implements MessageHandler {
+class MapViewErrorHandler implements MessageHandler {
   @override
   void handleMessage(
       MapViewController mapViewController, Map<String, dynamic> payload) {
