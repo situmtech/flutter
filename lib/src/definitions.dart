@@ -440,7 +440,7 @@ typedef MapViewCallback = void Function(MapViewController controller);
 // POI selection callback.
 typedef OnPoiSelectedCallback = void Function(
     OnPoiSelectedResult poiSelectedResult);
-typedef OnMapViewErrorCallback = void Function(MapViewError response);
+typedef OnMapViewErrorCallback = void Function(MapViewError error);
 // POI deselection callback.
 typedef OnPoiDeselectedCallback = void Function(
     OnPoiDeselectedResult poiDeselectedResult);
