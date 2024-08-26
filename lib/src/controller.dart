@@ -274,7 +274,7 @@ class MapViewController {
   }
 
   void _notifyMapViewError(MapViewError payload) {
-    _onMapViewErrorCallBack!(payload);
+    _onMapViewErrorCallBack?.call(payload);
   }
 
   void _setRoute(
