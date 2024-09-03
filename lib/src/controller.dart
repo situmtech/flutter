@@ -11,6 +11,7 @@ class MapViewController {
   OnExternalLinkClickedCallback? _onExternalLinkClickedCallback;
   OnCalibrationPointClickedCallback? _onCalibrationPointClickedCallback;
   OnCalibrationFinishedCallback? _onCalibrationFinishedCallback;
+  OnMapViewErrorCallback? _onMapViewErrorCallBack;
 
   late Function(MapViewConfiguration) _widgetUpdater;
   late MapViewCallback _widgetLoadCallback;
@@ -270,6 +271,10 @@ class MapViewController {
       // Same API for sending status and errors...
       _setCurrentLocationStatus(_lastErrorToSend!);
     }
+  }
+
+  void _notifyMapViewError(MapViewError payload) {
+    _onMapViewErrorCallBack?.call(payload);
   }
 
   void _setRoute(
