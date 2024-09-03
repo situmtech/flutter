@@ -42,6 +42,7 @@ const WV_MESSAGE_NAVIGATION_STOP = "navigation.stopped";
 const WV_MESSAGE_CARTOGRAPHY_POI_SELECTED = "cartography.poi_selected";
 const WV_MESSAGE_CARTOGRAPHY_POI_DESELECTED = "cartography.poi_deselected";
 const WV_MESSAGE_MAP_IS_READY = "app.map_is_ready";
+const WV_MESSAGE_ERROR = "app.error";
 const WV_MESSAGE_LOCATION_START = "location.start";
 const WV_MESSAGE_AR_REQUESTED = "augmented_reality.requested";
 const WV_VIEWER_NAVIGATION_STARTED = "viewer.navigation.started";

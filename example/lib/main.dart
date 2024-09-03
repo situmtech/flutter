@@ -267,20 +267,22 @@ class _MyTabsState extends State<MyTabs> {
   Widget _createSitumMapTab() {
     return Stack(children: [
       MapView(
-        key: const Key("situm_map"),
-        configuration: MapViewConfiguration(
-          // Your Situm credentials.
-          // Copy config.dart.example if you haven't already.
-          situmApiKey: situmApiKey,
-          // Set your building identifier:
-          buildingIdentifier: buildingIdentifier,
-          // Your remote identifier, if any:
-          remoteIdentifier: remoteIdentifier,
-          // The viewer domain:
-          viewerDomain: viewerDomain,
-        ),
-        onLoad: _onLoad,
-      ),
+          key: const Key("situm_map"),
+          configuration: MapViewConfiguration(
+            // Your Situm credentials.
+            // Copy config.dart.example if you haven't already.
+            situmApiKey: situmApiKey,
+            // Set your building identifier:
+            buildingIdentifier: buildingIdentifier,
+            // Your remote identifier, if any:
+            remoteIdentifier: remoteIdentifier,
+            // The viewer domain:
+            viewerDomain: viewerDomain,
+          ),
+          onLoad: _onLoad,
+          onError: (error) => {
+                _echo("Situm> MapView> Error ${error.code}:\n${error.message}")
+              }),
     ]);
   }
 
