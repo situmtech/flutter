@@ -267,22 +267,23 @@ class _MyTabsState extends State<MyTabs> {
   Widget _createSitumMapTab() {
     return Stack(children: [
       MapView(
-          key: const Key("situm_map"),
-          configuration: MapViewConfiguration(
-            // Your Situm credentials.
-            // Copy config.dart.example if you haven't already.
-            situmApiKey: situmApiKey,
-            // Set your building identifier:
-            buildingIdentifier: buildingIdentifier,
-            // Your remote identifier, if any:
-            remoteIdentifier: remoteIdentifier,
-            // The viewer domain:
-            viewerDomain: viewerDomain,
-          ),
-          onLoad: _onLoad,
-          onError: (error) => {
-                _echo("Situm> MapView> Error ${error.code}:\n${error.message}")
-              }),
+        key: const Key("situm_map"),
+        configuration: MapViewConfiguration(
+          // Your Situm credentials.
+          // Copy config.dart.example if you haven't already.
+          situmApiKey: situmApiKey,
+          // Set your building identifier:
+          buildingIdentifier: buildingIdentifier,
+          // Your remote identifier, if any:
+          remoteIdentifier: remoteIdentifier,
+          // The viewer domain:
+          viewerDomain: viewerDomain,
+        ),
+        // Load callback:
+        onLoad: _onLoad,
+        // Optional error callback:
+        onError: _onError,
+      ),
     ]);
   }
 
@@ -344,6 +345,10 @@ class _MyTabsState extends State<MyTabs> {
 
       await flutterTts.speak(speakaloudTextResult.text);
     });
+  }
+
+  void _onError(MapViewError error) {
+    _echo("Situm> MapView> Error ${error.code}:\n${error.message}");
   }
 
   void _setCameraViewer(Poi? poi) {
