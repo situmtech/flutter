@@ -126,6 +126,6 @@ steps:
           cd build/app/outputs/flutter-apk/
 
           mv app-release.apk ${{ parameters.BUILDNUMBER }}-release.apk
-          m365 spo file add -p ${{ parameters.BUILDNUMBER }}-release.apk -u $(SharepointUrl) -f "$folder/$branchFolder/$destinationFolder"
+          m365 spo file add -p ${{ parameters.BUILDNUMBER }}-release.apk -u $(SharepointUrl) --folder "$folder/$branchFolder/$destinationFolder"
   
         displayName: Upload APK
