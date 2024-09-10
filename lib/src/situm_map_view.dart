@@ -49,6 +49,7 @@ class _MapViewState extends State<MapView> {
     // persistUnderlyingWidget is set to true.
     if (webViewWidget != null &&
         mapViewConfiguration.persistUnderlyingWidget == true) {
+          _shouldDisplayBlankScreen = false;
       return;
     }
 
