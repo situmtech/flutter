@@ -6,7 +6,7 @@ part of wayfinding;
 class MapView extends StatefulWidget {
   final MapViewConfiguration configuration;
   final MapViewCallback onLoad;
-  final OnMapViewErrorCallback onError;
+  final OnMapViewErrorCallback? onError;
   final MapViewCallback? didUpdateCallback;
   static const String _retryScreenURL =
       "packages/situm_flutter/html/retry_screen.html";
@@ -23,7 +23,7 @@ class MapView extends StatefulWidget {
     required Key key,
     required this.configuration,
     required this.onLoad,
-    required this.onError,
+    this.onError,
     this.didUpdateCallback,
   }) : super(key: key);
 
@@ -49,6 +49,7 @@ class _MapViewState extends State<MapView> {
     // persistUnderlyingWidget is set to true.
     if (webViewWidget != null &&
         mapViewConfiguration.persistUnderlyingWidget == true) {
+          _shouldDisplayBlankScreen = false;
       return;
     }
 
@@ -92,11 +93,8 @@ class _MapViewState extends State<MapView> {
             if (shouldDisplayRetryScreen &&
                 ConnectionErrors.values.contains(error.errorCode)) {
               webViewController!.loadFlutterAsset(MapView._retryScreenURL);
-              if (wyfController != null &&
-                  wyfController!._onMapViewErrorCallBack != null) {
-                wyfController!
-                    ._onMapViewErrorCallBack!(MapViewError.NoNetworkError());
-              }
+              wyfController?._onMapViewErrorCallBack
+                  ?.call(MapViewError.NoNetworkError());
             }
           })
           ..setOnNavigationRequest((dynamic request) {
