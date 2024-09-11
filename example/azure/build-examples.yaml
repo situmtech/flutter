@@ -114,18 +114,18 @@ steps:
           npm i -g $(office365Cli)
   
           echo -e "\n[+] Login in Sharepoint \n"
-          m365 login --authType password --userName $(sharepoint_user)  --password $(sharepoint_pass)
+          m365 login --authType password --userName $(sharepoint_user)  --password $(sharepoint_pass) --appId $(sharepoint_appId)
   
           echo -e "\n[+] Create Branch folder $folder/$branchFolder\n"
-          m365 spo folder add -p $folder -u $(SharepointUrl) --name $branchFolder
+          m365 spo folder add -p "$folder" -u $(SharepointUrl) --name "$branchFolder"
   
           echo -e "\n[+] Create Destination folder $folder/$branchFolder/$destinationFolder\n"
-          m365 spo folder add -p $folder/$branchFolder -u $(SharepointUrl) --name $destinationFolder
+          m365 spo folder add -p "$folder/$branchFolder" -u $(SharepointUrl) --name "$destinationFolder"
   
           echo -e "\n[+] Upload APK to $folder/$branchFolder/$destinationFolder\n"
           cd build/app/outputs/flutter-apk/
 
           mv app-release.apk ${{ parameters.BUILDNUMBER }}-release.apk
-          m365 spo file add -p ${{ parameters.BUILDNUMBER }}-release.apk -u $(SharepointUrl) -f $folder/$branchFolder/$destinationFolder
+          m365 spo file add -p ${{ parameters.BUILDNUMBER }}-release.apk -u $(SharepointUrl) --folder "$folder/$branchFolder/$destinationFolder"
   
         displayName: Upload APK
