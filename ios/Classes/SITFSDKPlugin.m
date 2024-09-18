@@ -101,6 +101,10 @@ const NSString* RESULTS_KEY = @"results";
     } else  if ([@"addExternalArData" isEqualToString:call.method]) {
         [self handleSetArOdometry:call
                                result:result];
+
+    } else  if ([@"validateMapViewProjectSettings" isEqualToString:call.method]) {
+        [self handleValidateMapViewProjectSettings:call
+                               result:result];
     } else if ([@"updateNavigationState" isEqualToString:call.method]) {
         [self updateNavigationState:call
                                result:result];
@@ -434,6 +438,11 @@ SITRealtimeUpdateInterval createRealtimeUpdateInterval(NSString *name) {
         }
     }];
 }
+
+-(void)handleValidateMapViewProjectSettings:(FlutterMethodCall*)call result:(FlutterResult)result{
+    [SITMapViewValidator validateMapViewProjectSettings];
+}
+
 - (void)getDeviceId:(FlutterMethodCall*)call result:(FlutterResult)result {
     NSString *deviceID = SITServices.deviceID;
     result(deviceID);
