@@ -6,6 +6,8 @@ abstract class MessageHandler {
     switch (type) {
       case WV_MESSAGE_MAP_IS_READY:
         return MapIsReadyHandler();
+      case WV_MESSAGE_ERROR:
+        return MapViewErrorHandler();
       case WV_MESSAGE_DIRECTIONS_REQUESTED:
         return DirectionsMessageHandler();
       case WV_MESSAGE_NAVIGATION_REQUESTED:
@@ -22,6 +24,10 @@ abstract class MessageHandler {
         return CalibrationStoppedMessageHandler();
       case WV_MESSAGE_UI_SPEAK_ALOUD_TEXT:
         return SpeakAloudTextMessageHandler();
+      case WV_VIEWER_NAVIGATION_STARTED:
+      case WV_VIEWER_NAVIGATION_UPDATED:
+      case WV_VIEWER_NAVIGATION_STOPPED:
+        return ViewerNavigationMessageHandler();
       default:
         debugPrint("EmptyMessageHandler handles message of type: $type");
         return EmptyMessageHandler();
@@ -50,6 +56,27 @@ class MapIsReadyHandler implements MessageHandler {
   void handleMessage(
       MapViewController mapViewController, Map<String, dynamic> payload) {
     mapViewController._notifyMapIsReady();
+  }
+}
+
+class MapViewErrorHandler implements MessageHandler {
+  @override
+  void handleMessage(
+      MapViewController mapViewController, Map<String, dynamic> payload) {
+    String code = payload['code'] ?? '';
+    MapViewError? errorPayload;
+
+    switch (code) {
+      case 'NO_NETWORK_ERROR':
+        errorPayload = MapViewError.NoNetworkError();
+        break;
+      default:
+        break;
+    }
+
+    if (errorPayload != null) {
+      mapViewController._notifyMapViewError(errorPayload);
+    }
   }
 }
 
@@ -94,6 +121,7 @@ class NavigationMessageHandler implements MessageHandler {
     MapViewController mapViewController,
     Map<String, dynamic> payload,
   ) async {
+    mapViewController._usingViewerNavigation = false;
     var sdk = SitumSdk();
     // Calculate route and start navigation. WayfindingController will listen
     // for native callbacks to get up to date with the navigation status, using
@@ -126,6 +154,7 @@ class NavigationStopMessageHandler implements MessageHandler {
   @override
   void handleMessage(
       MapViewController mapViewController, Map<String, dynamic> payload) {
+    mapViewController._usingViewerNavigation = false;
     var sdk = SitumSdk();
     sdk.stopNavigation();
   }
@@ -198,5 +227,15 @@ class CalibrationStoppedMessageHandler implements MessageHandler {
       MapViewController mapViewController, Map<String, dynamic> payload) {
     var status = createCalibrationFinishedStatus(payload);
     mapViewController._onCalibrationFinishedCallback?.call(status);
+  }
+}
+
+class ViewerNavigationMessageHandler implements MessageHandler {
+  @override
+  void handleMessage(
+      MapViewController mapViewController, Map<String, dynamic> payload) {
+    mapViewController._usingViewerNavigation = true;
+
+    SitumSdk().updateNavigationState(payload);
   }
 }

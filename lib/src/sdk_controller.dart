@@ -209,8 +209,28 @@ class SitumSdk {
     _onLocationUpdateCallback = callback;
   }
 
-  /// Get notified about positioning status changes. See
-  /// [requestLocationUpdates].
+  /// Get notified about positioning status changes.
+  /// The possible statuses that you might receive from this callback are:
+  ///
+  /// [STARTING]
+  /// * The SDK initialized the positioning engine.
+  ///
+  /// [CALCULATING]
+  /// * Our SDK is now locating the user in a building.
+  ///   Once the user is located inside the building, you should be receiving the user location by the [onLocationUpdate] callback.
+  ///
+  /// [USER_NOT_IN_BUILDING]
+  /// * The user location is not inside the building any more.
+  ///   This status will only be thrown when using [building mode](https://situm.com/docs/mobile-sdks-positioning/#sdk-geolocation-modes).
+  ///
+  /// [STOPPED]
+  /// * The positioning engine was stopped.
+  ///
+  /// These statuses are the basic ones that will help you to stay aware of what's happening with the positioning.
+  /// There are some other situational and platform specific statuses that you might want to listen,
+  /// so take a look at the native SDK statuses that we send for [Android](https://developers.situm.com/sdk_documentation/android/javadoc/latest/es/situm/sdk/location/LocationStatus.html) and for [iOS](https://developers.situm.com/sdk_documentation/ios/documentation/Enums/SITLocationState.html).
+  ///
+  /// See [requestLocationUpdates].
   Future<void> onLocationStatus(OnLocationStatusCallback callback) async {
     _onLocationStatusCallback = callback;
   }
@@ -414,6 +434,16 @@ class SitumSdk {
   /// useful in common use-cases such as handling [Poi] description interactions.
   void openUrlInDefaultBrowser(String url) {
     methodChannel.invokeMethod('openUrlInDefaultBrowser', {"url": url});
+  }
+
+  /// Update SDK with the MapView navigation states.
+  /// Do not use this method as it is intended for internal use by the map
+  /// viewer module.
+  void updateNavigationState(Map<String, dynamic> externalNavigation) {
+    methodChannel.invokeMethod(
+      'updateNavigationState',
+      externalNavigation,
+    );
   }
 
   // Callbacks:

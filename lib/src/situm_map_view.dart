@@ -6,6 +6,7 @@ part of wayfinding;
 class MapView extends StatefulWidget {
   final MapViewConfiguration configuration;
   final MapViewCallback onLoad;
+  final OnMapViewErrorCallback? onError;
   final MapViewCallback? didUpdateCallback;
   static const String _retryScreenURL =
       "packages/situm_flutter/html/retry_screen.html";
@@ -22,6 +23,7 @@ class MapView extends StatefulWidget {
     required Key key,
     required this.configuration,
     required this.onLoad,
+    this.onError,
     this.didUpdateCallback,
   }) : super(key: key);
 
@@ -35,6 +37,9 @@ class _MapViewState extends State<MapView> {
   static PlatformWebViewWidget? webViewWidget;
   late MapViewConfiguration mapViewConfiguration;
 
+  bool _shouldDisplayBlankScreen =
+      defaultTargetPlatform == TargetPlatform.android ? true : false;
+
   @override
   void initState() {
     super.initState();
@@ -44,6 +49,7 @@ class _MapViewState extends State<MapView> {
     // persistUnderlyingWidget is set to true.
     if (webViewWidget != null &&
         mapViewConfiguration.persistUnderlyingWidget == true) {
+          _shouldDisplayBlankScreen = false;
       return;
     }
 
@@ -66,7 +72,8 @@ class _MapViewState extends State<MapView> {
             // Do nothing.
           })
           ..setOnPageStarted((String url) {
-            // Do nothing.
+            // Once we have loaded a page, hide the blank screen
+            _displayBlankScreen(false);
           })
           ..setOnPageFinished((String url) {
             debugPrint("Situm> WYF> Page loaded.");
@@ -86,6 +93,8 @@ class _MapViewState extends State<MapView> {
             if (shouldDisplayRetryScreen &&
                 ConnectionErrors.values.contains(error.errorCode)) {
               webViewController!.loadFlutterAsset(MapView._retryScreenURL);
+              wyfController?._onMapViewErrorCallBack
+                  ?.call(MapViewError.NoNetworkError());
             }
           })
           ..setOnNavigationRequest((dynamic request) {
@@ -112,6 +121,8 @@ class _MapViewState extends State<MapView> {
         name: OFFLINE_CHANNEL,
         onMessageReceived: (JavaScriptMessage message) {
           _loadWithConfig(widget.configuration);
+          // Make sure we hide any native Android error screens before trying to load MapView again.
+          _displayBlankScreen(true);
         },
       ))
       ..setOnPlatformPermissionRequest(
@@ -127,6 +138,7 @@ class _MapViewState extends State<MapView> {
     );
     wyfController!._widgetUpdater = _loadWithConfig;
     wyfController!._widgetLoadCallback = widget.onLoad;
+    wyfController!._onMapViewErrorCallBack = widget.onError;
     wyfController!._webViewController = webViewController!;
 
     PlatformWebViewWidgetCreationParams webViewParams =
@@ -150,7 +162,8 @@ class _MapViewState extends State<MapView> {
     }
 
     if (webViewController is WebKitWebViewController) {
-      (webViewController as WebKitWebViewController).setInspectable(configuration.enableDebugging);
+      (webViewController as WebKitWebViewController)
+          .setInspectable(configuration.enableDebugging);
     }
     var sdk = SitumSdk();
     final String deviceId = await sdk.getDeviceId();
@@ -160,15 +173,26 @@ class _MapViewState extends State<MapView> {
         ?.loadRequest(LoadRequestParams(uri: Uri.parse(mapViewUrl)));
   }
 
+  void _displayBlankScreen(bool value) {
+    setState(() {
+      _shouldDisplayBlankScreen =
+          defaultTargetPlatform == TargetPlatform.android ? value : false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    // In the example of the plugin (https://pub.dev/packages/webview_flutter_android/example),
-    // PlatformWebViewWidget is instantiated in each call to the 'build' method.
-    // However, we avoid doing so because it is causing a native view to be
-    // generated with each 'build' call, resulting in flashes and even crashes.
-    // To solve this, we store a reference to the PlatformWebViewWidget and
-    // invoke its 'build' method.
-    return webViewWidget!.build(context);
+    return _shouldDisplayBlankScreen
+        // This blank screen hides any error screen that the native Android webview could display
+        // before we handle it in setOnWebResourceError() callback.
+        ? Container(color: Colors.white)
+        // In the example of the plugin (https://pub.dev/packages/webview_flutter_android/example),
+        // PlatformWebViewWidget is instantiated in each call to the 'build' method.
+        // However, we avoid doing so because it is causing a native view to be
+        // generated with each 'build' call, resulting in flashes and even crashes.
+        // To solve this, we store a reference to the PlatformWebViewWidget and
+        // invoke its 'build' method.
+        : webViewWidget!.build(context);
   }
 
   @override

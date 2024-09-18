@@ -11,6 +11,7 @@ class MapViewController {
   OnExternalLinkClickedCallback? _onExternalLinkClickedCallback;
   OnCalibrationPointClickedCallback? _onCalibrationPointClickedCallback;
   OnCalibrationFinishedCallback? _onCalibrationFinishedCallback;
+  OnMapViewErrorCallback? _onMapViewErrorCallBack;
 
   late Function(MapViewConfiguration) _widgetUpdater;
   late MapViewCallback _widgetLoadCallback;
@@ -34,6 +35,10 @@ class MapViewController {
     'BLE_DISABLED',
     'STOPPED',
   ];
+
+  // Internal variable to make MapViewController aware of
+  // which navigation engine is being used on MapView (WASM or SDK).
+  bool? _usingViewerNavigation;
 
   MapViewController({
     String? situmUser,
@@ -112,6 +117,13 @@ class MapViewController {
     _sendMessage(WV_MESSAGE_CARTOGRAPHY_SELECT_POI, {"identifier": identifier});
   }
 
+  /// Selects a point saved as find my car on the map.
+  ///
+  /// To use it, the feature 'Find My Car' must be enabled.
+  void selectCar() async {
+    _sendMessage(WV_MESSAGE_CARTOGRAPHY_SELECT_CAR, {});
+  }
+
   /// Selects the given POI category in the map.
   ///
   /// This method is deprecated. You can instead use [search] to filter POIs by category.
@@ -132,6 +144,20 @@ class MapViewController {
       message["type"] = "'${accessibilityMode.name}'";
     }
     _sendMessage(WV_MESSAGE_NAVIGATION_START, message);
+  }
+
+  /// Starts navigating to a point saved as find my car. You can optionally choose the desired
+  /// [AccessibilityMode] used to calculate the route.
+  ///
+  /// To use it, the feature 'Find My Car' must be enabled.
+  void navigateToCar({
+    AccessibilityMode? accessibilityMode,
+  }) async {
+    dynamic message = {};
+    if (accessibilityMode != null) {
+      message["type"] = "'${accessibilityMode.name}'";
+    }
+    _sendMessage(WV_MESSAGE_NAVIGATION_TO_CAR, message);
   }
 
   /// Starts navigating to the given coordinates, at the given floor. You can
@@ -201,9 +227,12 @@ class MapViewController {
   /// Select a floor of the current building by its [Floor.identifier].
   ///
   /// **NOTE**: introducing an invalid identifier may result in unexpected behaviours.
-  void selectFloor(int identifier) async {
-    _sendMessage(
-        WV_MESSAGE_CARTOGRAPHY_SELECT_FLOOR, {"identifier": identifier});
+  void selectFloor(int identifier, {SelectCartographyOptions? options}) async {
+    final message = {
+      "identifier": identifier,
+      if (options != null) "options": options.toMap(),
+    };
+    _sendMessage(WV_MESSAGE_CARTOGRAPHY_SELECT_FLOOR, message);
   }
 
   /// Communicates the state of the AR module to the [MapView].
@@ -251,6 +280,10 @@ class MapViewController {
     }
   }
 
+  void _notifyMapViewError(MapViewError payload) {
+    _onMapViewErrorCallBack?.call(payload);
+  }
+
   void _setRoute(
       DirectionsMessage directionsMessage, SitumRoute situmRoute) async {
     situmRoute.rawContent["identifier"] = directionsMessage.identifier;
@@ -287,6 +320,9 @@ class MapViewController {
   }
 
   void _setNavigationOutOfRoute() {
+    // Only send this message when using SDK navigation engine.
+    if (_usingViewerNavigation == true) return;
+
     _sendMessage(
         WV_MESSAGE_NAVIGATION_UPDATE,
         jsonEncode({
@@ -295,6 +331,9 @@ class MapViewController {
   }
 
   void _setNavigationDestinationReached() {
+    // Only send this message when using SDK navigation engine.
+    if (_usingViewerNavigation == true) return;
+
     _sendMessage(
         WV_MESSAGE_NAVIGATION_UPDATE,
         jsonEncode({
@@ -303,6 +342,9 @@ class MapViewController {
   }
 
   void _setNavigationProgress(RouteProgress progress) {
+    // Only send this message when using SDK navigation engine.
+    if (_usingViewerNavigation == true) return;
+
     progress.rawContent["type"] = "PROGRESS";
     _sendMessage(WV_MESSAGE_NAVIGATION_UPDATE, jsonEncode(progress.rawContent));
   }

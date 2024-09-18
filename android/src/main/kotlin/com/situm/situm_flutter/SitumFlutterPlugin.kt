@@ -31,6 +31,7 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
 
     private lateinit var channel: MethodChannel
     private lateinit var navigation: Navigation
+    private lateinit var viewerNavigation: ViewerNavigation
     private var locationListener: LocationListener? = null
     private var geofenceListener: GeofenceListener? = null
     private var context: Context? = null
@@ -57,6 +58,7 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
         channel = MethodChannel(flutterPluginBinding.binaryMessenger, CHANNEL_ID_SDK)
         channel.setMethodCallHandler(this)
         navigation = Navigation.init(channel, handler)
+        viewerNavigation = ViewerNavigation.init(channel, handler)
     }
 
     override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
@@ -99,6 +101,7 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
             "requestNavigation" -> requestNavigation(arguments, result)
             "stopNavigation" -> stopNavigation(result)
             "openUrlInDefaultBrowser" -> openUrlInDefaultBrowser(arguments, result)
+            "updateNavigationState" -> updateNavigationState(arguments, result)
             else -> result.notImplemented()
         }
     }
@@ -131,13 +134,18 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
         SitumSdk.locationManager().addLocationListener(locationListener!!)
     }
 
+    private fun onSdkInitialized() {
+        startListeningLocationUpdates()
+        SitumSdk.navigationManager().addNavigationListener(navigation)
+    }
+
     // Public methods (impl):
 
     private fun init(arguments: Map<String, Any>, result: MethodChannel.Result) {
         SitumSdk.init(context)
         SitumSdk.configuration()
             .setApiKey(arguments["situmUser"] as String, arguments["situmApiKey"] as String)
-        startListeningLocationUpdates()
+        onSdkInitialized()
         result.success("DONE")
     }
 
@@ -150,7 +158,7 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
 
     private fun initSdk(result: MethodChannel.Result) {
         SitumSdk.init(context)
-        startListeningLocationUpdates()
+        onSdkInitialized()
         result.success("DONE")
     }
 
@@ -347,15 +355,26 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
             return
         }
         val url = arguments["url"] as String
+
         val activity = context as Activity
         val launchIntent: Intent = Intent(Intent.ACTION_VIEW)
-            .setData(Uri.parse(url))
+
+        if (url.endsWith(".pdf")) {
+            launchIntent.setDataAndType(Uri.parse(url), "application/pdf")
+        } else {
+            launchIntent.setData(Uri.parse(url))
+        }
+            
         try {
             activity.startActivity(launchIntent)
         } catch (e: ActivityNotFoundException) {
             result.success(false)
         }
         result.success(true)
+    }
+
+    private fun updateNavigationState(arguments: Map<String, Any>, result: MethodChannel.Result) {
+        viewerNavigation.updateNavigationState(arguments, result)
     }
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {

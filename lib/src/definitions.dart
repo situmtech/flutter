@@ -243,6 +243,26 @@ class Camera {
   }
 }
 
+class SelectCartographyOptions {
+  /// Set the [fitCamera] to true or false
+  ///
+  /// The truth value provokes that the camera will fit to cartographic element selected.
+  ///
+  /// Value defaults to false.
+  bool? fitCamera;
+
+  SelectCartographyOptions({this.fitCamera});
+
+  toMap() {
+    Map<String, Object> result = {};
+    if (fitCamera != null) {
+      result["fitCamera"] = fitCamera!;
+    }
+
+    return result;
+  }
+}
+
 class OnPoiSelectedResult {
   final Poi poi;
 
@@ -349,6 +369,31 @@ class ConnectionErrors {
   ];
 }
 
+class MapViewError {
+  final String code;
+  final String message;
+
+  const MapViewError({required this.code, required this.message});
+
+  static MapViewError NoNetworkError() {
+    return const MapViewError(
+      code: "NO_NETWORK_ERROR",
+      message:
+          "There is no internet connection, unable to download all the resources",
+    );
+  }
+
+  Map<String, dynamic> toMap() => {
+        "code": code,
+        "message": message,
+      };
+
+  @override
+  String toString() {
+    return const JsonEncoder.withIndent('\t').convert(toMap());
+  }
+}
+
 class MapViewDirectionsOptions {
   List<String>? excludedTags;
   List<String>? includedTags;
@@ -395,6 +440,7 @@ typedef MapViewCallback = void Function(MapViewController controller);
 // POI selection callback.
 typedef OnPoiSelectedCallback = void Function(
     OnPoiSelectedResult poiSelectedResult);
+typedef OnMapViewErrorCallback = void Function(MapViewError error);
 // POI deselection callback.
 typedef OnPoiDeselectedCallback = void Function(
     OnPoiDeselectedResult poiDeselectedResult);
