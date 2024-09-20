@@ -49,7 +49,7 @@ class _MapViewState extends State<MapView> {
     // persistUnderlyingWidget is set to true.
     if (webViewWidget != null &&
         mapViewConfiguration.persistUnderlyingWidget == true) {
-          _shouldDisplayBlankScreen = false;
+      _shouldDisplayBlankScreen = false;
       return;
     }
 
@@ -174,10 +174,12 @@ class _MapViewState extends State<MapView> {
   }
 
   void _displayBlankScreen(bool value) {
-    setState(() {
-      _shouldDisplayBlankScreen =
-          defaultTargetPlatform == TargetPlatform.android ? value : false;
-    });
+    if (mounted) {
+      setState(() {
+        _shouldDisplayBlankScreen =
+            defaultTargetPlatform == TargetPlatform.android ? value : false;
+      });
+    }
   }
 
   @override
