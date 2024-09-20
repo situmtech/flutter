@@ -1,2 +1,6 @@
-### Added
-* Added new xcode log for iOS to warn you if you havent added WKAppBoundDomains to your App Info.plist and you use the MapView 
+## Unreleased
+
+### Changed
+
+- Added defensive code on an internal `setState` call to check the mounted state of the widget and
+  avoid potential crashes.
