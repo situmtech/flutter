@@ -82,6 +82,9 @@ class MapViewConfiguration {
   /// Default is false.
   final bool? persistUnderlyingWidget;
 
+  /// See: https://docs.flutter.dev/platform-integration/android/platform-views
+  final bool displayWithHybridComposition;
+
   /// Sets the UI language based on the given ISO 639-1 code. Checkout the
   /// [Situm docs](https://situm.com/docs/query-params/) to see the list of
   /// supported languages.
@@ -100,6 +103,7 @@ class MapViewConfiguration {
     this.enableDebugging = false,
     this.lockCameraToBuilding,
     this.persistUnderlyingWidget = false,
+    this.displayWithHybridComposition = true,
     this.language,
   }) {
     if (viewerDomain != null) {

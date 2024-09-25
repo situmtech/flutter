@@ -145,7 +145,8 @@ class _MapViewState extends State<MapView> {
         defaultTargetPlatform == TargetPlatform.android
             ? AndroidWebViewWidgetCreationParams(
                 controller: webViewController!,
-                displayWithHybridComposition: true,
+                displayWithHybridComposition:
+                    widget.configuration.displayWithHybridComposition,
                 layoutDirection: widget.configuration.directionality,
               )
             : PlatformWebViewWidgetCreationParams(
