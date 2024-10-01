@@ -1,3 +1,5 @@
+// ignore_for_file: constant_identifier_names
+
 part of sdk;
 
 /// Enum that allows to specify whether the geolocations computed should be sent

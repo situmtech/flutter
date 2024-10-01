@@ -58,7 +58,6 @@ class MapViewController {
     // forwarded to the map viewer.
     situmSdk.internalSetMethodCallMapDelegate(_methodCallHandler);
     _validateMapViewProjectSettings();
-
   }
 
   /// Tells the [MapView] where the user is located at.
@@ -88,10 +87,11 @@ class MapViewController {
   }
 
   Future<void> _validateMapViewProjectSettings() async {
-     if (Platform.isIOS) {
+    if (Platform.isIOS) {
       await methodChannel.invokeMethod("validateMapViewProjectSettings");
     }
   }
+
   // Actions:
 
   void _reloadWithConfiguration(MapViewConfiguration configuration) async {
@@ -474,6 +474,9 @@ class MapViewController {
         break;
       case InternalCallType.navigationOutOfRoute:
         _setNavigationOutOfRoute();
+        break;
+      default:
+        // DO NOTHING: other internal calls are ignored.
         break;
     }
   }
