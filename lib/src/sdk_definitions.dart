@@ -333,6 +333,7 @@ class Location {
   final String buildingIdentifier;
   final String floorIdentifier;
   final Angle? bearing;
+  final Angle? cartesianBearing;
   final double accuracy;
   final bool isIndoor;
   final bool isOutdoor;
@@ -364,6 +365,7 @@ class Location {
         'buildingIdentifier': buildingIdentifier,
         'floorIdentifier': floorIdentifier,
         'bearing': bearing?.toMap(),
+        'cartesianBearing' : cartesianBearing?.toMap(),
         'accuracy': accuracy,
         'isIndoor': isIndoor,
         'isOutdoor': isOutdoor,

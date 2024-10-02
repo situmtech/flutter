@@ -143,6 +143,12 @@ Location createLocation(dynamic args) {
       radians: args["bearing"]["radians"],
       radiansMinusPiPi: args["bearing"]["radiansMinusPiPi"],
     ),
+    cartesianBearing: Angle(
+      degrees: args["cartesianBearing"]["degrees"],
+      degreesClockwise: args["cartesianBearing"]["degreesClockwise"],
+      radians: args["cartesianBearing"]["radians"],
+      radiansMinusPiPi: args["cartesianBearing"]["radiansMinusPiPi"],
+    )
     accuracy: args["accuracy"],
     buildingIdentifier: args["buildingIdentifier"],
     floorIdentifier: args["floorIdentifier"],
