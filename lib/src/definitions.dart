@@ -82,7 +82,9 @@ class MapViewConfiguration {
   /// Default is false.
   final bool? persistUnderlyingWidget;
 
-  /// See: https://docs.flutter.dev/platform-integration/android/platform-views
+  /// Determine whether the underlying webview containing the map will use hybrid composition or not.
+  /// Only for Android, see: https://docs.flutter.dev/platform-integration/android/platform-views
+  /// The default value is true.
   final bool displayWithHybridComposition;
 
   /// Sets the UI language based on the given ISO 639-1 code. Checkout the
