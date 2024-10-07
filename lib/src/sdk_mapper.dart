@@ -154,7 +154,7 @@ Location createLocation(dynamic args) {
 }
 
 SitumRoute createRoute(arguments) {
-  Poi? poi = null;
+  Poi? poi;
   var poiTo = arguments["poiTo"];
   if (poiTo != null) {
     Map map = arguments["poiTo"];
@@ -164,7 +164,7 @@ SitumRoute createRoute(arguments) {
 }
 
 DirectionsRequest createDirectionsRequest(arguments) {
-  var poiToIdentifier = null;
+  var poiToIdentifier;
   Map directionsRequestArgs = arguments["directionsRequest"];
   if (!directionsRequestArgs.containsKey("poiToIdentifier") &&
       arguments["destinationCategory"] == "POI") {
