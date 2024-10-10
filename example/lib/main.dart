@@ -38,7 +38,10 @@ class _MyTabsState extends State<MyTabs> {
   late FlutterTts flutterTts;
   int _selectedIndex = 0;
   List<Poi> pois = [];
-  Poi? dropdownValue;
+  List<Floor> floors = [];
+  Poi? poiDropdownValue;
+  Floor? floorDropdownValue;
+  bool fitCameraToFloor = false;
   Function? mapViewLoadAction;
 
   MapViewController? mapViewController;
@@ -63,6 +66,7 @@ class _MyTabsState extends State<MyTabs> {
         ]),
         _poiInteraction(),
         _setCamera(),
+        _setFloor(),
         Expanded(
             child: ValueListenableBuilder<String>(
           valueListenable: currentOutputNotifier,
@@ -106,6 +110,19 @@ class _MyTabsState extends State<MyTabs> {
         child: Text(buttonText));
   }
 
+  Widget _sdkCheckbox(
+      String labelText, bool value, void Function(bool?) onChanged) {
+    return Row(
+      children: [
+        Text(labelText),
+        Checkbox(
+          value: value,
+          onChanged: onChanged,
+        ),
+      ],
+    );
+  }
+
   Padding _cardTitle(IconData iconData, String title) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
@@ -138,11 +155,11 @@ class _MyTabsState extends State<MyTabs> {
                   padding: const EdgeInsets.all(8.0),
                   child: DropdownButton<Poi>(
                     isExpanded: true,
-                    value: dropdownValue,
+                    value: poiDropdownValue,
                     elevation: 16,
                     onChanged: (Poi? value) {
                       setState(() {
-                        dropdownValue = value!;
+                        poiDropdownValue = value!;
                       });
                     },
                     items: pois.map((value) {
@@ -154,7 +171,53 @@ class _MyTabsState extends State<MyTabs> {
                   ),
                 ),
               ),
-              _sdkButton("Set", (() => _setCameraViewer(dropdownValue))),
+              _sdkButton("Set", (() => _setCameraViewer(poiDropdownValue))),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Card _setFloor() {
+    return Card(
+      child: ExpansionTile(
+        shape: const Border(),
+        title: _cardTitle(Icons.video_camera_front_rounded, "Set floor"),
+        children: [
+          Row(
+            children: <Widget>[
+              Flexible(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: DropdownButton<Floor>(
+                    isExpanded: true,
+                    value: floorDropdownValue,
+                    elevation: 16,
+                    onChanged: (Floor? value) {
+                      setState(() {
+                        floorDropdownValue = value!;
+                      });
+                    },
+                    items: floors.map((value) {
+                      return DropdownMenuItem<Floor>(
+                        value: value,
+                        child: Text(value.name),
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ),
+              _sdkButton("Set", (() => _selectFloor(floorDropdownValue))),
+              _sdkCheckbox(
+                "Fit",
+                fitCameraToFloor,
+                (bool? newValue) {
+                  setState(() {
+                    fitCameraToFloor = newValue ?? !fitCameraToFloor;
+                  });
+                },
+              )
             ],
           ),
         ],
@@ -175,11 +238,11 @@ class _MyTabsState extends State<MyTabs> {
                   padding: const EdgeInsets.all(8.0),
                   child: DropdownButton<Poi>(
                     isExpanded: true,
-                    value: dropdownValue,
+                    value: poiDropdownValue,
                     elevation: 16,
                     onChanged: (Poi? value) {
                       setState(() {
-                        dropdownValue = value!;
+                        poiDropdownValue = value!;
                       });
                     },
                     items: pois.map((value) {
@@ -191,8 +254,8 @@ class _MyTabsState extends State<MyTabs> {
                   ),
                 ),
               ),
-              _sdkButton("Select", (() => _selectPoi(dropdownValue))),
-              _sdkButton("Navigate", (() => _navigateToPoi(dropdownValue))),
+              _sdkButton("Select", (() => _selectPoi(poiDropdownValue))),
+              _sdkButton("Navigate", (() => _navigateToPoi(poiDropdownValue))),
             ],
           )
         ],
@@ -216,7 +279,10 @@ class _MyTabsState extends State<MyTabs> {
           // The viewer domain:
           viewerDomain: viewerDomain,
         ),
+        // Load callback:
         onLoad: _onLoad,
+        // Optional error callback:
+        onError: _onError,
       ),
     ]);
   }
@@ -281,6 +347,10 @@ class _MyTabsState extends State<MyTabs> {
     });
   }
 
+  void _onError(MapViewError error) {
+    _echo("Situm> MapView> Error ${error.code}:\n${error.message}");
+  }
+
   void _setCameraViewer(Poi? poi) {
     Camera c = Camera();
     c.center = poi?.position.coordinate;
@@ -288,6 +358,20 @@ class _MyTabsState extends State<MyTabs> {
     setState(() {
       _selectedIndex = 1;
     });
+  }
+
+  void _selectFloor(Floor? floor) {
+    int floorId = int.tryParse(floor?.identifier ?? "") ?? 0;
+    if (floorId != 0) {
+      SelectCartographyOptions options = SelectCartographyOptions();
+      options.fitCamera = fitCameraToFloor;
+
+      mapViewController?.selectFloor(floorId, options: options);
+
+      setState(() {
+        _selectedIndex = 1;
+      });
+    }
   }
 
   void _selectPoi(Poi? poi) {
@@ -329,7 +413,15 @@ class _MyTabsState extends State<MyTabs> {
     var poiList = await situmSdk.fetchPoisFromBuilding(buildingIdentifier);
     setState(() {
       pois = poiList;
-      dropdownValue = pois[0];
+      poiDropdownValue = pois[0];
+    });
+  }
+
+  void _downloadFloors(String buildingIdentifier) async {
+    var info = await situmSdk.fetchBuildingInfo(buildingIdentifier);
+    setState(() {
+      floors = info.floors;
+      floorDropdownValue = floors[0];
     });
   }
 
@@ -371,6 +463,7 @@ class _MyTabsState extends State<MyTabs> {
       _echo("Situm> SDK> Exit geofences: ${geofencesResult.geofences}.");
     });
     _downloadPois(buildingIdentifier);
+    _downloadFloors(buildingIdentifier);
 
     flutterTts = FlutterTts();
 

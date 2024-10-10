@@ -45,9 +45,9 @@ steps:
           echo "##vso[task.setvariable variable=version]$(echo ${{ parameters.flutterVersion }})"
           echo -e "\n[+] I'm a shy step so I don't tell you anything\n"
         fi
- 
+
       displayName: Set Flutter Version Manual
- 
+
   - ${{ if ne(variables['Build.Reason'],'manual') }}:
     - bash: |
         FlutterVersion=$(echo $(Build.SourceBranch) | cut -d "/" -f 4)
@@ -77,24 +77,24 @@ steps:
     displayName: Initial Vars & Configs
 
   - bash: |
- 
+
       mkdir $(Agent.BuildDirectory)/binaries
       cd $(Agent.BuildDirectory)/binaries
       echo -e "\n[+] Download Flutter version $(flutterLinuxVersion)\n"
- 
+
       wget -q $(flutterLinuxVersion)
- 
+
       echo -e "\n[+] Untar Flutter version\n"
       find . -iname "*.tar.xz" -exec tar xf {} \;
- 
+
       echo -e "\n[+] Download gcloud cli version $(gcloudCliVersion)\n"
       curl -O $(gcloudCliVersion)
- 
+
       echo -e "\n[+] Untar gcloud Cli version\n"
       find . -iname  "*.tar.gz" -exec tar xzf {} \;
- 
+
     displayName: Install Binaries
- 
+
   - bash: |
       if [ -d "flutter" ];then
         cd flutter
@@ -102,14 +102,14 @@ steps:
       #Export binary paths
       export PATH="$PATH:$(Agent.BuildDirectory)/binaries/flutter/bin"
       export PATH="$PATH:$(Agent.BuildDirectory)/binaries/google-cloud-sdk/bin"
- 
+
       echo -e "\n[+] Fetch all branches\n"
       git fetch
- 
+
       echo -e "\n[+] Checkout to $(currentBranch)\n"
- 
+
       git checkout $(currentBranch)
- 
+
       echo -e "\n[+] Change version in pubspec.yaml\n"
       sed "s/^version:\s[0-9].*$/version: $(version)/g" -i pubspec.yaml  
       echo -e "\n[+] Change version in situm_flutter.podspec"
@@ -121,10 +121,10 @@ steps:
       echo -e "\n[+] Add,commit and push changes to $(currentBranch)"
       git pull origin $(currentBranch)
       git commit -am "[skip ci] Setting the Flutter version to $(version)"
- 
+
       git push --set-upstream origin $(currentBranch)
       git push
- 
+
     displayName: Set version
 
   - template: azure-templates/publish_release.yml@sys_kubernetes_templates
@@ -242,6 +242,14 @@ steps:
       bitbucket:
         bitbucket_user: $(bitbucket_user)
         bitbucket_pass: $(bitbucket_pass)
+
+  - template: azure-templates/plugins_merge.yml@sys_kubernetes_templates
+    parameters:
+      plugins:
+        - name: "Flutter SMT"
+          repo: "https://bitbucket.org/situm/flutter-app-sitummappingtool"
+      system: "N/A" 
+
  
 
 

@@ -6,6 +6,8 @@ abstract class MessageHandler {
     switch (type) {
       case WV_MESSAGE_MAP_IS_READY:
         return MapIsReadyHandler();
+      case WV_MESSAGE_ERROR:
+        return MapViewErrorHandler();
       case WV_MESSAGE_DIRECTIONS_REQUESTED:
         return DirectionsMessageHandler();
       case WV_MESSAGE_NAVIGATION_REQUESTED:
@@ -94,6 +96,27 @@ class MapIsReadyHandler implements MessageHandler {
   void handleMessage(
       MapViewController mapViewController, Map<String, dynamic> payload) {
     mapViewController._notifyMapIsReady();
+  }
+}
+
+class MapViewErrorHandler implements MessageHandler {
+  @override
+  void handleMessage(
+      MapViewController mapViewController, Map<String, dynamic> payload) {
+    String code = payload['code'] ?? '';
+    MapViewError? errorPayload;
+
+    switch (code) {
+      case 'NO_NETWORK_ERROR':
+        errorPayload = MapViewError.NoNetworkError();
+        break;
+      default:
+        break;
+    }
+
+    if (errorPayload != null) {
+      mapViewController._notifyMapViewError(errorPayload);
+    }
   }
 }
 
