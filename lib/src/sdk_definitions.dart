@@ -374,6 +374,27 @@ class Location {
       };
 }
 
+class ExternalLocation {
+  final Coordinate coordinate;
+  final String buildingIdentifier;
+  final String floorIdentifier;
+
+  ExternalLocation({
+    required this.coordinate,
+    required this.buildingIdentifier,
+    required this.floorIdentifier
+  });
+
+    Map<String, dynamic> toMap() => {
+        'coordinate': {
+          'latitude': coordinate.latitude,
+          'longitude': coordinate.longitude,
+        },
+        'buildingIdentifier': buildingIdentifier,
+        'floorIdentifier': floorIdentifier,
+      };
+}
+
 class OnEnteredGeofenceResult {
   final List<Geofence> geofences;
 
@@ -766,8 +787,9 @@ class PoiCategory extends NamedResource {
 
 class ConfigurationOptions {
   final bool useRemoteConfig;
+  final bool useExternalLocations;
 
-  ConfigurationOptions({this.useRemoteConfig = true});
+  ConfigurationOptions({this.useRemoteConfig = true, this.useExternalLocations = false});
 }
 
 class PrefetchOptions {

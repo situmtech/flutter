@@ -11,6 +11,7 @@
 #import <CoreLocation/CoreLocation.h>
 #import "SITNavigationHandler.h"
 
+
 @interface SITFSDKPlugin() <SITLocationDelegate, SITGeofencesDelegate>
 
 @property (nonatomic, strong) SITCommunicationManager *comManager;
@@ -63,7 +64,10 @@ const NSString* RESULTS_KEY = @"results";
     } else if ([@"removeUpdates" isEqualToString: call.method]) {
         [self handleRemoveUpdates:call
                            result:result];
-    } else if ([@"prefetchPositioningInfo" isEqualToString:call.method]) {
+    } else if ([@"addExternalLocation" isEqualToString: call.method]) {
+        [self handleAddExternalLocation:call
+                           result:result];
+    }  else if ([@"prefetchPositioningInfo" isEqualToString:call.method]) {
         [self handlePrefetchPositioningInfo:call
                                      result:result];
     } else if ([@"fetchPoisFromBuilding" isEqualToString:call.method]) {
@@ -218,7 +222,9 @@ const NSString* RESULTS_KEY = @"results";
 
 - (void)handleSetConfiguration:(FlutterMethodCall*)call result:(FlutterResult)result {
     BOOL useRemoteConfig = [call.arguments[@"useRemoteConfig"] boolValue];
+    BOOL useExternalLocations = [call.arguments[@"useExternalLocations"] boolValue];
     [SITServices setUseRemoteConfig:useRemoteConfig];
+    [SITServices setUseExternalLocations:useExternalLocations];
     result(@"DONE");
 }
 
@@ -299,6 +305,24 @@ SITRealtimeUpdateInterval createRealtimeUpdateInterval(NSString *name) {
     [self.locManager removeUpdates];
     
     result(@"DONE");
+}
+
+- (void)handleAddExternalLocation:(FlutterMethodCall*)call
+                              result:(FlutterResult)result {
+    SITExternalLocation *externalLocation = [self createExternalLocation:call.arguments];
+    [self.locManager addExternalLocation:externalLocation];
+    result(@"DONE");
+}
+
+-(SITExternalLocation *)createExternalLocation:(NSDictionary *)arguments{
+    NSString *buildingId = arguments[@"buildingIdentifier"];
+        NSString *floorId = arguments[@"floorIdentifier"];
+    NSNumber *latitude = arguments[@"coordinate"][@"latitude"];
+    NSNumber *longitude = arguments[@"coordinate"][@"longitude"];
+    return [[SITExternalLocation alloc ] initWithBuildingIdentifier:buildingId
+                                        floorIdentifier:floorId
+                                        latitude:[latitude floatValue]
+                                        longitude:[longitude floatValue]];
 }
 
 - (void)handlePrefetchPositioningInfo:(FlutterMethodCall*)call result:(FlutterResult)result {
