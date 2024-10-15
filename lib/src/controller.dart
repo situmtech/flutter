@@ -53,7 +53,6 @@ class MapViewController {
     // so it can be used in callbacks, etc.
     situmSdk.init();
     situmSdk.setApiKey(situmApiKey);
-    situmSdk.setConfiguration(ConfigurationOptions(useRemoteConfig: true));
     // Subscribe to native SDK messages so the location updates can be directly
     // forwarded to the map viewer.
     situmSdk.internalSetMethodCallMapDelegate(_methodCallHandler);

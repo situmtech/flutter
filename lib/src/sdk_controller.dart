@@ -192,6 +192,7 @@ class SitumSdk {
       "setConfiguration",
       <String, dynamic>{
         'useRemoteConfig': options.useRemoteConfig,
+        'useExternalLocations': options.useExternalLocations,
       },
     );
   }
@@ -322,6 +323,11 @@ class SitumSdk {
   /// Stops positioning.
   Future<void> removeUpdates() async {
     await methodChannel.invokeMethod('removeUpdates');
+  }
+
+  /// Adds an external location.
+  Future<void> addExternalLocation(ExternalLocation externalLocation) async {
+    await methodChannel.invokeMethod('addExternalLocation', externalLocation.toMap());
   }
 
   /// Downloads all the buildings for the current user.
