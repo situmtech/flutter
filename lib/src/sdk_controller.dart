@@ -325,7 +325,7 @@ class SitumSdk {
     await methodChannel.invokeMethod('removeUpdates');
   }
 
-  /// Stops positioning.
+  /// Adds an external location.
   Future<void> addExternalLocation(ExternalLocation externalLocation) async {
     await methodChannel.invokeMethod('addExternalLocation', externalLocation.toMap());
   }
