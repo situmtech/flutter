@@ -915,9 +915,9 @@ class RouteProgress {
 
 /// Define a criteria under which the positioning will be automatically stopped.
 class AutoStopCriteria {
-  /// Seconds elapsed receiving consecutive [StatusNames.userNotInBuilding]
-  /// after which positioning will stop.
-  final int? consecutiveOutOfBuildingTimeout;
+  /// Time duration receiving consecutive [StatusNames.userNotInBuilding]
+  /// after which positioning will be automatically stopped.
+  final Duration? consecutiveOutOfBuildingTimeout;
 
   AutoStopCriteria({
     this.consecutiveOutOfBuildingTimeout,
@@ -925,8 +925,10 @@ class AutoStopCriteria {
 
   Map<String, dynamic> toMap() {
     Map<String, dynamic> map = {};
-    _addToMapIfNotNull("consecutiveOutOfBuildingTimeout",
-        consecutiveOutOfBuildingTimeout, map);
+    if (consecutiveOutOfBuildingTimeout != null) {
+      map["consecutiveOutOfBuildingTimeout"] =
+          consecutiveOutOfBuildingTimeout!.inSeconds;
+    }
     return map;
   }
 }
