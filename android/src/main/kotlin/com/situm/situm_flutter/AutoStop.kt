@@ -36,7 +36,7 @@ object AutoStop : LocationListener {
             }
             if (consecutiveOOBTracker?.hasElapsedSeconds(autoStopCriteria.consecutiveOOBTimeout) == true) {
                 SitumSdk.locationManager().removeUpdates()
-                disable()
+                consecutiveOOBTracker = null
             }
         }
     }
