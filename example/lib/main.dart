@@ -490,9 +490,6 @@ class _MyTabsState extends State<MyTabs> {
       buildingIdentifier: buildingIdentifier, //"-1"
       useDeadReckoning: false,
     ));
-    situmSdk.requestAutoStop(AutoStopCriteria(
-      consecutiveOutOfBuildingTimeout: 10
-    ));
   }
 
   void _removeUpdates() async {
