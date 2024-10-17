@@ -105,6 +105,8 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
             "stopNavigation" -> stopNavigation(result)
             "openUrlInDefaultBrowser" -> openUrlInDefaultBrowser(arguments, result)
             "updateNavigationState" -> updateNavigationState(arguments, result)
+            "requestAutoStop" -> requestAutoStop(arguments, result)
+            "removeAutoStop" -> removeAutoStop(result)
             else -> result.notImplemented()
         }
     }
@@ -392,6 +394,17 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
 
     private fun updateNavigationState(arguments: Map<String, Any>, result: MethodChannel.Result) {
         viewerNavigation.updateNavigationState(arguments, result)
+    }
+
+    private fun requestAutoStop(arguments: Map<String, Any>, result: MethodChannel.Result) {
+        val criteria = AutoStopCriteria.Builder().fromMap(arguments).build()
+        AutoStop.autoStopUnderCriteria(criteria)
+        result.success("DONE")
+    }
+
+    private fun removeAutoStop(result: MethodChannel.Result) {
+        AutoStop.disable()
+        result.success("DONE")
     }
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {

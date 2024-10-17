@@ -111,7 +111,13 @@ const NSString* RESULTS_KEY = @"results";
                                result:result];
     } else if ([@"updateNavigationState" isEqualToString:call.method]) {
         [self updateNavigationState:call
-                               result:result];
+                             result:result];
+    } else if ([@"requestAutoStop" isEqualToString:call.method]) {
+        // Only for Android.
+        result(@"DONE");
+    } else if ([@"removeAutoStop" isEqualToString:call.method]) {
+        // Only for Android.
+        result(@"DONE");
     } else {
         result(FlutterMethodNotImplemented);
     }
