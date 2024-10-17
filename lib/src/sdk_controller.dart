@@ -211,21 +211,7 @@ class SitumSdk {
   }
 
   /// Get notified about positioning status changes.
-  /// The possible statuses that you might receive from this callback are:
-  ///
-  /// [STARTING]
-  /// * The SDK initialized the positioning engine.
-  ///
-  /// [CALCULATING]
-  /// * Our SDK is now locating the user in a building.
-  ///   Once the user is located inside the building, you should be receiving the user location by the [onLocationUpdate] callback.
-  ///
-  /// [USER_NOT_IN_BUILDING]
-  /// * The user location is not inside the building any more.
-  ///   This status will only be thrown when using [building mode](https://situm.com/docs/mobile-sdks-positioning/#sdk-geolocation-modes).
-  ///
-  /// [STOPPED]
-  /// * The positioning engine was stopped.
+  /// See [StatusNames] to learn about the possible statuses that you might receive.
   ///
   /// These statuses are the basic ones that will help you to stay aware of what's happening with the positioning.
   /// There are some other situational and platform specific statuses that you might want to listen,
@@ -325,9 +311,20 @@ class SitumSdk {
     await methodChannel.invokeMethod('removeUpdates');
   }
 
+  /// Stop positioning automatically under the given criteria.
+  Future<void> requestAutoStop(AutoStopCriteria criteria) async {
+    await methodChannel.invokeMethod('requestAutoStop', criteria.toMap());
+  }
+
+  /// Disable any [AutoStopCriteria] previously requested.
+  Future<void> removeAutoStop() async {
+    await methodChannel.invokeMethod('removeAutoStop', {});
+  }
+
   /// Adds an external location.
   Future<void> addExternalLocation(ExternalLocation externalLocation) async {
-    await methodChannel.invokeMethod('addExternalLocation', externalLocation.toMap());
+    await methodChannel.invokeMethod(
+        'addExternalLocation', externalLocation.toMap());
   }
 
   /// Downloads all the buildings for the current user.

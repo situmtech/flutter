@@ -382,10 +382,10 @@ class ExternalLocation {
   ExternalLocation({
     required this.coordinate,
     required this.buildingIdentifier,
-    required this.floorIdentifier
+    required this.floorIdentifier,
   });
 
-    Map<String, dynamic> toMap() => {
+  Map<String, dynamic> toMap() => {
         'coordinate': {
           'latitude': coordinate.latitude,
           'longitude': coordinate.longitude,
@@ -789,7 +789,10 @@ class ConfigurationOptions {
   final bool useRemoteConfig;
   final bool useExternalLocations;
 
-  ConfigurationOptions({this.useRemoteConfig = true, this.useExternalLocations = false});
+  ConfigurationOptions({
+    this.useRemoteConfig = true,
+    this.useExternalLocations = false,
+  });
 }
 
 class PrefetchOptions {
@@ -876,6 +879,25 @@ enum ErrorType {
   nonCritical,
 }
 
+/// Reference list of the status names received in the
+/// [SitumSdk.onLocationStatus] callback. Other status may be received and may
+/// vary depending on the platform.
+class StatusNames {
+  /// The positioning system has been started.
+  static const starting = "STARTING";
+
+  /// The SDK is trying to locate the user in a specific [Building]. Once the
+  /// user is located inside the building, you should be receiving locations on
+  /// your [onLocationUpdate] callback.
+  static const calculating = "CALCULATING";
+
+  /// The user location is not inside the building.
+  static const userNotInBuilding = "USER_NOT_IN_BUILDING";
+
+  /// The positioning has been stopped.
+  static const stopped = "STOPPED";
+}
+
 class SitumRoute {
   final dynamic rawContent;
   final Poi? poiTo;
@@ -889,6 +911,24 @@ class RouteProgress {
   const RouteProgress({
     required this.rawContent,
   });
+}
+
+/// Define a criteria under which the positioning will be automatically stopped.
+class AutoStopCriteria {
+  /// Seconds elapsed receiving consecutive [StatusNames.userNotInBuilding]
+  /// after which positioning will stop.
+  final int? consecutiveOutOfBuildingTimeout;
+
+  AutoStopCriteria({
+    this.consecutiveOutOfBuildingTimeout,
+  });
+
+  Map<String, dynamic> toMap() {
+    Map<String, dynamic> map = {};
+    _addToMapIfNotNull("consecutiveOutOfBuildingTimeout",
+        consecutiveOutOfBuildingTimeout, map);
+    return map;
+  }
 }
 
 void _addToMapIfNotNull(String key, dynamic value, Map<String, dynamic> map) {
