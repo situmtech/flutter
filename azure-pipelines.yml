@@ -95,37 +95,37 @@ steps:
   #
   #    displayName: Install Binaries
   #
-  #  - bash: |
-  #      if [ -d "flutter" ];then
-  #        cd flutter
-  #      fi
-  #      #Export binary paths
-  #      export PATH="$PATH:$(Agent.BuildDirectory)/binaries/flutter/bin"
-  #      export PATH="$PATH:$(Agent.BuildDirectory)/binaries/google-cloud-sdk/bin"
-  #
-  #      echo -e "\n[+] Fetch all branches\n"
-  #      git fetch
-  #
-  #      echo -e "\n[+] Checkout to $(currentBranch)\n"
-  #
-  #      git checkout $(currentBranch)
-  #
-  #      echo -e "\n[+] Change version in pubspec.yaml\n"
-  #      sed "s/^version:\s[0-9].*$/version: $(version)/g" -i pubspec.yaml  
-  #      echo -e "\n[+] Change version in situm_flutter.podspec"
-  #      sed "s/s.version\s.*= '[0-9\.].*'$/s.version          = '$(version)'/g" -i ios/situm_flutter.podspec
-  #      echo -e "\n[+] Set new plugin version in examples"
-  #      cd example
-  #      flutter pub get
-  #      
-  #      echo -e "\n[+] Add,commit and push changes to $(currentBranch)"
-  #      git pull origin $(currentBranch)
-  #      git commit -am "[skip ci] Setting the Flutter version to $(version)"
-  #
-  #      git push --set-upstream origin $(currentBranch)
-  #      git push
-  #
-  #    displayName: Set version
+  - bash: |
+      if [ -d "flutter" ];then
+        cd flutter
+      fi
+      #Export binary paths
+      export PATH="$PATH:$(Agent.BuildDirectory)/binaries/flutter/bin"
+      export PATH="$PATH:$(Agent.BuildDirectory)/binaries/google-cloud-sdk/bin"
+ 
+      echo -e "\n[+] Fetch all branches\n"
+      git fetch
+ 
+      echo -e "\n[+] Checkout to $(currentBranch)\n"
+ 
+      git checkout $(currentBranch)
+ 
+      echo -e "\n[+] Change version in pubspec.yaml\n"
+      sed "s/^version:\s[0-9].*$/version: $(version)/g" -i pubspec.yaml  
+      echo -e "\n[+] Change version in situm_flutter.podspec"
+      sed "s/s.version\s.*= '[0-9\.].*'$/s.version          = '$(version)'/g" -i ios/situm_flutter.podspec
+      echo -e "\n[+] Set new plugin version in examples"
+      cd example
+      flutter pub get
+      
+      echo -e "\n[+] Add,commit and push changes to $(currentBranch)"
+      git pull origin $(currentBranch)
+      git commit -am "[skip ci] Setting the Flutter version to $(version)"
+ 
+      git push --set-upstream origin $(currentBranch)
+      git push
+ 
+    displayName: Set version
   #
   #  - template: azure-templates/publish_release.yml@sys_kubernetes_templates
   #    parameters:
