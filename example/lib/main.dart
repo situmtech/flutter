@@ -90,7 +90,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void updateExternalLocation() {
     if (useExternalLocations) {
       setState(() {
-        index = (index + 1) % 3;
+        index = (index + 1) % LATITUDES.length;
         situmSdk.addExternalLocation(ExternalLocation(
             coordinate: Coordinate(
                 latitude: LATITUDES[index], longitude: LONGITUDES[index]),
