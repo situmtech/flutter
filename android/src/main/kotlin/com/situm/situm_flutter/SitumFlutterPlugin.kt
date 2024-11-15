@@ -13,13 +13,14 @@ import es.situm.sdk.communication.CommunicationConfigImpl
 import es.situm.sdk.configuration.network.NetworkOptionsImpl
 import es.situm.sdk.error.Error
 import es.situm.sdk.location.ExternalArData
-import es.situm.sdk.location.ExternalLocation
 import es.situm.sdk.location.GeofenceListener
 import es.situm.sdk.location.LocationListener
 import es.situm.sdk.location.LocationRequest
 import es.situm.sdk.location.LocationStatus
+import es.situm.sdk.location.ExternalLocation
 import es.situm.sdk.model.cartography.*
 import es.situm.sdk.model.location.Location
+import es.situm.sdk.model.location.Coordinate
 import es.situm.sdk.utils.Handler
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
@@ -89,6 +90,7 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
             "setConfiguration" -> setConfiguration(arguments, result)
             "requestLocationUpdates" -> requestLocationUpdates(arguments, result)
             "removeUpdates" -> removeUpdates(result)
+            "addExternalLocation" -> addExternalLocation(arguments, result)
             "prefetchPositioningInfo" -> prefetchPositioningInfo(arguments, result)
             "geofenceCallbacksRequested" -> geofenceCallbacksRequested(result)
             "fetchPoisFromBuilding" -> fetchPoisFromBuilding(arguments, result)
@@ -101,9 +103,10 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
             "requestDirections" -> requestDirections(arguments, result)
             "requestNavigation" -> requestNavigation(arguments, result)
             "stopNavigation" -> stopNavigation(result)
-            "addExternalLocation" -> addExternalLocation(arguments, result)
             "openUrlInDefaultBrowser" -> openUrlInDefaultBrowser(arguments, result)
             "updateNavigationState" -> updateNavigationState(arguments, result)
+            "requestAutoStop" -> requestAutoStop(arguments, result)
+            "removeAutoStop" -> removeAutoStop(result)
             else -> result.notImplemented()
         }
     }
@@ -199,6 +202,9 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
         if (arguments.containsKey("useRemoteConfig")) {
             SitumSdk.configuration().isUseRemoteConfig = arguments["useRemoteConfig"] as Boolean
         }
+        if (arguments.containsKey("useExternalLocations")) {
+            SitumSdk.configuration().useExternalLocations(arguments["useExternalLocations"] as Boolean)
+        }
         result.success("DONE")
     }
 
@@ -285,6 +291,17 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
         result?.success("DONE")
     }
 
+    private fun addExternalLocation(arguments: Map<String, Any>, result: MethodChannel.Result) {
+        val buildingIdentifier = arguments["buildingIdentifier"] as String?
+        val floorIdentifier = arguments["floorIdentifier"] as String?
+        val coordinateMap = arguments["coordinate"] as Map<String, Any>
+        val lat = coordinateMap?.get("latitude") as Double;
+        val long = coordinateMap?.get("longitude") as Double;
+        val externalLocation = ExternalLocation.Builder(buildingIdentifier, floorIdentifier,lat,long).build()
+        SitumSdk.locationManager().addExternalLocation(externalLocation)
+        result.success("DONE")
+    }
+
     private fun requestDirections(arguments: Map<String, Any>, result: MethodChannel.Result) {
         navigation.requestDirections(arguments, result)
     }
@@ -295,16 +312,6 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
         navigation.requestNavigation(
             directionsRequestArgs, navigationRequestArgs, result
         )
-    }
-
-    private fun addExternalLocation(arguments: Map<String, Any>, result: MethodChannel.Result) {
-        SitumSdk.locationManager().addExternalLocation(
-                ExternalLocation.Builder(
-                        arguments["buildingIdentifier"] as String,
-                        arguments["floorIdentifier"] as String,
-                        arguments["latitude"] as Double,
-                        arguments["longitude"] as Double).build())
-        result.success("DONE")
     }
 
     private fun stopNavigation(result: MethodChannel.Result) {
@@ -390,6 +397,17 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
 
     private fun updateNavigationState(arguments: Map<String, Any>, result: MethodChannel.Result) {
         viewerNavigation.updateNavigationState(arguments, result)
+    }
+
+    private fun requestAutoStop(arguments: Map<String, Any>, result: MethodChannel.Result) {
+        val criteria = AutoStopCriteria.Builder().fromMap(arguments).build()
+        AutoStop.autoStopUnderCriteria(criteria)
+        result.success("DONE")
+    }
+
+    private fun removeAutoStop(result: MethodChannel.Result) {
+        AutoStop.disable()
+        result.success("DONE")
     }
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {

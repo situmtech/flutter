@@ -37,7 +37,7 @@ class _LocationStatusAdapter {
     String? result = status;
 
     switch (status) {
-      case "USER_NOT_IN_BUILDING":
+      case StatusNames.userNotInBuilding:
         if (!_shouldNotifyStatus(status)) {
           return null;
         }
@@ -47,7 +47,7 @@ class _LocationStatusAdapter {
       case "RETRY_DOWNLOAD_POSITIONING_MODEL":
       case "PROCESSING_POSITIONING_MODEL":
       case "STARTING_POSITIONING":
-      case "CALCULATING":
+      case StatusNames.calculating:
         return null;
     }
 
@@ -68,15 +68,15 @@ class _LocationStatusAdapter {
     String? result = status;
 
     switch (status) {
-      case "CALCULATING":
-        result = "STARTING";
+      case StatusNames.calculating:
+        result = StatusNames.starting;
         break;
-      case "USER_NOT_IN_BUILDING":
+      case StatusNames.userNotInBuilding:
         if (!_shouldNotifyStatus(status)) {
           return null;
         }
         break;
-      case "STARTING":
+      case StatusNames.starting:
         return null;
     }
 

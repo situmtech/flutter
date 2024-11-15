@@ -225,8 +225,7 @@ String stringFromArgsOrEmptyId(arguments, String key) {
 
 ExternalLocation createExternalLocation(dynamic args) {
   return ExternalLocation(
-    latitude: args["latitude"],
-    longitude: args["longitude"],
+    coordinate: createCoordinate(args['coordinate']),
     buildingIdentifier: args["buildingIdentifier"],
     floorIdentifier: args["floorIdentifier"],
   );
