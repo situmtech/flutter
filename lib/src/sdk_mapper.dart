@@ -1,4 +1,4 @@
-part of sdk;
+part of '../sdk.dart';
 
 BuildingInfo createBuildingInfo(Map map) {
   return BuildingInfo(
@@ -164,7 +164,7 @@ SitumRoute createRoute(arguments) {
 }
 
 DirectionsRequest createDirectionsRequest(arguments) {
-  var poiToIdentifier;
+  String? poiToIdentifier;
   Map directionsRequestArgs = arguments["directionsRequest"];
   if (!directionsRequestArgs.containsKey("poiToIdentifier") &&
       arguments["destinationCategory"] == "POI") {
