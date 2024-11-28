@@ -6,7 +6,7 @@ import 'package:situm_flutter/wayfinding.dart';
 
 import './config.dart';
 
-const floorIdentifier = "38718";
+const floorIdentifier = "35594";
 
 void main() {
   runApp(const MyApp());
@@ -37,17 +37,21 @@ class MyHomePage extends StatefulWidget {
 }
 
 // PATRAS
-// List<double> LATITUDES = [38.29429, 38.29411, 38.29412];
-// List<double> LONGITUDES = [21.79631, 21.79665, 21.79719];
+// List<double> LATITUDES = [38.29424, 38.29424, 38.29423, 38.29425, 38.29425];
+// List<double> LONGITUDES = [21.79592, 21.79629, 21.79657, 21.79689, 21.79716];
+// MRMQA
+List<double> LATITUDES = [43.01170, 43.01100, 43.01061, 43.01012, 43.00980, 43.00983, 43.00945, 43.00913, 43.00852, 43.00830, 43.00923];
+List<double> LONGITUDES = [-8.45287, -8.45305, -8.45311, -8.45321, -8.45279, -8.45217, -8.45294, -8.45287, -8.45258, -8.45341, -8.45133];
 // OFICINA CORE
-List<double> LATITUDES = [42.86367, 42.86393, 42.86416];
-List<double> LONGITUDES = [-8.54299, -8.54318, -8.54332];
+// List<double> LATITUDES = [42.86367, 42.86393, 42.86416];
+// List<double> LONGITUDES = [-8.54299, -8.54318, -8.54332];
 
 class _MyHomePageState extends State<MyHomePage> {
   late SitumSdk situmSdk;
   MapViewController? mapViewController;
   bool useExternalLocations = true;
   int index = 0;
+  String poiIdentifier = '';
 
   @override
   void initState() {
@@ -84,7 +88,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void navigateToPoi() {
-    mapViewController?.navigateToPoi("659123");
+    mapViewController?.navigateToPoi(poiIdentifier);
   }
 
   void updateExternalLocation() {
@@ -129,14 +133,32 @@ class _MyHomePageState extends State<MyHomePage> {
             child: Padding(
               padding:
                   const EdgeInsets.all(16.0), // Add some padding for spacing
-              child: ElevatedButton(
-                onPressed: navigateToPoi,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                ),
-                child: const Text(
-                  'Navigate To Poi',
-                ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const SizedBox(height: 20), // Spacing between elements
+                  const SizedBox(height: 8), // Spacing between elements
+                  ElevatedButton(
+                    onPressed: navigateToPoi,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                    ),
+                    child: const Text(
+                      'Navigate To Poi',
+                    ),
+                  ),
+                  TextField(
+                    decoration: const InputDecoration(
+                      labelText: 'Id de POI',
+                      border: OutlineInputBorder(),
+                    ),
+                    onChanged: (value) {
+                      setState(() {
+                        poiIdentifier = value; // Update state on input change
+                      });
+                    },
+                  ),
+                ]
               ),
             ),
           ),
@@ -183,7 +205,6 @@ class _MyHomePageState extends State<MyHomePage> {
       debugPrint(
           "Situm> wayfinding> Poi selected: ${poiSelectedResult.poi.name}");
     });
-    //mapViewController!.navigateToPoi("659117");
   }
 
   //Step 4 - Positioning
@@ -203,29 +224,6 @@ class _MyHomePageState extends State<MyHomePage> {
     situmSdk.onLocationError((error) {
       debugPrint("Situm> sdk> Error: ${error.message}");
     });
-    // situmSdk.onNavigationStart((route) {
-    //   debugPrint("Situm> sdk> Navigation started: ${route.rawContent}");
-    // });
-    // situmSdk.onNavigationProgress((progress) {
-    //   debugPrint("Situm> sdk> Navigation updated: ${progress.rawContent}");
-    // });
-    // situmSdk.onNavigationOutOfRoute(() {
-    //   debugPrint("Situm> sdk> Navigation ");
-    // });
-    // situmSdk.onNavigationDestinationReached((route) {
-    //   debugPrint("Situm> sdk> Navigation finished ${route.rawContent}");
-    // });
-    // situmSdk.onNavigationCancellation(() {
-    //   debugPrint("Situm> sdk> Navigation has been cancelled");
-    // });
-    // situmSdk.fetchBuildingInfo(buildingIdentifier).then((buildingInfo) =>
-    //     {debugPrint("Situm> sdk> Building info: ${buildingInfo.geofences}")});
-    // situmSdk.onEnterGeofences((geofences) {
-    //   debugPrint("Situm> sdk> Entered geofences $geofences");
-    // });
-    // situmSdk.onExitGeofences((geofences) {
-    //   debugPrint("Situm> sdk> Exited geofences $geofences");
-    // });
 
     // Positioning
     // Check permissions:
@@ -233,8 +231,6 @@ class _MyHomePageState extends State<MyHomePage> {
     if (hasPermissions) {
       // Happy path: start positioning using the default options.
       // The MapView will automatically draw the user location.
-      // situmSdk.requestLocationUpdates(
-      //     LocationRequest(buildingIdentifier: buildingIdentifier));
       situmSdk
           .setConfiguration(ConfigurationOptions(useExternalLocations: true));
       situmSdk.requestLocationUpdates(
@@ -248,23 +244,6 @@ class _MyHomePageState extends State<MyHomePage> {
       // Handle permissions denial.
       debugPrint("Situm> sdk> Permissions denied!");
     }
-
-//
-//     var route = await situmSdk.requestDirections(DirectionsRequest(
-//         from: Point(
-//             buildingIdentifier: buildingIdentifier,
-//             floorIdentifier: floorIdentifier,
-//             coordinate: Coordinate(latitude: 42.86396, longitude: -8.54321),
-//             cartesianCoordinate:
-//                 CartesianCoordinate(x: 127.04024, y: 31.55724)),
-//         to: Point(
-//             buildingIdentifier: buildingIdentifier,
-//             floorIdentifier: "38713",
-//             coordinate: Coordinate(latitude: 42.86388, longitude: -8.54298),
-//             cartesianCoordinate:
-//                 CartesianCoordinate(x: 111.71700, y: 17.81241))));
-//
-    // debugPrint("Situm > sdk > Route computed ${route.rawContent.toString()}");
   }
 
   // Requests positioning permissions
