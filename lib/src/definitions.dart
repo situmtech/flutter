@@ -1,4 +1,4 @@
-part of wayfinding;
+part of '../wayfinding.dart';
 
 // Public definitions:
 
@@ -160,6 +160,7 @@ class MapViewConfiguration {
 }
 
 class DirectionsMessage {
+  // ignore: constant_identifier_names
   static const EMPTY_ID = "-1";
 
   // Identifier used by the map-viewer on the pre-route UI, where multiple
@@ -362,9 +363,16 @@ enum ARStatus {
 
 // Connection errors
 class ConnectionErrors {
+  // ignore: constant_identifier_names
   static const ANDROID_NO_CONNECTION = -2;
+
+  // ignore: constant_identifier_names
   static const ANDROID_SOCKET_NOT_CONNECTED = -6;
+
+  // ignore: constant_identifier_names
   static const IOS_NO_CONNECTION = -1009;
+
+  // ignore: constant_identifier_names
   static const IOS_HOSTNAME_NOT_RESOLVED = -1003;
 
   static const List<int> values = [
@@ -381,7 +389,7 @@ class MapViewError {
 
   const MapViewError({required this.code, required this.message});
 
-  static MapViewError NoNetworkError() {
+  static MapViewError noNetworkError() {
     return const MapViewError(
       code: "NO_NETWORK_ERROR",
       message:

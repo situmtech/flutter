@@ -1,4 +1,4 @@
-part of wayfinding;
+part of '../wayfinding.dart';
 
 abstract class MessageHandler {
   factory MessageHandler(String type) {
@@ -68,7 +68,7 @@ class MapViewErrorHandler implements MessageHandler {
 
     switch (code) {
       case 'NO_NETWORK_ERROR':
-        errorPayload = MapViewError.NoNetworkError();
+        errorPayload = MapViewError.noNetworkError();
         break;
       default:
         break;

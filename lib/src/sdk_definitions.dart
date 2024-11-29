@@ -1,6 +1,6 @@
 // ignore_for_file: constant_identifier_names
 
-part of sdk;
+part of '../sdk.dart';
 
 /// Enum that allows to specify whether the geolocations computed should be sent
 /// to Situm Platform, and if so with which periodicity (time interval).

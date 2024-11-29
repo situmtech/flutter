@@ -4,7 +4,7 @@
 
 <p align="center" style="text-align:center">
 
-[Situm Wayfinding](https://situm.com/wayfinding) for Flutter. Integrate plug&play navigation experience with floorplans, POIs, routes and turn-by-turn directions in no time. With the power of [Situm](https://www.situm.com/).
+[Situm Wayfinding](https://situm.com/wayfinding) for Flutter. Integrate plug&play navigation experience with floor plans, POIs, routes and turn-by-turn directions in no time. With the power of [Situm](https://www.situm.com/).
 
 </p>
 

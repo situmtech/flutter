@@ -1,4 +1,4 @@
-part of sdk;
+part of '../../sdk.dart';
 
 /// [_LocationStatusAdapter]
 /// This class is in charge of handling the native LocationStatus

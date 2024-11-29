@@ -1,4 +1,4 @@
-part of wayfinding;
+part of '../wayfinding.dart';
 
 DirectionsMessage createDirectionsMessage(arguments) => DirectionsMessage(
       buildingIdentifier: arguments["buildingIdentifier"],
