@@ -6,6 +6,7 @@ import es.situm.sdk.error.Error
 import es.situm.sdk.location.ForegroundServiceNotificationOptions
 import es.situm.sdk.location.LocationRequest
 import es.situm.sdk.location.OutdoorLocationOptions
+import es.situm.sdk.location.DiagnosticsOptions
 import es.situm.sdk.model.MapperInterface
 import es.situm.sdk.model.cartography.Building
 import es.situm.sdk.utils.Handler
@@ -95,6 +96,15 @@ fun LocationRequest.Builder.fromArguments(args: Map<String, Any>): LocationReque
             outdoorLocationOptions.enableOutdoorPositions(outdoorOptionsMap["enableOutdoorPositions"] as Boolean)
         }
         outdoorLocationOptions(outdoorLocationOptions.build())
+    }
+    if (args.containsKey("diagnosticsOptions")) {
+        val diagnosticsOptionsMap = args["diagnosticsOptions"] as Map<String, Any>
+        val diagnosticsOptions = DiagnosticsOptions.fromMap(diagnosticsOptionsMap)
+        diagnosticsOptions(diagnosticsOptions)
+        Log.d(
+            "SDK>",
+            "Situm> SDK> LocationRequest> diagnosticsOptions: $diagnosticsOptions - Upload? -> ${diagnosticsOptions.isUploadDiagnosticsData}"
+        )
     }
     args["useWifi"]?.let {
         Log.d("SDK>", "Situm> SDK> LocationRequest> Set useWifi: $it")
