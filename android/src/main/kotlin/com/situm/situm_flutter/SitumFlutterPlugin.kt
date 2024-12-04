@@ -281,6 +281,7 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
         val locationRequest = LocationRequest.Builder().fromArguments(arguments).build()
         SitumSdk.locationManager().requestLocationUpdates(locationRequest)
         result.success("DONE")
+
     }
 
     private fun removeUpdates(result: MethodChannel.Result?) {
