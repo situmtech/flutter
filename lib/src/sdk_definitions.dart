@@ -378,14 +378,14 @@ class ExternalLocation {
   final Coordinate coordinate;
   final String buildingIdentifier;
   final String floorIdentifier;
-  final Angle bearing;
+  final Angle? bearing;
   final double accuracy;
 
   ExternalLocation({
     required this.coordinate,
     required this.buildingIdentifier,
     required this.floorIdentifier,
-    required this.bearing,
+     this.bearing,
     required this.accuracy,
   });
 
@@ -396,7 +396,7 @@ class ExternalLocation {
         },
         'buildingIdentifier': buildingIdentifier,
         'floorIdentifier': floorIdentifier,
-        'bearing': bearing.toMap(),
+        'bearing': bearing?.toMap(),
         'accuracy': accuracy,
       };
 }
