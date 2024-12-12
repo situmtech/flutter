@@ -378,11 +378,15 @@ class ExternalLocation {
   final Coordinate coordinate;
   final String buildingIdentifier;
   final String floorIdentifier;
+  final Angle? bearing;
+  final double? accuracy;
 
   ExternalLocation({
     required this.coordinate,
     required this.buildingIdentifier,
     required this.floorIdentifier,
+    this.bearing,
+    this.accuracy,
   });
 
   Map<String, dynamic> toMap() => {
@@ -392,6 +396,8 @@ class ExternalLocation {
         },
         'buildingIdentifier': buildingIdentifier,
         'floorIdentifier': floorIdentifier,
+        'bearing': bearing?.toMap(),
+        'accuracy': accuracy,
       };
 }
 
