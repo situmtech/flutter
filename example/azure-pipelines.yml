@@ -29,7 +29,7 @@ parameters:
     default: "demo"
   - name: MAPVIEWURL
     type: string
-    default: "https://map-viewer.situm.com"
+    default: "https://maps.situm.com"
 
 resources:
   repositories:
