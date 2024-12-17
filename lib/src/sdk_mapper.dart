@@ -228,5 +228,6 @@ ExternalLocation createExternalLocation(dynamic args) {
     coordinate: createCoordinate(args['coordinate']),
     buildingIdentifier: args["buildingIdentifier"],
     floorIdentifier: args["floorIdentifier"],
+    bearing: args['bearing'],
   );
 }

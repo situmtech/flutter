@@ -21,6 +21,7 @@ import es.situm.sdk.location.ExternalLocation
 import es.situm.sdk.model.cartography.*
 import es.situm.sdk.model.location.Location
 import es.situm.sdk.model.location.Coordinate
+import es.situm.sdk.model.location.Angle
 import es.situm.sdk.utils.Handler
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
@@ -297,7 +298,8 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
         val coordinateMap = arguments["coordinate"] as Map<String, Any>
         val lat = coordinateMap?.get("latitude") as Double;
         val long = coordinateMap?.get("longitude") as Double;
-        val externalLocation = ExternalLocation.Builder(buildingIdentifier, floorIdentifier,lat,long).build()
+        val bearing = arguments["bearing"] as Double;
+        val externalLocation = ExternalLocation.Builder(buildingIdentifier, floorIdentifier,lat,long).bearing(Angle.fromDegrees(bearing)).build()
         SitumSdk.locationManager().addExternalLocation(externalLocation)
         result.success("DONE")
     }
