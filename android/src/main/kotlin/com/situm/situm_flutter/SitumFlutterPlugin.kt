@@ -20,7 +20,6 @@ import es.situm.sdk.location.LocationStatus
 import es.situm.sdk.location.ExternalLocation
 import es.situm.sdk.model.cartography.*
 import es.situm.sdk.model.location.Location
-import es.situm.sdk.model.location.Coordinate
 import es.situm.sdk.utils.Handler
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware

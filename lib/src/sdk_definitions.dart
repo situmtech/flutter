@@ -66,6 +66,36 @@ class OutdoorLocationOptions {
   }
 }
 
+/// Configuration options related to remote diagnostic and telemetry.
+class DiagnosticsOptions {
+  /// Configures whether diagnostics and telemetry data should be uploaded.
+  ///
+  /// Enabling this option is beneficial for support purposes, as the telemetry data
+  /// contains valuable insights that the Situm team can analyze to identify and resolve
+  /// positioning issues more effectively.
+  ///
+  /// Additionally, when beacons are correctly configured, battery level readings
+  /// are included in the telemetry data. These readings can assist in monitoring beacon
+  /// performance and proactively addressing potential hardware issues.
+  ///
+  /// The default value is `true`.
+  ///
+  /// **Note:** Uploading diagnostics and telemetry data consumes network bandwidth.
+  /// Developers should carefully consider the application's context and user preferences
+  /// before disabling this feature.
+  final bool? uploadDiagnosticsData;
+
+  DiagnosticsOptions({
+      this.uploadDiagnosticsData,
+  });
+
+  Map<String, dynamic> toMap() {
+    Map<String, dynamic> map = {};
+    _addToMapIfNotNull("uploadDiagnosticsData", uploadDiagnosticsData, map);
+    return map;
+  }
+}
+
 /// A data object that allows you to configure the positioning parameters.
 class LocationRequest {
   final String? buildingIdentifier;
@@ -78,6 +108,7 @@ class LocationRequest {
   final MotionMode? motionMode;
   final bool? useBle;
   final bool? useGps;
+  final DiagnosticsOptions? diagnosticsOptions;
 
   /// Only for Android.
   final bool? useWifi;
@@ -93,6 +124,7 @@ class LocationRequest {
     this.useBle,
     this.useGps,
     this.motionMode,
+    this.diagnosticsOptions,
   });
 
   Map<String, dynamic> toMap() {
@@ -110,6 +142,7 @@ class LocationRequest {
     _addToMapIfNotNull("useWifi", useWifi, map);
     _addToMapIfNotNull("useBle", useBle, map);
     _addToMapIfNotNull("useGps", useGps, map);
+    _addToMapIfNotNull("diagnosticsOptions", diagnosticsOptions?.toMap(), map);
     return map;
   }
 }
