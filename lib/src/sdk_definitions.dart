@@ -818,7 +818,7 @@ class PrefetchOptions {
 ///   * NSLocationWhenInUseUsageDescription (iOS)
 ///
 /// [code] [ErrorCodes.bluetoothPermissionDenied]
-/// * (Android only)
+/// * Android only.
 /// * type: [ErrorType.critical].
 ///
 /// * **CAUSE**: BLUETOOTH_CONNECT or BLUETOOTH_SCAN are not granted yet,
@@ -834,6 +834,17 @@ class PrefetchOptions {
 /// * type: [ErrorType.critical].
 ///
 /// * **CAUSE**: The location service is disabled, so SDK won't be able to start positioning.
+///
+/// [code] [ErrorCodes.foregroundServiceNotAllowed]
+/// * Android only.
+/// * type: [ErrorType.critical].
+///
+/// * **CAUSE**: The positioning could not start because the Android Foreground Service where it runs tried to start in an illegal state.
+/// On Android 12+ (API level 31 and above), apps are generally restricted from starting Foreground Services while running in the background,
+/// except in certain [specific exemptions](https://developer.android.com/develop/background-work/services/foreground-services#background-start-restriction-exemptions).
+/// If you try to start the Situm Foreground Service from the background, the SDK will capture the Operating System exception and will throw this error.
+/// As a consequence, the positioning will not be started.
+/// Solution: Start positioning only when the app is in the foreground.
 ///
 /// There are other errors that we throw directly as we receive them from [Android](https://developers.situm.com/sdk_documentation/android/javadoc/latest/es/situm/sdk/location/locationmanager.code) and [iOS](https://developers.situm.com/sdk_documentation/ios/documentation/enums/sitlocationerror#/).
 class Error {
@@ -875,6 +886,7 @@ class ErrorCodes {
   static const buildingNotCalibrated = "BUILDING_NOT_CALIBRATED";
   static const buildingModelDownloadError = "BUILDING_MODEL_DOWNLOAD_ERROR";
   static const buildingModelProcessingError = "BUILDING_MODEL_PROCESSING_ERROR";
+  static const foregroundServiceNotAllowed = "FOREGROUND_SERVICE_NOT_ALLOWED";
 }
 
 enum ErrorType {
