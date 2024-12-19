@@ -20,7 +20,6 @@ import es.situm.sdk.location.LocationStatus
 import es.situm.sdk.location.ExternalLocation
 import es.situm.sdk.model.cartography.*
 import es.situm.sdk.model.location.Location
-import es.situm.sdk.model.location.Coordinate
 import es.situm.sdk.utils.Handler
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
@@ -289,13 +288,10 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
     }
 
     private fun addExternalLocation(arguments: Map<String, Any>, result: MethodChannel.Result) {
-        val buildingIdentifier = arguments["buildingIdentifier"] as String?
-        val floorIdentifier = arguments["floorIdentifier"] as String?
-        val coordinateMap = arguments["coordinate"] as Map<String, Any>
-        val lat = coordinateMap?.get("latitude") as Double;
-        val long = coordinateMap?.get("longitude") as Double;
-        val externalLocation = ExternalLocation.Builder(buildingIdentifier, floorIdentifier,lat,long).build()
-        SitumSdk.locationManager().addExternalLocation(externalLocation)
+        val updatedArguments = arguments.toMutableMap()
+        val accuracyConverted = (updatedArguments["accuracy"] as? Double)?.toFloat() ?: 0f
+        updatedArguments["accuracy"] = accuracyConverted
+        SitumSdk.locationManager().addExternalLocation(ExternalLocation.fromMap(updatedArguments))
         result.success("DONE")
     }
 

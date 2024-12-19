@@ -1,4 +1,4 @@
-part of wayfinding;
+part of '../wayfinding.dart';
 
 /// Controller for [MapView]. This class exposes methods and callbacks.
 class MapViewController {
@@ -13,7 +13,6 @@ class MapViewController {
   OnCalibrationFinishedCallback? _onCalibrationFinishedCallback;
   OnMapViewErrorCallback? _onMapViewErrorCallBack;
 
-  late Function(MapViewConfiguration) _widgetUpdater;
   late MapViewCallback _widgetLoadCallback;
   late PlatformWebViewController _webViewController;
 
@@ -92,11 +91,6 @@ class MapViewController {
   }
 
   // Actions:
-
-  void _reloadWithConfiguration(MapViewConfiguration configuration) async {
-    // TODO - feature: reload with a new configuration.
-    _widgetUpdater(configuration);
-  }
 
   /// Reloads the [MapView] using the current configuration by reloading the
   /// underlying platform web view controller.

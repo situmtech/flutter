@@ -1,4 +1,4 @@
-part of sdk;
+part of '../sdk.dart';
 
 /// Main entry point for the Situm Flutter SDK. Use [SitumSdk] to start
 /// positioning, calculate routes and fetch resources.
