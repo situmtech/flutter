@@ -66,6 +66,36 @@ class OutdoorLocationOptions {
   }
 }
 
+/// Configuration options related to remote diagnostic and telemetry.
+class DiagnosticsOptions {
+  /// Configures whether diagnostics and telemetry data should be uploaded.
+  ///
+  /// Enabling this option is beneficial for support purposes, as the telemetry data
+  /// contains valuable insights that the Situm team can analyze to identify and resolve
+  /// positioning issues more effectively.
+  ///
+  /// Additionally, when beacons are correctly configured, battery level readings
+  /// are included in the telemetry data. These readings can assist in monitoring beacon
+  /// performance and proactively addressing potential hardware issues.
+  ///
+  /// The default value is `true`.
+  ///
+  /// **Note:** Uploading diagnostics and telemetry data consumes network bandwidth.
+  /// Developers should carefully consider the application's context and user preferences
+  /// before disabling this feature.
+  final bool? uploadDiagnosticsData;
+
+  DiagnosticsOptions({
+      this.uploadDiagnosticsData,
+  });
+
+  Map<String, dynamic> toMap() {
+    Map<String, dynamic> map = {};
+    _addToMapIfNotNull("uploadDiagnosticsData", uploadDiagnosticsData, map);
+    return map;
+  }
+}
+
 /// A data object that allows you to configure the positioning parameters.
 class LocationRequest {
   final String? buildingIdentifier;
@@ -78,6 +108,7 @@ class LocationRequest {
   final MotionMode? motionMode;
   final bool? useBle;
   final bool? useGps;
+  final DiagnosticsOptions? diagnosticsOptions;
 
   /// Only for Android.
   final bool? useWifi;
@@ -93,6 +124,7 @@ class LocationRequest {
     this.useBle,
     this.useGps,
     this.motionMode,
+    this.diagnosticsOptions,
   });
 
   Map<String, dynamic> toMap() {
@@ -110,6 +142,7 @@ class LocationRequest {
     _addToMapIfNotNull("useWifi", useWifi, map);
     _addToMapIfNotNull("useBle", useBle, map);
     _addToMapIfNotNull("useGps", useGps, map);
+    _addToMapIfNotNull("diagnosticsOptions", diagnosticsOptions?.toMap(), map);
     return map;
   }
 }
@@ -818,7 +851,7 @@ class PrefetchOptions {
 ///   * NSLocationWhenInUseUsageDescription (iOS)
 ///
 /// [code] [ErrorCodes.bluetoothPermissionDenied]
-/// * (Android only)
+/// * Android only.
 /// * type: [ErrorType.critical].
 ///
 /// * **CAUSE**: BLUETOOTH_CONNECT or BLUETOOTH_SCAN are not granted yet,
@@ -834,6 +867,17 @@ class PrefetchOptions {
 /// * type: [ErrorType.critical].
 ///
 /// * **CAUSE**: The location service is disabled, so SDK won't be able to start positioning.
+///
+/// [code] [ErrorCodes.foregroundServiceNotAllowed]
+/// * Android only.
+/// * type: [ErrorType.critical].
+///
+/// * **CAUSE**: The positioning could not start because the Android Foreground Service where it runs tried to start in an illegal state.
+/// On Android 12+ (API level 31 and above), apps are generally restricted from starting Foreground Services while running in the background,
+/// except in certain [specific exemptions](https://developer.android.com/develop/background-work/services/foreground-services#background-start-restriction-exemptions).
+/// If you try to start the Situm Foreground Service from the background, the SDK will capture the Operating System exception and will throw this error.
+/// As a consequence, the positioning will not be started.
+/// Solution: Start positioning only when the app is in the foreground.
 ///
 /// There are other errors that we throw directly as we receive them from [Android](https://developers.situm.com/sdk_documentation/android/javadoc/latest/es/situm/sdk/location/locationmanager.code) and [iOS](https://developers.situm.com/sdk_documentation/ios/documentation/enums/sitlocationerror#/).
 class Error {
@@ -875,6 +919,7 @@ class ErrorCodes {
   static const buildingNotCalibrated = "BUILDING_NOT_CALIBRATED";
   static const buildingModelDownloadError = "BUILDING_MODEL_DOWNLOAD_ERROR";
   static const buildingModelProcessingError = "BUILDING_MODEL_PROCESSING_ERROR";
+  static const foregroundServiceNotAllowed = "FOREGROUND_SERVICE_NOT_ALLOWED";
 }
 
 enum ErrorType {

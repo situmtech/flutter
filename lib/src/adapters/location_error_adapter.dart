@@ -45,6 +45,9 @@ class _LocationErrorAdapter {
       case "8005": // Android
         arguments["code"] = ErrorCodes.buildingModelProcessingError;
         break;
+      case "8014": // Android only
+        arguments["code"] = ErrorCodes.foregroundServiceNotAllowed;
+        break;
     }
 
     Error result = Error(
