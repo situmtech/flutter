@@ -321,34 +321,7 @@ SITRealtimeUpdateInterval createRealtimeUpdateInterval(NSString *name) {
 }
 
 -(SITExternalLocation *)createExternalLocation:(NSDictionary *)arguments{
-    NSString *buildingId = arguments[@"buildingIdentifier"];
-        NSString *floorId = arguments[@"floorIdentifier"];
-    NSNumber *latitude = arguments[@"coordinate"][@"latitude"];
-    NSNumber *longitude = arguments[@"coordinate"][@"longitude"];
-    NSNumber *accuracy = nil;
-    NSNumber *bearing = nil;
-
-    if ([arguments[@"accuracy"] isKindOfClass:[NSNumber class]]) {
-        accuracy = arguments[@"accuracy"];
-    }
-    
-    if ([arguments[@"bearing"] isKindOfClass:[NSDictionary class]]
-        && [arguments[@"bearing"][@"degrees"] isKindOfClass:[NSNumber class]]) {
-        bearing = arguments[@"bearing"][@"degrees"];
-    }
-
-    SITExternalLocation *externalLocation = [[SITExternalLocation alloc ] initWithBuildingIdentifier:buildingId
-                                                                                     floorIdentifier:floorId
-                                                                                     latitude:[latitude floatValue]
-                                                                                           longitude:[longitude floatValue]];
-    if (accuracy != nil) {
-        [externalLocation setAccuracy:[accuracy floatValue]];
-    }
-
-    if (bearing != nil) {
-        [externalLocation setBearing: [[SITAngle alloc] initWithDegrees:[bearing floatValue]]];
-    }
-    return externalLocation;
+    return [SITExternalLocation fromDictionary:arguments];
 }
 
 - (void)handlePrefetchPositioningInfo:(FlutterMethodCall*)call result:(FlutterResult)result {
