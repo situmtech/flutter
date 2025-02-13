@@ -40,6 +40,14 @@ class _MyTabsState extends State<MyTabs> {
   List<Poi> pois = [];
   List<Floor> floors = [];
   Poi? poiDropdownValue;
+  Poi? fromDropdownValue;
+  Poi? toDropdownValue;
+
+  AccessibilityMode? accessibilityMode;
+  // AccessibilityMode? accessibilityMode=AccessibilityMode.CHOOSE_SHORTEST;
+  // AccessibilityMode? accessibilityMode=AccessibilityMode.ONLY_ACCESSIBLE;
+  // AccessibilityMode? accessibilityMode=AccessibilityMode.ONLY_NOT_ACCESSIBLE_FLOOR_CHANGES;
+
   Floor? floorDropdownValue;
   bool fitCameraToFloor = false;
   Function? mapViewLoadAction;
@@ -254,8 +262,65 @@ class _MyTabsState extends State<MyTabs> {
                   ),
                 ),
               ),
+              _sdkButton("Deselect", (() => _deselectPoi())),
               _sdkButton("Select", (() => _selectPoi(poiDropdownValue))),
               _sdkButton("Navigate", (() => _navigateToPoi(poiDropdownValue))),
+            ],
+          ),
+          Row(
+            children: <Widget>[
+              Flexible(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: DropdownButton<Poi>(
+                    isExpanded: true,
+                    value: fromDropdownValue,
+                    elevation: 16,
+                    onChanged: (Poi? value) {
+                      setState(() {
+                        fromDropdownValue = value!;
+                      });
+                    },
+                    items: pois.map((value) {
+                      return DropdownMenuItem<Poi>(
+                        value: value,
+                        child: Text(value.name),
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ),
+              Flexible(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: DropdownButton<Poi>(
+                    isExpanded: true,
+                    value: toDropdownValue,
+                    elevation: 16,
+                    onChanged: (Poi? value) {
+                      setState(() {
+                        toDropdownValue = value!;
+                      });
+                    },
+                    items: pois.map((value) {
+                      return DropdownMenuItem<Poi>(
+                        value: value,
+                        child: Text(value.name),
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ),
+              _sdkButton(
+                  "x",
+                  (() => setState(() {
+                        fromDropdownValue = null;
+                        toDropdownValue = null;
+                      }))),
+              _sdkButton(
+                  "Directions",
+                  (() =>
+                      _requestDirections(fromDropdownValue, toDropdownValue))),
             ],
           )
         ],
@@ -374,6 +439,18 @@ class _MyTabsState extends State<MyTabs> {
     }
   }
 
+  void _deselectPoi() {
+    setState(() {
+      _selectedIndex = 1;
+    });
+    mapViewLoadAction = () {
+      mapViewController?.deselectPoi();
+    };
+    if (mapViewController != null) {
+      _callMapviewLoadAction();
+    }
+  }
+
   void _selectPoi(Poi? poi) {
     if (poi == null) {
       return;
@@ -403,6 +480,21 @@ class _MyTabsState extends State<MyTabs> {
     });
     mapViewLoadAction = () {
       mapViewController?.navigateToPoi(poi.identifier);
+    };
+    if (mapViewController != null) {
+      _callMapviewLoadAction();
+    }
+  }
+
+  void _requestDirections(Poi? from, Poi? to) {
+    setState(() {
+      _selectedIndex = 1;
+    });
+    mapViewLoadAction = () {
+      mapViewController?.requestDirections(
+          poiFromIdentifier: from?.identifier,
+          poiToIdentifier: to?.identifier,
+          accessibilityMode: accessibilityMode);
     };
     if (mapViewController != null) {
       _callMapviewLoadAction();
