@@ -8,14 +8,13 @@ part of '../wayfinding.dart';
 /// MapView(
 ///   key: const Key("situm_map"),
 ///   configuration: MapViewConfiguration(
-///   // Your Situm credentials.
+///     // Your Situm credentials.
 ///     situmUser: "YOUR-SITUM-USER",
 ///     situmApiKey: "YOUR-SITUM-API-KEY",
-///   // Set your building identifier:
+///     // Set your building identifier:
 ///     buildingIdentifier: "YOUR-SITUM-BUILDING-IDENTIFIER",
-///   // Alternatively, you can set an identifier that allows you to remotely configure all map settings.
-///   // For now, you need to contact Situm to obtain yours.
-///   // remoteIdentifier: null;
+///     // Alternatively, you can set a profile name that allows you to remotely configure all map settings.
+///     // profile: null;
 ///     viewerDomain: "map-viewer.situm.com",
 ///     apiDomain: "dashboard.situm.com",
 ///     directionality: TextDirection.ltr,
@@ -31,13 +30,24 @@ class MapViewConfiguration {
   final String situmApiKey;
 
   /// The building that will be loaded on the map. Alternatively you can pass a
-  /// remoteIdentifier (that will be prioritized).
+  /// profile (that will be prioritized).
   final String? buildingIdentifier;
 
   /// A String identifier that allows you to remotely configure all map settings.
   /// Alternatively you can pass a buildingIdentifier, remoteIdentifier
   /// will be prioritized.
+  @Deprecated('Use profile instead')
   final String? remoteIdentifier;
+
+  /// A String that specifies the selected profile name for configuring the [MapView]
+  /// with its corresponding remote settings.
+  ///
+  /// When you set this attribute, the [MapView] will load the configuration associated
+  /// with the provided profile name. This allows your application to dynamically adjust
+  /// the MapView’s appearance and behavior based on predefined profiles.
+  ///
+  /// Alternatively you can pass a buildingIdentifier, profile will be prioritized.
+  final String? profile;
 
   /// A String parameter that allows you to specify
   /// which domain will be displayed inside our webview.
@@ -93,12 +103,14 @@ class MapViewConfiguration {
   final String? language;
 
   /// The [MapView] settings. Required fields are your Situm user and API key,
-  /// but also a buildingIdentifier or remoteIdentifier.
+  /// but also a buildingIdentifier or profile.
   MapViewConfiguration({
     this.situmUser,
     required this.situmApiKey,
     this.buildingIdentifier,
+    @Deprecated('Use profile instead')
     this.remoteIdentifier,
+    this.profile,
     String? viewerDomain,
     this.apiDomain = "dashboard.situm.com",
     this.directionality = TextDirection.ltr,
@@ -122,6 +134,8 @@ class MapViewConfiguration {
     }
   }
 
+  String? get _effectiveProfile => profile ?? remoteIdentifier;
+
   String get _internalApiDomain {
     String finalApiDomain = apiDomain.replaceFirst(RegExp(r'https://'), '');
 
@@ -133,9 +147,9 @@ class MapViewConfiguration {
   }
 
   String _getViewerURL(String? deviceId) {
-    if (buildingIdentifier == null && remoteIdentifier == null) {
+    if (buildingIdentifier == null && _effectiveProfile == null) {
       throw ArgumentError(
-          'Missing configuration: remoteIdentifier or buildingIdentifier must be provided.');
+          'Missing configuration: profile or buildingIdentifier must be provided.');
     }
     var base = viewerDomain;
     var query = "apikey=$situmApiKey&domain=$_internalApiDomain&mode=embed";
@@ -148,8 +162,8 @@ class MapViewConfiguration {
     if (deviceId != null) {
       query = "$query&deviceId=$deviceId";
     }
-    if (remoteIdentifier?.isNotEmpty == true) {
-      base = "$base/id/$remoteIdentifier";
+    if (_effectiveProfile?.isNotEmpty == true) {
+      base = "$base/id/$_effectiveProfile";
     }
     if (buildingIdentifier?.isNotEmpty == true && buildingIdentifier != "-1") {
       query = "$query&buildingid=$buildingIdentifier";
