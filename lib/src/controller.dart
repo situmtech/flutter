@@ -149,7 +149,7 @@ class MapViewController {
       message["navigationTo"] = "'$poiToIdentifier'";
     }
     if (accessibilityMode != null) {
-      message["type"] = "'${accessibilityMode.name}'";
+      message["routeType"] = "'${accessibilityMode.name}'";
     }
     _sendMessage(WV_MESSAGE_DIRECTIONS_START, message);
   }
