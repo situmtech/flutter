@@ -134,7 +134,7 @@ class MapViewConfiguration {
     }
   }
 
-  String? get _effectiveProfile => profile ?? remoteIdentifier;
+  String? get _effectiveProfile => profile?.isNotEmpty == true ? profile : remoteIdentifier;
 
   String get _internalApiDomain {
     String finalApiDomain = apiDomain.replaceFirst(RegExp(r'https://'), '');
