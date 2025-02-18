@@ -14,3 +14,7 @@
   Operating System exception and will throw this error through the `onLocationError` callback.
 - Added a new attribute `diagnosticsOptions` to the `LocationRequest` to manage configuration
   options related to remote diagnostic and telemetry.
+
+- added 2 new actions sent to mapview:
+  - deselect current poi
+  - calculate static directions
