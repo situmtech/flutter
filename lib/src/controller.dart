@@ -105,6 +105,11 @@ class MapViewController {
         WV_MESSAGE_CARTOGRAPHY_SELECT_BUILDING, {"identifier": identifier});
   }
 
+  /// Deselects current POI
+  void deselectPoi() async {
+    _sendMessage(WV_MESSAGE_CARTOGRAPHY_DESELECT_POI, {});
+  }
+
   /// Selects the given POI in the map.
   void selectPoi(String identifier) async {
     _sendMessage(WV_MESSAGE_CARTOGRAPHY_SELECT_POI, {"identifier": identifier});
@@ -124,6 +129,29 @@ class MapViewController {
   void selectPoiCategory(String identifier) async {
     _sendMessage(
         WV_MESSAGE_CARTOGRAPHY_SELECT_POI_CATEGORY, {"identifier": identifier});
+  }
+
+  /// Starts directions from an origin POI to a destination POI.
+  /// If [poiFromIdentifier] is not specified and the user's position is available, it will be set as the origin automatically.
+  /// You can optionally specify the desired [AccessibilityMode] to calculate the route.
+  ///
+  /// Note: If MapView is not being used, consider using [SitumSdk.requestDirections] instead.
+  void requestDirections({
+    String? poiFromIdentifier,
+    String? poiToIdentifier,
+    AccessibilityMode? accessibilityMode,
+  }) async {
+    dynamic message = {};
+    if (poiFromIdentifier != null) {
+      message["navigationFrom"] = "'$poiFromIdentifier'";
+    }
+    if (poiToIdentifier != null) {
+      message["navigationTo"] = "'$poiToIdentifier'";
+    }
+    if (accessibilityMode != null) {
+      message["routeType"] = "'${accessibilityMode.name}'";
+    }
+    _sendMessage(WV_MESSAGE_DIRECTIONS_START, message);
   }
 
   /// Starts navigating to the given POI. You can optionally choose the desired
