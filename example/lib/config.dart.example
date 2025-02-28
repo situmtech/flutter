@@ -5,9 +5,9 @@ const situmApiKey = "YOUR-SITUM-API-KEY";
 
 // Set here the building identifier you want on the map.
 const buildingIdentifier = "YOUR-SITUM-BUILDING-IDENTIFIER";
-// Alternatively, you can set an identifier that allows you to remotely configure all map settings.
+// Alternatively, you can set a profile name that allows you to remotely configure all map settings.
 // For now, you need to contact Situm to obtain yours.
-const remoteIdentifier = null;
+const profile = null;
 
 // A String parameter that allows you to specify which domain will be displayed inside our webview.
 // Take a look at [MapViewConfiguration.viewerDomain].
