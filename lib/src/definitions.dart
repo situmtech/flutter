@@ -318,13 +318,16 @@ class OnSpeakAloudTextResult {
   /// A [String] that represents the language code, i.e. es-ES
   final String? lang;
 
-  /// A [Double] that represents the volume from 0.0 to 1.0
+  /// A [Double] that represents the volume from 0.0 to 1.0, default 1
+  /// https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesisUtterance/volume
   final double? volume;
 
-  /// A [Double] that represents the speech pitch from 0.0 to 1.0
+  /// A [Double] that represents the speech pitch from 0.0 to 2.0, default 1
+  /// https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesisUtterance/pitch
   final double? pitch;
 
-  /// A [Double] that represents the speech rate from 0.0 to 1.0
+  /// A [Double] that represents the speech rate from 0.0 to 10.0, default 1
+  /// https://developer.mozilla.org/en-US/docs/Web/API/SpeechSynthesisUtterance/rate
   final double? rate;
 
   const OnSpeakAloudTextResult(
