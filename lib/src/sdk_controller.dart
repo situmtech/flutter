@@ -449,6 +449,18 @@ class SitumSdk {
     );
   }
 
+  /// Automatically assists users in resolving app-related permission and sensor issues.
+  ///
+  /// This method presents a user interface that explains detected configuration issues
+  /// and guides users through the required steps to resolve them, following best
+  /// practices for runtime permission requests.
+  ///
+  /// Issues addressed include:
+  /// - Missing permissions for Location or Bluetooth.
+  /// - Disabled Location or Bluetooth sensors.
+  ///
+  /// By calling this method, the system proactively ensures the device is correctly
+  /// configured for optimal functionality.
   Future<void> autoManage(bool enabled) {
     return methodChannel
         .invokeMapMethod("userHelper.autoManage", {"enabled": enabled});
