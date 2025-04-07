@@ -106,6 +106,7 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
             "updateNavigationState" -> updateNavigationState(arguments, result)
             "requestAutoStop" -> requestAutoStop(arguments, result)
             "removeAutoStop" -> removeAutoStop(result)
+            "userHelper.autoManage" -> userHelperAutoManage(arguments, result)
             else -> result.notImplemented()
         }
     }
@@ -401,6 +402,11 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
     private fun removeAutoStop(result: MethodChannel.Result) {
         AutoStop.disable()
         result.success("DONE")
+    }
+
+    private fun userHelperAutoManage(arguments: Map<String, Any>, result: MethodChannel.Result) {
+        val enabled = arguments["enabled"] as Boolean
+        SitumSdk.userHelperManager().autoManage(enabled)
     }
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {

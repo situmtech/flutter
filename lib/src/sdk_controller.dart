@@ -449,6 +449,11 @@ class SitumSdk {
     );
   }
 
+  Future<void> autoManage(bool enabled) {
+    return methodChannel
+        .invokeMapMethod("userHelper.autoManage", {"enabled": enabled});
+  }
+
   // Callbacks:
 
   Future<void> _methodCallHandler(MethodCall call) async {

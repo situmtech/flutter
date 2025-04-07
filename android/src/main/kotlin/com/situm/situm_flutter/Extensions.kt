@@ -62,7 +62,7 @@ fun LocationRequest.Builder.fromArguments(args: Map<String, Any>): LocationReque
     }
     if (args.containsKey("foregroundServiceNotificationOptions")) {
         val fgsNotificationOptionsMap =
-            args["foregroundServiceNotificationOptions"] as Map<String, Any>
+            args["foregroundServiceNotificationOptions"] as Map<String, Any>?
         if (fgsNotificationOptionsMap != null) {
             val fgsNotificationOptions =
                 ForegroundServiceNotificationOptions.fromMap(fgsNotificationOptionsMap)

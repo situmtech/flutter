@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:situm_flutter/sdk.dart';
 import 'package:situm_flutter/wayfinding.dart';
 
@@ -478,10 +477,8 @@ class _MyTabsState extends State<MyTabs> {
   // SDK auxiliary functions
 
   void _requestLocationUpdates() async {
-    var hasPermissions = await _requestPermissions();
-    if (!hasPermissions) {
-      _echo("You need to accept permissions to start positioning.");
-    }
+    // Tell the native SDK to automatically manage permissions and sensor state.
+    situmSdk.autoManage(true);
     // Start positioning using the native SDK. You will receive location and
     // status updates (as well as possible errors) in the defined callbacks.
     // You don't need to do anything to draw the user's position on the map; the
@@ -572,20 +569,5 @@ class _MyTabsState extends State<MyTabs> {
     setState(() {
       _selectedIndex = index;
     });
-  }
-
-  /// Example of a function that request permissions and check the result:
-  Future<bool> _requestPermissions() async {
-    var permissions = <Permission>[
-      Permission.locationWhenInUse,
-    ];
-    if (Platform.isAndroid) {
-      permissions.addAll([
-        Permission.bluetoothConnect,
-        Permission.bluetoothScan,
-      ]);
-    }
-    Map<Permission, PermissionStatus> statuses = await permissions.request();
-    return statuses.values.every((status) => status.isGranted);
   }
 }
