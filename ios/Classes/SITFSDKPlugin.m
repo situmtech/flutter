@@ -118,6 +118,8 @@ const NSString* RESULTS_KEY = @"results";
     } else if ([@"removeAutoStop" isEqualToString:call.method]) {
         // Only for Android.
         result(@"DONE");
+    } else if ([@"userHelper.autoManage" isEqualToString:call.method]) {
+        [self handleUserHelperAutoManage:call result:result];
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -588,6 +590,12 @@ didInitiatedWithRequest:(SITLocationRequest *)request
     self.locManager.geofenceDelegate = self;
     
     result(@"SUCCESS");
+}
+
+- (void)handleUserHelperAutoManage:(FlutterMethodCall*)call result:(FlutterResult)result {
+    BOOL enabled = [call.arguments[@"enabled"] boolValue];
+    [[SITUserHelperManager sharedInstance] autoManage:enabled];
+    result(@"DONE");
 }
 
 @end
