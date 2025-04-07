@@ -1,4 +1,4 @@
-part of sdk;
+part of '../sdk.dart';
 
 BuildingInfo createBuildingInfo(Map map) {
   return BuildingInfo(
@@ -164,7 +164,7 @@ SitumRoute createRoute(arguments) {
 }
 
 DirectionsRequest createDirectionsRequest(arguments) {
-  var poiToIdentifier;
+  String? poiToIdentifier;
   Map directionsRequestArgs = arguments["directionsRequest"];
   if (!directionsRequestArgs.containsKey("poiToIdentifier") &&
       arguments["destinationCategory"] == "POI") {
@@ -228,6 +228,12 @@ ExternalLocation createExternalLocation(dynamic args) {
     coordinate: createCoordinate(args['coordinate']),
     buildingIdentifier: args["buildingIdentifier"],
     floorIdentifier: args["floorIdentifier"],
-    bearing: args['bearing'],
+    bearing: Angle(
+      degrees: args["bearing"]["degrees"],
+      degreesClockwise: args["bearing"]["degreesClockwise"],
+      radians: args["bearing"]["radians"],
+      radiansMinusPiPi: args["bearing"]["radiansMinusPiPi"],
+    ),
+    accuracy: args["accuracy"]
   );
 }

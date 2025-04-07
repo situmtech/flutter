@@ -1,4 +1,4 @@
-part of wayfinding;
+part of '../wayfinding.dart';
 
 /// MapView is the main component and entry point for Situm Flutter Wayfinding.
 /// This widget will load your Situm building on a map, based on the given
@@ -94,7 +94,7 @@ class _MapViewState extends State<MapView> {
                 ConnectionErrors.values.contains(error.errorCode)) {
               webViewController!.loadFlutterAsset(MapView._retryScreenURL);
               wyfController?._onMapViewErrorCallBack
-                  ?.call(MapViewError.NoNetworkError());
+                  ?.call(MapViewError.noNetworkError());
             }
           })
           ..setOnNavigationRequest((dynamic request) {
@@ -136,7 +136,6 @@ class _MapViewState extends State<MapView> {
     wyfController ??= MapViewController(
       situmApiKey: mapViewConfiguration.situmApiKey,
     );
-    wyfController!._widgetUpdater = _loadWithConfig;
     wyfController!._widgetLoadCallback = widget.onLoad;
     wyfController!._onMapViewErrorCallBack = widget.onError;
     wyfController!._webViewController = webViewController!;

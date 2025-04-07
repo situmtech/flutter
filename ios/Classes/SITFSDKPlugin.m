@@ -324,14 +324,7 @@ SITRealtimeUpdateInterval createRealtimeUpdateInterval(NSString *name) {
 }
 
 -(SITExternalLocation *)createExternalLocation:(NSDictionary *)arguments{
-    NSString *buildingId = arguments[@"buildingIdentifier"];
-        NSString *floorId = arguments[@"floorIdentifier"];
-    NSNumber *latitude = arguments[@"coordinate"][@"latitude"];
-    NSNumber *longitude = arguments[@"coordinate"][@"longitude"];
-    return [[SITExternalLocation alloc ] initWithBuildingIdentifier:buildingId
-                                        floorIdentifier:floorId
-                                        latitude:[latitude floatValue]
-                                        longitude:[longitude floatValue]];
+    return [SITExternalLocation fromDictionary:arguments];
 }
 
 - (void)handlePrefetchPositioningInfo:(FlutterMethodCall*)call result:(FlutterResult)result {

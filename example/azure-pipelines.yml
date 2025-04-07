@@ -24,7 +24,7 @@ parameters:
   - name: BUILDINGID
     type: string
     default: "1"
-  - name: REMOTEIDENTIFIER
+  - name: PROFILE
     type: string
     default: "demo"
   - name: MAPVIEWURL
@@ -53,7 +53,7 @@ jobs:
               echo "##vso[task.setvariable variable=BUILDINGID]$(echo $(BUILDING_ID_EXAMPLES))"
               echo "##vso[task.setvariable variable=MAPVIEWURL]$(echo $(DEFAULT_MAPVIEWURL))"
               # TODO: add DEFAULT_REMOTEIDENTIFIER to Passwords.
-              echo "##vso[task.setvariable variable=REMOTEIDENTIFIER]$(echo $(DEFAULT_REMOTEIDENTIFIER))"
+              echo "##vso[task.setvariable variable=PROFILE]$(echo $(DEFAULT_REMOTEIDENTIFIER))"
               echo "##vso[task.setvariable variable=BUILDNUMBER]$(echo $(Build.BuildNumber) | awk -F"." '{if ($2 < 10) print $1"0"$2; else print $1$2}')"
 
               echo -e "\n[!] I'm a shy step so I don't show any information. You'll see my work in the Configure Credentials step"
@@ -65,7 +65,7 @@ jobs:
               echo "##vso[task.setvariable variable=XAPIEMAIL]$(echo ${{ parameters.XAPIEMAIL}})"
               echo "##vso[task.setvariable variable=BUILDINGID]$(echo ${{ parameters.BUILDINGID}})"
               echo "##vso[task.setvariable variable=MAPVIEWURL]$(echo ${{ parameters.MAPVIEWURL}})"
-              echo "##vso[task.setvariable variable=REMOTEIDENTIFIER]$(echo ${{ parameters.REMOTEIDENTIFIER}})"
+              echo "##vso[task.setvariable variable=PROFILE]$(echo ${{ parameters.PROFILE}})"
               echo "##vso[task.setvariable variable=BUILDNUMBER]$(echo $(Build.BuildNumber) | awk -F"." '{if ($2 < 10) print $1"0"$2; else print $1$2}')"
 
 
@@ -77,7 +77,7 @@ jobs:
           XAPIKEY: $(XAPIKEY)
           XAPIEMAIL: $(XAPIEMAIL)
           BUILDINGID: $(BUILDINGID)
-          REMOTEIDENTIFIER: $(REMOTEIDENTIFIER)
+          PROFILE: $(PROFILE)
           MAPVIEWURL: $(MAPVIEWURL)
           system: "Android"
 
@@ -87,7 +87,7 @@ jobs:
           XAPIEMAIL: $(XAPIEMAIL)
           BUILDINGID: $(BUILDINGID)
           BUILDNUMBER: $(BUILDNUMBER)
-          REMOTEIDENTIFIER: $(REMOTEIDENTIFIER)
+          PROFILE: $(PROFILE)
           MAPVIEWURL: $(MAPVIEWURL)
       - ${{ if ne(variables['Build.Reason'],'manual') }}:
         - template: azure-templates/teams-notifier.yml@sys_kubernetes_templates
@@ -112,7 +112,7 @@ jobs:
               echo "##vso[task.setvariable variable=BUILDINGID]$(echo $(BUILDING_ID_EXAMPLES))"
               echo "##vso[task.setvariable variable=MAPVIEWURL]$(echo $(DEFAULT_MAPVIEWURL))"
               # TODO: add DEFAULT_REMOTEIDENTIFIER to Passwords.
-              echo "##vso[task.setvariable variable=REMOTEIDENTIFIER]$(echo $(DEFAULT_REMOTEIDENTIFIER))"
+              echo "##vso[task.setvariable variable=PROFILE]$(echo $(DEFAULT_REMOTEIDENTIFIER))"
               echo "##vso[task.setvariable variable=BUILDNUMBER]$(echo $(Build.BuildNumber) | awk -F"." '{if ($2 < 10) print $1"0"$2; else print $1$2}')"
 
               echo -e "\n[!] I'm a shy step so I don't show any information. You'll see my work in the Configure Credentials step"
@@ -124,7 +124,7 @@ jobs:
               echo "##vso[task.setvariable variable=XAPIEMAIL]$(echo ${{ parameters.XAPIEMAIL}})"
               echo "##vso[task.setvariable variable=BUILDINGID]$(echo ${{ parameters.BUILDINGID}})"
               echo "##vso[task.setvariable variable=MAPVIEWURL]$(echo ${{ parameters.MAPVIEWURL}})"
-              echo "##vso[task.setvariable variable=REMOTEIDENTIFIER]$(echo ${{ parameters.REMOTEIDENTIFIER}})"
+              echo "##vso[task.setvariable variable=PROFILE]$(echo ${{ parameters.PROFILE}})"
               echo "##vso[task.setvariable variable=BUILDNUMBER]$(echo $(Build.BuildNumber) | awk -F"." '{if ($2 < 10) print $1"0"$2; else print $1$2}')"
 
               echo -e "\n[!] I'm a shy step so I don't show any information. You'll see my work in the Configure Credentials step"
@@ -135,7 +135,7 @@ jobs:
           XAPIKEY: $(XAPIKEY)
           XAPIEMAIL: $(XAPIEMAIL)
           BUILDINGID: $(BUILDINGID)
-          REMOTEIDENTIFIER: $(REMOTEIDENTIFIER)
+          PROFILE: $(PROFILE)
           MAPVIEWURL: $(MAPVIEWURL)
           system: "iOS"
 
@@ -145,7 +145,7 @@ jobs:
           XAPIEMAIL: $(XAPIEMAIL)
           BUILDINGID: $(BUILDINGID)
           BUILDNUMBER: $(BUILDNUMBER)
-          REMOTEIDENTIFIER: $(REMOTEIDENTIFIER)
+          PROFILE: $(PROFILE)
           MAPVIEWURL: $(MAPVIEWURL)
 
       - ${{ if ne(variables['Build.Reason'],'manual') }}:

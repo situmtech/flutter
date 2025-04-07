@@ -5,7 +5,7 @@ parameters:
     type: string
   - name: BUILDINGID
     type: string
-  - name: REMOTEIDENTIFIER
+  - name: PROFILE
     type: string
   - name: DASHBOARD_URL
     type: string
@@ -60,7 +60,7 @@ steps:
           gem install fastlane
   
           dashboard=$(echo ${{ parameters.DASHBOARD_URL }} | awk -F"/" '{print $3}')  
-          export WHATS_NEW="Plugin version: $(pluginVersion), USER: ${{parameters.XAPIEMAIL}}, BUILDINGID: ${{ parameters.BUILDINGID }}, REMOTEIDENTIFIER: ${{ parameters.REMOTEIDENTIFIER }}, DASHBOARD_URL: $dashboard, MAPVIEWURL: ${{ parameters.MAPVIEWURL}}"
+          export WHATS_NEW="Plugin version: $(pluginVersion), USER: ${{parameters.XAPIEMAIL}}, BUILDINGID: ${{ parameters.BUILDINGID }}, PROFILE: ${{ parameters.PROFILE }}, DASHBOARD_URL: $dashboard, MAPVIEWURL: ${{ parameters.MAPVIEWURL}}"
           export IPHONEOS_DEPLOYMENT_TARGET=$(IPHONEOS_DEPLOYMENT_TARGET)
           export BUILDNUMBER=${{ parameters.BUILDNUMBER }}
           echo -e "\n[+] Setting variables to deploy:"

@@ -1,4 +1,4 @@
-part of sdk;
+part of '../../sdk.dart';
 
 /// This private class adapts the native errors
 /// received from [Android](https://developers.situm.com/sdk_documentation/android/javadoc/latest/es/situm/sdk/location/locationmanager.code) and [iOS](https://developers.situm.com/sdk_documentation/ios/documentation/enums/sitlocationerror#/) and gives back a proccessed hybrid error.
@@ -44,6 +44,9 @@ class _LocationErrorAdapter {
       case "13": // iOS kSITLocationErrorBuildingModelNotAvaliable
       case "8005": // Android
         arguments["code"] = ErrorCodes.buildingModelProcessingError;
+        break;
+      case "8014": // Android only
+        arguments["code"] = ErrorCodes.foregroundServiceNotAllowed;
         break;
     }
 

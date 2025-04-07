@@ -1,4 +1,4 @@
-part of wayfinding;
+part of '../wayfinding.dart';
 
 /// Controller for [MapView]. This class exposes methods and callbacks.
 class MapViewController {
@@ -13,7 +13,6 @@ class MapViewController {
   OnCalibrationFinishedCallback? _onCalibrationFinishedCallback;
   OnMapViewErrorCallback? _onMapViewErrorCallBack;
 
-  late Function(MapViewConfiguration) _widgetUpdater;
   late MapViewCallback _widgetLoadCallback;
   late PlatformWebViewController _webViewController;
 
@@ -93,11 +92,6 @@ class MapViewController {
 
   // Actions:
 
-  void _reloadWithConfiguration(MapViewConfiguration configuration) async {
-    // TODO - feature: reload with a new configuration.
-    _widgetUpdater(configuration);
-  }
-
   /// Reloads the [MapView] using the current configuration by reloading the
   /// underlying platform web view controller.
   void reload() async {
@@ -109,6 +103,11 @@ class MapViewController {
   void selectBuilding(String identifier) async {
     _sendMessage(
         WV_MESSAGE_CARTOGRAPHY_SELECT_BUILDING, {"identifier": identifier});
+  }
+
+  /// Deselects current POI
+  void deselectPoi() async {
+    _sendMessage(WV_MESSAGE_CARTOGRAPHY_DESELECT_POI, {});
   }
 
   /// Selects the given POI in the map.
@@ -130,6 +129,29 @@ class MapViewController {
   void selectPoiCategory(String identifier) async {
     _sendMessage(
         WV_MESSAGE_CARTOGRAPHY_SELECT_POI_CATEGORY, {"identifier": identifier});
+  }
+
+  /// Starts directions from an origin POI to a destination POI.
+  /// If [poiFromIdentifier] is not specified and the user's position is available, it will be set as the origin automatically.
+  /// You can optionally specify the desired [AccessibilityMode] to calculate the route.
+  ///
+  /// Note: If MapView is not being used, consider using [SitumSdk.requestDirections] instead.
+  void requestDirections({
+    String? poiFromIdentifier,
+    String? poiToIdentifier,
+    AccessibilityMode? accessibilityMode,
+  }) async {
+    dynamic message = {};
+    if (poiFromIdentifier != null) {
+      message["navigationFrom"] = "'$poiFromIdentifier'";
+    }
+    if (poiToIdentifier != null) {
+      message["navigationTo"] = "'$poiToIdentifier'";
+    }
+    if (accessibilityMode != null) {
+      message["routeType"] = "'${accessibilityMode.name}'";
+    }
+    _sendMessage(WV_MESSAGE_DIRECTIONS_START, message);
   }
 
   /// Starts navigating to the given POI. You can optionally choose the desired
