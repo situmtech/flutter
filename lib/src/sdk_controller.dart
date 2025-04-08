@@ -449,6 +449,13 @@ class SitumSdk {
     );
   }
 
+  void onSpeakAloudText(Map<String, dynamic> result) {
+    methodChannel.invokeMethod(
+      'onSpeakAloudText',
+      result,
+    );
+  }
+
   // Callbacks:
 
   Future<void> _methodCallHandler(MethodCall call) async {
