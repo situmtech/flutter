@@ -37,6 +37,7 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
     private var geofenceListener: GeofenceListener? = null
     private var context: Context? = null
     private var handler = android.os.Handler(Looper.getMainLooper())
+    private var ttsManager: TextToSpeechManager? = null
 
     // Add this config to avoid preloading images. The default value for preloadImages is true but
     // this might cause performance issues.
@@ -106,6 +107,7 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
             "updateNavigationState" -> updateNavigationState(arguments, result)
             "requestAutoStop" -> requestAutoStop(arguments, result)
             "removeAutoStop" -> removeAutoStop(result)
+            "onSpeakAloudText" -> onSpeakAloudText(arguments, result)
             else -> result.notImplemented()
         }
     }
@@ -284,6 +286,8 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
 
     private fun removeUpdates(result: MethodChannel.Result?) {
         SitumSdk.locationManager().removeUpdates()
+        ttsManager?.stop()
+        ttsManager = null
         result?.success("DONE")
     }
 
@@ -395,6 +399,21 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
     private fun requestAutoStop(arguments: Map<String, Any>, result: MethodChannel.Result) {
         val criteria = AutoStopCriteria.Builder().fromMap(arguments).build()
         AutoStop.autoStopUnderCriteria(criteria)
+        result.success("DONE")
+    }
+
+    private fun onSpeakAloudText(arguments: Map<String, Any>, result: MethodChannel.Result) {
+        context?.let {
+            if (ttsManager == null) {
+                ttsManager = TextToSpeechManager(it)
+            }
+            ttsManager?.speak(
+                text = arguments["text"] as String,
+                lang = arguments["lang"] as String,
+                pitch = (arguments["pitch"] as Double).toFloat(),
+                rate = (arguments["rate"] as Double).toFloat(),
+            )
+        }
         result.success("DONE")
     }
 

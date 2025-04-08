@@ -590,4 +590,10 @@ didInitiatedWithRequest:(SITLocationRequest *)request
     result(@"SUCCESS");
 }
 
+- (void) handleOnSpeakAloudText :(FlutterMethodCall*)call
+                                    result:(FlutterResult)result {
+    // Do nothing, TTS is already managed by SITMapView internally
+    result(@"SUCCESS");
+}
+
 @end
