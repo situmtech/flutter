@@ -228,12 +228,14 @@ ExternalLocation createExternalLocation(dynamic args) {
     coordinate: createCoordinate(args['coordinate']),
     buildingIdentifier: args["buildingIdentifier"],
     floorIdentifier: args["floorIdentifier"],
-    bearing: Angle(
-      degrees: args["bearing"]["degrees"],
-      degreesClockwise: args["bearing"]["degreesClockwise"],
-      radians: args["bearing"]["radians"],
-      radiansMinusPiPi: args["bearing"]["radiansMinusPiPi"],
-    ),
-    accuracy: args["accuracy"]
+    accuracy: args["accuracy"],
+    bearing: args.containsKey("bearing")
+        ? Angle(
+            degrees: args["bearing"]["degrees"],
+            degreesClockwise: args["bearing"]["degreesClockwise"],
+            radians: args["bearing"]["radians"],
+            radiansMinusPiPi: args["bearing"]["radiansMinusPiPi"],
+          )
+        : null,
   );
 }
