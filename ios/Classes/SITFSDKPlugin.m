@@ -118,6 +118,8 @@ const NSString* RESULTS_KEY = @"results";
     } else if ([@"removeAutoStop" isEqualToString:call.method]) {
         // Only for Android.
         result(@"DONE");
+    } else if ([@"userHelper.configure" isEqualToString:call.method]) {
+        [self handleConfigureUserHelper:call result:result];
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -588,6 +590,30 @@ didInitiatedWithRequest:(SITLocationRequest *)request
     self.locManager.geofenceDelegate = self;
     
     result(@"SUCCESS");
+}
+
+- (void)handleConfigureUserHelper:(FlutterMethodCall*)call result:(FlutterResult)result {
+    BOOL enabled = [call.arguments[@"enabled"] boolValue];
+    NSDictionary *colorScheme = call.arguments[@"colorScheme"];
+    
+    [[SITUserHelperManager sharedInstance] autoManage:enabled];
+    
+    if (colorScheme) {
+        NSString *primaryColor = colorScheme[@"primaryColor"];
+        NSString *secondaryColor = colorScheme[@"secondaryColor"];
+        
+        SITUserHelperColorScheme *helperColorScheme = [[SITUserHelperColorScheme alloc] init];
+        if (primaryColor) {
+            helperColorScheme.primaryColor = primaryColor;
+        }
+        if (secondaryColor) {
+            helperColorScheme.secondaryColor = secondaryColor;
+        }
+        
+        [[SITUserHelperManager sharedInstance] setColorScheme:helperColorScheme];
+    }
+    
+    result(@"DONE");
 }
 
 @end
