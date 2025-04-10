@@ -118,8 +118,8 @@ const NSString* RESULTS_KEY = @"results";
     } else if ([@"removeAutoStop" isEqualToString:call.method]) {
         // Only for Android.
         result(@"DONE");
-    } else if ([@"userHelper.autoManage" isEqualToString:call.method]) {
-        [self handleUserHelperAutoManage:call result:result];
+    } else if ([@"userHelper.configure" isEqualToString:call.method]) {
+        [self handleConfigureUserHelper:call result:result];
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -592,9 +592,13 @@ didInitiatedWithRequest:(SITLocationRequest *)request
     result(@"SUCCESS");
 }
 
-- (void)handleUserHelperAutoManage:(FlutterMethodCall*)call result:(FlutterResult)result {
+- (void)handleConfigureUserHelper:(FlutterMethodCall*)call result:(FlutterResult)result {
     BOOL enabled = [call.arguments[@"enabled"] boolValue];
+    NSDictionary *colorScheme = call.arguments[@"colorScheme"];
+    
     [[SITUserHelperManager sharedInstance] autoManage:enabled];
+    
+    // TODO: Apply color scheme when supported by the native SDK
     result(@"DONE");
 }
 

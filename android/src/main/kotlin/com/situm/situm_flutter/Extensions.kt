@@ -10,6 +10,7 @@ import es.situm.sdk.location.DiagnosticsOptions
 import es.situm.sdk.model.MapperInterface
 import es.situm.sdk.model.cartography.Building
 import es.situm.sdk.utils.Handler
+import es.situm.sdk.userhelper.UserHelperColorScheme
 import io.flutter.plugin.common.MethodChannel
 
 fun Collection<MapperInterface>.toMap(): List<Map<String, Any>> {
@@ -150,4 +151,16 @@ fun String?.isValidIdentifier(): Boolean {
 fun String?.isGlobalModeIdentifier(): Boolean {
     // Respect both Android and iOS
     return this == "-1" || this?.isBlank() == true
+}
+
+fun UserHelperColorScheme.Builder.fromArguments(args: Map<String, Any>): UserHelperColorScheme.Builder {
+    val primaryColor = args["primaryColor"] as? String
+    val secondaryColor = args["secondaryColor"] as? String
+    primaryColor?.let {
+        this.setPrimaryColor(it)
+    }
+    secondaryColor?.let {
+        this.setSecondaryColor(it)
+    }
+    return this
 }

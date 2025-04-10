@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_tts/flutter_tts.dart';
 import 'package:situm_flutter/sdk.dart';
@@ -477,8 +475,10 @@ class _MyTabsState extends State<MyTabs> {
   // SDK auxiliary functions
 
   void _requestLocationUpdates() async {
-    // Tell the native SDK to automatically manage permissions and sensor state.
-    situmSdk.autoManage(true);
+    // Tell the native SDK to automatically request permissions and manage
+    // sensor (BLE/Location) issues.
+    situmSdk.enableUserHelper();
+
     // Start positioning using the native SDK. You will receive location and
     // status updates (as well as possible errors) in the defined callbacks.
     // You don't need to do anything to draw the user's position on the map; the

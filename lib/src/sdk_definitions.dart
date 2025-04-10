@@ -1061,3 +1061,45 @@ class _InternalDelegates {
     });
   }
 }
+
+/// Color scheme for the user helper UI.
+class UserHelperColorScheme {
+  /// Primary color for the user helper UI.
+  final String primaryColor;
+
+  /// Secondary color for the user helper UI.
+  final String secondaryColor;
+
+  const UserHelperColorScheme({
+    required this.primaryColor,
+    required this.secondaryColor,
+  });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'primaryColor': primaryColor,
+      'secondaryColor': secondaryColor,
+    };
+  }
+}
+
+/// Configuration options for the user helper.
+class UserHelperOptions {
+  /// Whether the user helper is enabled. Equivalent to the underlying native SitumSdk.userHelperManager#autoManage(true).
+  final bool enabled;
+
+  /// Color scheme for the user helper UI.
+  final UserHelperColorScheme? colorScheme;
+
+  const UserHelperOptions({
+    this.enabled = true,
+    this.colorScheme,
+  });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'enabled': enabled,
+      'colorScheme': colorScheme?.toMap(),
+    };
+  }
+}
