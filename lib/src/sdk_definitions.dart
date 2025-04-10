@@ -1065,9 +1065,11 @@ class _InternalDelegates {
 /// Color scheme for the user helper UI.
 class UserHelperColorScheme {
   /// Primary color for the user helper UI.
+  /// Use HEX color code (e.g. "#ff5733").
   final String primaryColor;
 
   /// Secondary color for the user helper UI.
+  /// Use HEX color code (e.g. "#ff5733").
   final String secondaryColor;
 
   const UserHelperColorScheme({
