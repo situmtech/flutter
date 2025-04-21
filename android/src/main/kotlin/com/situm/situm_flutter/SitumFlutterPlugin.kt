@@ -405,12 +405,7 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
             if (ttsManager == null) {
                 ttsManager = TextToSpeechManager(it)
             }
-            ttsManager?.speak(
-                text = arguments["text"] as String,
-                lang = arguments["lang"] as String,
-                pitch = (arguments["pitch"] as Double).toFloat(),
-                rate = (arguments["rate"] as Double).toFloat(),
-            )
+            ttsManager?.speak(arguments)
         }
         result.success("DONE")
     }

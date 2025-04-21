@@ -18,11 +18,20 @@ class TextToSpeechManager(context: Context) : OnInitListener {
         }
     }
 
-    fun speak(text: String, lang: String, pitch: Float, rate: Float) {
-        textToSpeech.setLanguage(Locale(lang))
-        textToSpeech.setPitch(pitch)
-        textToSpeech.setSpeechRate(convertToAndroidSpeechRate(rate))
-        textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null, null)
+    fun speak(arguments: Map<String, Any>) {
+        if (arguments["text"] == null) return
+
+        arguments["lang"]?.let {
+            textToSpeech.setLanguage(Locale(it as String))
+        }
+        arguments["pitch"]?.let {
+            textToSpeech.setPitch((it as Double).toFloat())
+        }
+        arguments["rate"]?.let {
+            textToSpeech.setSpeechRate(convertToAndroidSpeechRate((it as Double).toFloat()))
+        }
+
+        textToSpeech.speak(arguments["text"] as String, TextToSpeech.QUEUE_FLUSH, null, null)
     }
 
     // ui.speak_aloud_text message sends the speech rate in FlutterTts scale [0.0f,1.0f],
