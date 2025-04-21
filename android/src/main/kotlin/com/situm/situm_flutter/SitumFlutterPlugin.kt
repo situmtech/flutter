@@ -107,7 +107,7 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
             "updateNavigationState" -> updateNavigationState(arguments, result)
             "requestAutoStop" -> requestAutoStop(arguments, result)
             "removeAutoStop" -> removeAutoStop(result)
-            "onSpeakAloudText" -> onSpeakAloudText(arguments, result)
+            "speakAloudText" -> speakAloudText(arguments, result)
             else -> result.notImplemented()
         }
     }
@@ -402,7 +402,7 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
         result.success("DONE")
     }
 
-    private fun onSpeakAloudText(arguments: Map<String, Any>, result: MethodChannel.Result) {
+    private fun speakAloudText(arguments: Map<String, Any>, result: MethodChannel.Result) {
         context?.let {
             if (ttsManager == null) {
                 ttsManager = TextToSpeechManager(it)

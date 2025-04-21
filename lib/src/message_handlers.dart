@@ -213,13 +213,8 @@ class SpeakAloudTextMessageHandler implements MessageHandler {
       mapViewController._onSpeakAloudTextCallback!.call(OnSpeakAloudTextResult(
           text: text, lang: lang, pitch: pitch, rate: rate, volume: volume));
     } else {
-      SitumSdk().onSpeakAloudText({
-        "text": text,
-        "lang": lang,
-        "pitch": pitch,
-        "rate": rate,
-        // "volume": volume
-      });
+      mapViewController._speakAloudText(OnSpeakAloudTextResult(
+          text: text, lang: lang, pitch: pitch, rate: rate, volume: volume));
     }
   }
 }
