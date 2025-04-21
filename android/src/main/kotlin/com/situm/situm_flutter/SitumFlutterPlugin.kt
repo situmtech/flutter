@@ -286,8 +286,6 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
 
     private fun removeUpdates(result: MethodChannel.Result?) {
         SitumSdk.locationManager().removeUpdates()
-        ttsManager?.stop()
-        ttsManager = null
         result?.success("DONE")
     }
 
@@ -436,5 +434,7 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
 
     override fun onDetachedFromActivity() {
         context = null
+        ttsManager?.stop()
+        ttsManager = null
     }
 }
