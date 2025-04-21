@@ -594,11 +594,12 @@ didInitiatedWithRequest:(SITLocationRequest *)request
 
 - (void)handleConfigureUserHelper:(FlutterMethodCall*)call result:(FlutterResult)result {
     BOOL enabled = [call.arguments[@"enabled"] boolValue];
-    NSDictionary *colorScheme = call.arguments[@"colorScheme"];
+    id colorSchemeValue = call.arguments[@"colorScheme"];
     
     [[SITUserHelperManager sharedInstance] autoManage:enabled];
     
-    if (colorScheme) {
+    if ([colorSchemeValue isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *colorScheme = (NSDictionary *)colorSchemeValue;
         NSString *primaryColor = colorScheme[@"primaryColor"];
         NSString *secondaryColor = colorScheme[@"secondaryColor"];
         

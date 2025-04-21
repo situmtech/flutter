@@ -463,8 +463,8 @@ class SitumSdk {
   /// Use [UserHelperOptions] to configure the available options.
   /// Call [enableUserHelper] as a shortcut to enable the user helper with default configuration.
   /// Call [disableUserHelper] as a shortcut to disable the user helper.
-  Future<void> configureUserHelper(UserHelperOptions options) {
-    return methodChannel.invokeMapMethod(
+  Future<void> configureUserHelper(UserHelperOptions options) async {
+    await methodChannel.invokeMethod(
       "userHelper.configure",
       options.toMap(),
     );
@@ -473,8 +473,8 @@ class SitumSdk {
   /// Enables the user helper with default configuration.
   /// This is equivalent to calling [configureUserHelper] with [enabled: true].
   /// The user helper will assist users in resolving app-related permission and sensor issues.
-  Future<void> enableUserHelper() {
-    return configureUserHelper(const UserHelperOptions(enabled: true));
+  Future<void> enableUserHelper() async {
+    await configureUserHelper(const UserHelperOptions(enabled: true));
   }
 
   /// Disables the user helper.
