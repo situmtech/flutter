@@ -118,6 +118,9 @@ const NSString* RESULTS_KEY = @"results";
     } else if ([@"removeAutoStop" isEqualToString:call.method]) {
         // Only for Android.
         result(@"DONE");
+    }  else if ([@"speakAloudText" isEqualToString:call.method]) {
+        // Only for Android, TTS is already managed by SITMapView internally
+        result(@"DONE");
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -587,12 +590,6 @@ didInitiatedWithRequest:(SITLocationRequest *)request
                                     result:(FlutterResult)result {
     self.locManager.geofenceDelegate = self;
     
-    result(@"SUCCESS");
-}
-
-- (void) handleOnSpeakAloudText :(FlutterMethodCall*)call
-                                    result:(FlutterResult)result {
-    // Do nothing, TTS is already managed by SITMapView internally
     result(@"SUCCESS");
 }
 
