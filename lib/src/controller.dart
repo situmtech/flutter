@@ -90,6 +90,15 @@ class MapViewController {
     }
   }
 
+  // Internal method to speak aloud some event
+  // that MapView wants to tell to the user
+  void _speakAloudText(OnSpeakAloudTextResult result) {
+    methodChannel.invokeMethod(
+      'speakAloudText',
+      result.toMap(),
+    );
+  }
+
   // Actions:
 
   /// Reloads the [MapView] using the current configuration by reloading the
@@ -382,7 +391,11 @@ class MapViewController {
     _onPoiDeselectedCallback = callback;
   }
 
+  /// @deprecated - Since 3.25.14 text-to-speech functionality is handled automatically by @situm/flutter.
   /// Get notified when the viewer wants to read aloud some text.
+  /// On Android, implementing this callback will replace the default behaviour of reading aloud the text-to-speech messages.
+  @Deprecated(
+      "This functionality is now automatically handled by @situm/flutter.")
   void onSpeakAloudText(OnSpeakAloudTextCallback callback) {
     _onSpeakAloudTextCallback = callback;
   }

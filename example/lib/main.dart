@@ -325,26 +325,6 @@ class _MyTabsState extends State<MyTabs> {
       //   navigationRequest.distanceToGoalThreshold = 10.0;
       //   ...
     });
-
-    // Flutter-Android webview lacks proper support for TTS technology so we
-    // fallback to third-party libraries
-    controller.onSpeakAloudText((speakaloudTextResult) async {
-      _echo("Situm > SDK > Speak aloud: ${speakaloudTextResult.text}");
-      if (speakaloudTextResult.lang != null) {
-        flutterTts.setLanguage(speakaloudTextResult.lang!);
-      }
-      if (speakaloudTextResult.rate != null) {
-        flutterTts.setSpeechRate(speakaloudTextResult.rate!);
-      }
-      if (speakaloudTextResult.volume != null) {
-        flutterTts.setVolume(speakaloudTextResult.volume!);
-      }
-      if (speakaloudTextResult.pitch != null) {
-        flutterTts.setPitch(speakaloudTextResult.pitch!);
-      }
-
-      await flutterTts.speak(speakaloudTextResult.text);
-    });
   }
 
   void _onError(MapViewError error) {

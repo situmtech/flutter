@@ -37,6 +37,7 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
     private var geofenceListener: GeofenceListener? = null
     private var context: Context? = null
     private var handler = android.os.Handler(Looper.getMainLooper())
+    private var ttsManager: TextToSpeechManager? = null
 
     // Add this config to avoid preloading images. The default value for preloadImages is true but
     // this might cause performance issues.
@@ -106,6 +107,7 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
             "updateNavigationState" -> updateNavigationState(arguments, result)
             "requestAutoStop" -> requestAutoStop(arguments, result)
             "removeAutoStop" -> removeAutoStop(result)
+            "speakAloudText" -> speakAloudText(arguments, result)
             else -> result.notImplemented()
         }
     }
@@ -398,6 +400,16 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
         result.success("DONE")
     }
 
+    private fun speakAloudText(arguments: Map<String, Any>, result: MethodChannel.Result) {
+        context?.let {
+            if (ttsManager == null) {
+                ttsManager = TextToSpeechManager(it)
+            }
+            ttsManager?.speak(arguments)
+        }
+        result.success("DONE")
+    }
+
     private fun removeAutoStop(result: MethodChannel.Result) {
         AutoStop.disable()
         result.success("DONE")
@@ -417,5 +429,7 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
 
     override fun onDetachedFromActivity() {
         context = null
+        ttsManager?.stop()
+        ttsManager = null
     }
 }
