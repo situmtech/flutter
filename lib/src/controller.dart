@@ -391,7 +391,11 @@ class MapViewController {
     _onPoiDeselectedCallback = callback;
   }
 
+  /// @deprecated - Since 3.25.14 text-to-speech functionality is handled automatically by @situm/flutter.
   /// Get notified when the viewer wants to read aloud some text.
+  /// On Android, implementing this callback will replace the default behaviour of reading aloud the text-to-speech messages.
+  @Deprecated(
+      "This functionality is now automatically handled by @situm/flutter.")
   void onSpeakAloudText(OnSpeakAloudTextCallback callback) {
     _onSpeakAloudTextCallback = callback;
   }
