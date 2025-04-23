@@ -90,6 +90,15 @@ class MapViewController {
     }
   }
 
+  // Internal method to speak aloud some event
+  // that MapView wants to tell to the user
+  void _speakAloudText(OnSpeakAloudTextResult result) {
+    methodChannel.invokeMethod(
+      'speakAloudText',
+      result.toMap(),
+    );
+  }
+
   // Actions:
 
   /// Reloads the [MapView] using the current configuration by reloading the

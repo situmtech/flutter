@@ -108,8 +108,7 @@ class MapViewConfiguration {
     this.situmUser,
     required this.situmApiKey,
     this.buildingIdentifier,
-    @Deprecated('Use profile instead')
-    this.remoteIdentifier,
+    @Deprecated('Use profile instead') this.remoteIdentifier,
     this.profile,
     String? viewerDomain,
     this.apiDomain = "dashboard.situm.com",
@@ -134,7 +133,8 @@ class MapViewConfiguration {
     }
   }
 
-  String? get _effectiveProfile => profile?.isNotEmpty == true ? profile : remoteIdentifier;
+  String? get _effectiveProfile =>
+      profile?.isNotEmpty == true ? profile : remoteIdentifier;
 
   String get _internalApiDomain {
     String finalApiDomain = apiDomain.replaceFirst(RegExp(r'https://'), '');
@@ -329,6 +329,30 @@ class OnSpeakAloudTextResult {
 
   const OnSpeakAloudTextResult(
       {required this.text, this.lang, this.volume, this.pitch, this.rate});
+
+  toMap() {
+    Map<String, Object> result = {};
+    result["text"] = text;
+    if (lang != null) {
+      result["lang"] = lang!;
+    }
+    if (volume != null) {
+      result["volume"] = volume!;
+    }
+    if (pitch != null) {
+      result["pitch"] = pitch!;
+    }
+    if (rate != null) {
+      result["rate"] = rate!;
+    }
+
+    return result;
+  }
+
+  @override
+  String toString() {
+    return const JsonEncoder.withIndent('\t').convert(toMap());
+  }
 }
 
 class SearchFilter {
