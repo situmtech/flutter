@@ -118,6 +118,9 @@ const NSString* RESULTS_KEY = @"results";
     } else if ([@"removeAutoStop" isEqualToString:call.method]) {
         // Only for Android.
         result(@"DONE");
+    }  else if ([@"speakAloudText" isEqualToString:call.method]) {
+        // Only for Android, TTS is already managed by SITMapView internally
+        result(@"DONE");
     } else if ([@"userHelper.configure" isEqualToString:call.method]) {
         [self handleConfigureUserHelper:call result:result];
     } else {
