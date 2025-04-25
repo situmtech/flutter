@@ -13,13 +13,18 @@ import es.situm.sdk.communication.CommunicationConfigImpl
 import es.situm.sdk.configuration.network.NetworkOptionsImpl
 import es.situm.sdk.error.Error
 import es.situm.sdk.location.ExternalArData
+import es.situm.sdk.location.ExternalLocation
 import es.situm.sdk.location.GeofenceListener
 import es.situm.sdk.location.LocationListener
 import es.situm.sdk.location.LocationRequest
 import es.situm.sdk.location.LocationStatus
-import es.situm.sdk.location.ExternalLocation
-import es.situm.sdk.model.cartography.*
+import es.situm.sdk.model.cartography.Building
+import es.situm.sdk.model.cartography.BuildingInfo
+import es.situm.sdk.model.cartography.Geofence
+import es.situm.sdk.model.cartography.Poi
+import es.situm.sdk.model.cartography.PoiCategory
 import es.situm.sdk.model.location.Location
+import es.situm.sdk.userhelper.UserHelperColorScheme
 import es.situm.sdk.utils.Handler
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
@@ -108,6 +113,7 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
             "requestAutoStop" -> requestAutoStop(arguments, result)
             "removeAutoStop" -> removeAutoStop(result)
             "speakAloudText" -> speakAloudText(arguments, result)
+            "userHelper.configure" -> configureUserHelper(arguments, result)
             else -> result.notImplemented()
         }
     }
@@ -204,7 +210,8 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
             SitumSdk.configuration().isUseRemoteConfig = arguments["useRemoteConfig"] as Boolean
         }
         if (arguments.containsKey("useExternalLocations")) {
-            SitumSdk.configuration().useExternalLocations(arguments["useExternalLocations"] as Boolean)
+            SitumSdk.configuration()
+                .useExternalLocations(arguments["useExternalLocations"] as Boolean)
         }
         result.success("DONE")
     }
@@ -381,7 +388,7 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
         } else {
             launchIntent.setData(Uri.parse(url))
         }
-            
+
         try {
             activity.startActivity(launchIntent)
         } catch (e: ActivityNotFoundException) {
@@ -412,6 +419,21 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
 
     private fun removeAutoStop(result: MethodChannel.Result) {
         AutoStop.disable()
+        result.success("DONE")
+    }
+
+    private fun configureUserHelper(arguments: Map<String, Any>, result: MethodChannel.Result) {
+        val enabled = arguments["enabled"] as Boolean
+        val colorSchemeMap = arguments["colorScheme"] as Map<String, Any>?
+
+        val userHelperManager = SitumSdk.userHelperManager()
+        userHelperManager.autoManage(enabled)
+        colorSchemeMap?.let {
+            userHelperManager.setColorScheme(
+                UserHelperColorScheme.Builder().fromArguments(it).build()
+            )
+        }
+
         result.success("DONE")
     }
 
