@@ -449,6 +449,40 @@ class SitumSdk {
     );
   }
 
+ 
+  /// Automatically assists users in resolving app-related permission and sensor issues.
+  ///
+  /// This method presents a user interface that explains detected configuration issues
+  /// and guides users through the required steps to resolve them, following best
+  /// practices for runtime permission requests.
+  ///
+  /// Issues addressed include:
+  /// - Missing permissions for Location or Bluetooth.
+  /// - Disabled Location or Bluetooth sensors.
+  /// 
+  /// Use [UserHelperOptions] to configure the available options.
+  /// Call [enableUserHelper] as a shortcut to enable the user helper with default configuration.
+  /// Call [disableUserHelper] as a shortcut to disable the user helper.
+  Future<void> configureUserHelper(UserHelperOptions options) async {
+    await methodChannel.invokeMethod(
+      "userHelper.configure",
+      options.toMap(),
+    );
+  }
+
+  /// Enables the user helper with default configuration.
+  /// This is equivalent to calling [configureUserHelper] with [enabled: true].
+  /// The user helper will assist users in resolving app-related permission and sensor issues.
+  Future<void> enableUserHelper() async {
+    await configureUserHelper(const UserHelperOptions(enabled: true));
+  }
+
+  /// Disables the user helper.
+  /// This is equivalent to calling [configureUserHelper] with [enabled: false].
+  Future<void> disableUserHelper() {
+    return configureUserHelper(const UserHelperOptions(enabled: false));
+  }
+
   // Callbacks:
 
   Future<void> _methodCallHandler(MethodCall call) async {

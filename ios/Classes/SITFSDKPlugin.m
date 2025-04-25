@@ -121,6 +121,8 @@ const NSString* RESULTS_KEY = @"results";
     }  else if ([@"speakAloudText" isEqualToString:call.method]) {
         // Only for Android, TTS is already managed by SITMapView internally
         result(@"DONE");
+    } else if ([@"userHelper.configure" isEqualToString:call.method]) {
+        [self handleConfigureUserHelper:call result:result];
     } else {
         result(FlutterMethodNotImplemented);
     }
@@ -591,6 +593,31 @@ didInitiatedWithRequest:(SITLocationRequest *)request
     self.locManager.geofenceDelegate = self;
     
     result(@"SUCCESS");
+}
+
+- (void)handleConfigureUserHelper:(FlutterMethodCall*)call result:(FlutterResult)result {
+    BOOL enabled = [call.arguments[@"enabled"] boolValue];
+    id colorSchemeValue = call.arguments[@"colorScheme"];
+    
+    [[SITUserHelperManager sharedInstance] autoManage:enabled];
+    
+    if ([colorSchemeValue isKindOfClass:[NSDictionary class]]) {
+        NSDictionary *colorScheme = (NSDictionary *)colorSchemeValue;
+        NSString *primaryColor = colorScheme[@"primaryColor"];
+        NSString *secondaryColor = colorScheme[@"secondaryColor"];
+        
+        SITUserHelperColorScheme *helperColorScheme = [[SITUserHelperColorScheme alloc] init];
+        if (primaryColor) {
+            helperColorScheme.primaryColor = primaryColor;
+        }
+        if (secondaryColor) {
+            helperColorScheme.secondaryColor = secondaryColor;
+        }
+        
+        [[SITUserHelperManager sharedInstance] setColorScheme:helperColorScheme];
+    }
+    
+    result(@"DONE");
 }
 
 @end
