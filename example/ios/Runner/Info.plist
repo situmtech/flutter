@@ -58,6 +58,7 @@
 	<key>WKAppBoundDomains</key>
 	<array>
 		<string>map-viewer.situm.com</string>
+		<string>pro-3920.map-viewer.situm.com</string>
 	</array>
 </dict>
 </plist>
