@@ -3,11 +3,11 @@ PODS:
   - flutter_tts (0.0.1):
     - Flutter
   - Protobuf (3.29.4)
-  - situm_flutter (3.25.15):
+  - situm_flutter (3.26.8):
     - Flutter
-    - SitumSDK (~> 3.28.1)
-  - SitumSDK (3.28.1):
-    - Protobuf (~> 3.7)
+    - SitumSDK (~> 3.31.0)
+  - SitumSDK (3.31.0):
+    - Protobuf (~> 3.18)
     - SSZipArchive (~> 2.4)
   - SSZipArchive (2.4.3)
   - webview_flutter_wkwebview (0.0.1):
@@ -39,8 +39,8 @@ SPEC CHECKSUMS:
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   flutter_tts: 0f492aab6accf87059b72354fcb4ba934304771d
   Protobuf: 2e6de032ba12b9efb390ae550d1a243a5b19ddfc
-  situm_flutter: d4f638efe0736cfd112f3a8a95bf99ede398089d
-  SitumSDK: 974f20680e13f115caaa818b48bcc2340b768ffc
+  situm_flutter: 0469718d710ee583c99acd73d815be7d978994a3
+  SitumSDK: 1f26f3de4297e7834d901d6b2077022710129f4d
   SSZipArchive: fe6a26b2a54d5a0890f2567b5cc6de5caa600aef
   webview_flutter_wkwebview: 4f3e50f7273d31e5500066ed267e3ae4309c5ae4
 
