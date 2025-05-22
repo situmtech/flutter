@@ -33,8 +33,7 @@ pool:
 
 steps:
 
-  - ${{ if startsWith(variables['Build.SourceBranch'], 'refs/heads/feature/') }}:
- # - ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/develop') }}:
+  - ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/develop') }}:
     - template: azure-templates/static-analyse.yml@sys_kubernetes_templates
       parameters:
         repoFolder: .
