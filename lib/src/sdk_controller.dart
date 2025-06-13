@@ -118,11 +118,11 @@ class SitumSdk {
   ///
   /// Failing to implement this parameter might result in unexpected behavior.
   ///
-  /// [url] should include only the protocol and the domain (e.g., "https://dashboard.situm.com").
+  /// [url] should include only the protocol and the domain (e.g., "https://api.situm.com").
   /// Do not include paths or query parameters.
   Future<void> setDashboardURL(String? url) async {
     if (url == null) {
-      url = "https://dashboard.situm.com";
+      url = "https://api.situm.com";
     } else {
       if (!url.startsWith(RegExp(r'https://'))) {
         url = "https://$url";
