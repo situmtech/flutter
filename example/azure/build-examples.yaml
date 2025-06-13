@@ -9,7 +9,7 @@ parameters:
     type: string
   - name: DASHBOARD_URL
     type: string
-    default: "https://dashboard.situm.com"
+    default: "https://api.situm.com"
   - name: BUILDNUMBER
     type: string
     default: "202430015"

@@ -16,7 +16,7 @@ part of '../wayfinding.dart';
 ///     // Alternatively, you can set a profile name that allows you to remotely configure all map settings.
 ///     // profile: null;
 ///     viewerDomain: "map-viewer.situm.com",
-///     apiDomain: "dashboard.situm.com",
+///     apiDomain: "api.situm.com",
 ///     directionality: TextDirection.ltr,
 ///     enableDebugging: false,
 ///   ),
@@ -58,9 +58,9 @@ class MapViewConfiguration {
   late final String viewerDomain;
 
   /// A String parameter that allows you to choose the API you will be retrieving
-  /// our cartography from. Default is [dashboard.situm.com](https://dashboard.situm.com).
+  /// our cartography from. Default is [api.situm.com](https://api.situm.com).
   ///
-  /// [apiDomain] should include only the domain (e.g., "dashboard.situm.com").
+  /// [apiDomain] should include only the domain (e.g., "api.situm.com").
   /// * **Note**: When using [SitumSdk.setDashboardURL], make sure you introduce the same domain.
   final String apiDomain;
 
@@ -111,7 +111,7 @@ class MapViewConfiguration {
     @Deprecated('Use profile instead') this.remoteIdentifier,
     this.profile,
     String? viewerDomain,
-    this.apiDomain = "dashboard.situm.com",
+    this.apiDomain = "api.situm.com",
     this.directionality = TextDirection.ltr,
     this.enableDebugging = false,
     this.lockCameraToBuilding,
