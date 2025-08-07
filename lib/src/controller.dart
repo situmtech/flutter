@@ -14,7 +14,6 @@ class MapViewController {
   OnMapViewErrorCallback? _onMapViewErrorCallBack;
 
   late MapViewCallback _widgetLoadCallback;
-  late PlatformWebViewController _webViewController;
 
   // Internal callback that will receive every MapView message. This callback
   // has been introduced to enable communication between MapView and the new AR
@@ -79,9 +78,10 @@ class MapViewController {
   void _sendMessage(String type, dynamic payload) {
     // Do not quote payload keys!
     var message = "{type: '$type', payload: $payload}";
-    _webViewController.runJavaScript("""
-      window.postMessage($message)
-    """);
+    // TODO: invokeMethod para o channel ID de Wayfinding.
+    // _webViewController.runJavaScript("""
+    //   window.postMessage($message)
+    // """);
   }
 
   Future<void> _validateMapViewProjectSettings() async {
@@ -104,7 +104,8 @@ class MapViewController {
   /// Reloads the [MapView] using the current configuration by reloading the
   /// underlying platform web view controller.
   void reload() async {
-    _webViewController.reload();
+    // TODO: implementar en nativo.
+    // _webViewController.reload();
   }
 
   /// Selects the given Building in the map.

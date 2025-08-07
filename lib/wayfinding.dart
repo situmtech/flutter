@@ -6,22 +6,11 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:situm_flutter/sdk.dart';
-
-// Import for Android features.
-import 'package:webview_flutter_android/webview_flutter_android.dart';
-
-// WebView:
-// Not necessary, also included with webview_flutter_platform_interface:
-// import 'package:webview_flutter/webview_flutter.dart' hide NavigationRequest;
-// WebView Platform interface:
-import 'package:webview_flutter_platform_interface/webview_flutter_platform_interface.dart'
-    hide NavigationRequest;
-
-// Import for iOS features.
-import 'package:webview_flutter_wkwebview/webview_flutter_wkwebview.dart';
 
 part 'src/controller.dart';
 
@@ -33,6 +22,9 @@ part 'src/message_handlers.dart';
 
 part 'src/situm_map_view.dart';
 
+part 'src/webview/webview.dart';
+
+// TODO sobra fijo.
 const WV_CHANNEL = "ReactNativeWebView";
 const OFFLINE_CHANNEL = "OfflineChannel";
 

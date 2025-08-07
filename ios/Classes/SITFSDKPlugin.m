@@ -22,9 +22,86 @@
 
 @end
 
+// MARK: NATIVE MAPVIEW - PoC
+
+// TODO: separar en ficheiros, neste fanse demasiadas cousas xa, require orden.
+@interface WebViewFactory : NSObject <FlutterPlatformViewFactory>
+- (instancetype)initWithMessenger:(NSObject<FlutterBinaryMessenger>*)messenger;
+@end
+
+@interface WebView : NSObject <FlutterPlatformView>
+
+- (instancetype)initWithFrame:(CGRect)frame
+               viewIdentifier:(int64_t)viewId
+                    arguments:(id _Nullable)args
+              binaryMessenger:(NSObject<FlutterBinaryMessenger>*)messenger;
+
+- (UIView*)view;
+@end
+
+@implementation WebViewFactory {
+    NSObject<FlutterBinaryMessenger>* _messenger;
+}
+
+- (instancetype)initWithMessenger:(NSObject<FlutterBinaryMessenger>*)messenger {
+    self = [super init];
+    if (self) {
+        _messenger = messenger;
+    }
+    return self;
+}
+
+- (NSObject<FlutterPlatformView>*)createWithFrame:(CGRect)frame
+                                   viewIdentifier:(int64_t)viewId
+                                        arguments:(id _Nullable)args {
+    return [[WebView alloc] initWithFrame:frame
+                           viewIdentifier:viewId
+                                arguments:args
+                          binaryMessenger:_messenger];
+}
+
+/// Implementing this method is only necessary when the `arguments` in `createWithFrame` is not `nil`.
+- (NSObject<FlutterMessageCodec>*)createArgsCodec {
+    return [FlutterStandardMessageCodec sharedInstance];
+}
+
+@end
+
+@implementation WebView {
+    SITMapView *_view;
+}
+
+- (instancetype)initWithFrame:(CGRect)frame
+               viewIdentifier:(int64_t)viewId
+                    arguments:(id _Nullable)args
+              binaryMessenger:(NSObject<FlutterBinaryMessenger>*)messenger {
+    if (self = [super init]) {
+        _view = [[SITMapView alloc] init];
+        // TODO: usar arguments, SITMapViewConfiguration#fromMap().
+        SITMapViewConfiguration *config = [[SITMapViewConfiguration alloc] initWithBuildingIdentifier:@"7033" profile:@""];
+        [_view loadWithConfiguration:config withCompletion:^(id<SITMapViewController>  _Nonnull mapViewController, NSError * _Nullable error) {
+            if (error) {
+                NSLog(@"Error loading map: %@", error.localizedDescription);
+            } else {
+                NSLog(@"Map loaded properly");
+            }
+        }];
+    }
+    return self;
+}
+
+- (UIView*)view {
+    return _view;
+}
+
+@end
+
+// MARK: END NATIVE MAPVIEW
+
 @implementation SITFSDKPlugin
 
 const NSString* RESULTS_KEY = @"results";
+NSString *const CHANNEL_ID_WAYFINDING = @"situm.com/flutter_mapview";
 
 +(void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
     FlutterMethodChannel *channel = [FlutterMethodChannel methodChannelWithName:@"situm.com/flutter_sdk" binaryMessenger:[registrar messenger]];
@@ -36,6 +113,10 @@ const NSString* RESULTS_KEY = @"results";
     [SITNavigationManager.sharedManager addDelegate:instance.navigationHandler];
     instance.channel = channel;
     [registrar addMethodCallDelegate:instance channel:channel];
+    // MARK: ALSO FOR NATIVE MAPVIEW:
+    WebViewFactory* factory =
+          [[WebViewFactory alloc] initWithMessenger:registrar.messenger];
+      [registrar registerViewFactory:factory withId:CHANNEL_ID_WAYFINDING];
 }
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
