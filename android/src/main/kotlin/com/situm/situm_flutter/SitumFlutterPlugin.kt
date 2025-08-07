@@ -7,7 +7,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Looper
 import android.util.Log
-import androidx.annotation.NonNull
+import com.situm.situm_flutter.webview.WebViewFactory
 import es.situm.sdk.SitumSdk
 import es.situm.sdk.communication.CommunicationConfigImpl
 import es.situm.sdk.configuration.network.NetworkOptionsImpl
@@ -53,9 +53,10 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
     companion object {
         private var initialized = false
         const val CHANNEL_ID_SDK = "situm.com/flutter_sdk"
+        const val CHANNEL_ID_MAPVIEW = "situm.com/flutter_mapview"
     }
 
-    override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
+    override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         Log.d("Situm", "Situm> SitumFlutterPlugin> onAttachedToEngine initialized=$initialized")
         // Firebase remote message issue:
         if (initialized) {
@@ -66,9 +67,13 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
         channel.setMethodCallHandler(this)
         navigation = Navigation.init(channel, handler)
         viewerNavigation = ViewerNavigation.init(channel, handler)
+        // Register SDK MapView UI:
+        flutterPluginBinding
+            .platformViewRegistry
+            .registerViewFactory(CHANNEL_ID_MAPVIEW, WebViewFactory())
     }
 
-    override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
+    override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
         Log.d("Situm", "Situm> SitumFlutterPlugin> onDetachedFromEngine - initialized=$initialized")
         // onDetachedFromEngine should be called only when the app using this plugin is finalized,
         // but should not be related to the Firebase issue.
