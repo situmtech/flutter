@@ -2,11 +2,11 @@ PODS:
   - Flutter (1.0.0)
   - flutter_tts (0.0.1):
     - Flutter
-  - Protobuf (3.29.4)
-  - situm_flutter (3.26.8):
+  - Protobuf (3.29.5)
+  - situm_flutter (3.26.25):
     - Flutter
-    - SitumSDK (~> 3.31.0)
-  - SitumSDK (3.31.0):
+    - SitumSDK (~> 3.34.4)
+  - SitumSDK (3.34.4):
     - Protobuf (~> 3.18)
     - SSZipArchive (~> 2.4)
   - SSZipArchive (2.4.3)
@@ -36,14 +36,14 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/webview_flutter_wkwebview/ios"
 
 SPEC CHECKSUMS:
-  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
-  flutter_tts: 0f492aab6accf87059b72354fcb4ba934304771d
-  Protobuf: 2e6de032ba12b9efb390ae550d1a243a5b19ddfc
-  situm_flutter: 0469718d710ee583c99acd73d815be7d978994a3
-  SitumSDK: 1f26f3de4297e7834d901d6b2077022710129f4d
+  Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
+  flutter_tts: b88dbc8655d3dc961bc4a796e4e16a4cc1795833
+  Protobuf: 164aea2ae380c3951abdc3e195220c01d17400e0
+  situm_flutter: afa05f8473de166712c10c123f6267a300527fb3
+  SitumSDK: 8c4a51cff4032218f94a261642a854775be40d8a
   SSZipArchive: fe6a26b2a54d5a0890f2567b5cc6de5caa600aef
-  webview_flutter_wkwebview: 4f3e50f7273d31e5500066ed267e3ae4309c5ae4
+  webview_flutter_wkwebview: daa94b5ed120e19439eb7f797649768d6360ebdd
 
-PODFILE CHECKSUM: b372eb01cab451b27c846ed62cbdd2b859c6b5a0
+PODFILE CHECKSUM: 3b749f30a8d5a341f7ae96d089e4c79a0780f0e5
 
 COCOAPODS: 1.16.2
