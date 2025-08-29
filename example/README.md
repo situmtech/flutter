@@ -70,6 +70,9 @@ From the `example` folder, execute the following command which works on both And
 flutter run
 ```
 
+> [!IMPORTANT]
+> In case you are not able to compile our example app, you could try to set your flutter and java versions to the specified at [mise.toml](./mise.toml). If you install [mise](https://mise.jdx.dev/demo.html), this versioning tool will switch automatically to the correct versions you need.
+
 You can also run the app from your IDE:
 
 - On Android: open `example/android/` with Android Studio.
