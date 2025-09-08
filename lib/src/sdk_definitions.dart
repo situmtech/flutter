@@ -86,7 +86,7 @@ class DiagnosticsOptions {
   final bool? uploadDiagnosticsData;
 
   DiagnosticsOptions({
-      this.uploadDiagnosticsData,
+    this.uploadDiagnosticsData,
   });
 
   Map<String, dynamic> toMap() {
@@ -827,10 +827,14 @@ class PoiCategory extends NamedResource {
 class ConfigurationOptions {
   final bool useRemoteConfig;
   final bool useExternalLocations;
+  // The maximum age that cache should last as valid (in seconds).
+  // Defaults to cacheMaxAge will be 3600 seconds (1 hour).
+  final int? cacheMaxAge;
 
   ConfigurationOptions({
     this.useRemoteConfig = true,
     this.useExternalLocations = false,
+    this.cacheMaxAge,
   });
 }
 

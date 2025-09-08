@@ -2,5 +2,4 @@
 
 ### Added
 
-- Added a new method `configureUserHelper(options)` to automatically assists users in resolving app-related
-  permission and sensor issues. Also added `enableUserHelper` and `disableUserHelper` shortcuts.
+- Added [ConfigurationOptions.cacheMaxAge](https://pub.dev/documentation/situm_flutter/latest/sdk/ConfigurationOptions/cacheMaxAge.html) to set the max age that cache should last (in seconds).

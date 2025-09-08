@@ -234,8 +234,11 @@ const NSString* RESULTS_KEY = @"results";
 - (void)handleSetConfiguration:(FlutterMethodCall*)call result:(FlutterResult)result {
     BOOL useRemoteConfig = [call.arguments[@"useRemoteConfig"] boolValue];
     BOOL useExternalLocations = [call.arguments[@"useExternalLocations"] boolValue];
+    long cacheMaxAge = [call.arguments[@"cacheMaxAge"] longValue];
+
     [SITServices setUseRemoteConfig:useRemoteConfig];
     [SITServices setUseExternalLocations:useExternalLocations];
+    [[SITCommunicationManager sharedManager] setCacheMaxAge:cacheMaxAge];
     result(@"DONE");
 }
 
