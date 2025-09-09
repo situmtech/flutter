@@ -420,8 +420,6 @@ SITRealtimeUpdateInterval createRealtimeUpdateInterval(NSString *name) {
 
 - (void)handleFetchBuildings:(FlutterMethodCall*)call result:(FlutterResult)result {
     
-    NSLog(@"ATAG >> cacheMaxAge is %li", [[SITCommunicationManager sharedManager] cacheMaxAge]);
-    
     [self.comManager fetchBuildingsWithOptions: nil
                                        success:^(NSDictionary * _Nullable mapping) {
         
