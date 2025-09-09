@@ -234,11 +234,14 @@ const NSString* RESULTS_KEY = @"results";
 - (void)handleSetConfiguration:(FlutterMethodCall*)call result:(FlutterResult)result {
     BOOL useRemoteConfig = [call.arguments[@"useRemoteConfig"] boolValue];
     BOOL useExternalLocations = [call.arguments[@"useExternalLocations"] boolValue];
-    long cacheMaxAge = [call.arguments[@"cacheMaxAge"] longValue];
+    NSString *cacheMaxAge = call.arguments[@"cacheMaxAge"];
 
     [SITServices setUseRemoteConfig:useRemoteConfig];
     [SITServices setUseExternalLocations:useExternalLocations];
-    [[SITCommunicationManager sharedManager] setCacheMaxAge:cacheMaxAge];
+    
+    if (cacheMaxAge != nil) {
+        [[SITCommunicationManager sharedManager] setCacheMaxAge:[cacheMaxAge longLongValue]];
+    }
     result(@"DONE");
 }
 
@@ -416,6 +419,8 @@ SITRealtimeUpdateInterval createRealtimeUpdateInterval(NSString *name) {
 }
 
 - (void)handleFetchBuildings:(FlutterMethodCall*)call result:(FlutterResult)result {
+    
+    NSLog(@"ATAG >> cacheMaxAge is %li", [[SITCommunicationManager sharedManager] cacheMaxAge]);
     
     [self.comManager fetchBuildingsWithOptions: nil
                                        success:^(NSDictionary * _Nullable mapping) {
