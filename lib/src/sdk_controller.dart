@@ -188,16 +188,7 @@ class SitumSdk {
 
   /// Sets the SDK [ConfigurationOptions].
   Future<void> setConfiguration(ConfigurationOptions options) async {
-    var configurationParams = <String, dynamic>{
-      'useRemoteConfig': options.useRemoteConfig,
-      'useExternalLocations': options.useExternalLocations
-    };
-
-    if (options.cacheMaxAge != null) {
-      configurationParams['cacheMaxAge'] = options.cacheMaxAge;
-    }
-
-    await methodChannel.invokeMethod("setConfiguration", configurationParams);
+    await methodChannel.invokeMethod("setConfiguration", options.toMap());
   }
 
   /// Starts positioning. Use [onLocationUpdate], [onLocationStatus] and

@@ -836,6 +836,15 @@ class ConfigurationOptions {
     this.useExternalLocations = false,
     this.cacheMaxAge,
   });
+
+  Map<String, dynamic> toMap() {
+    Map<String, dynamic> map = {
+      "useRemoteConfig": useRemoteConfig,
+      "useExternalLocations": useExternalLocations,
+    };
+    _addToMapIfNotNull("cacheMaxAge", cacheMaxAge, map);
+    return map;
+  }
 }
 
 class PrefetchOptions {
