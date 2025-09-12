@@ -31,6 +31,7 @@ import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
+import java.util.concurrent.TimeUnit
 
 // SitumFlutterPlugin.
 class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCallHandler {
@@ -212,6 +213,11 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
         if (arguments.containsKey("useExternalLocations")) {
             SitumSdk.configuration()
                 .useExternalLocations(arguments["useExternalLocations"] as Boolean)
+        }
+        if (arguments.containsKey("cacheMaxAge")) {
+            val cacheMaxAgeValue: Int = arguments["cacheMaxAge"] as Int
+            SitumSdk.configuration()
+                .setCacheMaxAge(cacheMaxAgeValue.toLong(), TimeUnit.SECONDS)
         }
         result.success("DONE")
     }

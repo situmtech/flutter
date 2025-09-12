@@ -188,13 +188,7 @@ class SitumSdk {
 
   /// Sets the SDK [ConfigurationOptions].
   Future<void> setConfiguration(ConfigurationOptions options) async {
-    await methodChannel.invokeMethod(
-      "setConfiguration",
-      <String, dynamic>{
-        'useRemoteConfig': options.useRemoteConfig,
-        'useExternalLocations': options.useExternalLocations,
-      },
-    );
+    await methodChannel.invokeMethod("setConfiguration", options.toMap());
   }
 
   /// Starts positioning. Use [onLocationUpdate], [onLocationStatus] and
@@ -449,7 +443,6 @@ class SitumSdk {
     );
   }
 
- 
   /// Automatically assists users in resolving app-related permission and sensor issues.
   ///
   /// This method presents a user interface that explains detected configuration issues
@@ -459,7 +452,7 @@ class SitumSdk {
   /// Issues addressed include:
   /// - Missing permissions for Location or Bluetooth.
   /// - Disabled Location or Bluetooth sensors.
-  /// 
+  ///
   /// Use [UserHelperOptions] to configure the available options.
   /// Call [enableUserHelper] as a shortcut to enable the user helper with default configuration.
   /// Call [disableUserHelper] as a shortcut to disable the user helper.
