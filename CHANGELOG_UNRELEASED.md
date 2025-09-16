@@ -1,5 +1,8 @@
 ## Unreleased
 
-### Added
+### Changed
 
-- Added [ConfigurationOptions.cacheMaxAge](https://pub.dev/documentation/situm_flutter/latest/sdk/ConfigurationOptions/cacheMaxAge.html) to set the max age that cache should last (in seconds).
+- Updated compileSdkVersion to 36.
+- Updated TextToSpeechManager to handle Samsung devices.
+- Modified example Info.plist to include maps.situm.com at WKAppBoundDomains.
+- Completely removed flutter_tts from example app.
