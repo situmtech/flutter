@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_tts/flutter_tts.dart';
 import 'package:situm_flutter/sdk.dart';
 import 'package:situm_flutter/wayfinding.dart';
 
@@ -32,7 +31,6 @@ class MyTabs extends StatefulWidget {
 
 class _MyTabsState extends State<MyTabs> {
   late SitumSdk situmSdk;
-  late FlutterTts flutterTts;
   int _selectedIndex = 0;
   List<Poi> pois = [];
   List<Floor> floors = [];
@@ -441,8 +439,6 @@ class _MyTabsState extends State<MyTabs> {
     });
     _downloadPois(buildingIdentifier);
     _downloadFloors(buildingIdentifier);
-
-    flutterTts = FlutterTts();
 
     super.initState();
   }
