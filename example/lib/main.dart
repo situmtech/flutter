@@ -403,8 +403,8 @@ class _MyTabsState extends State<MyTabs> {
   @override
   void initState() {
     situmSdk = SitumSdk();
-    // In case you wan't to use our SDK before initializing our MapView widget,
-    // you can set up your credentials with this line of code :
+    // In case you want to use our SDK before initializing our MapView widget,
+    // you can set up your credentials with this line of code:
     situmSdk.init();
     // Authenticate with your account and API key.
     // You can find yours at https://dashboard.situm.com/accounts/profile
