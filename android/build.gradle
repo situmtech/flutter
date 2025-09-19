@@ -30,7 +30,9 @@ android {
         namespace 'com.situm.situm_flutter'
     }
 
-    compileSdkVersion flutter.compileSdkVersion
+    compileSdkVersion rootProject.ext.has("flutter") && rootProject.ext.flutter.has("compileSdkVersion")
+            ? rootProject.ext.flutter.compileSdkVersion
+            : 36
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
