@@ -57,6 +57,7 @@
     <string>We use your phone sensors (giroscope, accelerometer and altimeter) to improve location quality</string>
 	<key>WKAppBoundDomains</key>
 	<array>
+        <string>maps.situm.com</string>
 		<string>map-viewer.situm.com</string>
 	</array>
 </dict>

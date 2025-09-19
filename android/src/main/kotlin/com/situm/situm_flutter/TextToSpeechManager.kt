@@ -1,6 +1,7 @@
 package com.situm.situm_flutter
 
 import android.content.Context
+import android.os.Build
 import android.speech.tts.TextToSpeech
 import android.speech.tts.TextToSpeech.OnInitListener
 import java.util.Locale
@@ -9,12 +10,21 @@ import java.util.Locale
 class TextToSpeechManager(context: Context) : OnInitListener {
 
     private val DEFAULT_SPEECH_RATE_VALUE = 1.0f
-    private var textToSpeech = TextToSpeech(context, this)
+    private var textToSpeech: TextToSpeech
+
+    init {
+        val enginePackage = getPreferredTtsEnginePackage(context)
+        textToSpeech = if (enginePackage != null) {
+            TextToSpeech(context, this, enginePackage)
+        } else {
+            TextToSpeech(context, this)
+        }
+    }
 
     override fun onInit(status: Int) {
         if (status == TextToSpeech.SUCCESS) {
             // Establece el idioma (opcional)
-            textToSpeech.setLanguage(Locale.getDefault())
+            textToSpeech.language = Locale.getDefault()
         }
     }
 
@@ -46,6 +56,21 @@ class TextToSpeechManager(context: Context) : OnInitListener {
     fun stop() {
         textToSpeech.stop()
         textToSpeech.shutdown()
+    }
+
+    private fun getPreferredTtsEnginePackage(context: Context): String? {
+        val ttsTemp = TextToSpeech(context) { }
+        val engines = ttsTemp.engines
+        ttsTemp.shutdown()
+
+        val googleTts = "com.google.android.tts"
+        return if (Build.MANUFACTURER.equals("Samsung", ignoreCase = true) &&
+            engines.any { it.name == googleTts }
+        ) {
+            googleTts
+        } else {
+            null
+        }
     }
 
 }
