@@ -1,6 +1,7 @@
 package com.situm.situm_flutter
 
 import android.app.Activity
+import android.os.Build
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
@@ -19,6 +20,7 @@ object AccessibilityHack {
      * interfere with other WebViews present in the app.
      */
     fun enableWebViewAccessibility(activity: Activity?, viewerDomain: String? = null) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) return
         val root = activity?.window?.decorView?.rootView as? ViewGroup ?: return
 
         // TODO: remove logs!
