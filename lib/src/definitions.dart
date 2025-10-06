@@ -129,7 +129,7 @@ class MapViewConfiguration {
       }
       this.viewerDomain = viewerDomain;
     } else {
-      this.viewerDomain = "https://map-viewer.situm.com";
+      this.viewerDomain = "https://maps.situm.com";
     }
   }
 

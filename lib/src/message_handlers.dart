@@ -55,7 +55,7 @@ class MapIsReadyHandler implements MessageHandler {
   @override
   void handleMessage(
       MapViewController mapViewController, Map<String, dynamic> payload) {
-    mapViewController._notifyMapIsReady();
+    mapViewController._onMapIsReady();
   }
 }
 

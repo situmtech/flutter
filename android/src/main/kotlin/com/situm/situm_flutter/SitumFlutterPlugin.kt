@@ -45,6 +45,10 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
     private var handler = android.os.Handler(Looper.getMainLooper())
     private var ttsManager: TextToSpeechManager? = null
 
+    // Used to find our webview in the Android view hierarchy at AccessibilityHack.
+    // This is necessary only while the MapView component relies on webview_flutter.
+    private var viewerDomain: String? = null
+
     // Add this config to avoid preloading images. The default value for preloadImages is true but
     // this might cause performance issues.
     private val NO_PRELOAD_IMAGES_CONFIG = CommunicationConfigImpl(
@@ -56,7 +60,7 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
         const val CHANNEL_ID_SDK = "situm.com/flutter_sdk"
     }
 
-    override fun onAttachedToEngine(@NonNull flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
+    override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
         Log.d("Situm", "Situm> SitumFlutterPlugin> onAttachedToEngine initialized=$initialized")
         // Firebase remote message issue:
         if (initialized) {
@@ -69,7 +73,7 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
         viewerNavigation = ViewerNavigation.init(channel, handler)
     }
 
-    override fun onDetachedFromEngine(@NonNull binding: FlutterPlugin.FlutterPluginBinding) {
+    override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
         Log.d("Situm", "Situm> SitumFlutterPlugin> onDetachedFromEngine - initialized=$initialized")
         // onDetachedFromEngine should be called only when the app using this plugin is finalized,
         // but should not be related to the Firebase issue.
@@ -115,6 +119,7 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
             "removeAutoStop" -> removeAutoStop(result)
             "speakAloudText" -> speakAloudText(arguments, result)
             "userHelper.configure" -> configureUserHelper(arguments, result)
+            "ensureTalkBackCompatibility" -> hackWebViewAccessibility(arguments)
             else -> result.notImplemented()
         }
     }
@@ -443,6 +448,13 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
         result.success("DONE")
     }
 
+    private fun hackWebViewAccessibility(arguments: Map<String, Any> = mapOf()) {
+        if (arguments.containsKey("viewerDomain")) {
+            viewerDomain = arguments["viewerDomain"] as String
+        }
+        AccessibilityHack.enableWebViewAccessibility(context as Activity?, viewerDomain)
+    }
+
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
         context = binding.activity
     }
@@ -453,6 +465,7 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
 
     override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
         context = binding.activity
+        hackWebViewAccessibility()
     }
 
     override fun onDetachedFromActivity() {
