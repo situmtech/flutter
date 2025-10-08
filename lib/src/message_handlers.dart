@@ -6,6 +6,8 @@ abstract class MessageHandler {
     switch (type) {
       case WV_MESSAGE_MAP_IS_READY:
         return MapIsReadyHandler();
+      case WV_MESSAGE_CARTOGRAPHY_CAR_SAVED:
+        return CarSavedHandler();
       case WV_MESSAGE_ERROR:
         return MapViewErrorHandler();
       case WV_MESSAGE_DIRECTIONS_REQUESTED:
@@ -56,6 +58,18 @@ class MapIsReadyHandler implements MessageHandler {
   void handleMessage(
       MapViewController mapViewController, Map<String, dynamic> payload) {
     mapViewController._notifyMapIsReady();
+  }
+}
+
+class CarSavedHandler implements MessageHandler {
+  @override
+  void handleMessage(
+      MapViewController mapViewController, Map<String, dynamic> payload) {
+    final carPosition = CarPosition(
+      floorId: payload['floorId']?.toDouble() ?? 0.0,
+      coordinates: createCoordinate(payload['coordinates']),
+    );
+    mapViewController._onCarSavedCallBack!(carPosition);
   }
 }
 

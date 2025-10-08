@@ -42,6 +42,7 @@ const WV_MESSAGE_NAVIGATION_REQUESTED = "navigation.requested";
 const WV_MESSAGE_NAVIGATION_STOP = "navigation.stopped";
 const WV_MESSAGE_CARTOGRAPHY_POI_SELECTED = "cartography.poi_selected";
 const WV_MESSAGE_CARTOGRAPHY_POI_DESELECTED = "cartography.poi_deselected";
+const WV_MESSAGE_CARTOGRAPHY_CAR_SAVED = "cartography.car_saved";
 const WV_MESSAGE_MAP_IS_READY = "app.map_is_ready";
 const WV_MESSAGE_ERROR = "app.error";
 const WV_MESSAGE_LOCATION_START = "location.start";
@@ -79,6 +80,7 @@ const WV_MESSAGE_CARTOGRAPHY_SELECT_CAR = "cartography.select_car";
 const WV_MESSAGE_CARTOGRAPHY_SELECT_POI_CATEGORY =
     "cartography.select_poi_category";
 const WV_MESSAGE_CARTOGRAPHY_SELECT_FLOOR = "cartography.select_floor";
+const WV_MESSAGE_CARTOGRAPHY_SAVE_CAR = "cartography.save_car";
 const WV_MESSAGE_UI_SET_LANGUAGE = "ui.set_language";
 
 // Camera actions

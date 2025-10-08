@@ -12,6 +12,7 @@ class MapViewController {
   OnCalibrationPointClickedCallback? _onCalibrationPointClickedCallback;
   OnCalibrationFinishedCallback? _onCalibrationFinishedCallback;
   OnMapViewErrorCallback? _onMapViewErrorCallBack;
+  OnCarSavedCallBack? _onCarSavedCallBack;
 
   late MapViewCallback _widgetLoadCallback;
   late PlatformWebViewController _webViewController;
@@ -246,6 +247,11 @@ class MapViewController {
     _sendMessage(WV_MESSAGE_CAMERA_FOLLOW_USER, {"value": false});
   }
 
+  void saveCar(CarPosition carPoisition) async {
+    _sendMessage(
+        WV_MESSAGE_CARTOGRAPHY_SAVE_CAR, jsonEncode(carPoisition.toMap()));
+  }
+
   /// Animate the map's [Camera].
   ///
   /// * **NOTE**: Calling this method repeatedly within a short period of time might result in unexpected behaviours with the camera animations,
@@ -384,6 +390,10 @@ class MapViewController {
   /// Get notified when a POI is selected.
   void onPoiSelected(OnPoiSelectedCallback callback) {
     _onPoiSelectedCallback = callback;
+  }
+
+  void onCarSaved(OnCarSavedCallBack callback) {
+    _onCarSavedCallBack = callback;
   }
 
   /// Get notified when the selected POI is deselected.

@@ -300,6 +300,23 @@ class OnPoiDeselectedResult {
   });
 }
 
+class CarPosition {
+  final double floorId;
+  final Coordinate coordinates;
+
+  const CarPosition({
+    required this.floorId,
+    required this.coordinates,
+  });
+
+  toMap() {
+    Map<String, Object> result = {};
+    result["floorId"] = floorId;
+    result["coordinates"] = coordinates.toMap();
+    return result;
+  }
+}
+
 class OnExternalLinkClickedResult {
   final String url;
 
@@ -492,6 +509,8 @@ typedef MapViewCallback = void Function(MapViewController controller);
 // POI selection callback.
 typedef OnPoiSelectedCallback = void Function(
     OnPoiSelectedResult poiSelectedResult);
+//
+typedef OnCarSavedCallBack = void Function(CarPosition carPosition);
 typedef OnMapViewErrorCallback = void Function(MapViewError error);
 // POI deselection callback.
 typedef OnPoiDeselectedCallback = void Function(
