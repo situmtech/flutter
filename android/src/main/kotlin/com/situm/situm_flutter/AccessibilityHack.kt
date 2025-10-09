@@ -2,7 +2,6 @@ package com.situm.situm_flutter
 
 import android.app.Activity
 import android.os.Build
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.view.accessibility.AccessibilityEvent
@@ -23,18 +22,12 @@ object AccessibilityHack {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.Q) return
         val root = activity?.window?.decorView?.rootView as? ViewGroup ?: return
 
-        // TODO: remove logs!
-        Log.d("ATAG", "Call to enableWebViewAccessibility, viewerDomain=$viewerDomain")
         findWebViews(root).forEach { webView ->
             val url = webView.url
-            Log.d("ATAG", "Found WebView with url=$url")
-
             // Skip if viewerDomain is set and url does not match
             if (viewerDomain != null && (url == null || !url.contains(viewerDomain))) {
                 return@forEach
             }
-
-            Log.d("ATAG", "Applying accessibility hack to $url")
 
             webView.apply {
                 importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_YES
@@ -48,7 +41,6 @@ object AccessibilityHack {
             var parent = webView.parent
             while (parent is View) {
                 if (parent.importantForAccessibility == View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS) {
-                    Log.d("ATAG", "Fixing parent with NO_HIDE_DESCENDANTS")
                     parent.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_AUTO
                 }
                 parent = parent.parent
