@@ -65,7 +65,7 @@ class CarSavedHandler implements MessageHandler {
   @override
   void handleMessage(
       MapViewController mapViewController, Map<String, dynamic> payload) {
-    mapViewController._onCarSavedCallBack!(
+    mapViewController._onCarSavedCallback?.call(
       payload['floorIdentifier'].toString(),
       createCoordinate(payload['coordinate']),
     );
@@ -182,6 +182,9 @@ abstract class PoiSelectionMessageHandler implements MessageHandler {
       return;
     }
     var poiId = "${payload["identifier"]}";
+    if (poiId == FIND_MY_CAR_POI_ID) {
+      return;
+    }
     var buildingId = "${payload["buildingIdentifier"]}";
     var sdk = SitumSdk();
     var poi = await sdk.fetchPoiFromBuilding(buildingId, poiId);

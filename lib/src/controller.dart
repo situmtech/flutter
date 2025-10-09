@@ -12,7 +12,7 @@ class MapViewController {
   OnCalibrationPointClickedCallback? _onCalibrationPointClickedCallback;
   OnCalibrationFinishedCallback? _onCalibrationFinishedCallback;
   OnMapViewErrorCallback? _onMapViewErrorCallBack;
-  OnCarSavedCallBack? _onCarSavedCallBack;
+  OnCarSavedCallback? _onCarSavedCallback;
 
   late MapViewCallback _widgetLoadCallback;
   late PlatformWebViewController _webViewController;
@@ -395,9 +395,12 @@ class MapViewController {
     _onPoiSelectedCallback = callback;
   }
 
-  /// Get notified when a car is saved.
-  void onCarSaved(OnCarSavedCallBack callback) {
-    _onCarSavedCallBack = callback;
+  /// Triggered when the user's car location is saved.
+  ///
+  /// A **car** represents the FMC feature entity that stores where the user has parked.
+  /// It is persisted locally on the host as a personal POI.
+  void onCarSaved(OnCarSavedCallback callback) {
+    _onCarSavedCallback = callback;
   }
 
   /// Get notified when the selected POI is deselected.

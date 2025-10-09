@@ -493,7 +493,7 @@ typedef MapViewCallback = void Function(MapViewController controller);
 typedef OnPoiSelectedCallback = void Function(
     OnPoiSelectedResult poiSelectedResult);
 // Car saved callback.
-typedef OnCarSavedCallBack = void Function(
+typedef OnCarSavedCallback = void Function(
     String floorIdentifier, Coordinate coordinate);
 typedef OnMapViewErrorCallback = void Function(MapViewError error);
 // POI deselection callback.

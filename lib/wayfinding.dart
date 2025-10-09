@@ -105,3 +105,6 @@ const WV_MESSAGE_CALIBRATIONS_STOP_CURRENT = "calibration.stop";
 // Calibration events:
 const WV_MESSAGE_LOCAL_CALIB_UPLOAD_REQUESTED =
     "calibration.local_calibrations_upload_requested";
+
+// Custom IDs on Viewer
+const FIND_MY_CAR_POI_ID = "-3";
