@@ -65,11 +65,10 @@ class CarSavedHandler implements MessageHandler {
   @override
   void handleMessage(
       MapViewController mapViewController, Map<String, dynamic> payload) {
-    final carPosition = CarPosition(
-      floorId: payload['floorId']?.toDouble() ?? 0.0,
-      coordinates: createCoordinate(payload['coordinates']),
+    mapViewController._onCarSavedCallBack!(
+      payload['floorIdentifier'].toString(),
+      createCoordinate(payload['coordinate']),
     );
-    mapViewController._onCarSavedCallBack!(carPosition);
   }
 }
 

@@ -247,9 +247,12 @@ class MapViewController {
     _sendMessage(WV_MESSAGE_CAMERA_FOLLOW_USER, {"value": false});
   }
 
-  void saveCar(CarPosition carPoisition) async {
-    _sendMessage(
-        WV_MESSAGE_CARTOGRAPHY_SAVE_CAR, jsonEncode(carPoisition.toMap()));
+  void saveCar(String floorIdentifier, Coordinate coordinate) async {
+    final message = {
+      "floorIdentifier": floorIdentifier,
+      "coordinate": coordinate.toMap(),
+    };
+    _sendMessage(WV_MESSAGE_CARTOGRAPHY_SAVE_CAR, message);
   }
 
   /// Animate the map's [Camera].
