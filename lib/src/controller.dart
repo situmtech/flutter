@@ -395,6 +395,7 @@ class MapViewController {
     _onPoiSelectedCallback = callback;
   }
 
+  /// Get notified when a car is saved.
   void onCarSaved(OnCarSavedCallBack callback) {
     _onCarSavedCallBack = callback;
   }
