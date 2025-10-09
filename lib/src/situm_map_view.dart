@@ -134,7 +134,7 @@ class _MapViewState extends State<MapView> {
         },
       );
     wyfController ??= MapViewController(
-      situmApiKey: mapViewConfiguration.situmApiKey,
+      mapViewConfiguration: mapViewConfiguration
     );
     wyfController!._widgetLoadCallback = widget.onLoad;
     wyfController!._onMapViewErrorCallBack = widget.onError;

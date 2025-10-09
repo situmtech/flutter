@@ -23,7 +23,9 @@ if (flutterVersionName == null) {
 }
 
 android {
-    compileSdkVersion 36
+    compileSdkVersion rootProject.ext.has("flutter") && rootProject.ext.flutter.has("compileSdkVersion")
+            ? rootProject.ext.flutter.compileSdkVersion
+            : 36
     ndkVersion flutter.ndkVersion
 
     compileOptions {

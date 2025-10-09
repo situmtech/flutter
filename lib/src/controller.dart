@@ -39,10 +39,16 @@ class MapViewController {
   // which navigation engine is being used on MapView (WASM or SDK).
   bool? _usingViewerNavigation;
 
+  // Used internally to ensure accessibility modifications are scoped only
+  // to the Situm WebView (matching the viewerDomain) and do not interfere with
+  // other WebViews present in the app.
+  String? _viewerDomain;
+
   MapViewController({
     String? situmUser,
-    required String situmApiKey,
+    required MapViewConfiguration mapViewConfiguration,
   }) {
+    _viewerDomain = mapViewConfiguration.viewerDomain;
     // Open SDK channel to call native (private) methods if necessary.
     // WARNING: don't set the method call handler here as it will overwrite the
     // one provided by the SDK controller.
@@ -51,7 +57,7 @@ class MapViewController {
     // Be sure to initialize, configure and authenticate in our SDK
     // so it can be used in callbacks, etc.
     situmSdk.init();
-    situmSdk.setApiKey(situmApiKey);
+    situmSdk.setApiKey(mapViewConfiguration.situmApiKey);
     // Subscribe to native SDK messages so the location updates can be directly
     // forwarded to the map viewer.
     situmSdk.internalSetMethodCallMapDelegate(_methodCallHandler);
@@ -299,7 +305,7 @@ class MapViewController {
 
   // WYF internal utils:
 
-  void _notifyMapIsReady() {
+  void _onMapIsReady() {
     _widgetLoadCallback(this);
     if (_lastStatusToSend != null) {
       _setCurrentLocationStatus(_lastStatusToSend!);
@@ -308,10 +314,18 @@ class MapViewController {
       // Same API for sending status and errors...
       _setCurrentLocationStatus(_lastErrorToSend!);
     }
+    _ensureTalkBackCompatibility();
   }
 
   void _notifyMapViewError(MapViewError payload) {
     _onMapViewErrorCallBack?.call(payload);
+  }
+
+  Future<void> _ensureTalkBackCompatibility() async {
+    if (Platform.isAndroid) {
+      await methodChannel.invokeMethod(
+          "ensureTalkBackCompatibility", {"viewerDomain": _viewerDomain});
+    }
   }
 
   void _setRoute(
