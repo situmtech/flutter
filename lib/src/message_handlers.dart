@@ -6,7 +6,7 @@ abstract class MessageHandler {
     switch (type) {
       case WV_MESSAGE_MAP_IS_READY:
         return MapIsReadyHandler();
-      case WV_MESSAGE_CARTOGRAPHY_CAR_SAVED:
+      case WV_MESSAGE_FIND_MY_CAR_SAVED:
         return CarSavedHandler();
       case WV_MESSAGE_ERROR:
         return MapViewErrorHandler();

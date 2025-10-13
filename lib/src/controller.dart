@@ -252,7 +252,7 @@ class MapViewController {
       "floorIdentifier": floorIdentifier,
       "coordinate": coordinate.toMap(),
     };
-    _sendMessage(WV_MESSAGE_CARTOGRAPHY_SAVE_CAR, message);
+    _sendMessage(WV_MESSAGE_FIND_MY_CAR_SAVE, message);
   }
 
   /// Animate the map's [Camera].
