@@ -12,6 +12,7 @@ class MapViewController {
   OnCalibrationPointClickedCallback? _onCalibrationPointClickedCallback;
   OnCalibrationFinishedCallback? _onCalibrationFinishedCallback;
   OnMapViewErrorCallback? _onMapViewErrorCallBack;
+  OnCarSavedCallback? _onCarSavedCallback;
 
   late MapViewCallback _widgetLoadCallback;
   late PlatformWebViewController _webViewController;
@@ -252,6 +253,14 @@ class MapViewController {
     _sendMessage(WV_MESSAGE_CAMERA_FOLLOW_USER, {"value": false});
   }
 
+  void saveCar(String floorIdentifier, Coordinate coordinate) async {
+    final message = {
+      "floorIdentifier": floorIdentifier,
+      "coordinate": coordinate.toMap(),
+    };
+    _sendMessage(WV_MESSAGE_FIND_MY_CAR_SAVE, message);
+  }
+
   /// Animate the map's [Camera].
   ///
   /// * **NOTE**: Calling this method repeatedly within a short period of time might result in unexpected behaviours with the camera animations,
@@ -398,6 +407,14 @@ class MapViewController {
   /// Get notified when a POI is selected.
   void onPoiSelected(OnPoiSelectedCallback callback) {
     _onPoiSelectedCallback = callback;
+  }
+
+  /// Triggered when the user's car location is saved.
+  ///
+  /// A **car** represents the FMC feature entity that stores where the user has parked.
+  /// It is persisted locally on the host as a personal POI.
+  void onCarSaved(OnCarSavedCallback callback) {
+    _onCarSavedCallback = callback;
   }
 
   /// Get notified when the selected POI is deselected.
