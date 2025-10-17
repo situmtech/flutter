@@ -221,7 +221,7 @@ class SitumSdk {
     _onLocationErrorCallback = callback;
   }
 
-  /// Requests directions between two [Point]s using the given
+  /// Calculates and returns a [SitumRoute] between two [Point]s using the given
   /// [DirectionsRequest].
   Future<SitumRoute> requestDirections(
       DirectionsRequest directionsRequest) async {
@@ -231,8 +231,9 @@ class SitumSdk {
     return createRoute(response);
   }
 
-  /// Requests navigation between two [Point]s, using the given
-  /// [DirectionsRequest] and [NavigationRequest].
+  /// Calculates and returns a [SitumRoute] between two [Point]s, using the given
+  /// [DirectionsRequest] and [NavigationRequest]. Does NOT start a navigation, it is
+  /// meant to give users a way of generating a route and using it for their own purposes.
   Future<SitumRoute> requestNavigation(DirectionsRequest directionsRequest,
       NavigationRequest navigationRequest) async {
     Map response = await methodChannel.invokeMethod('requestNavigation', {
