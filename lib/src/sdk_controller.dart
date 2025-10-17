@@ -222,7 +222,9 @@ class SitumSdk {
   }
 
   /// Calculates and returns a [SitumRoute] between two [Point]s using the given
-  /// [DirectionsRequest].
+  /// [DirectionsRequest]. This method will NOT show directions in the [MapView],
+  /// it is meant to give users a way of generating a route and using it for their
+  /// own purposes.
   Future<SitumRoute> requestDirections(
       DirectionsRequest directionsRequest) async {
     Map response = await methodChannel.invokeMethod(
@@ -232,8 +234,9 @@ class SitumSdk {
   }
 
   /// Calculates and returns a [SitumRoute] between two [Point]s, using the given
-  /// [DirectionsRequest] and [NavigationRequest]. Does NOT start a navigation, it is
-  /// meant to give users a way of generating a route and using it for their own purposes.
+  /// [DirectionsRequest] and [NavigationRequest]. This method does NOT start a navigation
+  /// in the [MapView], it is meant to give users a way of generating a route and using it 
+  /// for their own purposes.
   Future<SitumRoute> requestNavigation(DirectionsRequest directionsRequest,
       NavigationRequest navigationRequest) async {
     Map response = await methodChannel.invokeMethod('requestNavigation', {
