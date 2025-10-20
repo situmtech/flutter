@@ -57,6 +57,10 @@ const WV_MESSAGE_CALIBRATION_STOPPED = "calibration.stopped";
 
 // ACTIONS sent to map-viewer:
 
+// Configuration
+const WV_APP_CONFIG = "app.set_config_item";
+const WV_APP_CONFIG_ITEM_TTS_ENGINE = "internal.tts.engine";
+
 // Location actions
 const WV_MESSAGE_LOCATION = "location.update";
 const WV_MESSAGE_LOCATION_STATUS = "location.update_status";
@@ -72,7 +76,7 @@ const WV_MESSAGE_NAVIGATION_TO_CAR = "navigation.start.to_car";
 const WV_MESSAGE_NAVIGATION_UPDATE = "navigation.update";
 const WV_MESSAGE_NAVIGATION_CANCEL = "navigation.cancel";
 
-// Cartogaphy actions
+// Cartography actions
 const WV_MESSAGE_CARTOGRAPHY_SELECT_BUILDING = "cartography.select_building";
 const WV_MESSAGE_CARTOGRAPHY_DESELECT_POI = "cartography.deselect_poi";
 const WV_MESSAGE_CARTOGRAPHY_SELECT_POI = "cartography.select_poi";
