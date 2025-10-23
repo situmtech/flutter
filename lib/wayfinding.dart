@@ -37,18 +37,19 @@ const WV_CHANNEL = "ReactNativeWebView";
 const OFFLINE_CHANNEL = "OfflineChannel";
 
 // EVENTS from map-viewer:
+const WV_MESSAGE_AR_REQUESTED = "augmented_reality.requested";
+const WV_MESSAGE_CARTOGRAPHY_POI_DESELECTED = "cartography.poi_deselected";
+const WV_MESSAGE_CARTOGRAPHY_POI_SELECTED = "cartography.poi_selected";
 const WV_MESSAGE_DIRECTIONS_REQUESTED = "directions.requested";
+const WV_MESSAGE_ERROR = "app.error";
+const WV_MESSAGE_FIND_MY_CAR_SAVED = "find_my_car.saved";
+const WV_MESSAGE_LOCATION_START = "location.start";
+const WV_MESSAGE_MAP_IS_READY = "app.map_is_ready";
 const WV_MESSAGE_NAVIGATION_REQUESTED = "navigation.requested";
 const WV_MESSAGE_NAVIGATION_STOP = "navigation.stopped";
-const WV_MESSAGE_CARTOGRAPHY_POI_SELECTED = "cartography.poi_selected";
-const WV_MESSAGE_CARTOGRAPHY_POI_DESELECTED = "cartography.poi_deselected";
-const WV_MESSAGE_MAP_IS_READY = "app.map_is_ready";
-const WV_MESSAGE_ERROR = "app.error";
-const WV_MESSAGE_LOCATION_START = "location.start";
-const WV_MESSAGE_AR_REQUESTED = "augmented_reality.requested";
 const WV_VIEWER_NAVIGATION_STARTED = "viewer.navigation.started";
-const WV_VIEWER_NAVIGATION_UPDATED = "viewer.navigation.updated";
 const WV_VIEWER_NAVIGATION_STOPPED = "viewer.navigation.stopped";
+const WV_VIEWER_NAVIGATION_UPDATED = "viewer.navigation.updated";
 
 // Calibration events:
 const WV_MESSAGE_CALIBRATION_POINT_CLICKED = "calibration.point_clicked";
@@ -79,6 +80,7 @@ const WV_MESSAGE_CARTOGRAPHY_SELECT_CAR = "cartography.select_car";
 const WV_MESSAGE_CARTOGRAPHY_SELECT_POI_CATEGORY =
     "cartography.select_poi_category";
 const WV_MESSAGE_CARTOGRAPHY_SELECT_FLOOR = "cartography.select_floor";
+const WV_MESSAGE_FIND_MY_CAR_SAVE = "find_my_car.save";
 const WV_MESSAGE_UI_SET_LANGUAGE = "ui.set_language";
 
 // Camera actions
@@ -103,3 +105,6 @@ const WV_MESSAGE_CALIBRATIONS_STOP_CURRENT = "calibration.stop";
 // Calibration events:
 const WV_MESSAGE_LOCAL_CALIB_UPLOAD_REQUESTED =
     "calibration.local_calibrations_upload_requested";
+
+// Custom IDs on Viewer
+const FIND_MY_CAR_POI_ID = "-3";

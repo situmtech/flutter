@@ -309,6 +309,9 @@ class _MyTabsState extends State<MyTabs> {
     // it become available
     //controller.followUser();
 
+    controller.onCarSaved((floorIdentifier, coordinate) {
+      printWarning("WYF> car saved on floor: $floorIdentifier");
+    });
     controller.onPoiSelected((poiSelectedResult) {
       printWarning("WYF> Poi SELECTED: ${poiSelectedResult.poi.name}");
     });
