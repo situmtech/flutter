@@ -11,6 +11,7 @@ class TextToSpeechManager(context: Context) : OnInitListener {
 
     private val DEFAULT_SPEECH_RATE_VALUE = 1.0f
     private var textToSpeech: TextToSpeech
+    private var canSpeak: Boolean = true
 
     init {
         val enginePackage = getPreferredTtsEnginePackage(context)
@@ -29,6 +30,7 @@ class TextToSpeechManager(context: Context) : OnInitListener {
     }
 
     fun speak(arguments: Map<String, Any>) {
+        if (!canSpeak) return
         if (arguments["text"] == null) return
 
         arguments["lang"]?.let {
@@ -70,6 +72,15 @@ class TextToSpeechManager(context: Context) : OnInitListener {
             googleTts
         } else {
             null
+        }
+    }
+
+    fun setCanSpeak(value: Boolean) {
+        // TTS is paused when screen is off, app goes background and MapView gets destroyed
+        canSpeak = value
+
+        if (!canSpeak) {
+            textToSpeech.stop()
         }
     }
 

@@ -10,6 +10,7 @@
 #import <SitumSDK/SitumSDK.h>
 #import <CoreLocation/CoreLocation.h>
 #import "SITNavigationHandler.h"
+#import "SITTextToSpeechManager.h"
 
 
 @interface SITFSDKPlugin() <SITLocationDelegate, SITGeofencesDelegate>
@@ -17,6 +18,7 @@
 @property (nonatomic, strong) SITCommunicationManager *comManager;
 @property (nonatomic, strong) SITLocationManager *locManager;
 @property (nonatomic, strong) SITNavigationHandler *navigationHandler;
+@property (nonatomic, strong) SITTextToSpeechManager *ttsManager;
 
 @property (nonatomic, strong) FlutterMethodChannel *channel;
 
@@ -35,6 +37,7 @@ const NSString* RESULTS_KEY = @"results";
     instance.navigationHandler.channel = channel;
     [SITNavigationManager.sharedManager addDelegate:instance.navigationHandler];
     instance.channel = channel;
+    instance.ttsManager = [[SITTextToSpeechManager alloc] init];
     [registrar addMethodCallDelegate:instance channel:channel];
 }
 
@@ -66,7 +69,7 @@ const NSString* RESULTS_KEY = @"results";
                            result:result];
     } else if ([@"addExternalLocation" isEqualToString: call.method]) {
         [self handleAddExternalLocation:call
-                           result:result];
+                                 result:result];
     }  else if ([@"prefetchPositioningInfo" isEqualToString:call.method]) {
         [self handlePrefetchPositioningInfo:call
                                      result:result];
@@ -104,11 +107,10 @@ const NSString* RESULTS_KEY = @"results";
                                result:result];
     } else  if ([@"addExternalArData" isEqualToString:call.method]) {
         [self handleSetArOdometry:call
-                               result:result];
-
+                           result:result];
     } else  if ([@"validateMapViewProjectSettings" isEqualToString:call.method]) {
         [self handleValidateMapViewProjectSettings:call
-                               result:result];
+                                            result:result];
     } else if ([@"updateNavigationState" isEqualToString:call.method]) {
         [self updateNavigationState:call
                              result:result];
@@ -119,8 +121,8 @@ const NSString* RESULTS_KEY = @"results";
         // Only for Android.
         result(@"DONE");
     }  else if ([@"speakAloudText" isEqualToString:call.method]) {
-        // Only for Android, TTS is already managed by SITMapView internally
-        result(@"DONE");
+        [self handleSpeakAloudText:call
+                            result:result];
     } else if ([@"userHelper.configure" isEqualToString:call.method]) {
         [self handleConfigureUserHelper:call result:result];
     } else {
@@ -625,5 +627,13 @@ didInitiatedWithRequest:(SITLocationRequest *)request
     
     result(@"DONE");
 }
+
+- (void)handleSpeakAloudText:(FlutterMethodCall *)call
+                      result:(FlutterResult)result
+{
+    [self.ttsManager speakWithPayload: call.arguments];
+    result(@"DONE");
+}
+
 
 @end

@@ -324,6 +324,7 @@ class MapViewController {
       _setCurrentLocationStatus(_lastErrorToSend!);
     }
     _ensureTalkBackCompatibility();
+    _sendViewerConfigMessage();
   }
 
   void _notifyMapViewError(MapViewError payload) {
@@ -335,6 +336,14 @@ class MapViewController {
       await methodChannel.invokeMethod(
           "ensureTalkBackCompatibility", {"viewerDomain": _viewerDomain});
     }
+  }
+
+  void _sendViewerConfigMessage() {
+    const configItems = [
+      // Tells the MapView to send tts messages instead of speaking by itself.
+      {"key": WV_APP_CONFIG_ITEM_TTS_ENGINE, "value": "mobile"}
+    ];
+    _sendMessage(WV_APP_CONFIG, jsonEncode(configItems));
   }
 
   void _setRoute(
