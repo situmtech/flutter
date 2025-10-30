@@ -7,7 +7,9 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Looper
 import android.util.Log
-import androidx.annotation.NonNull
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
 import es.situm.sdk.SitumSdk
 import es.situm.sdk.communication.CommunicationConfigImpl
 import es.situm.sdk.configuration.network.NetworkOptionsImpl
@@ -55,6 +57,17 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
         NetworkOptionsImpl.Builder().setPreloadImages(false).build()
     )
 
+    private var lifecycle: Lifecycle? = null
+    private val lifecycleObserver = object : DefaultLifecycleObserver {
+        override fun onResume(owner: LifecycleOwner) {
+            onActivityResume(owner)
+        }
+
+        override fun onPause(owner: LifecycleOwner) {
+            onActivityPause(owner)
+        }
+    }
+
     companion object {
         private var initialized = false
         const val CHANNEL_ID_SDK = "situm.com/flutter_sdk"
@@ -85,6 +98,14 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
         locationListener?.let {
             SitumSdk.locationManager().removeLocationListener(it)
         }
+    }
+
+    private fun onActivityResume(owner: LifecycleOwner) {
+        ttsManager?.setCanSpeak(true)
+    }
+
+    private fun onActivityPause(owner: LifecycleOwner) {
+        ttsManager?.setCanSpeak(false)
     }
 
     override fun onMethodCall(methodCall: MethodCall, result: MethodChannel.Result) {
@@ -457,20 +478,28 @@ class SitumFlutterPlugin : FlutterPlugin, ActivityAware, MethodChannel.MethodCal
 
     override fun onAttachedToActivity(binding: ActivityPluginBinding) {
         context = binding.activity
+        lifecycle = (binding.activity as? LifecycleOwner)?.lifecycle
+        lifecycle?.addObserver(lifecycleObserver)
     }
 
     override fun onDetachedFromActivityForConfigChanges() {
         context = null
+        lifecycle?.removeObserver(lifecycleObserver)
+        lifecycle = null
     }
 
     override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
         context = binding.activity
         hackWebViewAccessibility()
+        lifecycle = (binding.activity as? LifecycleOwner)?.lifecycle
+        lifecycle?.addObserver(lifecycleObserver)
     }
 
     override fun onDetachedFromActivity() {
         context = null
         ttsManager?.stop()
         ttsManager = null
+        lifecycle?.removeObserver(lifecycleObserver)
+        lifecycle = null
     }
 }
