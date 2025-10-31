@@ -273,6 +273,7 @@ class _MyTabsState extends State<MyTabs> {
           profile: profile,
           // The viewer domain:
           viewerDomain: viewerDomain,
+          apiDomain: apiDomain,
         ),
         // Load callback:
         onLoad: _onLoad,
@@ -412,6 +413,7 @@ class _MyTabsState extends State<MyTabs> {
     // Authenticate with your account and API key.
     // You can find yours at https://dashboard.situm.com/accounts/profile
     situmSdk.setApiKey(situmApiKey);
+    situmSdk.setDashboardURL(apiDomain);
     // Configure SDK before authenticating.
     situmSdk.setConfiguration(ConfigurationOptions(
         // In case you want to use our remote configuration (https://dashboard.situm.com/settings).
