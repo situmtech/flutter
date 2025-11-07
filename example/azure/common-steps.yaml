@@ -39,7 +39,7 @@ steps:
 
       echo -e "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<resources>\n\t<string name=\"google_api_key\">$(MAPS_APIKEY_EXAMPLE)</string>\n</resources>" > android/app/src/main/res/values/google_api_key.xml
 
-      sed -i '' "s/maps\.situm\.com/$(MAPVIEWURL)/g" ios/Runner/Info.plist
+      sed -i '' "s|maps\.situm\.com|$(MAPVIEWURL)|g" ios/Runner/Info.plist
       cat ios/Runner/Info.plist
 
     displayName: Configure credentials
