@@ -31,7 +31,7 @@ pool:
   vmImage: $(ubuntuVersion)
 
 steps:
-  - ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/feature/SIS-957') }}:
+  - ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/develop') }}:
       - checkout: self
         fetchTags: false
         fetchDepth: 1
