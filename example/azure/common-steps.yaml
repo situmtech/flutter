@@ -11,6 +11,8 @@ parameters:
     type: string
   - name: PROFILE
     type: string
+  - name: APIDOMAIN
+    type: string
 
 steps:
   - checkout: self
@@ -36,6 +38,7 @@ steps:
       echo -n "const buildingIdentifier = \"${{ parameters.BUILDINGID }}\";" >> lib/config.dart
       echo -n "const profile = \"${{ parameters.PROFILE }}\";" >> lib/config.dart
       echo -n "const viewerDomain = \"$(MAPVIEWURL)\";" >> lib/config.dart
+      echo -n "const apiDomain = \"$(parameters.APIDOMAIN)\";" >> lib/config.dart
 
       echo -e "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n<resources>\n\t<string name=\"google_api_key\">$(MAPS_APIKEY_EXAMPLE)</string>\n</resources>" > android/app/src/main/res/values/google_api_key.xml
 
