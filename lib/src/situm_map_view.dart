@@ -119,14 +119,6 @@ class _MapViewState extends State<MapView> {
           _onMapViewerMessageUpdateInternalState(messageType);
         },
       ))
-      ..addJavaScriptChannel(JavaScriptChannelParams(
-        name: OFFLINE_CHANNEL,
-        onMessageReceived: (JavaScriptMessage message) {
-          _loadWithConfig(widget.configuration);
-          // Make sure we hide any native Android error screens before trying to load MapView again.
-          _displayBlankScreen(true);
-        },
-      ))
       ..setOnPlatformPermissionRequest(
         (PlatformWebViewPermissionRequest request) {
           debugPrint(

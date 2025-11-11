@@ -36,7 +36,6 @@ part 'src/situm_map_view.dart';
 part 'src/ui_utils.dart';
 
 const WV_CHANNEL = "ReactNativeWebView";
-const OFFLINE_CHANNEL = "OfflineChannel";
 
 // EVENTS from map-viewer:
 const WV_MESSAGE_AR_REQUESTED = "augmented_reality.requested";
