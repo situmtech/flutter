@@ -142,12 +142,12 @@ steps:
           find . -iname "*.tar.xz" -exec tar xf {} \;
 
           echo -e "\n[+] download gcloud cli version $(gcloudcliversion)\n"
-          curl -o $(gcloudcliversion)
+          curl -O $(gcloudCliVersion)
 
           echo -e "\n[+] untar gcloud cli version\n"
           find . -iname  "*.tar.gz" -exec tar xzf {} \;
 
-        displayname: install binaries
+        displayName: install binaries
 
       - bash: |
           set -euo pipefail
