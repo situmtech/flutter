@@ -25,13 +25,15 @@ class ViewerNavigation private constructor() {
     }
 
     fun updateNavigationState(
-            arguments: Map<String, Any>,
-            result: MethodChannel.Result
+        arguments: Map<String, Any>,
+        result: MethodChannel.Result
     ) {
-       
-        SitumSdk.navigationManager().updateNavigationState(
-            ExternalNavigation.fromMap(arguments)
-        )
+        val externalNavigation = ExternalNavigation.fromMap(arguments)
+        if (externalNavigation == null) {
+            result.success(false)
+            return
+        }
+        SitumSdk.navigationManager().updateNavigationState(externalNavigation)
         result.success(true)
     }
 }

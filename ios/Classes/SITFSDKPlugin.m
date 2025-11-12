@@ -544,6 +544,7 @@ SITRealtimeUpdateInterval createRealtimeUpdateInterval(NSString *name) {
                          result:(FlutterResult)result {
     if ([call.arguments count] > 0) {
         SITExternalNavigation *externalNavigation = [SITExternalNavigation fromDictionary:call.arguments];
+        if (!externalNavigation) return
 
         [[SITNavigationManager sharedManager] updateNavigationState:externalNavigation];
     }
