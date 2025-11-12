@@ -147,7 +147,7 @@ steps:
           echo -e "\n[+] untar gcloud cli version\n"
           find . -iname  "*.tar.gz" -exec tar xzf {} \;
 
-        displayname: install binaries
+        displayName: install binaries
 
       - bash: |
           set -euo pipefail
