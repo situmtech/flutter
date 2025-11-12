@@ -37,6 +37,7 @@ class _MapViewState extends State<MapView> {
   static PlatformWebViewWidget? webViewWidget;
   late MapViewConfiguration mapViewConfiguration;
 
+  bool _shouldDisplayMainFrameError = false;
   bool _shouldDisplayBlankScreen =
       defaultTargetPlatform == TargetPlatform.android ? true : false;
 
@@ -87,12 +88,11 @@ class _MapViewState extends State<MapView> {
                 isForMainFrame: ${error.isForMainFrame}
                 url: ${error.url}
             ''');
-            bool shouldDisplayRetryScreen =
-                error.isForMainFrame != null && error.isForMainFrame!;
-
-            if (shouldDisplayRetryScreen &&
+            if (error.isForMainFrame == true &&
                 ConnectionErrors.values.contains(error.errorCode)) {
-              webViewController!.loadFlutterAsset(MapView._retryScreenURL);
+              setState(() {
+                _shouldDisplayMainFrameError = true;
+              });
               wyfController?._onMapViewErrorCallBack
                   ?.call(MapViewError.noNetworkError());
             }
@@ -114,15 +114,9 @@ class _MapViewState extends State<MapView> {
         name: WV_CHANNEL,
         onMessageReceived: (JavaScriptMessage message) {
           Map<String, dynamic> map = jsonDecode(message.message);
-          wyfController?.onMapViewerMessage(map["type"], map["payload"] ?? {});
-        },
-      ))
-      ..addJavaScriptChannel(JavaScriptChannelParams(
-        name: OFFLINE_CHANNEL,
-        onMessageReceived: (JavaScriptMessage message) {
-          _loadWithConfig(widget.configuration);
-          // Make sure we hide any native Android error screens before trying to load MapView again.
-          _displayBlankScreen(true);
+          var messageType = map["type"];
+          wyfController?.onMapViewerMessage(messageType, map["payload"] ?? {});
+          _onMapViewerMessageUpdateInternalState(messageType);
         },
       ))
       ..setOnPlatformPermissionRequest(
@@ -134,7 +128,7 @@ class _MapViewState extends State<MapView> {
         },
       );
     wyfController ??= MapViewController(
-      mapViewConfiguration: mapViewConfiguration
+      mapViewConfiguration: mapViewConfiguration,
     );
     wyfController!._widgetLoadCallback = widget.onLoad;
     wyfController!._onMapViewErrorCallBack = widget.onError;
@@ -157,10 +151,12 @@ class _MapViewState extends State<MapView> {
   }
 
   void _loadWithConfig(MapViewConfiguration configuration) async {
+    setState(() {
+      _shouldDisplayMainFrameError = false;
+    });
     if (webViewController is AndroidWebViewController) {
       AndroidWebViewController.enableDebugging(configuration.enableDebugging);
     }
-
     if (webViewController is WebKitWebViewController) {
       (webViewController as WebKitWebViewController)
           .setInspectable(configuration.enableDebugging);
@@ -184,17 +180,30 @@ class _MapViewState extends State<MapView> {
 
   @override
   Widget build(BuildContext context) {
-    return _shouldDisplayBlankScreen
-        // This blank screen hides any error screen that the native Android webview could display
-        // before we handle it in setOnWebResourceError() callback.
-        ? Container(color: Colors.white)
-        // In the example of the plugin (https://pub.dev/packages/webview_flutter_android/example),
-        // PlatformWebViewWidget is instantiated in each call to the 'build' method.
-        // However, we avoid doing so because it is causing a native view to be
-        // generated with each 'build' call, resulting in flashes and even crashes.
-        // To solve this, we store a reference to the PlatformWebViewWidget and
-        // invoke its 'build' method.
-        : webViewWidget!.build(context);
+    return Stack(
+      children: [
+        _shouldDisplayBlankScreen
+            // This blank screen hides any error screen that the native Android webview could display
+            // before we handle it in setOnWebResourceError() callback.
+            ? Container(color: Colors.white)
+            // In the example of the plugin (https://pub.dev/packages/webview_flutter_android/example),
+            // PlatformWebViewWidget is instantiated in each call to the 'build' method.
+            // However, we avoid doing so because it is causing a native view to be
+            // generated with each 'build' call, resulting in flashes and even crashes.
+            // To solve this, we store a reference to the PlatformWebViewWidget and
+            // invoke its 'build' method.
+            : webViewWidget!.build(context),
+        // TODO: https://issues.chromium.org/issues/459123397
+        // Currently, we cannot determine whether a received main frame error is genuine or not.
+        // In some cases, the underlying WebView may continue loading behind the retry screen,
+        // and the map may eventually load successfully. When a "map-is-ready" message is received,
+        // this flag will be set to false.
+        // The Stack is therefore required to keep the WebView alive behind the retry screen.
+        // It should be removed as soon as possible to reduce composition overhead,
+        // but for now it is necessary to mitigate this WebView issue.
+        if (_shouldDisplayMainFrameError) _buildRetryScreen(_onErrorRetryLoad),
+      ],
+    );
   }
 
   @override
@@ -209,5 +218,21 @@ class _MapViewState extends State<MapView> {
   void dispose() {
     super.dispose();
     // wyfController?.onWidgetDisposed();
+  }
+
+  void _onErrorRetryLoad() {
+    _loadWithConfig(widget.configuration);
+    // Make sure we hide any native Android error screens before trying to load MapView again.
+    _displayBlankScreen(true);
+  }
+
+  void _onMapViewerMessageUpdateInternalState(messageType) {
+    if (messageType == WV_MESSAGE_MAP_IS_READY) {
+      setState(() {
+        if (mounted) {
+          _shouldDisplayMainFrameError = false;
+        }
+      });
+    }
   }
 }
