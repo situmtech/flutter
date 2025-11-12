@@ -30,14 +30,16 @@ parameters:
   - name: MAPVIEWURL
     type: string
     default: "https://maps.situm.com"
+  - name: APIDOMAIN
+    type: string
+    default: "api.situm.com"
 
 resources:
   repositories:
-  - repository: sys_kubernetes_templates
-    type: bitbucket
-    endpoint: Bitbucket - sistemas
-    name: situm/sys-kubernetes-templates.git
-
+    - repository: sys_kubernetes_templates
+      type: bitbucket
+      endpoint: Bitbucket - sistemas
+      name: situm/sys-kubernetes-templates.git
 
 jobs:
   - job: Android_app
@@ -54,6 +56,7 @@ jobs:
               echo "##vso[task.setvariable variable=MAPVIEWURL]$(echo $(DEFAULT_MAPVIEWURL))"
               # TODO: add DEFAULT_REMOTEIDENTIFIER to Passwords.
               echo "##vso[task.setvariable variable=PROFILE]$(echo $(DEFAULT_REMOTEIDENTIFIER))"
+              echo "##vso[task.setvariable variable=APIDOMAIN]$(echo $(DEFAULT_APIDOMAIN))"
               echo "##vso[task.setvariable variable=BUILDNUMBER]$(echo $(Build.BuildNumber) | awk -F"." '{if ($2 < 10) print $1"0"$2; else print $1$2}')"
 
               echo -e "\n[!] I'm a shy step so I don't show any information. You'll see my work in the Configure Credentials step"
@@ -66,6 +69,7 @@ jobs:
               echo "##vso[task.setvariable variable=BUILDINGID]$(echo ${{ parameters.BUILDINGID}})"
               echo "##vso[task.setvariable variable=MAPVIEWURL]$(echo ${{ parameters.MAPVIEWURL}})"
               echo "##vso[task.setvariable variable=PROFILE]$(echo ${{ parameters.PROFILE}})"
+              echo "##vso[task.setvariable variable=APIDOMAIN]$(echo ${{ parameters.APIDOMAIN}})"
               echo "##vso[task.setvariable variable=BUILDNUMBER]$(echo $(Build.BuildNumber) | awk -F"." '{if ($2 < 10) print $1"0"$2; else print $1$2}')"
 
 
@@ -79,6 +83,7 @@ jobs:
           BUILDINGID: $(BUILDINGID)
           PROFILE: $(PROFILE)
           MAPVIEWURL: $(MAPVIEWURL)
+          APIDOMAIN: $(APIDOMAIN)
           system: "Android"
 
       - template: azure/build-examples.yaml
@@ -90,14 +95,12 @@ jobs:
           PROFILE: $(PROFILE)
           MAPVIEWURL: $(MAPVIEWURL)
       - ${{ if ne(variables['Build.Reason'],'manual') }}:
-        - template: azure-templates/teams-notifier.yml@sys_kubernetes_templates
-          parameters:
-            channelId: $(releasesMobileChannelId)
-            teamID: $(releasesMobileTeamId)
-            messageType: "error"
-            message: "Hey Team, 🚨 our <strong>Flutter Android Example App auto build</strong> just took a dive off the high board and belly-flopped! 🚨 Let's put on our lifeguard hats and dive in for a rescue mission! 🚑 Time to debug and bring that pipeline back to smooth sailing! 🛠️⚓ Alert level: High! Let's fix it! 🚨"
-
-
+          - template: azure-templates/teams-notifier.yml@sys_kubernetes_templates
+            parameters:
+              channelId: $(releasesMobileChannelId)
+              teamID: $(releasesMobileTeamId)
+              messageType: "error"
+              message: "Hey Team, 🚨 our <strong>Flutter Android Example App auto build</strong> just took a dive off the high board and belly-flopped! 🚨 Let's put on our lifeguard hats and dive in for a rescue mission! 🚑 Time to debug and bring that pipeline back to smooth sailing! 🛠️⚓ Alert level: High! Let's fix it! 🚨"
 
   - job: iOS_app
 
@@ -113,6 +116,7 @@ jobs:
               echo "##vso[task.setvariable variable=MAPVIEWURL]$(echo $(DEFAULT_MAPVIEWURL))"
               # TODO: add DEFAULT_REMOTEIDENTIFIER to Passwords.
               echo "##vso[task.setvariable variable=PROFILE]$(echo $(DEFAULT_REMOTEIDENTIFIER))"
+              echo "##vso[task.setvariable variable=APIDOMAIN]$(echo $(DEFAULT_APIDOMAIN))"
               echo "##vso[task.setvariable variable=BUILDNUMBER]$(echo $(Build.BuildNumber) | awk -F"." '{if ($2 < 10) print $1"0"$2; else print $1$2}')"
 
               echo -e "\n[!] I'm a shy step so I don't show any information. You'll see my work in the Configure Credentials step"
@@ -125,6 +129,7 @@ jobs:
               echo "##vso[task.setvariable variable=BUILDINGID]$(echo ${{ parameters.BUILDINGID}})"
               echo "##vso[task.setvariable variable=MAPVIEWURL]$(echo ${{ parameters.MAPVIEWURL}})"
               echo "##vso[task.setvariable variable=PROFILE]$(echo ${{ parameters.PROFILE}})"
+              echo "##vso[task.setvariable variable=APIDOMAIN]$(echo ${{ parameters.APIDOMAIN}})"
               echo "##vso[task.setvariable variable=BUILDNUMBER]$(echo $(Build.BuildNumber) | awk -F"." '{if ($2 < 10) print $1"0"$2; else print $1$2}')"
 
               echo -e "\n[!] I'm a shy step so I don't show any information. You'll see my work in the Configure Credentials step"
@@ -137,6 +142,7 @@ jobs:
           BUILDINGID: $(BUILDINGID)
           PROFILE: $(PROFILE)
           MAPVIEWURL: $(MAPVIEWURL)
+          APIDOMAIN: $(APIDOMAIN)
           system: "iOS"
 
       - template: azure/build-examples.yaml
@@ -147,13 +153,12 @@ jobs:
           BUILDNUMBER: $(BUILDNUMBER)
           PROFILE: $(PROFILE)
           MAPVIEWURL: $(MAPVIEWURL)
+          APIDOMAIN: $(APIDOMAIN)
 
       - ${{ if ne(variables['Build.Reason'],'manual') }}:
-        - template: azure-templates/teams-notifier.yml@sys_kubernetes_templates
-          parameters:
-            channelId: $(releasesMobileChannelId)
-            teamID: $(releasesMobileTeamId)
-            messageType: "error"
-            message: "Hey Team, 🚨 our <strong>Flutter iOS Example App auto build</strong> just took a dive off the high board and belly-flopped! 🚨 Let's put on our lifeguard hats and dive in for a rescue mission! 🚑 Time to debug and bring that pipeline back to smooth sailing! 🛠️⚓ Alert level: High! Let's fix it! 🚨"
-
-
+          - template: azure-templates/teams-notifier.yml@sys_kubernetes_templates
+            parameters:
+              channelId: $(releasesMobileChannelId)
+              teamID: $(releasesMobileTeamId)
+              messageType: "error"
+              message: "Hey Team, 🚨 our <strong>Flutter iOS Example App auto build</strong> just took a dive off the high board and belly-flopped! 🚨 Let's put on our lifeguard hats and dive in for a rescue mission! 🚑 Time to debug and bring that pipeline back to smooth sailing! 🛠️⚓ Alert level: High! Let's fix it! 🚨"
