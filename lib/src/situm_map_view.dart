@@ -114,9 +114,12 @@ class _MapViewState extends State<MapView> {
         name: WV_CHANNEL,
         onMessageReceived: (JavaScriptMessage message) {
           Map<String, dynamic> map = jsonDecode(message.message);
-          var messageType = map["type"];
+          final messageType = map["type"] as String;
           wyfController?.onMapViewerMessage(messageType, map["payload"] ?? {});
-          _onMapViewerMessageUpdateInternalState(messageType);
+          // Forward every viewer message to this State so it can update itself.
+          // This must go through _InternalMessageBridge to prevent crashes caused by
+          // handling messages during a widget rebuild in an inconsistent state.
+          _InternalMessageBridge.dispatch(messageType, map["payload"] ?? {});
         },
       ))
       ..setOnPlatformPermissionRequest(
@@ -147,6 +150,10 @@ class _MapViewState extends State<MapView> {
                 layoutDirection: widget.configuration.directionality,
               );
     webViewWidget = PlatformWebViewWidget(webViewParams);
+    // Register an internal method that will receive every viewer message.
+    // IMPORTANT: register it here, after the webViewWidget was created, to
+    // avoid receiving messages while in an inconsistent state.
+    _InternalMessageBridge.register(_onMapViewerMessageUpdateInternalState);
     _loadWithConfig(mapViewConfiguration);
   }
 
@@ -217,19 +224,34 @@ class _MapViewState extends State<MapView> {
   @override
   void dispose() {
     super.dispose();
+    // IMPORTANT: We use a static reference to support the
+    // "persistUnderlyingWidget" feature. Because of that, this state must be
+    // explicitly unregistered when disposed; otherwise it may continue receiving
+    // WebView messages through _onMapViewerMessageUpdateInternalState, causing
+    // unwanted rebuilds in an inconsistent state.
+    _InternalMessageBridge.unregister();
     // wyfController?.onWidgetDisposed();
   }
 
   void _onErrorRetryLoad() {
     _loadWithConfig(widget.configuration);
-    // Make sure we hide any native Android error screens before trying to load MapView again.
+    // Make sure we hide any native Android error screens before trying to load
+    // MapView again.
     _displayBlankScreen(true);
   }
 
-  void _onMapViewerMessageUpdateInternalState(messageType) {
+  void _onMapViewerMessageUpdateInternalState(
+      String messageType, Map<String, dynamic> payload) {
+    // IMPORTANT: If the webViewWidget has not been initialized yet, skip this
+    // message. Otherwise, handling it could trigger a rebuild that tries to
+    // call webViewWidget!.build(...) while the widget is still null.
+    if (webViewWidget == null || !mounted) {
+      return;
+    }
     if (messageType == WV_MESSAGE_MAP_IS_READY) {
       setState(() {
         if (mounted) {
+          // Double check mounted.
           _shouldDisplayMainFrameError = false;
         }
       });
