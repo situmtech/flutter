@@ -1,5 +1,27 @@
 part of '../wayfinding.dart';
 
+class _InternalMessageBridge {
+  static void Function(String messageType, Map<String, dynamic> payload)?
+      _listener;
+
+  static void register(
+      void Function(String messageType, Map<String, dynamic> payload)
+          listener) {
+    _listener = listener;
+  }
+
+  static void unregister() {
+    _listener = null;
+  }
+
+  static void dispatch(String messageType, Map<String, dynamic> payload) {
+    final l = _listener;
+    if (l != null) {
+      l(messageType, payload);
+    }
+  }
+}
+
 Widget _buildRetryScreen(Function onErrorRetryLoad) {
   return Container(
     color: const Color(0xff313131),
