@@ -10,23 +10,18 @@ class MapViewControllerHolder {
 
   MapViewControllerHolder._internal();
 
-  Completer<MapViewController>? _completer;
+  final Completer<MapViewController> _completer = Completer<MapViewController>();
 
   /// Use this method to call MapViewController methods.
   Future<MapViewController> ensureMapViewController() {
-    // If a controller is already loading or available, reuse the same future.
-    if (_completer != null) {
-      return _completer!.future;
-    }
-    // Otherwise create a new Completer and wait for whoever will complete it.
-    _completer = Completer<MapViewController>();
-    return _completer!.future;
+    // Reuse the same future.
+    return _completer.future;
   }
 
   /// Call this from your MapView.onLoad callback.
   void setController(MapViewController controller) {
-    if (!(_completer?.isCompleted ?? true)) {
-      _completer!.complete(controller);
+    if (!(_completer.isCompleted)) {
+      _completer.complete(controller);
     }
   }
 }
