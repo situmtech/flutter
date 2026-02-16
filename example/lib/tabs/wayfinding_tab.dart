@@ -24,6 +24,7 @@ class _WayfindingTabState extends State<WayfindingTab> {
 
   @override
   void dispose() {
+    MapViewControllerHolder().reset();
     super.dispose();
   }
 
