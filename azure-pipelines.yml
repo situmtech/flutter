@@ -6,6 +6,7 @@
 trigger:
   - release/*
   - develop
+  - feature/*
 pr: none
 
 variables:
@@ -26,12 +27,13 @@ resources:
       type: bitbucket
       endpoint: Bitbucket - sistemas
       name: situm/sys-kubernetes-templates.git
+      ref: feature/trivy-no-severity-filter
 
 pool:
   vmImage: $(ubuntuVersion)
 
 steps:
-  - ${{ if eq(variables['Build.SourceBranch'], 'refs/heads/develop') }}:
+  - ${{ if contains(variables['Build.SourceBranch'], 'feature/') }}:
       - checkout: self
         fetchTags: false
         fetchDepth: 1
