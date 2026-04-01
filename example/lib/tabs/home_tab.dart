@@ -24,6 +24,7 @@ class _HomeTabState extends State<HomeTab> {
   ValueNotifier<List<Poi>> pois = ValueNotifier([]);
   ValueNotifier<List<Floor>> floors = ValueNotifier([]);
   bool loadingData = true;
+  String? fetchError;
   Poi? poiInteractionsPoi;
   Poi? cameraPoi;
   Floor? selectedFloor;
@@ -43,20 +44,29 @@ class _HomeTabState extends State<HomeTab> {
   void _fetchData() async {
     setState(() {
       loadingData = true;
+      fetchError = null;
     });
-    var buildingInfo = await situmSdk.fetchBuildingInfo(buildingIdentifier);
-    pois.value = buildingInfo.indoorPois;
-    floors.value = buildingInfo.floors;
-    poiInteractionsPoi =
-        cameraPoi = pois.value.isEmpty ? null : pois.value.first;
-    selectedFloor = floors.value.isEmpty ? null : floors.value.first;
-    setState(() {
-      loadingData = false;
-    });
+    try {
+      var buildingInfo = await situmSdk.fetchBuildingInfo(buildingIdentifier);
+      pois.value = buildingInfo.indoorPois;
+      floors.value = buildingInfo.floors;
+      poiInteractionsPoi =
+          cameraPoi = pois.value.isEmpty ? null : pois.value.first;
+      selectedFloor = floors.value.isEmpty ? null : floors.value.first;
+    } catch (e) {
+      setState(() {
+        fetchError = e.toString();
+      });
+    } finally {
+      setState(() {
+        loadingData = false;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    // Loading state:
     if (loadingData) {
       return const Center(
         child: Column(
@@ -69,6 +79,14 @@ class _HomeTabState extends State<HomeTab> {
         ),
       );
     }
+    // Error state:
+    if (fetchError != null) {
+      return FetchErrorScreen(
+        error: fetchError!,
+        onDismiss: () => setState(() => fetchError = null),
+      );
+    }
+    // Happy path:
     return ListView(
       padding: EdgeInsets.zero,
       children: [
