@@ -226,3 +226,42 @@ class CardTitle extends StatelessWidget {
     );
   }
 }
+
+class FetchErrorScreen extends StatelessWidget {
+  final String error;
+  final VoidCallback onDismiss;
+
+  const FetchErrorScreen({super.key, required this.error, required this.onDismiss});
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.error_outline, color: Colors.red, size: 48),
+            const SizedBox(height: 16),
+            const Text(
+              "Error fetching building data",
+              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              error,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontFamily: 'monospace', fontSize: 12),
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton.icon(
+              onPressed: onDismiss,
+              icon: const Icon(Icons.check),
+              label: const Text("OK, continue anyway"),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
