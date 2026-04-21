@@ -4,6 +4,7 @@ import android.app.Activity
 import android.os.Build
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewParent
 import android.view.accessibility.AccessibilityEvent
 import android.webkit.WebView
 
@@ -38,12 +39,13 @@ object AccessibilityHack {
             }
 
             // Fix parent flags
-            var parent = webView.parent
-            while (parent is View) {
-                if (parent.importantForAccessibility == View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS) {
-                    parent.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_AUTO
+            var current: ViewParent? = webView.parent
+            while (current is View) {
+                val v: View = current  // tipo explícito -> desambigua
+                if (v.importantForAccessibility == View.IMPORTANT_FOR_ACCESSIBILITY_NO_HIDE_DESCENDANTS) {
+                    v.importantForAccessibility = View.IMPORTANT_FOR_ACCESSIBILITY_AUTO
                 }
-                parent = parent.parent
+                current = v.parent
             }
         }
     }
