@@ -60,6 +60,7 @@ const WV_MESSAGE_CALIBRATION_STOPPED = "calibration.stopped";
 
 // Configuration
 const WV_APP_CONFIG = "app.set_config_item";
+const WV_MESSAGE_UI_SET_THEME = "ui.set_preferred_theme";
 const WV_APP_CONFIG_ITEM_TTS_ENGINE = "internal.tts.engine";
 
 // Location actions

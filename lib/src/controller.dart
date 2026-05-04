@@ -28,6 +28,8 @@ class MapViewController {
   // it finishes loading.
   String? _lastStatusToSend;
   String? _lastErrorToSend;
+  Brightness? _lastThemeToSend;
+  bool _isMapReady = false;
 
   List<String> mapViewerStatusesFilter = [
     'STARTING',
@@ -111,7 +113,16 @@ class MapViewController {
   /// Reloads the [MapView] using the current configuration by reloading the
   /// underlying platform web view controller.
   void reload() async {
+    _onMapWillLoad();
     _webViewController.reload();
+  }
+
+  /// Sets the viewer theme according to the current platform brightness.
+  void setTheme(Brightness brightness) {
+    _lastThemeToSend = brightness;
+    if (_isMapReady) {
+      _sendTheme(brightness);
+    }
   }
 
   /// Selects the given Building in the map.
@@ -272,7 +283,8 @@ class MapViewController {
   /// Select a floor of the current building by its [Floor.identifier].
   ///
   /// **NOTE**: introducing an invalid identifier may result in unexpected behaviours.
-  void selectFloor(String identifier, {SelectCartographyOptions? options}) async {
+  void selectFloor(String identifier,
+      {SelectCartographyOptions? options}) async {
     int floorId = int.tryParse(identifier) ?? 0;
     final message = {
       "identifier": floorId,
@@ -315,7 +327,12 @@ class MapViewController {
 
   // WYF internal utils:
 
+  void _onMapWillLoad() {
+    _isMapReady = false;
+  }
+
   void _onMapIsReady() {
+    _isMapReady = true;
     _widgetLoadCallback(this);
     if (_lastStatusToSend != null) {
       _setCurrentLocationStatus(_lastStatusToSend!);
@@ -326,6 +343,9 @@ class MapViewController {
     }
     _ensureTalkBackCompatibility();
     _sendViewerConfigMessage();
+    if (_lastThemeToSend != null) {
+      _sendTheme(_lastThemeToSend!);
+    }
   }
 
   void _notifyMapViewError(MapViewError payload) {
@@ -345,6 +365,17 @@ class MapViewController {
       {"key": WV_APP_CONFIG_ITEM_TTS_ENGINE, "value": "mobile"}
     ];
     _sendMessage(WV_APP_CONFIG, jsonEncode(configItems));
+  }
+
+  void _sendTheme(Brightness brightness) {
+    dynamic message = {
+      "theme": brightness == Brightness.dark ? 'dark' : 'light'
+    };
+
+    _sendMessage(
+      WV_MESSAGE_APP_SET_THEME,
+      jsonEncode(message),
+    );
   }
 
   void _setRoute(
