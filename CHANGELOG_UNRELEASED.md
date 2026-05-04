@@ -9,3 +9,7 @@
   list or a notification). Since the MapViewController is only available once the MapView has fully
   loaded, this helper provides a simple, awaitable ensureMapViewController() method—powered by a
   Dart Completer—that resolves automatically when the controller becomes ready.
+
+### Added
+
+- Added new message to let map-viewer know what's the current device preferred color scheme.
