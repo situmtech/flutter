@@ -113,7 +113,7 @@ class MapViewController {
   /// Reloads the [MapView] using the current configuration by reloading the
   /// underlying platform web view controller.
   void reload() async {
-    _onMapWillLoad();
+    _isMapReady = false;
     _webViewController.reload();
   }
 
@@ -326,10 +326,6 @@ class MapViewController {
   }
 
   // WYF internal utils:
-
-  void _onMapWillLoad() {
-    _isMapReady = false;
-  }
 
   void _onMapIsReady() {
     _isMapReady = true;
