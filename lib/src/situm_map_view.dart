@@ -164,7 +164,6 @@ class _MapViewState extends State<MapView> with WidgetsBindingObserver {
     setState(() {
       _shouldDisplayMainFrameError = false;
     });
-    wyfController?._isMapReady = false;
     if (webViewController is AndroidWebViewController) {
       AndroidWebViewController.enableDebugging(configuration.enableDebugging);
     }

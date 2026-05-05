@@ -29,7 +29,6 @@ class MapViewController {
   String? _lastStatusToSend;
   String? _lastErrorToSend;
   Brightness? _lastThemeToSend;
-  bool _isMapReady = false;
 
   List<String> mapViewerStatusesFilter = [
     'STARTING',
@@ -113,16 +112,13 @@ class MapViewController {
   /// Reloads the [MapView] using the current configuration by reloading the
   /// underlying platform web view controller.
   void reload() async {
-    _isMapReady = false;
     _webViewController.reload();
   }
 
   /// Sets the viewer theme according to the current platform brightness.
   void setTheme(Brightness brightness) {
     _lastThemeToSend = brightness;
-    if (_isMapReady) {
-      _sendTheme(brightness);
-    }
+    _sendTheme(brightness);
   }
 
   /// Selects the given Building in the map.
@@ -328,7 +324,6 @@ class MapViewController {
   // WYF internal utils:
 
   void _onMapIsReady() {
-    _isMapReady = true;
     _widgetLoadCallback(this);
     if (_lastStatusToSend != null) {
       _setCurrentLocationStatus(_lastStatusToSend!);
@@ -369,7 +364,7 @@ class MapViewController {
     };
 
     _sendMessage(
-      WV_MESSAGE_APP_SET_THEME,
+      WV_MESSAGE_UI_SET_THEME,
       jsonEncode(message),
     );
   }
