@@ -270,6 +270,7 @@ class _MapViewState extends State<MapView> with WidgetsBindingObserver {
           _shouldDisplayMainFrameError = false;
         }
       });
+      _syncPlatformTheme();
     }
   }
 }

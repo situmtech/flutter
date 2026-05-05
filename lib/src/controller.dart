@@ -28,7 +28,6 @@ class MapViewController {
   // it finishes loading.
   String? _lastStatusToSend;
   String? _lastErrorToSend;
-  Brightness? _lastThemeToSend;
 
   List<String> mapViewerStatusesFilter = [
     'STARTING',
@@ -117,7 +116,6 @@ class MapViewController {
 
   /// Sets the viewer theme according to the current platform brightness.
   void setTheme(Brightness brightness) {
-    _lastThemeToSend = brightness;
     _sendTheme(brightness);
   }
 
@@ -334,9 +332,6 @@ class MapViewController {
     }
     _ensureTalkBackCompatibility();
     _sendViewerConfigMessage();
-    if (_lastThemeToSend != null) {
-      _sendTheme(_lastThemeToSend!);
-    }
   }
 
   void _notifyMapViewError(MapViewError payload) {
