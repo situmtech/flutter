@@ -52,7 +52,6 @@ class _MapViewState extends State<MapView> with WidgetsBindingObserver {
     if (webViewWidget != null &&
         mapViewConfiguration.persistUnderlyingWidget == true) {
       _shouldDisplayBlankScreen = false;
-      _syncPlatformTheme();
       return;
     }
 
