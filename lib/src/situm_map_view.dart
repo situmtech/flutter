@@ -157,7 +157,6 @@ class _MapViewState extends State<MapView> with WidgetsBindingObserver {
     // avoid receiving messages while in an inconsistent state.
     _InternalMessageBridge.register(_onMapViewerMessageUpdateInternalState);
     _loadWithConfig(mapViewConfiguration);
-    _syncPlatformTheme();
   }
 
   void _loadWithConfig(MapViewConfiguration configuration) async {
