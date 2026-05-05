@@ -177,8 +177,8 @@ class _MapViewState extends State<MapView> with WidgetsBindingObserver {
         ?.loadRequest(LoadRequestParams(uri: Uri.parse(mapViewUrl)));
   }
 
-  void _syncPlatformTheme() {
-    wyfController?.setTheme(
+  void _syncPlatformPreferredTheme() {
+    wyfController?._setPreferredTheme(
       WidgetsBinding.instance.platformDispatcher.platformBrightness,
     );
   }
@@ -230,7 +230,7 @@ class _MapViewState extends State<MapView> with WidgetsBindingObserver {
 
   @override
   void didChangePlatformBrightness() {
-    _syncPlatformTheme();
+    _syncPlatformPreferredTheme();
   }
 
   @override
@@ -268,7 +268,7 @@ class _MapViewState extends State<MapView> with WidgetsBindingObserver {
           _shouldDisplayMainFrameError = false;
         }
       });
-      _syncPlatformTheme();
+      _syncPlatformPreferredTheme();
     }
   }
 }

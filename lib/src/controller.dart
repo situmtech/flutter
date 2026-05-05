@@ -114,9 +114,13 @@ class MapViewController {
     _webViewController.reload();
   }
 
-  /// Sets the viewer theme according to the current platform brightness.
-  void setTheme(Brightness brightness) {
-    _sendTheme(brightness);
+  /// Sets the viewer `preferredTheme` according to the current platform brightness.
+  ///
+  /// This does not override a theme already selected by the user inside the
+  /// webview; it only provides the preferred theme when the viewer applies system
+  /// preferences.
+  void _setPreferredTheme(Brightness brightness) {
+    _sendPreferredTheme(brightness);
   }
 
   /// Selects the given Building in the map.
@@ -353,13 +357,13 @@ class MapViewController {
     _sendMessage(WV_APP_CONFIG, jsonEncode(configItems));
   }
 
-  void _sendTheme(Brightness brightness) {
+  void _sendPreferredTheme(Brightness brightness) {
     dynamic message = {
       "theme": brightness == Brightness.dark ? 'dark' : 'light'
     };
 
     _sendMessage(
-      WV_MESSAGE_UI_SET_THEME,
+      WV_MESSAGE_UI_SET_PREFERRED_THEME,
       jsonEncode(message),
     );
   }
