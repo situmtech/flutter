@@ -31,7 +31,7 @@ class MapView extends StatefulWidget {
   State<StatefulWidget> createState() => _MapViewState();
 }
 
-class _MapViewState extends State<MapView> {
+class _MapViewState extends State<MapView> with WidgetsBindingObserver {
   static MapViewController? wyfController;
   static PlatformWebViewController? webViewController;
   static PlatformWebViewWidget? webViewWidget;
@@ -44,6 +44,7 @@ class _MapViewState extends State<MapView> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     mapViewConfiguration = widget.configuration;
 
     // Avoid re-initializations of the underlying WebView (PlatformView) if
@@ -176,6 +177,12 @@ class _MapViewState extends State<MapView> {
         ?.loadRequest(LoadRequestParams(uri: Uri.parse(mapViewUrl)));
   }
 
+  void _syncPlatformPreferredTheme() {
+    wyfController?._setPreferredTheme(
+      WidgetsBinding.instance.platformDispatcher.platformBrightness,
+    );
+  }
+
   void _displayBlankScreen(bool value) {
     if (mounted) {
       setState(() {
@@ -222,8 +229,13 @@ class _MapViewState extends State<MapView> {
   }
 
   @override
+  void didChangePlatformBrightness() {
+    _syncPlatformPreferredTheme();
+  }
+
+  @override
   void dispose() {
-    super.dispose();
+    WidgetsBinding.instance.removeObserver(this);
     // IMPORTANT: We use a static reference to support the
     // "persistUnderlyingWidget" feature. Because of that, this state must be
     // explicitly unregistered when disposed; otherwise it may continue receiving
@@ -231,6 +243,7 @@ class _MapViewState extends State<MapView> {
     // unwanted rebuilds in an inconsistent state.
     _InternalMessageBridge.unregister();
     // wyfController?.onWidgetDisposed();
+    super.dispose();
   }
 
   void _onErrorRetryLoad() {
@@ -255,6 +268,7 @@ class _MapViewState extends State<MapView> {
           _shouldDisplayMainFrameError = false;
         }
       });
+      _syncPlatformPreferredTheme();
     }
   }
 }
