@@ -5,7 +5,7 @@
 //  Created by fsvilas on 9/5/23.
 //
 
-#import "SITNavigationHandler.h"
+#import "./include/situm_flutter/SITNavigationHandler.h"
 #import <SitumSDK/SitumSDK.h>
 
 static const NSTimeInterval kMinNavigationUpdateInterval = 1.0;

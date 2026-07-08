@@ -5,12 +5,12 @@
 //  Created by Abraham Barros Barros on 30/9/22.
 //
 
-#import "SITFSDKPlugin.h"
-#import "SITFSDKUtils.h"
+#import "./include/situm_flutter/SITFSDKPlugin.h"
+#import "./include/situm_flutter/SITFSDKUtils.h"
 #import <SitumSDK/SitumSDK.h>
 #import <CoreLocation/CoreLocation.h>
-#import "SITNavigationHandler.h"
-#import "SITTextToSpeechManager.h"
+#import "./include/situm_flutter/SITNavigationHandler.h"
+#import "./include/situm_flutter/SITTextToSpeechManager.h"
 
 
 @interface SITFSDKPlugin() <SITLocationDelegate, SITGeofencesDelegate>

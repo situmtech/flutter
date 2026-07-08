@@ -1,0 +1,14 @@
+{
+  "pins" : [
+    {
+      "identity" : "situm-sdk-spm",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/situmtech/situm-sdk-spm",
+      "state" : {
+        "revision" : "bb86f356ee14fd818ad66e7a9a3ae81891808b03",
+        "version" : "3.40.0"
+      }
+    }
+  ],
+  "version" : 2
+}

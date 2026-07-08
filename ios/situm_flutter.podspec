@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'situm_flutter'
-  s.version          = '3.27.40'
+  s.version          = '4.0.0'
   s.summary          = 'Situm Flutter plugin.'
   s.description      = <<-DESC
   Situm Flutter plugin.
@@ -13,10 +13,11 @@ Pod::Spec.new do |s|
   s.license          = { :file => '../LICENSE' }
   s.author           = { 'Situm Technologies S.L.' => 'situm@situm.com' }
   s.source           = { :path => '.' }
-  s.source_files = 'Classes/**/*'
+  s.source_files = 'situm_flutter/Sources/situm_flutter/**/*.{h,m}'
+  s.public_header_files = 'situm_flutter/Sources/situm_flutter/include/situm_flutter/**/*.h'
   s.dependency 'Flutter'
   s.dependency 'SitumSDK', '~> 3.40.0'
-  s.platform = :ios, '9.0'
+  s.platform = :ios, '16.0'
 
   # Flutter.framework does not contain a i386 slice.
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386' }

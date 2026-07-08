@@ -5,7 +5,7 @@
 //  Created by albasitum on 6/3/23.
 //
 
-#import "SITFSDKUtils.h"
+#import "./include/situm_flutter/SITFSDKUtils.h"
 
 @implementation SITFSDKUtils
 

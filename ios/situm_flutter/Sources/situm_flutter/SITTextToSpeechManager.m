@@ -3,7 +3,7 @@
 //  situm_flutter
 //
 
-#import "SITTextToSpeechManager.h"
+#import "./include/situm_flutter/SITTextToSpeechManager.h"
 
 @interface SITTextToSpeechManager () <AVSpeechSynthesizerDelegate>
 @property (nonatomic, strong) AVSpeechSynthesizer *synthesizer;
@@ -16,9 +16,7 @@
     if (self) {
         self.synthesizer = [AVSpeechSynthesizer new];
         self.synthesizer.delegate = self;
-        if (@available(iOS 13.0, *)) {
-            self.synthesizer.usesApplicationAudioSession = false;
-        }
+        self.synthesizer.usesApplicationAudioSession = false;
     }
     return self;
 }
