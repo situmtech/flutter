@@ -44,7 +44,14 @@ flutter pub get
 
 #### iOS only
 
-Run `pod install` or `pod update` from the `example/ios` folder to bring the dependencies to your project.
+The bundled example app uses Swift Package Manager for iOS dependencies.
+
+> [!NOTE]
+> When running this example app on iOS with Swift Package Manager, make sure the
+> repository directory is named `situm_flutter`. Some Flutter versions generate
+> local Swift package overrides using the plugin directory name, and a different
+> checkout folder name can cause a Swift package identity mismatch. This
+> limitation is expected to be addressed in a future version.
 
 Also check out the project [code signing](https://developer.apple.com/support/code-signing/) before you run the example.
 

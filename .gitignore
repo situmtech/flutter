@@ -9,6 +9,7 @@
 .history
 .svn/
 migrate_working_dir/
+.local/
 
 # IntelliJ related
 *.iml
@@ -27,6 +28,7 @@ migrate_working_dir/
 **/doc/api/
 .dart_tool/
 .packages
+**/.swiftpm/
 build/
 
 # Project
