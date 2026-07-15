@@ -4,7 +4,7 @@
 
 <div align="center" style="text-align:center">
 
-A sample Flutter application to start learning the power of [Situm Flutter Plugin](../README.md).
+A sample Flutter application to start learning the power of [Situm Flutter Plugin](../situm_flutter/README.md).
 
 </div>
 
@@ -92,7 +92,7 @@ In case you want to learn how to use our plugin, you may want to take a look at 
 
 We use [SemVer](http://semver.org/) for versioning.
 
-Please refer to [CHANGELOG.md](../CHANGELOG.md) for a list of notables changes for each version of the library.
+Please refer to [CHANGELOG.md](../situm_flutter/CHANGELOG.md) for a list of notables changes for each version of the library.
 
 You can also see the [tags on this repository](https://github.com/situmtech/flutter-wayfinding/tags).
 
@@ -102,7 +102,7 @@ You will need to sign a Contributor License Agreement (CLA) before making a subm
 
 ## License
 
-This project is licensed under the MIT - see the [LICENSE](../LICENSE) file for details.
+This project is licensed under the MIT - see the [LICENSE](../situm_flutter/LICENSE) file for details.
 
 ## More information
 

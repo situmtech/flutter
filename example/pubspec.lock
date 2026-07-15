@@ -150,7 +150,7 @@ packages:
   situm_flutter:
     dependency: "direct main"
     description:
-      path: ".."
+      path: "../situm_flutter"
       relative: true
     source: path
     version: "3.27.40"
