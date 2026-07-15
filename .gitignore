@@ -35,3 +35,6 @@ build/
 **/config.dart
 **/google_api_key.xml
 example/android/app/.cxx/*
+
+# FVM Version Cache
+.fvm/
