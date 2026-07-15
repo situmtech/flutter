@@ -189,7 +189,7 @@ steps:
             bitbucket_user: situmops
           system: "N/A"
           server: "github"
-          repofolder: "flutter"
+          repofolder: "flutter/situm_flutter"
           mergeBranches:
             - "master"
             - "develop"
@@ -223,7 +223,9 @@ steps:
           if [ -d "flutter" ];then
             cd flutter
           fi
-          cd situm_flutter
+          if [ -d "situm_flutter" ];then
+            cd situm_flutter
+          fi
 
           echo -e "\n[+] Publish flutter package\n"
           dart pub publish --force
