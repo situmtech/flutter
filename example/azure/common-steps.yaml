@@ -21,7 +21,7 @@ steps:
     displayName: Clone repository
 
   - bash: |
-      pluginVersion=$(grep "^version: [0-9\.].*$" situm_flutter/pubspec.yaml | awk -F":" '{print $2}')
+      pluginVersion=$(grep "^version: [0-9\.].*$" pubspec.yaml | awk -F":" '{print $2}')
       echo "##vso[task.setvariable variable=pluginVersion]$(echo $pluginVersion)"
       cd example
 

@@ -68,7 +68,6 @@ steps:
           echo -e "\n[+] Get Dependencies\n"
           echo -e "##[command] flutter pub get \n"
 
-          cd situm_flutter
           flutter pub get
         displayName: Get Dependencies
 
@@ -167,9 +166,9 @@ steps:
           git checkout $(currentBranch)
 
           echo -e "\n[+] Change version in pubspec.yaml\n"
-          sed "s/^version:\s[0-9].*$/version: $(version)/g" -i situm_flutter/pubspec.yaml
+          sed "s/^version:\s[0-9].*$/version: $(version)/g" -i pubspec.yaml
           echo -e "\n[+] Change version in situm_flutter.podspec"
-          sed "s/s.version\s.*= '[0-9\.].*'$/s.version          = '$(version)'/g" -i situm_flutter/ios/situm_flutter.podspec
+          sed "s/s.version\s.*= '[0-9\.].*'$/s.version          = '$(version)'/g" -i ios/situm_flutter.podspec
           echo -e "\n[+] Set new plugin version in examples"
           cd example
           flutter pub get
@@ -189,7 +188,7 @@ steps:
             bitbucket_user: situmops
           system: "N/A"
           server: "github"
-          repofolder: "flutter/situm_flutter"
+          repofolder: "flutter"
           mergeBranches:
             - "master"
             - "develop"
@@ -223,9 +222,6 @@ steps:
           if [ -d "flutter" ];then
             cd flutter
           fi
-          if [ -d "situm_flutter" ];then
-            cd situm_flutter
-          fi
 
           echo -e "\n[+] Publish flutter package\n"
           dart pub publish --force
@@ -244,15 +240,15 @@ steps:
           git checkout master
           git pull origin master
 
-          iossdk=$(grep -i situmsdk situm_flutter/ios/situm_flutter.podspec | grep -o "[0-9]\+\.[0-9]\+\.[0-9]\+")
-          androidsdk=$(grep situm-sdk situm_flutter/android/build.gradle | grep -o "[0-9]\+\.[0-9]\+\.[0-9]\+")
+          iossdk=$(grep -i situmsdk ios/situm_flutter.podspec | grep -o "[0-9]\+\.[0-9]\+\.[0-9]\+")
+          androidsdk=$(grep situm-sdk android/build.gradle | grep -o "[0-9]\+\.[0-9]\+\.[0-9]\+")
 
           echo -e "\n[+] Checkout to previous commit\n"
           git checkout HEAD~1
 
 
-          iossdk_old=$(grep -i situmsdk situm_flutter/ios/situm_flutter.podspec | grep -o "[0-9]\+\.[0-9]\+\.[0-9]\+")
-          androidsdk_old=$(grep situm-sdk situm_flutter/android/build.gradle | grep -o "[0-9]\+\.[0-9]\+\.[0-9]\+")
+          iossdk_old=$(grep -i situmsdk ios/situm_flutter.podspec | grep -o "[0-9]\+\.[0-9]\+\.[0-9]\+")
+          androidsdk_old=$(grep situm-sdk android/build.gradle | grep -o "[0-9]\+\.[0-9]\+\.[0-9]\+")
 
           echo -e "\n[+] Return repository to master branch\n"
           git checkout master
