@@ -13,7 +13,8 @@ Pod::Spec.new do |s|
   s.license          = { :file => '../LICENSE' }
   s.author           = { 'Situm Technologies S.L.' => 'situm@situm.com' }
   s.source           = { :path => '.' }
-  s.source_files = 'Classes/**/*'
+  s.source_files = 'situm_flutter/Sources/situm_flutter/**/*.{h,m}'
+  s.public_header_files = 'situm_flutter/Sources/situm_flutter/include/situm_flutter/**/*.h'
   s.dependency 'Flutter'
   s.dependency 'SitumSDK', '~> 3.40.0'
   s.platform = :ios, '9.0'
