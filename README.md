@@ -70,6 +70,16 @@ dependencies. Flutter 3.44.0 and later enables Swift Package Manager by default.
 When using Swift Package Manager, add `$(inherited) -ObjC` to your app target's
 `Other Linker Flags` build setting. This is required by SitumSDK's Swift package.
 
+> [!NOTE]
+> The repository folder name requirement only affects local development of this
+> repository and the bundled example app when using Swift Package Manager. Apps
+> that consume `situm_flutter` from pub.dev are not affected.
+>
+> For local development with the example app and Swift Package Manager, clone or
+> place this repository in a folder named `situm_flutter`. Some Flutter versions
+> generate local Swift package overrides using the plugin directory name, and a
+> different checkout folder name can cause Swift package resolution failures.
+
 If your project uses CocoaPods:
 
 1. Remove the "use_frameworks!" directive in the `Podfile` of your iOS project.
