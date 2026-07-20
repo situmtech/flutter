@@ -1,4 +1,4 @@
-#import "./include/situm_flutter/SitumFlutterWayfindingPlugin.h"
+#import "SitumFlutterWayfindingPlugin.h"
 #if __has_include(<situm_flutter/situm_flutter-Swift.h>)
 #import <situm_flutter/situm_flutter-Swift.h>
 #else
@@ -8,7 +8,7 @@
 // #import "situm_flutter-Swift.h"
 #endif
 
-#import "./include/situm_flutter/SITFSDKPlugin.h"
+#import "SITFSDKPlugin.h"
 
 @implementation SitumFlutterWayfindingPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {

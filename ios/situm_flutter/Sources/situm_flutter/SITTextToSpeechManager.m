@@ -3,7 +3,7 @@
 //  situm_flutter
 //
 
-#import "./include/situm_flutter/SITTextToSpeechManager.h"
+#import "SITTextToSpeechManager.h"
 
 @interface SITTextToSpeechManager () <AVSpeechSynthesizerDelegate>
 @property (nonatomic, strong) AVSpeechSynthesizer *synthesizer;
