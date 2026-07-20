@@ -23,6 +23,14 @@ There is a comprehensive tutorial on how to set-up a new application using this 
 Below you will find the basic steps to install and configure the plugin on your Flutter project.
 These steps have already been done for you in the example application of this repository, but they are required for other projects.
 
+## Requirements
+
+Starting with version 4.0.0, this plugin requires:
+
+- Flutter 3.44.0 or later
+- Dart 3.12.0 or later
+- iOS 16.0 or later
+
 ## Running the example
 
 Check the [example/README](./example/README.md) file of this repository to create your first Flutter application using Situm Flutter.
@@ -56,11 +64,31 @@ up a Situm account.
 
 ### iOS
 
-1. Remove the "use_frameworks!" directive in the `Podfile` of your iOS project:
+On iOS, the plugin supports both CocoaPods and Swift Package Manager for native
+dependencies. Flutter 3.44.0 and later enables Swift Package Manager by default.
+
+When using Swift Package Manager, add `$(inherited) -ObjC` to your app target's
+`Other Linker Flags` build setting. This is required by SitumSDK's Swift package.
+
+> [!NOTE]
+> The repository folder name requirement only affects local development of this
+> repository and the bundled example app when using Swift Package Manager. Apps
+> that consume `situm_flutter` from pub.dev are not affected.
+>
+> For local development with the example app and Swift Package Manager, clone or
+> place this repository in a folder named `situm_flutter`. Some Flutter versions
+> generate local Swift package overrides using the plugin directory name, and a
+> different checkout folder name can cause Swift package resolution failures.
+
+If your project uses CocoaPods:
+
+1. Remove the "use_frameworks!" directive in the `Podfile` of your iOS project.
 
 2. Run `pod install` or `pod update` to bring the dependencies to your project.
 
-3. Declare the following permissions in your app's `Info.plist` file to successfully start positioning:
+For both CocoaPods and Swift Package Manager:
+
+1. Declare the following permissions in your app's `Info.plist` file to successfully start positioning:
 
 ```
 <key>NSLocationWhenInUseUsageDescription</key>
@@ -71,7 +99,7 @@ up a Situm account.
 <string>We use your phone sensors (giroscope, accelerometer and altimeter) to improve location quality</string>
 ```
 
-4. For offline support you will have to add the underlying web application's domain inside the entry `WKAppBoundDomains` on `Info.plist` as follows:
+2. For offline support you will have to add the underlying web application's domain inside the entry `WKAppBoundDomains` on `Info.plist` as follows:
 
 ```
 <key>WKAppBoundDomains</key>
