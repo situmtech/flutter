@@ -29,7 +29,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
-  situm_flutter: 08d488afc0766bd1871323c18a28e44be3b2d5d7
+  situm_flutter: bdc4f0a2feefce1553f069c0c886006496e811c3
   SitumSDK: 172f2a95374f51d19ee33abc86b870a227043b1d
   SSZipArchive: fe6a26b2a54d5a0890f2567b5cc6de5caa600aef
   webview_flutter_wkwebview: daa94b5ed120e19439eb7f797649768d6360ebdd
