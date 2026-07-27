@@ -1,5 +1,8 @@
 part of '../wayfinding.dart';
 
+@Deprecated('The plugin no longer handles direction requests from the MapView. '
+    'This function is kept for backward compatibility and is no longer '
+    'called internally.')
 DirectionsMessage createDirectionsMessage(arguments) => DirectionsMessage(
       buildingIdentifier: arguments["buildingIdentifier"],
       originIdentifier: stringFromArgsOrEmptyId(arguments, "originIdentifier"),
