@@ -87,6 +87,37 @@ class MapViewErrorHandler implements MessageHandler {
   }
 }
 
+@Deprecated('The routing bridge between the MapView and the native SDK'
+    'has been removed. This handler is kept for backward compatibility '
+    'and has no effect.')
+class DirectionsMessageHandler implements MessageHandler {
+  @override
+  void handleMessage(
+    MapViewController mapViewController,
+    Map<String, dynamic> payload,
+  ) {}
+}
+
+@Deprecated('The routing bridge between the MapView and the native SDK'
+    'has been removed. This handler is kept for backward compatibility '
+    'and has no effect.')
+class NavigationMessageHandler implements MessageHandler {
+  @override
+  void handleMessage(
+    MapViewController mapViewController,
+    Map<String, dynamic> payload,
+  ) {}
+}
+
+@Deprecated('The routing bridge between the MapView and the native SDK'
+    'has been removed. This handler is kept for backward compatibility '
+    'and has no effect.')
+class NavigationStopMessageHandler implements MessageHandler {
+  @override
+  void handleMessage(
+      MapViewController mapViewController, Map<String, dynamic> payload) {}
+}
+
 abstract class PoiSelectionMessageHandler implements MessageHandler {
   @override
   void handleMessage(
@@ -171,6 +202,11 @@ class ViewerNavigationMessageHandler implements MessageHandler {
   @override
   void handleMessage(
       MapViewController mapViewController, Map<String, dynamic> payload) {
+    // Forward Viewer navigation events to the existing SDK callbacks.
+    // This avoids introducing a separate set of callbacks for the Viewer.
+    //
+    // Warning: running SDK and MapView navigations at the same time may mix
+    // events because both use the same public SDK navigation callbacks.
     SitumSdk().updateNavigationState(payload);
   }
 }

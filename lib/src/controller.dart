@@ -430,7 +430,7 @@ class MapViewController {
   void onDirectionsRequestInterceptor(
       OnDirectionsRequestInterceptor callback) {}
 
-  @Deprecated('Routes are now calculated and managed by the MapView. '
+  @Deprecated('Navigation is now calculated and managed by the MapView. '
       'This method is kept for backward compatibility and has no effect.')
   void onNavigationRequestInterceptor(
       OnNavigationRequestInterceptor callback) {}

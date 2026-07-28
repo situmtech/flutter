@@ -510,7 +510,7 @@ typedef OnPoiDeselectedCallback = void Function(
 typedef OnDirectionsRequestInterceptor = void Function(
     DirectionsRequest directionsRequest);
 @Deprecated(
-    'Direction requests are no longer forwarded from the MapView to the '
+    'Navigation requests are no longer forwarded from the MapView to the '
     'native SDK. This type is kept for backward compatibility and is no '
     'longer used internally.')
 typedef OnNavigationRequestInterceptor = void Function(
