@@ -96,14 +96,14 @@ class DirectionsMessageHandler implements MessageHandler {
     MapViewController mapViewController,
     Map<String, dynamic> payload,
   ) {}
-}
 
-@Deprecated('The legacy routing bridge no longer uses this method. '
-    'It is kept for backward compatibility and has no effect.')
-void populateDirectionsRequest(
-  DirectionsRequest request,
-  DirectionsMessage useful,
-) {}
+  @Deprecated('The legacy routing bridge no longer uses this method. '
+      'It is kept for backward compatibility and has no effect.')
+  void populateDirectionsRequest(
+    DirectionsRequest request,
+    DirectionsMessage useful,
+  ) {}
+}
 
 @Deprecated('The routing bridge between the MapView and the native SDK '
     'has been removed. This handler is kept for backward compatibility '
