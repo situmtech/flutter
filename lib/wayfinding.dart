@@ -74,7 +74,7 @@ const WV_MESSAGE_LOCATION_STATUS = "location.update_status";
 
 // Directions actions
 const WV_MESSAGE_DIRECTIONS_START = "directions.start";
-@Deprecated('The routing bridge between the MapView and the native SDK has'
+@Deprecated('The routing bridge between the MapView and the native SDK has '
     'been removed. This message is no longer emitted by the plugin.')
 const WV_MESSAGE_DIRECTIONS_UPDATE = "directions.update";
 const WV_MESSAGE_DIRECTIONS_SET_OPTIONS = "directions.set_options";
@@ -82,7 +82,7 @@ const WV_MESSAGE_DIRECTIONS_SET_OPTIONS = "directions.set_options";
 // Navigation actions
 const WV_MESSAGE_NAVIGATION_START = "navigation.start";
 const WV_MESSAGE_NAVIGATION_TO_CAR = "navigation.start.to_car";
-@Deprecated('The navigation bridge between the MapView and the native SDK has'
+@Deprecated('The navigation bridge between the MapView and the native SDK has '
     'been removed. This message is no longer emitted by the plugin.')
 const WV_MESSAGE_NAVIGATION_UPDATE = "navigation.update";
 const WV_MESSAGE_NAVIGATION_CANCEL = "navigation.cancel";
