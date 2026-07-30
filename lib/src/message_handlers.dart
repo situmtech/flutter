@@ -105,7 +105,7 @@ class DirectionsMessageHandler implements MessageHandler {
   ) {}
 }
 
-@Deprecated('The routing bridge between the MapView and the native SDK '
+@Deprecated('The navigation bridge between the MapView and the native SDK '
     'has been removed. This handler is kept for backward compatibility '
     'and has no effect.')
 class NavigationMessageHandler implements MessageHandler {
@@ -116,7 +116,7 @@ class NavigationMessageHandler implements MessageHandler {
   ) {}
 }
 
-@Deprecated('The routing bridge between the MapView and the native SDK '
+@Deprecated('The navigation bridge between the MapView and the native SDK '
     'has been removed. This handler is kept for backward compatibility '
     'and has no effect.')
 class NavigationStopMessageHandler implements MessageHandler {
