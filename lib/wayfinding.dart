@@ -41,19 +41,10 @@ const WV_CHANNEL = "ReactNativeWebView";
 const WV_MESSAGE_AR_REQUESTED = "augmented_reality.requested";
 const WV_MESSAGE_CARTOGRAPHY_POI_DESELECTED = "cartography.poi_deselected";
 const WV_MESSAGE_CARTOGRAPHY_POI_SELECTED = "cartography.poi_selected";
-@Deprecated('The routing bridge between the MapView and the native SDK has '
-    'been removed. This message is no longer handled and has no effect.')
-const WV_MESSAGE_DIRECTIONS_REQUESTED = "directions.requested";
 const WV_MESSAGE_ERROR = "app.error";
 const WV_MESSAGE_FIND_MY_CAR_SAVED = "find_my_car.saved";
 const WV_MESSAGE_LOCATION_START = "location.start";
 const WV_MESSAGE_MAP_IS_READY = "app.map_is_ready";
-@Deprecated('The navigation bridge between the MapView and the native SDK has '
-    'been removed. This message is no longer handled and has no effect.')
-const WV_MESSAGE_NAVIGATION_REQUESTED = "navigation.requested";
-@Deprecated('The navigation bridge between the MapView and the native SDK has '
-    'been removed. This message is no longer handled and has no effect.')
-const WV_MESSAGE_NAVIGATION_STOP = "navigation.stopped";
 const WV_VIEWER_NAVIGATION_STARTED = "viewer.navigation.started";
 const WV_VIEWER_NAVIGATION_STOPPED = "viewer.navigation.stopped";
 const WV_VIEWER_NAVIGATION_UPDATED = "viewer.navigation.updated";
@@ -74,17 +65,11 @@ const WV_MESSAGE_LOCATION_STATUS = "location.update_status";
 
 // Directions actions
 const WV_MESSAGE_DIRECTIONS_START = "directions.start";
-@Deprecated('The routing bridge between the MapView and the native SDK has '
-    'been removed. This message is no longer emitted by the plugin.')
-const WV_MESSAGE_DIRECTIONS_UPDATE = "directions.update";
 const WV_MESSAGE_DIRECTIONS_SET_OPTIONS = "directions.set_options";
 
 // Navigation actions
 const WV_MESSAGE_NAVIGATION_START = "navigation.start";
 const WV_MESSAGE_NAVIGATION_TO_CAR = "navigation.start.to_car";
-@Deprecated('The navigation bridge between the MapView and the native SDK has '
-    'been removed. This message is no longer emitted by the plugin.')
-const WV_MESSAGE_NAVIGATION_UPDATE = "navigation.update";
 const WV_MESSAGE_NAVIGATION_CANCEL = "navigation.cancel";
 
 // Cartography actions
