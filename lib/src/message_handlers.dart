@@ -10,12 +10,6 @@ abstract class MessageHandler {
         return CarSavedHandler();
       case WV_MESSAGE_ERROR:
         return MapViewErrorHandler();
-      case WV_MESSAGE_DIRECTIONS_REQUESTED:
-        return DirectionsMessageHandler();
-      case WV_MESSAGE_NAVIGATION_REQUESTED:
-        return NavigationMessageHandler();
-      case WV_MESSAGE_NAVIGATION_STOP:
-        return NavigationStopMessageHandler();
       case WV_MESSAGE_CARTOGRAPHY_POI_SELECTED:
         return PoiSelectedMessageHandler();
       case WV_MESSAGE_CARTOGRAPHY_POI_DESELECTED:
@@ -90,86 +84,6 @@ class MapViewErrorHandler implements MessageHandler {
     if (errorPayload != null) {
       mapViewController._notifyMapViewError(errorPayload);
     }
-  }
-}
-
-class DirectionsMessageHandler implements MessageHandler {
-  @override
-  void handleMessage(
-    MapViewController mapViewController,
-    Map<String, dynamic> payload,
-  ) async {
-    var sdk = SitumSdk();
-    var directionsMessage = createDirectionsMessage(payload);
-    var directionsRequest = createDirectionsRequest(payload);
-    // Send DirectionsOptions so it can be intercepted.
-    mapViewController._interceptDirectionsRequest(directionsRequest);
-    // Populate directionsRequest with information useful for the directions callback:
-    populateDirectionsRequest(directionsRequest, directionsMessage);
-    // Calculate route and send it to the web-view.
-    try {
-      SitumRoute situmRoute = await sdk.requestDirections(directionsRequest);
-      mapViewController._setRoute(directionsMessage, situmRoute);
-    } on PlatformException catch (e) {
-      mapViewController._setRouteError(e.code,
-          routeIdentifier: directionsMessage.identifier);
-    } catch (e) {
-      mapViewController._setRouteError(-1,
-          routeIdentifier: directionsMessage.identifier);
-    }
-  }
-
-  void populateDirectionsRequest(
-      DirectionsRequest request, DirectionsMessage useful) {
-    request.destinationIdentifier = useful.destinationIdentifier;
-    request.destinationCategory = useful.destinationCategory;
-    request.originIdentifier = useful.originIdentifier;
-    request.originCategory = useful.originCategory;
-  }
-}
-
-class NavigationMessageHandler implements MessageHandler {
-  @override
-  void handleMessage(
-    MapViewController mapViewController,
-    Map<String, dynamic> payload,
-  ) async {
-    mapViewController._usingViewerNavigation = false;
-    var sdk = SitumSdk();
-    // Calculate route and start navigation. WayfindingController will listen
-    // for native callbacks to get up to date with the navigation status, using
-    // the internal _methodCallHandler.
-    var directionsMessage = createDirectionsMessage(payload);
-    var directionsRequest = createDirectionsRequest(payload);
-    mapViewController._interceptDirectionsRequest(directionsRequest);
-    var navigationRequest =
-        createNavigationRequest(payload["navigationRequest"]);
-    mapViewController._interceptNavigationRequest(navigationRequest);
-    try {
-      SitumRoute situmRoute = await sdk.requestNavigation(
-        directionsRequest,
-        navigationRequest,
-      );
-      mapViewController._setNavigationRoute(
-        directionsMessage.originIdentifier,
-        directionsMessage.destinationIdentifier,
-        situmRoute,
-      );
-    } on PlatformException catch (e) {
-      mapViewController._setRouteError(e.code);
-    } catch (e) {
-      mapViewController._setRouteError(-1);
-    }
-  }
-}
-
-class NavigationStopMessageHandler implements MessageHandler {
-  @override
-  void handleMessage(
-      MapViewController mapViewController, Map<String, dynamic> payload) {
-    mapViewController._usingViewerNavigation = false;
-    var sdk = SitumSdk();
-    sdk.stopNavigation();
   }
 }
 
@@ -257,8 +171,11 @@ class ViewerNavigationMessageHandler implements MessageHandler {
   @override
   void handleMessage(
       MapViewController mapViewController, Map<String, dynamic> payload) {
-    mapViewController._usingViewerNavigation = true;
-
+    // Forward Viewer navigation events to the existing SDK callbacks.
+    // This avoids introducing a separate set of callbacks for the Viewer.
+    //
+    // Warning: running SDK and MapView navigations at the same time may mix
+    // events because both use the same public SDK navigation callbacks.
     SitumSdk().updateNavigationState(payload);
   }
 }
