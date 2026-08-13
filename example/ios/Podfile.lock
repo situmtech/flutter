@@ -1,11 +1,11 @@
 PODS:
   - Flutter (1.0.0)
-  - situm_flutter (3.27.42):
+  - situm_flutter (3.27.45):
     - Flutter
-    - SitumSDK (~> 3.40.0)
-  - SitumSDK (3.40.0):
-    - SSZipArchive (~> 2.4)
-  - SSZipArchive (2.4.3)
+    - SitumSDK (~> 3.41.0)
+  - SitumSDK (3.41.0):
+    - SSZipArchive (~> 2.6)
+  - SSZipArchive (2.6.0)
   - webview_flutter_wkwebview (0.0.1):
     - Flutter
 
@@ -29,11 +29,11 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Flutter: cabc95a1d2626b1b06e7179b784ebcf0c0cde467
-  situm_flutter: 421cd181363a809602af8350d06c458fd02064e5
-  SitumSDK: 172f2a95374f51d19ee33abc86b870a227043b1d
-  SSZipArchive: fe6a26b2a54d5a0890f2567b5cc6de5caa600aef
+  situm_flutter: d2a46d9522aabd7c86dee98944b039656250694e
+  SitumSDK: fe0a19961b5c7d921974240ae48b7e7ebed4bef5
+  SSZipArchive: 8a6ee5677c8e304bebc109e39cf0da91ccef22ea
   webview_flutter_wkwebview: 4f3e50f7273d31e5500066ed267e3ae4309c5ae4
 
-PODFILE CHECKSUM: 3b749f30a8d5a341f7ae96d089e4c79a0780f0e5
+PODFILE CHECKSUM: ae98388f628a93ed09c630eba98c8d040e80294f
 
-COCOAPODS: 1.14.3
+COCOAPODS: 1.16.2
