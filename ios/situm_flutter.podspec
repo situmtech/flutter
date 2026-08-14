@@ -16,8 +16,8 @@ Pod::Spec.new do |s|
   s.source_files = 'situm_flutter/Sources/situm_flutter/**/*.{h,m}'
   s.public_header_files = 'situm_flutter/Sources/situm_flutter/include/situm_flutter/**/*.h'
   s.dependency 'Flutter'
-  s.dependency 'SitumSDK', '~> 3.41.0'
-  s.platform = :ios, '16.0'
+  s.dependency 'SitumSDK', '~> 3.40.0'
+  s.platform = :ios, '9.0'
 
   # Flutter.framework does not contain a i386 slice.
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386' }
