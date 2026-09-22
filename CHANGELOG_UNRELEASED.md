@@ -13,5 +13,4 @@
 
 ### Notes
 
-- Document the `-ObjC` linker flag required by SitumSDK when using Swift Package Manager.
 - Update WebView Flutter dependencies to versions that can participate in a Swift Package Manager iOS build.

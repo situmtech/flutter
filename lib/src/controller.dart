@@ -6,8 +6,6 @@ class MapViewController {
   OnPoiSelectedCallback? _onPoiSelectedCallback;
   OnPoiDeselectedCallback? _onPoiDeselectedCallback;
   OnSpeakAloudTextCallback? _onSpeakAloudTextCallback;
-  OnDirectionsRequestInterceptor? _onDirectionsRequestInterceptor;
-  OnNavigationRequestInterceptor? _onNavigationRequestInterceptor;
   OnExternalLinkClickedCallback? _onExternalLinkClickedCallback;
   OnCalibrationPointClickedCallback? _onCalibrationPointClickedCallback;
   OnCalibrationFinishedCallback? _onCalibrationFinishedCallback;
@@ -35,10 +33,6 @@ class MapViewController {
     'BLE_DISABLED',
     'STOPPED',
   ];
-
-  // Internal variable to make MapViewController aware of
-  // which navigation engine is being used on MapView (WASM or SDK).
-  bool? _usingViewerNavigation;
 
   // Used internally to ensure accessibility modifications are scoped only
   // to the Situm WebView (matching the viewerDomain) and do not interfere with
@@ -272,7 +266,8 @@ class MapViewController {
   /// Select a floor of the current building by its [Floor.identifier].
   ///
   /// **NOTE**: introducing an invalid identifier may result in unexpected behaviours.
-  void selectFloor(String identifier, {SelectCartographyOptions? options}) async {
+  void selectFloor(String identifier,
+      {SelectCartographyOptions? options}) async {
     int floorId = int.tryParse(identifier) ?? 0;
     final message = {
       "identifier": floorId,
@@ -345,71 +340,6 @@ class MapViewController {
       {"key": WV_APP_CONFIG_ITEM_TTS_ENGINE, "value": "mobile"}
     ];
     _sendMessage(WV_APP_CONFIG, jsonEncode(configItems));
-  }
-
-  void _setRoute(
-      DirectionsMessage directionsMessage, SitumRoute situmRoute) async {
-    situmRoute.rawContent["identifier"] = directionsMessage.identifier;
-    situmRoute.rawContent["originIdentifier"] =
-        directionsMessage.originIdentifier;
-    situmRoute.rawContent["destinationIdentifier"] =
-        directionsMessage.destinationIdentifier;
-    // The map-viewer waits for an accessibility mode in the "type" attribute
-    // of the payload. This is due to internal state management.
-    situmRoute.rawContent["type"] = directionsMessage.accessibilityMode?.name ??
-        AccessibilityMode.CHOOSE_SHORTEST;
-    _sendMessage(
-        WV_MESSAGE_DIRECTIONS_UPDATE, jsonEncode(situmRoute.rawContent));
-  }
-
-  void _setRouteError(dynamic code, {String? routeIdentifier}) {
-    _sendMessage(
-        WV_MESSAGE_DIRECTIONS_UPDATE,
-        jsonEncode({
-          "error": code,
-          "identifier": routeIdentifier,
-        }));
-  }
-
-  void _setNavigationRoute(
-    String originIdentifier,
-    String destinationIdentifier,
-    SitumRoute situmRoute,
-  ) async {
-    situmRoute.rawContent["originIdentifier"] = originIdentifier;
-    situmRoute.rawContent["destinationIdentifier"] = destinationIdentifier;
-    _sendMessage(
-        WV_MESSAGE_NAVIGATION_START, jsonEncode(situmRoute.rawContent));
-  }
-
-  void _setNavigationOutOfRoute() {
-    // Only send this message when using SDK navigation engine.
-    if (_usingViewerNavigation == true) return;
-
-    _sendMessage(
-        WV_MESSAGE_NAVIGATION_UPDATE,
-        jsonEncode({
-          "type": "OUT_OF_ROUTE",
-        }));
-  }
-
-  void _setNavigationDestinationReached() {
-    // Only send this message when using SDK navigation engine.
-    if (_usingViewerNavigation == true) return;
-
-    _sendMessage(
-        WV_MESSAGE_NAVIGATION_UPDATE,
-        jsonEncode({
-          "type": "DESTINATION_REACHED",
-        }));
-  }
-
-  void _setNavigationProgress(RouteProgress progress) {
-    // Only send this message when using SDK navigation engine.
-    if (_usingViewerNavigation == true) return;
-
-    progress.rawContent["type"] = "PROGRESS";
-    _sendMessage(WV_MESSAGE_NAVIGATION_UPDATE, jsonEncode(progress.rawContent));
   }
 
   // Callbacks:
@@ -495,21 +425,15 @@ class MapViewController {
 
   // Directions & Navigation Interceptors:
 
-  void _interceptDirectionsRequest(DirectionsRequest directionsRequest) {
-    _onDirectionsRequestInterceptor?.call(directionsRequest);
-  }
+  @Deprecated('Routes are now calculated and managed by the MapView. '
+      'This method is kept for backward compatibility and has no effect.')
+  void onDirectionsRequestInterceptor(
+      OnDirectionsRequestInterceptor callback) {}
 
-  void _interceptNavigationRequest(NavigationRequest navigationRequest) {
-    _onNavigationRequestInterceptor?.call(navigationRequest);
-  }
-
-  void onDirectionsRequestInterceptor(OnDirectionsRequestInterceptor callback) {
-    _onDirectionsRequestInterceptor = callback;
-  }
-
-  void onNavigationRequestInterceptor(OnNavigationRequestInterceptor callback) {
-    _onNavigationRequestInterceptor = callback;
-  }
+  @Deprecated('Navigation is now calculated and managed by the MapView. '
+      'This method is kept for backward compatibility and has no effect.')
+  void onNavigationRequestInterceptor(
+      OnNavigationRequestInterceptor callback) {}
 
   // External links navigation:
 
@@ -537,18 +461,6 @@ class MapViewController {
         break;
       case InternalCallType.locationError:
         _onError(call.get());
-        break;
-      // Navigation callbacks are used by both WYF and the integrator. If WYF
-      // uses them, they will be overwritten. To avoid that problem, we listen
-      // for native calls here.
-      case InternalCallType.navigationDestinationReached:
-        _setNavigationDestinationReached();
-        break;
-      case InternalCallType.navigationProgress:
-        _setNavigationProgress(call.get());
-        break;
-      case InternalCallType.navigationOutOfRoute:
-        _setNavigationOutOfRoute();
         break;
       default:
         // DO NOTHING: other internal calls are ignored.

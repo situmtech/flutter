@@ -54,7 +54,7 @@ class _WayfindingTabState extends State<WayfindingTab> {
   void _onLoad(MapViewController controller) {
     // Use MapViewController to communicate with the map: methods and callbacks
     // are available to perform actions and listen to events (e.g., listen to
-    // POI selections, intercept navigation options, navigate to POIs, etc.).
+    // POI selections, navigate to POIs, change floors, etc.).
     // You need to wait until the map is properly loaded to do so.
     mapViewController = controller;
 
@@ -87,11 +87,6 @@ class _WayfindingTabState extends State<WayfindingTab> {
     });
     controller.onPoiDeselected((poiDeselectedResult) {
       Logger.info("Poi DESELECTED: ${poiDeselectedResult.poi.name}");
-    });
-    controller.onNavigationRequestInterceptor((navigationRequest) {
-      Logger.info("Navigation interceptor: ${navigationRequest.toMap()}");
-      //   navigationRequest.distanceToGoalThreshold = 10.0;
-      //   ...
     });
 
     // widget.onLoad(controller);

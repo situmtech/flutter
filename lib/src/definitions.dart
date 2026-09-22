@@ -173,6 +173,10 @@ class MapViewConfiguration {
   }
 }
 
+@Deprecated(
+    'Direction requests are no longer forwarded from the MapView to the '
+    'native SDK. This type is kept for backward compatibility and is no '
+    'longer used internally.')
 class DirectionsMessage {
   // ignore: constant_identifier_names
   static const EMPTY_ID = "-1";
@@ -499,9 +503,16 @@ typedef OnMapViewErrorCallback = void Function(MapViewError error);
 // POI deselection callback.
 typedef OnPoiDeselectedCallback = void Function(
     OnPoiDeselectedResult poiDeselectedResult);
-// Directions and navigation interceptor.
+@Deprecated(
+    'Direction requests are no longer forwarded from the MapView to the '
+    'native SDK. This type is kept for backward compatibility and is no '
+    'longer used internally.')
 typedef OnDirectionsRequestInterceptor = void Function(
     DirectionsRequest directionsRequest);
+@Deprecated(
+    'Navigation requests are no longer forwarded from the MapView to the '
+    'native SDK. This type is kept for backward compatibility and is no '
+    'longer used internally.')
 typedef OnNavigationRequestInterceptor = void Function(
     NavigationRequest navigationRequest);
 // External link click.
