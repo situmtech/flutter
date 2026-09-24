@@ -1,5 +1,16 @@
-## Unreleased
-- Refactor iOS plugin folder structure to prepare for SPM compatibility
-- Updated Android example app compileSdkVersion & targetSdkVersion from 36 to 37.
-- Updated gradle wrapper version from 8.7 to 8.13.
-- Updated AGP (com.android.application) from 8.6.0 to 8.13.2.
+## 4.0.0
+
+### Breaking changes
+
+- Require Flutter 3.44.0 or later.
+- Require Dart 3.12.0 or later.
+- Require iOS 16.0 or later.
+
+### Added
+
+- Add Swift Package Manager support for the iOS plugin while keeping CocoaPods support.
+- Migrate the iOS example app to Swift Package Manager.
+
+### Notes
+
+- Update WebView Flutter dependencies to versions that can participate in a Swift Package Manager iOS build.

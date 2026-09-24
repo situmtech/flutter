@@ -53,7 +53,7 @@ steps:
 
           sudo xcode-select -switch $(xcodeVersion)
 
-          cd example/ios/fastlane
+          cd $(Pipeline.Workspace)/situm_flutter/example/ios/fastlane
 
           echo -e "\n[+] Setting Apple connection options"
 
@@ -71,14 +71,6 @@ steps:
           echo -e "\t[+] IPHONEOS_DEPLOYMENT_TARGET: $IPHONEOS_DEPLOYMENT_TARGET"
 
 
-          echo -e "\n[+] Pod deintegrate command \n"
-          cd ..
-          rm -rf Podfile.lock
-          pod deintegrate 
-
-          echo -e "\n[+] Pod install with --repo-update option \n"
-          pod install --repo-update
-
           echo -e "\n[+] Build example with fastlane \n"
           fastlane ios beta
 
@@ -87,13 +79,13 @@ steps:
   - ${{ if contains(parameters.system, 'ubuntu') }}:
       - bash: |
           export PATH="$PATH:$(Agent.BuildDirectory)/binaries/flutter/bin"
-          cd example
+          cd $(Pipeline.Workspace)/situm_flutter/example
 
           flutter build apk
         displayName: Build
 
       - bash: |
-          cd example
+          cd $(Pipeline.Workspace)/situm_flutter/example
 
           if [[ "$(Build.Reason)" == "Manual" ]];then
             folder="$(FlutterExample_folder)/Manual"

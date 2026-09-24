@@ -35,12 +35,12 @@ steps:
       - checkout: self
         fetchTags: false
         fetchDepth: 1
-        path: flutter
+        path: situm_flutter
         displayName: checkout self
 
       - template: azure-templates/static-analyse.yml@sys_kubernetes_templates
         parameters:
-          repoFolder: $(Pipeline.Workspace)/flutter
+          repoFolder: $(Pipeline.Workspace)/situm_flutter
           teams: mobile
           phase: semgrep
 
@@ -61,8 +61,8 @@ steps:
 
           export PATH="$PATH:$(Agent.BuildDirectory)/binaries/flutter/bin"
 
-          if [ -d "flutter" ];then
-            cd $(Pipeline.Workspace)/flutter
+          if [ -d "$(Pipeline.Workspace)/situm_flutter" ];then
+            cd $(Pipeline.Workspace)/situm_flutter
           fi
 
           echo -e "\n[+] Get Dependencies\n"
@@ -73,7 +73,7 @@ steps:
 
       - template: azure-templates/static-analyse.yml@sys_kubernetes_templates
         parameters:
-          repoFolder: $(Pipeline.Workspace)/flutter
+          repoFolder: $(Pipeline.Workspace)/situm_flutter
           teams: mobile
           phase: trivy
 
@@ -81,6 +81,7 @@ steps:
       - checkout: self
         fetchTags: false
         fetchDepth: 1
+        path: situm_flutter
         displayName: checkout self
 
       - ${{ if eq(variables['Build.Reason'],'manual') }}:
@@ -109,8 +110,8 @@ steps:
       - bash: |
 
           set -euo pipefail
-          if [ -d "flutter" ];then
-            cd flutter
+          if [ -d "$(Pipeline.Workspace)/situm_flutter" ];then
+            cd $(Pipeline.Workspace)/situm_flutter
           fi
           currentBranch=$(echo $(Build.SourceBranch) | cut -d "/" -f 3,4)
           echo "##vso[task.setvariable variable=currentBranch]$(echo $currentBranch)"
@@ -151,8 +152,8 @@ steps:
 
       - bash: |
           set -euo pipefail
-          if [ -d "flutter" ];then
-            cd flutter
+          if [ -d "$(Pipeline.Workspace)/situm_flutter" ];then
+            cd $(Pipeline.Workspace)/situm_flutter
           fi
           #Export binary paths
           export PATH="$PATH:$(Agent.BuildDirectory)/binaries/flutter/bin"
@@ -188,7 +189,7 @@ steps:
             bitbucket_user: situmops
           system: "N/A"
           server: "github"
-          repofolder: "flutter"
+          repofolder: "situm_flutter"
           mergeBranches:
             - "master"
             - "develop"
@@ -219,8 +220,8 @@ steps:
           echo -e "\n[+] Create temporary token \n"
           gcloud auth print-identity-token --audiences=https://pub.dev | dart pub token add https://pub.dev
 
-          if [ -d "flutter" ];then
-            cd flutter
+          if [ -d "$(Pipeline.Workspace)/situm_flutter" ];then
+            cd $(Pipeline.Workspace)/situm_flutter
           fi
 
           echo -e "\n[+] Publish flutter package\n"
@@ -231,8 +232,8 @@ steps:
       - bash: |
 
           set -euo pipefail
-          if [ -d "flutter" ]; then
-            cd flutter
+          if [ -d "$(Pipeline.Workspace)/situm_flutter" ]; then
+            cd $(Pipeline.Workspace)/situm_flutter
           fi
 
           echo -e "\n[+] Pull master changes and change to master branch \n"
