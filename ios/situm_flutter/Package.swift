@@ -13,7 +13,7 @@ let package = Package(
     ],
     dependencies: [
         .package(name: "FlutterFramework", path: "../FlutterFramework"),
-        .package(url: "https://github.com/situmtech/situm-sdk-spm", .upToNextMinor(from: "3.40.0"))
+        .package(url: "https://github.com/situmtech/situm-sdk-spm", exact: "3.41.2")
     ],
     targets: [
         .target(
