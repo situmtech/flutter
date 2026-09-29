@@ -16,9 +16,7 @@
     if (self) {
         self.synthesizer = [AVSpeechSynthesizer new];
         self.synthesizer.delegate = self;
-        if (@available(iOS 13.0, *)) {
-            self.synthesizer.usesApplicationAudioSession = false;
-        }
+        self.synthesizer.usesApplicationAudioSession = false;
     }
     return self;
 }

@@ -1,5 +1,16 @@
-## Unreleased
+## 4.0.0
 
-- Removed the routing and navigation bridge between MapView and the native SDK. MapView now always uses its own routing and navigation library.
-- Deprecated the legacy MapView directions and navigation request interceptors.
-- Refactor iOS plugin folder structure to prepare for SPM compatibility
+### Breaking changes
+
+- Require Flutter 3.44.0 or later.
+- Require Dart 3.12.0 or later.
+- Require iOS 16.0 or later.
+
+### Added
+
+- Add Swift Package Manager support for the iOS plugin while keeping CocoaPods support.
+- Migrate the iOS example app to Swift Package Manager.
+
+### Notes
+
+- Update WebView Flutter dependencies to versions that can participate in a Swift Package Manager iOS build.
