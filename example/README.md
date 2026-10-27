@@ -32,19 +32,29 @@ This folder contains the necessary source code for an example application using 
 The first step is to download this repo:
 
 ```bash
-git clone https://github.com/situmtech/flutter.git
+git clone https://github.com/situmtech/flutter.git situm_flutter
 ```
 
 And then install the plugin dependencies alongside the `example` app as follows:
 
 ```bash
-cd flutter/example
+cd situm_flutter/example
 flutter pub get
 ```
 
 #### iOS only
 
-Run `pod install` or `pod update` from the `example/ios` folder to bring the dependencies to your project.
+The bundled example app uses Swift Package Manager for iOS dependencies.
+
+> [!NOTE]
+> This limitation only affects local development of this repository and the
+> bundled example app when using Swift Package Manager. Apps that consume
+> `situm_flutter` from pub.dev are not affected.
+>
+> When running this example app on iOS with Swift Package Manager, make sure the
+> repository directory is named `situm_flutter`. Some Flutter versions generate
+> local Swift package overrides using the plugin directory name, and a different
+> checkout folder name can cause Swift package resolution failures.
 
 Also check out the project [code signing](https://developer.apple.com/support/code-signing/) before you run the example.
 
