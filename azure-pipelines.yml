@@ -189,7 +189,7 @@ steps:
             bitbucket_user: situmops
           system: "N/A"
           server: "github"
-          repofolder: "situm_flutter"
+          repofolder: "$(Pipeline.Workspace)/situm_flutter"
           mergeBranches:
             - "master"
             - "develop"
