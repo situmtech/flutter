@@ -1,16 +1,4 @@
-## 4.0.0
+## Unreleased
 
-### Breaking changes
-
-- Require Flutter 3.44.0 or later.
-- Require Dart 3.12.0 or later.
-- Require iOS 16.0 or later.
-
-### Added
-
-- Add Swift Package Manager support for the iOS plugin while keeping CocoaPods support.
-- Migrate the iOS example app to Swift Package Manager.
-
-### Notes
-
-- Update WebView Flutter dependencies to versions that can participate in a Swift Package Manager iOS build.
+- Migrate the Android plugin to Built-in Kotlin, following the Flutter guides. The plugin no longer applies the Kotlin Gradle Plugin, which Flutter warned about. No compatibility breaks are expected.
+- Update the Android example app to Gradle 9.3.1, Android Gradle Plugin 9.1.0 and Kotlin 2.4.0.
