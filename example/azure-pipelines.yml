@@ -32,7 +32,7 @@ parameters:
     default: "https://maps.situm.com"
   - name: APIDOMAIN
     type: string
-    default: "api.situm.com"
+    default: "https://api.situm.com"
 
 resources:
   repositories:
