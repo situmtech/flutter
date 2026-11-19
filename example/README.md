@@ -83,6 +83,19 @@ flutter run
 > [!IMPORTANT]
 > In case you are not able to compile our example app, you could try to set your flutter and java versions to the specified at [mise.toml](./mise.toml). If you install [mise](https://mise.jdx.dev/demo.html), this versioning tool will switch automatically to the correct versions you need.
 
+> [!TIP]
+> If a **release build** (`flutter build apk`) fails in a Gradle lint task with a Java error such as
+> `NoSuchMethodError`, the JDK used by Flutter is probably too old. Debug runs (`flutter run`) do not run
+> that lint, so the problem only shows up in release builds.
+>
+> Flutter does not always use the `java` from your `PATH` or `JAVA_HOME` (for example, it may pick the JDK
+> bundled with Android Studio). To check and change it:
+>
+> ```bash
+> flutter doctor -v | grep -i java        # JDK that Flutter is using
+> flutter config --jdk-dir <path-to-jdk>  # use a recent JDK (21 or later)
+> ```
+
 You can also run the app from your IDE:
 
 - On Android: open `example/android/` with Android Studio.
