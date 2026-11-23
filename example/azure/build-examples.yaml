@@ -77,9 +77,19 @@ steps:
         displayName: Build iOS example
 
   - ${{ if contains(parameters.system, 'ubuntu') }}:
+      # AGP 9.x ships a lint that needs JDK 21 (the agent defaults to JDK 17).
+      - task: JavaToolInstaller@0
+        inputs:
+          versionSpec: "21"
+          jdkArchitectureOption: "x64"
+          jdkSourceOption: "PreInstalled"
+        displayName: Install Java 21 for Gradle
+
       - bash: |
           export PATH="$PATH:$(Agent.BuildDirectory)/binaries/flutter/bin"
           cd $(Pipeline.Workspace)/situm_flutter/example
+
+          java -version
 
           flutter build apk
         displayName: Build
