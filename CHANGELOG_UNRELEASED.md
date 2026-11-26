@@ -1,0 +1,1 @@
+- fix OnSpeakAloudTextResult params values documentation
